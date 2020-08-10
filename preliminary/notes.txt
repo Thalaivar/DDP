@@ -1,0 +1,4 @@
+embeddings_1 = t-SNE, 25 perplex
+embeddings_2 = UMAP, 25 nbrs
+3 umap 50
+4 tsne 50
