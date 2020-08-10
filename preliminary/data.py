@@ -4,7 +4,7 @@ import numpy as np
 import os
 from tqdm import tqdm
 import ftplib
-from bsoid.config import *
+from LOCAL_CONFIG import *
 
 # Mapping for data
 NOSE_INDEX = 0
@@ -74,21 +74,23 @@ def conv_bsoid_format(filename):
         bodypart_headers.append(BSOID_DATA[i])
         bodypart_headers.append(BSOID_DATA[i])
         bodypart_headers.append(BSOID_DATA[i])
-
-
     
-    bsoid_data = pd.DataFrame(bsoid_data, columns=bodypart_headers)
-    # add necessary headers
-    bsoid_data.loc[-1] = bsoid_data_headers
-    bsoid_data.index += 1
-    bsoid_data.sort_index()
+    # hacky fix to get it in B-SOID format
+    bsoid_data = np.vstack((np.array(bsoid_data_headers), bsoid_data))
+    bsoid_data = np.vstack((np.array(bodypart_headers), bsoid_data))
+    idx = np.arange(bsoid_data.shape[0]).reshape(bsoid_data.shape[0], 1)
+    bsoid_data = np.hstack((idx, bsoid_data))
+    
+    bsoid_data = pd.DataFrame(bsoid_data)
     bsoid_data.to_csv(filename[:-3] +'.csv', index=False)
-    
+
     return bsoid_data
 
 def download_data(bsoid_data_file, pose_est_dir):
     bsoid_data = pd.read_csv(bsoid_data_file)
-
+    bsoid_data = bsoid_data.sample(n=30)
+    bsoid_data = bsoid_data.reset_index()
+    
     session = ftplib.FTP("ftp.box.com")
     session.login("ae16b011@smail.iitm.ac.in", "Q0w9e8r7t6Y%Z")
 
