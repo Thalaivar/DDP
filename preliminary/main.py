@@ -130,7 +130,7 @@ def process_feats():
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_feats.sav'))), 'wb') as fr:
         joblib.dump([f_10fps, f_10fps_sc], fr)
 
-def embedding():
+def embedding(subsample=False):
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_feats.sav'))), 'rb') as fr:
         f_10fps, f_10fps_sc = joblib.load(fr)
 
@@ -139,15 +139,22 @@ def embedding():
     mem = virtual_memory()
     allowed_n = int((mem.available - 256000000)/(f_10fps_sc.shape[0]*32*100))
     print("Max points allowed due to memory: {} and data has point: {}".format(allowed_n, f_10fps_sc.shape[1]))
+
+    if subsample and allowed_n < f_10fps_sc.shape[1]:
+        print("Subsampling data to max allowable limit...")
+        idx = np.random.permutation(np.arange(f_10fps_sc.shape[1]))[0:allowed_n]
+        f_10fps = f_10fps[:, idx]
+        f_10fps_sc = f_10fps_sc[:, idx]
+
     if mem.available > f_10fps_sc.shape[0] * f_10fps_sc.shape[1] * 32 * 100 + 256000000:
         trained_umap = umap.UMAP(n_neighbors=100, 
                                  **UMAP_PARAMS).fit(feats_train)
     else:
-        logging.info('Detecting that you are running low on available memory for this computation, setting low_memory so will take longer.')
+        print('Detecting that you are running low on available memory for this computation, setting low_memory so will take longer.')
         trained_umap = umap.UMAP(n_neighbors=100, low_memory=True,  # power law
                                  **UMAP_PARAMS).fit(feats_train)
     umap_embeddings = trained_umap.embedding_
-    logging.info(
+    print(
         'Done non-linear transformation of **{}** instances from **{}** D into **{}** D.'.format(feats_train.shape[0],
                                                                                                  feats_train.shape[1],
                                                                                                  umap_embeddings.shape[
@@ -157,11 +164,10 @@ def embedding():
 
 def clustering():
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'rb') as f:
-        f_10fps, f_10fps_sc, umap_embeddings = joblib.load(f)
+        _, _, umap_embeddings = joblib.load(f)
 
     cluster_range = [0.4, 1.2]
     print('Clustering with cluster size ranging from {}% to {}%'.format(cluster_range[0], cluster_range[1]))
-    
 
     highest_numulab = -np.infty
     numulab = []
@@ -181,7 +187,10 @@ def clustering():
     logging.info('Done assigning labels for **{}** instances in **{}** D space'.format(*umap_embeddings.shape))
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_clusters.sav'))), 'wb') as f:
         joblib.dump([assignments, soft_clusters, soft_assignments], f)
+
+    print('Identified {} clusters...'.format(len(np.unique(soft_assignments))))
     
 if __name__ == "__main__":
     # process_csvs()
-    process_feats()
+    # process_feats()
+    embedding(subsample=True)
