@@ -134,21 +134,22 @@ def process_feats():
 
 def embedding(subsample=False):
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_feats.sav'))), 'rb') as fr:
-        f_10fps, f_10fps_sc = joblib.load(fr)
+        _, f_10fps_sc = joblib.load(fr)
 
     feats_train = f_10fps_sc.T
+    del f_10fps_sc
 
     mem = virtual_memory()
     allowed_n = int((mem.available - 256000000)/(f_10fps_sc.shape[0]*32*100))
-    print("Max points allowed due to memory: {} and data has point: {}".format(allowed_n, f_10fps_sc.shape[1]))
+    print("Max points allowed due to memory: {} and data has point: {}".format(allowed_n, feats_train.shape[0]))
 
-    if subsample and allowed_n < f_10fps_sc.shape[1]:
+    if subsample and allowed_n < feats_train.shape[0]:
         print("Subsampling data to max allowable limit...")
         idx = np.random.permutation(np.arange(f_10fps_sc.shape[1]))[0:allowed_n]
         f_10fps = f_10fps[:, idx]
         f_10fps_sc = f_10fps_sc[:, idx]
 
-    if mem.available > f_10fps_sc.shape[0] * f_10fps_sc.shape[1] * 32 * 100 + 256000000:
+    if mem.available > feats_train.shape[1] * feats_train.shape[0] * 32 * 100 + 256000000:
         trained_umap = umap.UMAP(n_neighbors=100, 
                                  **UMAP_PARAMS).fit(feats_train)
     else:
@@ -161,6 +162,8 @@ def embedding(subsample=False):
                                                                                                  feats_train.shape[1],
                                                                                                  umap_embeddings.shape[
                                                                                                      1]))
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_feats.sav'))), 'rb') as fr:
+        f_10fps, f_10fps_sc = joblib.load(fr)
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'wb') as f:
         joblib.dump([f_10fps, f_10fps_sc, umap_embeddings], f)
 
