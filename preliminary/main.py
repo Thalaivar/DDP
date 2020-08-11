@@ -1,99 +1,187 @@
-from bsoid.train import *
-import bsoid.likelihoodprocessing as likelihoodprocessing
+import os
+import glob
+import math
+import umap
+import random
+import joblib
+import itertools
+import hdbscan
+import numpy as np
+import pandas as pd
+
+from tqdm import tqdm
+from LOCAL_CONFIG import *
+from preprocessing import *
+from psutil import virtual_memory
 from data import download_data, conv_bsoid_format
-import bsoid.train as bsoid_train
-from bsoid.config.LOCAL_CONFIG import *
-import ast
+from sklearn.preprocessing import StandardScaler
 
-DATA_DIR = BASE_PATH + TRAIN_FOLDERS[0]
-
-def download():
-    download_data('bsoid_strain_data.csv', DATA_DIR)
+def download(n):
+    download_data('bsoid_strain_data.csv', RAW_DATA_DIR)
     
     print("Converting HDF5 files to csv files...")
-    files = os.listdir(DATA_DIR)
+    files = os.listdir(RAW_DATA_DIR)
+    files = random.sample(files, n)
     for i in tqdm(range(len(files))):
         if files[i][-3:] == ".h5":
-            conv_bsoid_format(DATA_DIR+files[i])
+            conv_bsoid_format(RAW_DATA_DIR+files[i], CSV_DATA_DIR)
 
-    print("Deleting HDF5 files...")
-    for f in files:
-        if f[-3:] == ".h5":
-            os.remove(DATA_DIR+f)
+def process_csvs():
+    csv_rep = glob.glob(BASE_PATH + CSV_DATA_DIR + '/*.csv')
+    print('Preprocessing {} CSVs from {}'.format(len(csv_rep), BASE_PATH+CSV_DATA_DIR))
+    curr_df = pd.read_csv(csv_rep[0], low_memory=False)
+    currdf = np.array(curr_df)
+    BP = np.unique(currdf[0,1:])
+    BODYPARTS = []
+    for b in BP:
+        index = [i for i, s in enumerate(currdf[0, 1:]) if b in s]
+        if not index in BODYPARTS:
+            BODYPARTS += index
+    BODYPARTS.sort()
+    filenames = []
+    rawdata_li = []
+    data_li = []
+    perc_rect_li = []
+    f = get_filenames(BASE_PATH, CSV_DATA_DIR)
+    for j, filename in enumerate(f):
+        curr_df = pd.read_csv(filename, low_memory=False)
+        curr_df_filt, perc_rect = adp_filt(curr_df, BODYPARTS)
+        rawdata_li.append(curr_df)
+        perc_rect_li.append(perc_rect)
+        data_li.append(curr_df_filt)        
+        filenames.append(filename)
+    training_data = np.array(data_li)
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_data.sav'))), 'wb') as f:
+        joblib.dump([BASE_PATH, FPS, BODYPARTS, filenames, rawdata_li, training_data, perc_rect_li], f)
 
-def load_data(preprocess=True):
-    # data preprocessing
-    if preprocess:
-        # preprocess data
-        filenames, training_data, perc_rect = likelihoodprocessing.main(TRAIN_FOLDERS)
-        # save preprocessed data
-        with open(DATA_DIR+"filenames.txt", 'w') as f:
-            for filename in filenames:
-                f.write("%s\n"%filename)
-        np.save(DATA_DIR+"perc_rect.npy", perc_rect)    
-        np.save(DATA_DIR+"filtered_data.npy", training_data)
+def process_feats():
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_data.sav'))), 'rb') as fr:
+        BASE_PATH, FPS, BODYPARTS, filenames, rawdata_li, training_data, perc_rect_li = joblib.load(fr)
+    win_len = np.int(np.round(0.05 / (1 / FPS)) * 2 - 1)
+    feats = []
+    print("Extracting features from {} CSV files..".format(len(training_data)))
+    for m in tqdm(range(len(training_data))):
+        dataRange = len(training_data[m])
+        dxy_r = []
+        dis_r = []
+        for r in range(dataRange):
+            if r < dataRange - 1:
+                dis = []
+                for c in range(0, training_data[m].shape[1], 2):
+                    dis.append(np.linalg.norm(training_data[m][r + 1, c:c + 2] - training_data[m][r, c:c + 2]))
+                dis_r.append(dis)
+            dxy = []
+            for i, j in itertools.combinations(range(0, training_data[m].shape[1], 2), 2):
+                dxy.append(training_data[m][r, i:i + 2] - training_data[m][r, j:j + 2])
+            dxy_r.append(dxy)
+        dis_r = np.array(dis_r)
+        dxy_r = np.array(dxy_r)
+        dis_smth = []
+        dxy_eu = np.zeros([dataRange, dxy_r.shape[1]])
+        ang = np.zeros([dataRange - 1, dxy_r.shape[1]])
+        dxy_smth = []
+        ang_smth = []
+        for l in range(dis_r.shape[1]):
+            dis_smth.append(boxcar_center(dis_r[:, l], win_len))
+        for k in range(dxy_r.shape[1]):
+            for kk in range(dataRange):
+                dxy_eu[kk, k] = np.linalg.norm(dxy_r[kk, k, :])
+                if kk < dataRange - 1:
+                    b_3d = np.hstack([dxy_r[kk + 1, k, :], 0])
+                    a_3d = np.hstack([dxy_r[kk, k, :], 0])
+                    c = np.cross(b_3d, a_3d)
+                    ang[kk, k] = np.dot(np.dot(np.sign(c[2]), 180) / np.pi,
+                                        math.atan2(np.linalg.norm(c),
+                                                   np.dot(dxy_r[kk, k, :], dxy_r[kk + 1, k, :])))
+            dxy_smth.append(boxcar_center(dxy_eu[:, k], win_len))
+            ang_smth.append(boxcar_center(ang[:, k], win_len))
+        dis_smth = np.array(dis_smth)
+        dxy_smth = np.array(dxy_smth)
+        ang_smth = np.array(ang_smth)
+        feats.append(np.vstack((dxy_smth[:, 1:], ang_smth, dis_smth)))
+
+    for n in range(0, len(feats)):
+        feats1 = np.zeros(len(training_data[n]))
+        for k in range(round(FPS / 10), len(feats[n][0]), round(FPS / 10)):
+            if k > round(FPS / 10):
+                feats1 = np.concatenate((feats1.reshape(feats1.shape[0], feats1.shape[1]),
+                                         np.hstack((np.mean((feats[n][0:dxy_smth.shape[0],
+                                                             range(k - round(FPS / 10), k)]), axis=1),
+                                                    np.sum((feats[n][dxy_smth.shape[0]:feats[n].shape[0],
+                                                            range(k - round(FPS / 10), k)]),
+                                                           axis=1))).reshape(len(feats[0]), 1)), axis=1)
+            else:
+                feats1 = np.hstack((np.mean((feats[n][0:dxy_smth.shape[0], range(k - round(FPS / 10), k)]), axis=1),
+                                    np.sum((feats[n][dxy_smth.shape[0]:feats[n].shape[0],
+                                            range(k - round(FPS / 10), k)]), axis=1))).reshape(len(feats[0]), 1)
+        if n > 0:
+            f_10fps = np.concatenate((f_10fps, feats1), axis=1)
+            scaler = StandardScaler()
+            scaler.fit(feats1.T)
+            feats1_sc = scaler.transform(feats1.T).T
+            f_10fps_sc = np.concatenate((f_10fps_sc, feats1_sc), axis=1)
+        else:
+            f_10fps = feats1
+            scaler = StandardScaler()
+            scaler.fit(feats1.T)
+            feats1_sc = scaler.transform(feats1.T).T
+            f_10fps_sc = feats1_sc 
     
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_feats.sav'))), 'wb') as fr:
+        joblib.dump([f_10fps, f_10fps_sc], fr)
+
+def embedding():
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_feats.sav'))), 'rb') as fr:
+        f_10fps, f_10fps_sc = joblib.load(fr)
+
+    feats_train = f_10fps_sc.T
+
+    mem = virtual_memory()
+    allowed_n = int((mem.available - 256000000)/(f_10fps_sc.shape[0]*32*100))
+    print("Max points allowed due to memory: {} and data has point: {}".format(allowed_n, f_10fps_sc.shape[1]))
+    if mem.available > f_10fps_sc.shape[0] * f_10fps_sc.shape[1] * 32 * 100 + 256000000:
+        trained_umap = umap.UMAP(n_neighbors=100, 
+                                 **UMAP_PARAMS).fit(feats_train)
     else:
-        print("Loading preprocessed data...")
-        with open(DATA_DIR+"filenames.txt", 'r') as f:
-            filenames = ast.literal_eval(f.read())
-        # modify filenames for path to current system
-        for i in range(len(filenames)):
-            file_path = filenames[i].split('/')
-            filenames[i] = DATA_DIR+file_path[-1]
+        logging.info('Detecting that you are running low on available memory for this computation, setting low_memory so will take longer.')
+        trained_umap = umap.UMAP(n_neighbors=100, low_memory=True,  # power law
+                                 **UMAP_PARAMS).fit(feats_train)
+    umap_embeddings = trained_umap.embedding_
+    logging.info(
+        'Done non-linear transformation of **{}** instances from **{}** D into **{}** D.'.format(feats_train.shape[0],
+                                                                                                 feats_train.shape[1],
+                                                                                                 umap_embeddings.shape[
+                                                                                                     1]))
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'wb') as f:
+        joblib.dump([f_10fps, f_10fps_sc, umap_embeddings], f)
 
-        perc_rect = np.load(DATA_DIR+"perc_rect.npy", allow_pickle=True)
-        training_data = np.load(DATA_DIR+"filtered_data.npy", allow_pickle=True)
+def clustering():
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'rb') as f:
+        f_10fps, f_10fps_sc, umap_embeddings = joblib.load(f)
+
+    cluster_range = [0.4, 1.2]
+    print('Clustering with cluster size ranging from {}% to {}%'.format(cluster_range[0], cluster_range[1]))
     
-    return filenames, training_data, perc_rect
 
-def train(saved_feats=False):
-    if saved_feats:
-        data = np.load(DATA_DIR+"f_10fps.npy")
-    else:
-        data = np.load(DATA_DIR+"filtered_data.npy")
-        
-    # dimensionality reduction
-    algo = "t-SNE"
-    params = {"dimensions":2, "perplexity":np.sqrt(data.shape[1]), "theta":0.5}
-    f_10fps, f_10fps_sc, embedding, scaler = bsoid_dim_reduce(data, algo=algo, saved_feats=saved_feats, params=params)
+    highest_numulab = -np.infty
+    numulab = []
+    min_cluster_range = np.linspace(cluster_range[0], cluster_range[1], 25)
+    for min_c in min_cluster_range:
+        trained_classifier = hdbscan.HDBSCAN(prediction_data=True,
+                                                min_cluster_size=int(round(min_c * 0.01 * umap_embeddings.shape[0])),
+                                                **HDBSCAN_PARAMS).fit(umap_embeddings)
+        numulab.append(len(np.unique(trained_classifier.labels_)))
+        if numulab[-1] > highest_numulab:
+            logging.info('Adjusting minimum cluster size to maximize cluster number...')
+            highest_numulab = numulab[-1]
+            best_clf = trained_classifier
+    assignments = best_clf.labels_
+    soft_clusters = hdbscan.all_points_membership_vectors(best_clf)
+    soft_assignments = np.argmax(soft_clusters, axis=1)
+    logging.info('Done assigning labels for **{}** instances in **{}** D space'.format(*umap_embeddings.shape))
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_clusters.sav'))), 'wb') as f:
+        joblib.dump([assignments, soft_clusters, soft_assignments], f)
     
-    if algo == "UMAP":
-        filename = "embeddings_UMAP_" + str(params["dimensions"]) + "D_md" + str(params["min_dist"]) + "_nbr" + str(params["neighbors"]) + ".npy"
-    elif algo == "t-SNE":
-        filename = "embeddings_tSNE_" + str(params["dimensions"]) + "D_P" + str(params["perplexity"]) + "_th" + str(params["theta"]) + ".npy"
-    np.save(BASE_PATH+"embed/"+filename, embedding)
-
-    # # GMM training
-    # for p in perplexity:
-    #     params["perplexity"] = p
-
-    #     if algo == "UMAP":
-    #         filename = "embeddings_UMAP_" + str(params["dimensions"]) + "D_md" + str(params["min_dist"]) + "_nbr" + str(params["neighbors"]) + ".npy"
-    #     elif algo == "t-SNE":
-    #         filename = "embeddings_tSNE_" + str(params["dimensions"]) + "D_P" + str(params["perplexity"]) + "_th" + str(params["theta"]) + ".npy"
-    #     embedding = np.load(BASE_PATH+"embed/"+filename)
-        
-    #     gmm_assignments = bsoid_gmm(embedding)
-        
-    #     if algo == "UMAP":
-    #         filename = "assignments_UMAP_" + str(params["dimensions"]) + "D_md" + str(params["min_dist"]) + "_nbr" + str(params["neighbors"]) + ".npy"
-    #     elif algo == "t-SNE":
-    #         filename = "assignments_tSNE_" + str(params["dimensions"]) + "D_P" + str(params["perplexity"]) + "_th" + str(params["theta"]) + ".npy"
-    #     np.save(BASE_PATH+"embed/"+filename, gmm_assignments)
-
-    # SVC training
-    # classifier, scores = bsoid_svm(f_10fps_sc, gmm_assignments)
-
-    # return f_10fps, trained_tsne, scaler, gmm_assignments, classifier, scores
-    #return f_10fps, f_10fps_sc, trained_tsne, scaler
-
 if __name__ == "__main__":
-    # download all data
-    # download()
-
-    # load data
-    # load_data(preprocess=True)
-
-    # train the unsupervised classifier
-    train(saved_feats=True)
+    # process_csvs()
+    process_feats()
