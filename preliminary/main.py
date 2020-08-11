@@ -19,14 +19,14 @@ from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.neural_network import MLPClassifier
 
 def download(n):
-    download_data('bsoid_strain_data.csv', RAW_DATA_DIR)
+    download_data('bsoid_strain_data.csv', BASE_PATH+RAW_DATA_DIR)
     
     print("Converting HDF5 files to csv files...")
-    files = os.listdir(RAW_DATA_DIR)
+    files = os.listdir(BASE_PATH+RAW_DATA_DIR)
     files = random.sample(files, n)
     for i in tqdm(range(len(files))):
         if files[i][-3:] == ".h5":
-            conv_bsoid_format(RAW_DATA_DIR+files[i], CSV_DATA_DIR)
+            conv_bsoid_format(BASE_PATH+RAW_DATA_DIR+files[i], BASE_PATH+CSV_DATA_DIR)
 
 def process_csvs():
     csv_rep = glob.glob(BASE_PATH + CSV_DATA_DIR + '/*.csv')
