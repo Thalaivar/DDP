@@ -15,6 +15,8 @@ from preprocessing import *
 from psutil import virtual_memory
 from data import download_data, conv_bsoid_format
 from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.neural_network import MLPClassifier
 
 def download(n):
     download_data('bsoid_strain_data.csv', RAW_DATA_DIR)
@@ -162,6 +164,14 @@ def embedding(subsample=False):
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'wb') as f:
         joblib.dump([f_10fps, f_10fps_sc, umap_embeddings], f)
 
+def check_mem():
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_feats.sav'))), 'rb') as fr:
+        _, f_10fps_sc = joblib.load(fr)   
+    
+    mem = virtual_memory()
+    allowed_n = int((mem.available - 256000000)/(f_10fps_sc.shape[0]*32*100))
+    print("Max points allowed due to memory: {} and data has point: {}".format(allowed_n, f_10fps_sc.shape[1]))
+
 def clustering():
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'rb') as f:
         _, _, umap_embeddings = joblib.load(f)
@@ -189,7 +199,28 @@ def clustering():
         joblib.dump([assignments, soft_clusters, soft_assignments], f)
 
     print('Identified {} clusters...'.format(len(np.unique(soft_assignments))))
-    
+
+def classifier():
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'rb') as fr:
+        f_10fps, f_10fps_sc, umap_embeddings = joblib.load(fr)
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_clusters.sav'))), 'rb') as fr:
+        assignments, soft_clusters, soft_assignments = joblib.load(fr)
+    feats_train, feats_test, labels_train, labels_test = train_test_split(f_10fps.T, soft_assignments.T,
+                                                                          test_size=HLDOUT, random_state=23)
+
+    print('Training feedforward neural network on randomly partitioned {}% of training data...'.format(
+        (1 - HLDOUT) * 100))
+    classifier = MLPClassifier(**MLP_PARAMS)
+    classifier.fit(feats_train, labels_train)
+    clf = MLPClassifier(**MLP_PARAMS)
+    clf.fit(f_10fps.T, soft_assignments.T)
+    nn_assignments = clf.predict(f_10fps.T)
+    logging.info('Done training feedforward neural network '
+            'mapping **{}** features to **{}** assignments.'.format(f_10fps.T.shape, soft_assignments.T.shape))
+    scores = cross_val_score(classifier, feats_test, labels_test, cv=CV_IT, n_jobs=-1)
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_neuralnet.sav'))), 'wb') as f:
+        joblib.dump([feats_test, labels_test, classifier, clf, scores, nn_assignments], f)
+
 if __name__ == "__main__":
     # process_csvs()
     # process_feats()
