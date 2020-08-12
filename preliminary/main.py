@@ -5,6 +5,7 @@ import umap
 import random
 import joblib
 import itertools
+import ffmpeg
 import hdbscan
 import numpy as np
 import pandas as pd
@@ -13,10 +14,11 @@ from tqdm import tqdm
 from LOCAL_CONFIG import *
 from preprocessing import *
 from psutil import virtual_memory
-from data import download_data, conv_bsoid_format
-from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.neural_network import MLPClassifier
+from sklearn.preprocessing import StandardScaler
+from data import download_data, conv_bsoid_format
+from utils import bsoid_extract, bsoid_predict, create_labeled_vid
+from sklearn.model_selection import train_test_split, cross_val_score
 
 def download(n):
     download_data('bsoid_strain_data.csv', BASE_PATH+RAW_DATA_DIR)
@@ -132,7 +134,7 @@ def process_feats():
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_feats.sav'))), 'wb') as fr:
         joblib.dump([f_10fps, f_10fps_sc], fr)
 
-def embedding(subsample=False):
+def embedding():
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_feats.sav'))), 'rb') as fr:
         _, f_10fps_sc = joblib.load(fr)
 
@@ -140,14 +142,15 @@ def embedding(subsample=False):
     del f_10fps_sc
 
     mem = virtual_memory()
-    allowed_n = int((mem.available - 256000000)/(f_10fps_sc.shape[0]*32*100))
+    allowed_n = int((mem.available - 256000000)/(feats_train.shape[1]*32*100))
     print("Max points allowed due to memory: {} and data has point: {}".format(allowed_n, feats_train.shape[0]))
 
-    if subsample and allowed_n < feats_train.shape[0]:
-        print("Subsampling data to max allowable limit...")
-        idx = np.random.permutation(np.arange(f_10fps_sc.shape[1]))[0:allowed_n]
-        f_10fps = f_10fps[:, idx]
-        f_10fps_sc = f_10fps_sc[:, idx]
+    if allowed_n < feats_train.shape[0]:
+        raise ValueError('Too many samples...')
+        # print("Subsampling data to max allowable limit...")
+        # idx = np.random.permutation(np.arange(f_10fps_sc.shape[1]))[0:allowed_n]
+        # f_10fps = f_10fps[:, idx]
+        # f_10fps_sc = f_10fps_sc[:, idx]
 
     if mem.available > feats_train.shape[1] * feats_train.shape[0] * 32 * 100 + 256000000:
         trained_umap = umap.UMAP(n_neighbors=100, 
@@ -224,7 +227,104 @@ def classifier():
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_neuralnet.sav'))), 'wb') as f:
         joblib.dump([feats_test, labels_test, classifier, clf, scores, nn_assignments], f)
 
+def load_all():
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_neuralnet.sav'))), 'rb') as f:
+        feats_test, labels_test, classifier, clf, scores, nn_assignments = joblib.load(f)
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'rb') as fr:
+        f_10fps, f_10fps_sc, umap_embeddings = joblib.load(fr)
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_clusters.sav'))), 'rb') as fr:
+        assignments, soft_clusters, soft_assignments = joblib.load(fr)
+    
+    return f_10fps, f_10fps_sc, umap_embeddings, assignments, soft_assignments, soft_clusters, feats_test, labels_test, classifier, clf, scores, nn_assignments
+
+def video_processing(csv_file, video_file):
+    output_dir = TEST_DIR + csv_file.split('/')[-1][:-4]
+    try:
+        os.mkdir(output_dir)
+    except FileExistsError:
+        pass
+    frame_dir = output_dir + '/pngs'
+    try:
+        os.mkdir(frame_dir)
+    except FileExistsError:
+        pass
+    print('Extracting frames from video {} to dir {}...'.format(video_file, frame_dir))
+    
+    probe = ffmpeg.probe(video_file)
+    video_info = next(s for s in probe['streams'] if s['codec_type'] == 'video')
+    width = int(video_info['width'])
+    height = int(video_info['height'])
+    num_frames = int(video_info['nb_frames'])
+    bit_rate = int(video_info['bit_rate'])
+    avg_frame_rate = round(int(video_info['avg_frame_rate'].rpartition('/')[0]) / int(video_info['avg_frame_rate'].rpartition('/')[2]))
+    print('Frame extraction for {} frames at {} frames per second'.format(num_frames, avg_frame_rate))
+    try:
+        (ffmpeg.input(video_file)
+            .filter('fps', fps=avg_frame_rate)
+            .output(str.join('', (frame_dir, '/frame%01d.png')), video_bitrate=bit_rate,
+                    s=str.join('', (str(int(width * 0.5)), 'x', str(int(height * 0.5)))), sws_flags='bilinear',
+                    start_number=0)
+            .run(capture_stdout=True, capture_stderr=True))
+    except ffmpeg.Error as e:
+        print('stdout:', e.stdout.decode('utf8'))
+        print('stderr:', e.stderr.decode('utf8'))
+    
+    try:
+        os.mkdir(output_dir + '/mp4s')
+    except FileExistsError:
+        pass
+
+    shortvid_dir = output_dir + '/mp4s'
+    print('Saving example videos from {} to {}...'.format(video_file, shortvid_dir))
+    
+    min_time = input('Minimum bout duration: ')
+    min_frames = round(float(min_time) * 0.001 * float(FPS))
+    
+    number_examples = int(input('Number of examples per group: '))
+    out_fps = int(input('Output frame rate: '))
+    
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_neuralnet.sav'))), 'rb') as fr:
+        feats_test, labels_test, classifier, clf, scores, nn_assignments = joblib.load(fr)
+    
+    curr_df = pd.read_csv(csv_file, low_memory=False) 
+    currdf = np.array(curr_df)
+    BP = np.unique(currdf[0,1:])
+    BODYPARTS = []
+    for b in BP:
+        index = [i for i, s in enumerate(currdf[0, 1:]) if b in s]
+        if not index in BODYPARTS:
+            BODYPARTS += index
+    BODYPARTS.sort()
+    
+    curr_df_filt, perc_rect = adp_filt(curr_df, BODYPARTS)
+    test_data = [curr_df_filt]
+    labels_fs = []
+    labels_fs2 = []
+    fs_labels = []
+    for i in range(0, len(test_data)):
+        feats_new = bsoid_extract(test_data, FPS)
+        
+        with open(output_dir + '/' + MODEL_NAME + '_feats.sav', 'wb') as fr:
+            joblib.dump(feats_new, fr)
+
+        labels = bsoid_predict(feats_new, clf)
+        for m in range(0, len(labels)):
+            labels[m] = labels[m][::-1]
+        labels_pad = -1 * np.ones([len(labels), len(max(labels, key=lambda x: len(x)))])
+        for n, l in enumerate(labels):
+            labels_pad[n][0:len(l)] = l
+            labels_pad[n] = labels_pad[n][::-1]
+            if n > 0:
+                labels_pad[n][0:n] = labels_pad[n - 1][0:n]
+        labels_fs.append(labels_pad.astype(int))
+    for k in range(0, len(labels_fs)):
+        labels_fs2 = []
+        for l in range(math.floor(FPS / 10)):
+            labels_fs2.append(labels_fs[k][l])
+        fs_labels.append(np.array(labels_fs2).flatten('F'))
+    create_labeled_vid(fs_labels[0], int(min_frames), int(number_examples), int(out_fps),
+                        frame_dir, shortvid_dir)
 if __name__ == "__main__":
     # process_csvs()
     # process_feats()
-    embedding(subsample=True)
+    embedding()

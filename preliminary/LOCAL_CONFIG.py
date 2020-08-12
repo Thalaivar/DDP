@@ -1,8 +1,9 @@
 # data storage
 # BASE_PATH = '/scratch/scratch2/dhruvlaad/bsoid/'
-BASE_PATH = '/home/dhruvlaad/data/'
+# BASE_PATH = '/home/dhruvlaad/data/'
+BASE_PATH = '/Users/dhruvlaad/IIT/DDP/data/'
 RAW_DATA_DIR = 'raw/'
-CSV_DATA_DIR = 'test/'
+CSV_DATA_DIR = 'preproc/'
 OUTPUT_PATH = BASE_PATH + 'output/'
 
 # run
@@ -36,3 +37,6 @@ MLP_PARAMS = {
     'early_stopping': False,
     'verbose': 0  # set to 1 for tuning your feedforward neural network
 }
+
+# testing
+TEST_DIR = BASE_PATH + 'test/'
