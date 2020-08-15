@@ -1,6 +1,4 @@
 # data storage
-# BASE_PATH = '/scratch/scratch2/dhruvlaad/bsoid/'
-# BASE_PATH = '/home/dhruvlaad/data/'
 BASE_PATH = '/Users/dhruvlaad/IIT/DDP/data/'
 RAW_DATA_DIR = 'raw/'
 CSV_DATA_DIR = 'preproc/'
@@ -9,7 +7,7 @@ OUTPUT_PATH = BASE_PATH + 'output/'
 # run
 FPS = 30
 RETAIN_WINDOW = 30*60
-MODEL_NAME = '8animals'
+MODEL_NAME = '11animals'
 HLDOUT = 0.2
 CV_IT = 10
 

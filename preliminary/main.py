@@ -15,6 +15,7 @@ from LOCAL_CONFIG import *
 from preprocessing import *
 from psutil import virtual_memory
 from sklearn.neural_network import MLPClassifier
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import StandardScaler
 from data import download_data, conv_bsoid_format
 from utils import bsoid_extract, bsoid_predict, create_labeled_vid
@@ -161,7 +162,7 @@ def embedding():
                                  **UMAP_PARAMS).fit(feats_train)
     umap_embeddings = trained_umap.embedding_
     print(
-        'Done non-linear transformation of **{}** instances from **{}** D into **{}** D.'.format(feats_train.shape[0],
+        'Done non-linear transformation of {} instances from {}D into {}D.'.format(feats_train.shape[0],
                                                                                                  feats_train.shape[1],
                                                                                                  umap_embeddings.shape[
                                                                                                      1]))
@@ -178,11 +179,12 @@ def check_mem():
     allowed_n = int((mem.available - 256000000)/(f_10fps_sc.shape[0]*32*100))
     print("Max points allowed due to memory: {} and data has point: {}".format(allowed_n, f_10fps_sc.shape[1]))
 
-def clustering():
+def clustering(cluster_range=None):
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'rb') as f:
         _, _, umap_embeddings = joblib.load(f)
 
-    cluster_range = [0.4, 1.2]
+    if cluster_range is None:
+        cluster_range = [0.4, 1.2]
     print('Clustering with cluster size ranging from {}% to {}%'.format(cluster_range[0], cluster_range[1]))
 
     highest_numulab = -np.infty
@@ -218,10 +220,11 @@ def classifier():
         (1 - HLDOUT) * 100))
     classifier = MLPClassifier(**MLP_PARAMS)
     classifier.fit(feats_train, labels_train)
-    clf = MLPClassifier(**MLP_PARAMS)
+    # clf = MLPClassifier(**MLP_PARAMS)
+    clf = RandomForestClassifier(n_estimators=1000, n_jobs=4)
     clf.fit(f_10fps.T, soft_assignments.T)
     nn_assignments = clf.predict(f_10fps.T)
-    logging.info('Done training feedforward neural network '
+    print('Done training feedforward neural network '
             'mapping **{}** features to **{}** assignments.'.format(f_10fps.T.shape, soft_assignments.T.shape))
     scores = cross_val_score(classifier, feats_test, labels_test, cv=CV_IT, n_jobs=-1)
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_neuralnet.sav'))), 'wb') as f:
@@ -237,7 +240,7 @@ def load_all():
     
     return f_10fps, f_10fps_sc, umap_embeddings, assignments, soft_assignments, soft_clusters, feats_test, labels_test, classifier, clf, scores, nn_assignments
 
-def video_processing(csv_file, video_file):
+def results(csv_file, video_file, extract_frames=True):
     output_dir = TEST_DIR + csv_file.split('/')[-1][:-4]
     try:
         os.mkdir(output_dir)
@@ -257,17 +260,18 @@ def video_processing(csv_file, video_file):
     num_frames = int(video_info['nb_frames'])
     bit_rate = int(video_info['bit_rate'])
     avg_frame_rate = round(int(video_info['avg_frame_rate'].rpartition('/')[0]) / int(video_info['avg_frame_rate'].rpartition('/')[2]))
-    print('Frame extraction for {} frames at {} frames per second'.format(num_frames, avg_frame_rate))
-    try:
-        (ffmpeg.input(video_file)
-            .filter('fps', fps=avg_frame_rate)
-            .output(str.join('', (frame_dir, '/frame%01d.png')), video_bitrate=bit_rate,
-                    s=str.join('', (str(int(width * 0.5)), 'x', str(int(height * 0.5)))), sws_flags='bilinear',
-                    start_number=0)
-            .run(capture_stdout=True, capture_stderr=True))
-    except ffmpeg.Error as e:
-        print('stdout:', e.stdout.decode('utf8'))
-        print('stderr:', e.stderr.decode('utf8'))
+    if extract_frames:
+        print('Frame extraction for {} frames at {} frames per second'.format(num_frames, avg_frame_rate))
+        try:
+            (ffmpeg.input(video_file)
+                .filter('fps', fps=avg_frame_rate)
+                .output(str.join('', (frame_dir, '/frame%01d.png')), video_bitrate=bit_rate,
+                        s=str.join('', (str(int(width * 0.5)), 'x', str(int(height * 0.5)))), sws_flags='bilinear',
+                        start_number=0)
+                .run(capture_stdout=True, capture_stderr=True))
+        except ffmpeg.Error as e:
+            print('stdout:', e.stdout.decode('utf8'))
+            print('stderr:', e.stderr.decode('utf8'))
     
     try:
         os.mkdir(output_dir + '/mp4s')
@@ -283,6 +287,8 @@ def video_processing(csv_file, video_file):
     number_examples = int(input('Number of examples per group: '))
     out_fps = int(input('Output frame rate: '))
     
+    load_feats = input('Load pre-extracted features (yes/no): ')
+
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_neuralnet.sav'))), 'rb') as fr:
         feats_test, labels_test, classifier, clf, scores, nn_assignments = joblib.load(fr)
     
@@ -297,15 +303,21 @@ def video_processing(csv_file, video_file):
     BODYPARTS.sort()
     
     curr_df_filt, perc_rect = adp_filt(curr_df, BODYPARTS)
+    print('%% data below threshold: {}'.format(np.max(np.array(perc_rect))))
     test_data = [curr_df_filt]
     labels_fs = []
     labels_fs2 = []
     fs_labels = []
     for i in range(0, len(test_data)):
-        feats_new = bsoid_extract(test_data, FPS)
-        
-        with open(output_dir + '/' + MODEL_NAME + '_feats.sav', 'wb') as fr:
-            joblib.dump(feats_new, fr)
+        if load_feats == "no":
+            print('Extracting features from csv file {}...'.format(csv_file))
+            feats_new = bsoid_extract(test_data, FPS)
+            with open(output_dir + '/' + MODEL_NAME + '_predict_feats.sav', 'wb') as fr:
+                joblib.dump(feats_new, fr)
+        else:
+            print('Loading features from csv file {}...'.format(csv_file))
+            with open(output_dir + '/' + MODEL_NAME + '_predict_feats.sav', 'rb') as fr:
+                feats_new = joblib.load(fr)
 
         labels = bsoid_predict(feats_new, clf)
         for m in range(0, len(labels)):
@@ -324,7 +336,19 @@ def video_processing(csv_file, video_file):
         fs_labels.append(np.array(labels_fs2).flatten('F'))
     create_labeled_vid(fs_labels[0], int(min_frames), int(number_examples), int(out_fps),
                         frame_dir, shortvid_dir)
+
+    save_output = input('Save prediction output (yes/no): ')
+    if save_output == "yes":
+        with open(output_dir+'/'+MODEL_NAME+'_predict_data.sav', 'wb') as fr:
+            joblib.dump([fs_labels, min_frames, out_fps], fr)
+
+def load_predict_outputs():
+    with open(output_dir+'/'+MODEL_NAME+'_predict_data.sav', 'rb') as fr:
+        fs_labels, min_frames, out_fps = joblib.load(fr)
+    return fs_labels, min_frames, out_fps
+    
 if __name__ == "__main__":
     # process_csvs()
     # process_feats()
-    embedding()
+    # embedding()
+    clustering()
