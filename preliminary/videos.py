@@ -7,7 +7,7 @@ from utils import sort_nicely
 
 def get_all_bouts(labels):
     classes = np.unique(labels)
-    vid_locs = [[] for i in range(classes.size)]
+    vid_locs = [[] for i in range(np.max(classes)+1)]
     
     i = 0
     while i < len(labels)-1:
@@ -37,9 +37,11 @@ def create_vids(labels, crit, counts, output_fps, frame_dir, output_path):
             if vid['end'] - vid['start'] < crit:
                 del class_vid_locs[k][i]
     
-    if counts is not None:
-        for k, class_vids in enumerate(class_vid_locs):
-            class_vid_locs[k] = random.sample(class_vids, counts)
+    # get longest vids
+    for k, class_vids in enumerate(class_vid_locs):
+        class_vids.sort(key=lambda loc: loc['start']-loc['end'])
+        if len(class_vids) > counts:
+            class_vid_locs[k] = class_vids[0:counts]
     
     for i, class_vids in enumerate(tqdm(class_vid_locs)):
         for j, vid in enumerate(class_vids):

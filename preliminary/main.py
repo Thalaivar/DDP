@@ -9,6 +9,8 @@ import ffmpeg
 import hdbscan
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sn
 
 from tqdm import tqdm
 from LOCAL_CONFIG import *
@@ -16,9 +18,11 @@ from preprocessing import *
 from psutil import virtual_memory
 from sklearn.neural_network import MLPClassifier
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import confusion_matrix
 from sklearn.preprocessing import StandardScaler
 from data import download_data, conv_bsoid_format
-from utils import bsoid_extract, bsoid_predict, create_labeled_vid
+from utils import bsoid_extract, bsoid_predict
+from videos import create_vids
 from sklearn.model_selection import train_test_split, cross_val_score
 
 def download(n):
@@ -213,32 +217,58 @@ def classifier():
         f_10fps, f_10fps_sc, umap_embeddings = joblib.load(fr)
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_clusters.sav'))), 'rb') as fr:
         assignments, soft_clusters, soft_assignments = joblib.load(fr)
-    feats_train, feats_test, labels_train, labels_test = train_test_split(f_10fps.T, soft_assignments.T,
-                                                                          test_size=HLDOUT, random_state=23)
 
-    print('Training feedforward neural network on randomly partitioned {}% of training data...'.format(
-        (1 - HLDOUT) * 100))
-    classifier = MLPClassifier(**MLP_PARAMS)
-    classifier.fit(feats_train, labels_train)
-    # clf = MLPClassifier(**MLP_PARAMS)
-    clf = RandomForestClassifier(n_estimators=1000, n_jobs=4)
+    print("Training classifier on features...")
+    clf = MLPClassifier(**MLP_PARAMS)
+    # clf = RandomForestClassifier(class_weight='balanced', n_jobs=-1)
     clf.fit(f_10fps.T, soft_assignments.T)
-    nn_assignments = clf.predict(f_10fps.T)
+
     print('Done training feedforward neural network '
             'mapping **{}** features to **{}** assignments.'.format(f_10fps.T.shape, soft_assignments.T.shape))
-    scores = cross_val_score(classifier, feats_test, labels_test, cv=CV_IT, n_jobs=-1)
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_neuralnet.sav'))), 'wb') as f:
-        joblib.dump([feats_test, labels_test, classifier, clf, scores, nn_assignments], f)
+        joblib.dump([clf], f)
 
-def load_all():
-    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_neuralnet.sav'))), 'rb') as f:
-        feats_test, labels_test, classifier, clf, scores, nn_assignments = joblib.load(f)
+def validate_classifier():
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'rb') as fr:
         f_10fps, f_10fps_sc, umap_embeddings = joblib.load(fr)
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_clusters.sav'))), 'rb') as fr:
         assignments, soft_clusters, soft_assignments = joblib.load(fr)
     
-    return f_10fps, f_10fps_sc, umap_embeddings, assignments, soft_assignments, soft_clusters, feats_test, labels_test, classifier, clf, scores, nn_assignments
+    print("Training and testing selected classifier on {}% paritioned data...".format((1 - HLDOUT) * 100))
+
+    feats_train, feats_test, labels_train, labels_test = train_test_split(f_10fps.T, soft_assignments.T,
+                                                                          test_size=HLDOUT, random_state=23)
+    classifier = MLPClassifier(**MLP_PARAMS)
+    # classifier = RandomForestClassifier(class_weight='balanced', n_jobs=-1)
+    classifier.fit(feats_train, labels_train)
+    scores = cross_val_score(classifier, feats_test, labels_test, cv=CV_IT, n_jobs=-1)
+    print("Classifier accuracy scores: {}".format(scores))
+
+    labels_pred = classifier.predict(feats_test)
+    data = confusion_matrix(labels_test, labels_pred, normalize='all')
+    df_cm = pd.DataFrame(data, columns=np.unique(labels_test), index = np.unique(labels_test))
+    df_cm.index.name = 'Actual'
+    df_cm.columns.name = 'Predicted'
+    plt.figure(figsize = (10,7))
+    sn.heatmap(df_cm, cmap="Blues", annot=False)
+    plt.show()
+
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_clf_results.sav'))), 'wb') as f:
+        joblib.dump([feats_test, labels_test, labels_pred, scores, classifier], f)
+
+
+    
+def load_all():
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_neuralnet.sav'))), 'rb') as f:
+        clf = joblib.load(f)
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'rb') as fr:
+        f_10fps, f_10fps_sc, umap_embeddings = joblib.load(fr)
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_clusters.sav'))), 'rb') as fr:
+        assignments, soft_clusters, soft_assignments = joblib.load(fr)
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_clf_results.sav'))), 'rb') as f:
+        df_cm, scores, classifier = joblib.load(f)
+    
+    return f_10fps, f_10fps_sc, umap_embeddings, assignments, soft_assignments, soft_clusters, scores, df_cm, classifier, clf
 
 def results(csv_file, video_file, extract_frames=True):
     output_dir = TEST_DIR + csv_file.split('/')[-1][:-4]
@@ -290,8 +320,9 @@ def results(csv_file, video_file, extract_frames=True):
     load_feats = input('Load pre-extracted features (yes/no): ')
 
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_neuralnet.sav'))), 'rb') as fr:
-        feats_test, labels_test, classifier, clf, scores, nn_assignments = joblib.load(fr)
+        clf = joblib.load(fr)
     
+    clf = clf[0]
     curr_df = pd.read_csv(csv_file, low_memory=False) 
     currdf = np.array(curr_df)
     BP = np.unique(currdf[0,1:])
@@ -312,11 +343,11 @@ def results(csv_file, video_file, extract_frames=True):
         if load_feats == "no":
             print('Extracting features from csv file {}...'.format(csv_file))
             feats_new = bsoid_extract(test_data, FPS)
-            with open(output_dir + '/' + MODEL_NAME + '_predict_feats.sav', 'wb') as fr:
+            with open(OUTPUT_PATH + '/' + csv_file.split('/')[-1][:-4] + '_predict_feats.sav', 'wb') as fr:
                 joblib.dump(feats_new, fr)
         else:
             print('Loading features from csv file {}...'.format(csv_file))
-            with open(output_dir + '/' + MODEL_NAME + '_predict_feats.sav', 'rb') as fr:
+            with open(OUTPUT_PATH + '/' + csv_file.split('/')[-1][:-4] + '_predict_feats.sav', 'rb') as fr:
                 feats_new = joblib.load(fr)
 
         labels = bsoid_predict(feats_new, clf)
@@ -334,8 +365,10 @@ def results(csv_file, video_file, extract_frames=True):
         for l in range(math.floor(FPS / 10)):
             labels_fs2.append(labels_fs[k][l])
         fs_labels.append(np.array(labels_fs2).flatten('F'))
-    create_labeled_vid(fs_labels[0], int(min_frames), int(number_examples), int(out_fps),
-                        frame_dir, shortvid_dir)
+    # create_labeled_vid(fs_labels[0], int(min_frames), int(number_examples), int(out_fps),
+    #                     frame_dir, shortvid_dir)
+    create_vids(fs_labels[0], int(min_frames), int(number_examples), int(out_fps),
+                          frame_dir, shortvid_dir)
 
     save_output = input('Save prediction output (yes/no): ')
     if save_output == "yes":

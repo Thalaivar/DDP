@@ -7,7 +7,7 @@ OUTPUT_PATH = BASE_PATH + 'output/'
 # run
 FPS = 30
 RETAIN_WINDOW = 30*60
-MODEL_NAME = '11animals'
+MODEL_NAME = 'all'
 HLDOUT = 0.2
 CV_IT = 10
 
