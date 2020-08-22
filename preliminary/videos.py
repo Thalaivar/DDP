@@ -44,15 +44,20 @@ def create_vids(labels, crit, counts, output_fps, frame_dir, output_path):
             class_vid_locs[k] = class_vids[0:counts]
     
     for i, class_vids in enumerate(tqdm(class_vid_locs)):
+        video_name = 'group_{}.mp4'.format(i)
+        video = cv2.VideoWriter(os.path.join(output_path, video_name), fourcc, output_fps, (width, height))
+        video_frames = []
         for j, vid in enumerate(class_vids):
-            video_name = 'group_{}_example_{}.mp4'.format(i, j)
-            video_frames = []
             for idx in range(vid['start'], vid['end']+1):
                 video_frames.append(images[idx])
-            video = cv2.VideoWriter(os.path.join(output_path, video_name), fourcc, output_fps, (width, height))
-            for image in video_frames:
+            for idx in range(output_fps):
+                video_frames.append(np.zeros(shape=(height, width, layers), dtype=np.uint8))
+        for image in video_frames:
+            if isinstance(image, str):
                 video.write(cv2.imread(os.path.join(frame_dir, image)))
-            cv2.destroyAllWindows()
-            video.release()
+            elif isinstance(image, np.ndarray):
+                video.write(image)
+        cv2.destroyAllWindows()
+        video.release()
     
     return

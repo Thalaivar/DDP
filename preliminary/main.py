@@ -139,34 +139,50 @@ def process_feats():
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_feats.sav'))), 'wb') as fr:
         joblib.dump([f_10fps, f_10fps_sc], fr)
 
-def embedding(subsample=False, subsample_sz=int(5e5)):
-    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_feats.sav'))), 'rb') as fr:
-        f_10fps, f_10fps_sc = joblib.load(fr)
+def embedding(f_10fps_sc):
+    feats_train = f_10fps_sc.T
 
     mem = virtual_memory()
-    allowed_n = int((mem.available - 256000000)/(f_10fps.shape[0]*32*100))
-    print("Max points allowed due to memory: {} and data has point: {}".format(allowed_n, f_10fps.shape[1]))
-
-    if allowed_n < f_10fps.shape[1]:
-        print("Subsampling data to max allowable limit...")
-        idx = np.random.permutation(np.arange(f_10fps_sc.shape[1]))[0:subsample_sz]
-        f_10fps = f_10fps[:, idx]
-        f_10fps_sc = f_10fps_sc[:, idx]
-
     if mem.available > feats_train.shape[1] * feats_train.shape[0] * 32 * 100 + 256000000:
         print("Running UMAP...")
         trained_umap = umap.UMAP(n_neighbors=100, 
                                  **UMAP_PARAMS).fit(feats_train)
     else:
-        print('Detecting that you are running low on available memory for this computation, setting low_memory so will take longer.')
-        trained_umap = umap.UMAP(n_neighbors=100, low_memory=True,  # power law
-                                 **UMAP_PARAMS).fit(feats_train)
+        raise MemoryError('too many datapoints to run in UMAP.')
+    
     umap_embeddings = trained_umap.embedding_
-    print(
-        'Done non-linear transformation of {} instances from {}D into {}D.'.format(feats_train.shape[0],
-                                                                                                 feats_train.shape[1],
-                                                                                                 umap_embeddings.shape[
-                                                                                                     1]))
+    # print(
+    #     'Done non-linear transformation of {} instances from {}D into {}D.'.format(feats_train.shape[0],
+    #                                                                                              feats_train.shape[1],
+    #                                                                                              umap_embeddings.shape[
+    #                                                                                                  1]))
+    
+    return umap_embeddings
+    
+
+def incremental_embedding(batch_sz):
+    allowed_n = check_mem()
+    if allowed_n < batch_sz:
+        print("Incremental Embedding: batch size too big, UMAP may run OOM")
+
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_feats.sav'))), 'rb') as fr:
+        f_10fps, f_10fps_sc = joblib.load(fr)
+    
+    N = f_10fps_sc.shape[1]
+
+    print('Running incremental umap update on {} samples with batch size of {}...'.format(N, batch_sz))
+    pbar = tqdm(total=N)
+    idx = 0
+    while idx < N:
+        feats_batch = f_10fps_sc[:,idx:idx+batch_sz] if idx + batch_sz < N else f_10fps_sc[:,idx:]
+        embed_batch = embedding(feats_batch)
+        umap_embeddings = embed_batch if idx == 0 else np.vstack((umap_embeddings, embed_batch))
+        if idx + batch_sz < N:
+            pbar.update(batch_sz)
+        else:
+            pbar.update(N-idx)
+        idx += batch_sz
+        
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'wb') as f:
         joblib.dump([f_10fps, f_10fps_sc, umap_embeddings], f)
 
@@ -177,6 +193,8 @@ def check_mem():
     mem = virtual_memory()
     allowed_n = int((mem.available - 256000000)/(f_10fps_sc.shape[0]*32*100))
     print("Max points allowed due to memory: {} and data has point: {}".format(allowed_n, f_10fps_sc.shape[1]))
+
+    return allowed_n
 
 def clustering(cluster_range=None):
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'rb') as f:
@@ -206,6 +224,8 @@ def clustering(cluster_range=None):
         joblib.dump([assignments, soft_clusters, soft_assignments], f)
 
     print('Identified {} clusters...'.format(len(np.unique(soft_assignments))))
+
+def CURE():
 
 def classifier():
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'rb') as fr:
