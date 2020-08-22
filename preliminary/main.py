@@ -126,23 +126,28 @@ def process_feats():
                                     np.sum((feats[n][dxy_smth.shape[0]:feats[n].shape[0],
                                             range(k - round(FPS / 10), k)]), axis=1))).reshape(len(feats[0]), 1)
         if n > 0:
-            f_10fps = np.concatenate((f_10fps, feats1), axis=1)
+            # f_10fps = np.concatenate((f_10fps, feats1), axis=1)
+            f_10fps.append(feats1)
+
             scaler = StandardScaler()
             scaler.fit(feats1.T)
             feats1_sc = scaler.transform(feats1.T).T
-            f_10fps_sc = np.concatenate((f_10fps_sc, feats1_sc), axis=1)
+
+            # f_10fps_sc = np.concatenate((f_10fps_sc, feats1_sc), axis=1)
+            f_10fps_sc.append(feats1_sc)
         else:
-            f_10fps = feats1
+            f_10fps = [feats1]
             scaler = StandardScaler()
             scaler.fit(feats1.T)
             feats1_sc = scaler.transform(feats1.T).T
-            f_10fps_sc = feats1_sc 
+            f_10fps_sc = [feats1_sc]
     
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_feats.sav'))), 'wb') as fr:
         joblib.dump([f_10fps, f_10fps_sc], fr)
 
 def embedding(f_10fps_sc):
     feats_train = f_10fps_sc.T
+    del f_10fps_sc
 
     mem = virtual_memory()
     if mem.available > feats_train.shape[1] * feats_train.shape[0] * 32 * 100 + 256000000:
@@ -170,20 +175,25 @@ def incremental_embedding(batch_sz):
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_feats.sav'))), 'rb') as fr:
         f_10fps, f_10fps_sc = joblib.load(fr)
     
-    N = f_10fps_sc.shape[1]
+    # N = f_10fps_sc.shape[1]
+    N = len(f_10fps_sc)
 
     print('Running incremental umap update on {} samples with batch size of {}...'.format(N, batch_sz))
     pbar = tqdm(total=N)
     idx = 0
-    while idx < N:
-        feats_batch = f_10fps_sc[:,idx:idx+batch_sz] if idx + batch_sz < N else f_10fps_sc[:,idx:]
+    for idx, feats_batch in f_10fps_sc:
+        # feats_batch = f_10fps_sc[:,idx:idx+batch_sz] if idx + batch_sz < N else f_10fps_sc[:,idx:]
+        
         embed_batch = embedding(feats_batch)
         umap_embeddings = embed_batch if idx == 0 else np.vstack((umap_embeddings, embed_batch))
-        if idx + batch_sz < N:
-            pbar.update(batch_sz)
-        else:
-            pbar.update(N-idx)
-        idx += batch_sz
+        
+        # if idx + batch_sz < N:
+        #     pbar.update(batch_sz)
+        # else:
+        #     pbar.update(N-idx)
+        pbar.update(1)
+        
+        # idx += batch_sz
 
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'wb') as f:
         joblib.dump([f_10fps, f_10fps_sc, umap_embeddings], f)
@@ -198,10 +208,7 @@ def check_mem():
 
     return allowed_n
 
-def clustering(cluster_range=None):
-    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'rb') as f:
-        _, _, umap_embeddings = joblib.load(f)
-
+def clustering(umap_embeddings, cluster_range=None):
     if cluster_range is None:
         cluster_range = [0.4, 1.2]
     print('Clustering with cluster size ranging from {}% to {}%'.format(cluster_range[0], cluster_range[1]))
@@ -227,8 +234,11 @@ def clustering(cluster_range=None):
 
     print('Identified {} clusters...'.format(len(np.unique(soft_assignments))))
 
-# def CURE():
-
+def CURE():
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'rb') as f:
+        _, _, umap_embeddings = joblib.load(f)
+    
+    
 
 def classifier():
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'rb') as fr:
