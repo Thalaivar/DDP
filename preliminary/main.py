@@ -25,12 +25,14 @@ from utils import bsoid_extract, bsoid_predict
 from videos import create_vids
 from sklearn.model_selection import train_test_split, cross_val_score
 
-def download(n):
-    download_data('bsoid_strain_data.csv', BASE_PATH+RAW_DATA_DIR)
+def get_data(n=None, download=False):
+    if download:
+        download_data('bsoid_strain_data.csv', BASE_PATH+RAW_DATA_DIR)
     
     print("Converting HDF5 files to csv files...")
     files = os.listdir(BASE_PATH+RAW_DATA_DIR)
-    files = random.sample(files, n)
+    if n is not None:
+        files = random.sample(files, n)
     for i in tqdm(range(len(files))):
         if files[i][-3:] == ".h5":
             conv_bsoid_format(BASE_PATH+RAW_DATA_DIR+files[i], BASE_PATH+CSV_DATA_DIR)
@@ -182,7 +184,7 @@ def incremental_embedding(batch_sz):
         else:
             pbar.update(N-idx)
         idx += batch_sz
-        
+
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'wb') as f:
         joblib.dump([f_10fps, f_10fps_sc, umap_embeddings], f)
 
@@ -225,7 +227,8 @@ def clustering(cluster_range=None):
 
     print('Identified {} clusters...'.format(len(np.unique(soft_assignments))))
 
-def CURE():
+# def CURE():
+
 
 def classifier():
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'rb') as fr:
