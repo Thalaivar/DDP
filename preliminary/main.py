@@ -9,6 +9,10 @@ import ffmpeg
 import hdbscan
 import numpy as np
 import pandas as pd
+
+import matplotlib as mpl
+mpl.use('TkAgg')
+
 import matplotlib.pyplot as plt
 import seaborn as sn
 
@@ -167,33 +171,34 @@ def embedding(f_10fps_sc):
     return umap_embeddings
     
 
-def incremental_embedding(batch_sz):
-    allowed_n = check_mem()
-    if allowed_n < batch_sz:
-        print("Incremental Embedding: batch size too big, UMAP may run OOM")
+def incremental_embedding(batch_sz=1):
+    # allowed_n = check_mem()
+    # if allowed_n < batch_sz:
+    #     print("Incremental Embedding: batch size too big, UMAP may run OOM")
 
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_feats.sav'))), 'rb') as fr:
         f_10fps, f_10fps_sc = joblib.load(fr)
-    
-    # N = f_10fps_sc.shape[1]
-    N = len(f_10fps_sc)
 
-    print('Running incremental umap update on {} samples with batch size of {}...'.format(N, batch_sz))
+    N = math.floor(len(f_10fps_sc)/batch_sz)
+
+    print('Running incremental umap update on {} samples with batches of {} animals...'.format(N, batch_sz))
     pbar = tqdm(total=N)
     idx = 0
-    for idx, feats_batch in f_10fps_sc:
-        # feats_batch = f_10fps_sc[:,idx:idx+batch_sz] if idx + batch_sz < N else f_10fps_sc[:,idx:]
+    while idx < len(f_10fps_sc):
+        if idx + batch_sz < len(f_10fps_sc):
+            feats_batch = np.hstack(f_10fps_sc[idx:idx+batch_sz])
+        else:
+            feats_batch = np.hstack(f_10fps_sc[idx:])
         
         embed_batch = embedding(feats_batch)
         umap_embeddings = embed_batch if idx == 0 else np.vstack((umap_embeddings, embed_batch))
         
-        # if idx + batch_sz < N:
-        #     pbar.update(batch_sz)
-        # else:
-        #     pbar.update(N-idx)
-        pbar.update(1)
+        if idx + batch_sz < len(f_10fps_sc):
+            pbar.update(batch_sz)
+        else:
+            pbar.update(N-idx)
         
-        # idx += batch_sz
+        idx += batch_sz
 
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'wb') as f:
         joblib.dump([f_10fps, f_10fps_sc, umap_embeddings], f)
@@ -412,4 +417,5 @@ if __name__ == "__main__":
     # process_csvs()
     # process_feats()
     # embedding()
-    clustering()
+    incremental_embedding(4)
+    # clustering()

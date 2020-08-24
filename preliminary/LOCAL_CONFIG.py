@@ -1,6 +1,6 @@
 # data storage
-# BASE_PATH = '/Users/dhruvlaad/IIT/DDP/data/'
-BASE_PATH = '/home/dhruvlaad/data/'
+BASE_PATH = '/Users/dhruvlaad/IIT/DDP/data/'
+# BASE_PATH = '/home/dhruvlaad/data/'
 RAW_DATA_DIR = 'raw/'
 CSV_DATA_DIR = 'preproc/'
 OUTPUT_PATH = BASE_PATH + 'output/'
@@ -8,7 +8,7 @@ OUTPUT_PATH = BASE_PATH + 'output/'
 # run
 FPS = 30
 RETAIN_WINDOW = 30*60
-MODEL_NAME = 'incremental'
+MODEL_NAME = 'incremental_plaw'
 HLDOUT = 0.2
 CV_IT = 10
 
