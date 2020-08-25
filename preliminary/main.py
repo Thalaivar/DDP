@@ -160,7 +160,8 @@ def embedding(f_10fps_sc, initialize_batches=False, prev_embeddings=None):
             if prev_embeddings.shape[0] == feats_train.shape[0]:
                 trained_umap = umap.UMAP(n_neighbors=100, init=prev_embeddings, **UMAP_PARAMS).fit(feats_train)
             else:
-                warnings.warn('number of samples mismatch between init embedding ({}) and features ({}'.format(prev_embeddings.shape[0], feats_train.shape[0]))
+                warnings.warn('embedding without init as number of samples mismatch between init embedding ({}) and features ({}'.format(prev_embeddings.shape[0], feats_train.shape[0]))
+                trained_umap = umap.UMAP(n_neighbors=100, **UMAP_PARAMS).fit(feats_train)
         else:
             trained_umap = umap.UMAP(n_neighbors=100, 
                                  **UMAP_PARAMS).fit(feats_train)
@@ -175,25 +176,36 @@ def incremental_embedding(batch_sz=1, initialize_batches=False):
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_feats.sav'))), 'rb') as fr:
         f_10fps, f_10fps_sc = joblib.load(fr)
 
-    N = math.floor(len(f_10fps_sc)/batch_sz)
+    # collect feats from all animals into one array
+    f_10fps = np.hstack(f_10fps)
+    f_10fps_sc = np.hstack(f_10fps_sc)
+    # shuffle features
+    idx = np.random.permutation(np.arange(f_10fps.shape[1]))
+    f_10fps, f_10fps_sc = f_10fps[:,idx], f_10fps_sc[:,idx]
+    # no. of samples
+    N  = f_10fps_sc.shape[1]
 
-    print('Running incremental umap update on {} samples with batches of {} animals...'.format(N, batch_sz))
+    print('Running incremental umap update on {} samples in batches of {}...'.format(N, batch_sz))
+    
     prev_embeddings = None
     pbar = tqdm(total=N)
     idx = 0
-    while idx < len(f_10fps_sc):
-        if idx + batch_sz < len(f_10fps_sc):
-            feats_batch = np.hstack(f_10fps_sc[idx:idx+batch_sz])
+    while idx < N:
+        # create mini-batch for embedding
+        if idx + batch_sz < N:
+            feats_batch = f_10fps_sc[:, idx:idx+batch_sz]
         else:
-            feats_batch = np.hstack(f_10fps_sc[idx:])
+            feats_batch = f_10fps_sc[:, idx:]
         
+        # get umap embedding
         embed_batch = embedding(feats_batch, initialize_batches, prev_embeddings)
+        # stack embeddings into one array
         umap_embeddings = embed_batch if idx == 0 else np.vstack((umap_embeddings, embed_batch))
         
         if initialize_batches:
             prev_embeddings = embed_batch
         
-        pbar.update(1)
+        pbar.update(batch_sz) if idx + batch_sz < N else pbar.update(N - idx)
         idx += batch_sz
 
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'wb') as f:
