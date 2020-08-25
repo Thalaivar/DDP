@@ -5,6 +5,7 @@ import umap
 import random
 import joblib
 import itertools
+import warnings
 # import ffmpeg
 import hdbscan
 import numpy as np
@@ -149,39 +150,35 @@ def process_feats():
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_feats.sav'))), 'wb') as fr:
         joblib.dump([f_10fps, f_10fps_sc], fr)
 
-def embedding(f_10fps_sc):
+def embedding(f_10fps_sc, initialize_batches=False, prev_embeddings=None):
     feats_train = f_10fps_sc.T
     del f_10fps_sc
 
     mem = virtual_memory()
     if mem.available > feats_train.shape[1] * feats_train.shape[0] * 32 * 100 + 256000000:
-        print("Running UMAP...")
-        trained_umap = umap.UMAP(n_neighbors=100, 
+        if initialize_batches and prev_embeddings is not None:
+            if prev_embeddings.shape[0] == feats_train.shape[0]:
+                trained_umap = umap.UMAP(n_neighbors=100, init=prev_embeddings, **UMAP_PARAMS).fit(feats_train)
+            else:
+                warnings.warn('number of samples mismatch between init embedding ({}) and features ({}'.format(prev_embeddings.shape[0], feats_train.shape[0]))
+        else:
+            trained_umap = umap.UMAP(n_neighbors=100, 
                                  **UMAP_PARAMS).fit(feats_train)
     else:
         raise MemoryError('too many datapoints to run in UMAP.')
     
     umap_embeddings = trained_umap.embedding_
-    # print(
-    #     'Done non-linear transformation of {} instances from {}D into {}D.'.format(feats_train.shape[0],
-    #                                                                                              feats_train.shape[1],
-    #                                                                                              umap_embeddings.shape[
-    #                                                                                                  1]))
-    
     return umap_embeddings
     
 
-def incremental_embedding(batch_sz=1):
-    # allowed_n = check_mem()
-    # if allowed_n < batch_sz:
-    #     print("Incremental Embedding: batch size too big, UMAP may run OOM")
-
+def incremental_embedding(batch_sz=1, initialize_batches=False):
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_feats.sav'))), 'rb') as fr:
         f_10fps, f_10fps_sc = joblib.load(fr)
 
     N = math.floor(len(f_10fps_sc)/batch_sz)
 
     print('Running incremental umap update on {} samples with batches of {} animals...'.format(N, batch_sz))
+    prev_embeddings = None
     pbar = tqdm(total=N)
     idx = 0
     while idx < len(f_10fps_sc):
@@ -190,14 +187,13 @@ def incremental_embedding(batch_sz=1):
         else:
             feats_batch = np.hstack(f_10fps_sc[idx:])
         
-        embed_batch = embedding(feats_batch)
+        embed_batch = embedding(feats_batch, initialize_batches, prev_embeddings)
         umap_embeddings = embed_batch if idx == 0 else np.vstack((umap_embeddings, embed_batch))
         
-        if idx + batch_sz < len(f_10fps_sc):
-            pbar.update(batch_sz)
-        else:
-            pbar.update(N-idx)
+        if initialize_batches:
+            prev_embeddings = embed_batch
         
+        pbar.update(1)
         idx += batch_sz
 
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'wb') as f:
@@ -268,6 +264,9 @@ def validate_classifier():
         assignments, soft_clusters, soft_assignments = joblib.load(fr)
     
     print("Training and testing selected classifier on {}% paritioned data...".format((1 - HLDOUT) * 100))
+
+    # stack features into one array
+    f_10fps = np.hstack(f_10fps)
 
     feats_train, feats_test, labels_train, labels_test = train_test_split(f_10fps.T, soft_assignments.T,
                                                                           test_size=HLDOUT, random_state=23)
