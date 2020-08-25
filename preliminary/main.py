@@ -5,13 +5,13 @@ import umap
 import random
 import joblib
 import itertools
-import ffmpeg
+# import ffmpeg
 import hdbscan
 import numpy as np
 import pandas as pd
 
-import matplotlib as mpl
-mpl.use('TkAgg')
+# import matplotlib as mpl
+# mpl.use('TkAgg')
 
 import matplotlib.pyplot as plt
 import seaborn as sn
@@ -243,7 +243,7 @@ def CURE():
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'rb') as f:
         _, _, umap_embeddings = joblib.load(f)
     
-    
+    clustering(umap_embeddings, cluster_range=[0.3, 1.2]) 
 
 def classifier():
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'rb') as fr:
@@ -282,14 +282,14 @@ def validate_classifier():
     df_cm = pd.DataFrame(data, columns=np.unique(labels_test), index = np.unique(labels_test))
     df_cm.index.name = 'Actual'
     df_cm.columns.name = 'Predicted'
-    plt.figure(figsize = (10,7))
-    sn.heatmap(df_cm, cmap="Blues", annot=False)
-    plt.show()
+    # plt.figure(figsize = (10,7))
+    # sn.heatmap(df_cm, cmap="Blues", annot=False)
+    # plt.show()
 
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_clf_results.sav'))), 'wb') as f:
         joblib.dump([feats_test, labels_test, labels_pred, scores, classifier], f)
 
-
+    return df_cm, data, scores
     
 def load_all():
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_neuralnet.sav'))), 'rb') as f:
@@ -417,5 +417,7 @@ if __name__ == "__main__":
     # process_csvs()
     # process_feats()
     # embedding()
-    incremental_embedding(4)
+    # incremental_embedding(8)
+    # CURE()
     # clustering()
+    classifier()
