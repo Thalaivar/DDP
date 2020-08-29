@@ -8,13 +8,12 @@ OUTPUT_PATH = BASE_PATH + 'output/'
 # run
 FPS = 30
 RETAIN_WINDOW = 30*60
-MODEL_NAME = 'incremental'
+MODEL_NAME = 'all'
 HLDOUT = 0.2
 CV_IT = 10
 
 # embedding
 UMAP_PARAMS = {
-    'n_components': 3,
     'min_dist': 0.0,  # small value
     'random_state': 23,
 }

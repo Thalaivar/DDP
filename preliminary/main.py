@@ -6,7 +6,7 @@ import random
 import joblib
 import itertools
 import warnings
-# import ffmpeg
+import ffmpeg
 import hdbscan
 import numpy as np
 import pandas as pd
@@ -150,20 +150,35 @@ def process_feats():
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_feats.sav'))), 'wb') as fr:
         joblib.dump([f_10fps, f_10fps_sc], fr)
 
-def embedding(f_10fps_sc):
-    feats_train = f_10fps_sc.T
-    del f_10fps_sc
+def embedding(dimensions=10, train_size=int(4e5)):
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_feats.sav'))), 'rb') as fr:
+        f_10fps, f_10fps_sc = joblib.load(fr)
+    
+    f_10fps = np.hstack(f_10fps)
+    f_10fps_sc = np.hstack(f_10fps_sc)
 
-    mem = virtual_memory()
-    if mem.available > feats_train.shape[1] * feats_train.shape[0] * 32 * 100 + 256000000:
-        trained_umap = umap.UMAP(n_neighbors=100, 
-                                **UMAP_PARAMS).fit(feats_train)
+    # train embedding map
+    idx = np.random.permutation(np.arange(f_10fps.shape[1]))
+    idx = idx[:train_size]
+    feats_train = f_10fps_sc[:, idx]
+
+    allowed_n = check_mem(feats_train)
+    feats_train = feats_train.T
+
+    if allowed_n > feats_train.shape[0]:
+        print("Runnning UMAP on {} samples from {}D to {}D...".format(feats_train.shape[0], feats_train.shape[1], dimensions))
+        mapper = umap.UMAP(n_components=dimensions, n_neighbors=100, **UMAP_PARAMS).fit(feats_train)
     else:
-        raise MemoryError('too many datapoints to run in UMAP.')
+        raise MemoryError('max points allowed for UMAP {}, while you have {}'.format(allowed_n, feats_train.shape[1]))
     
-    umap_embeddings = trained_umap.embedding_
-    return umap_embeddings
-    
+    # embed entire dataset
+    print("Embedding entire data set...")
+    umap_embeddings = mapper.transform(f_10fps_sc.T)
+
+    # save results
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'wb') as fr:
+        joblib.dump([f_10fps, f_10fps_sc, umap_embeddings, mapper], fr)
+
 
 def incremental_embedding(batch_sz=int(3e5), sliding_window=int(1e5), shuffle=False):
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_feats.sav'))), 'rb') as fr:
@@ -197,9 +212,7 @@ def incremental_embedding(batch_sz=int(3e5), sliding_window=int(1e5), shuffle=Fa
         joblib.dump([f_10fps, f_10fps_sc, embeddings], fr)
 
 
-def check_mem():
-    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_feats.sav'))), 'rb') as fr:
-        _, f_10fps_sc = joblib.load(fr)   
+def check_mem(f_10fps_sc):
     
     mem = virtual_memory()
     allowed_n = int((mem.available - 256000000)/(f_10fps_sc.shape[0]*32*100))
@@ -246,8 +259,8 @@ def classifier():
         assignments, soft_clusters, soft_assignments = joblib.load(fr)
 
     print("Training classifier on features...")
-    clf = MLPClassifier(**MLP_PARAMS)
-    # clf = RandomForestClassifier(class_weight='balanced', n_jobs=-1)
+    # clf = MLPClassifier(**MLP_PARAMS)
+    clf = RandomForestClassifier(class_weight='balanced', n_jobs=-1)
     clf.fit(f_10fps.T, soft_assignments.T)
 
     print('Done training feedforward neural network '
@@ -263,13 +276,10 @@ def validate_classifier():
     
     print("Training and testing selected classifier on {}% paritioned data...".format((1 - HLDOUT) * 100))
 
-    # stack features into one array
-    f_10fps = np.hstack(f_10fps)
-
     feats_train, feats_test, labels_train, labels_test = train_test_split(f_10fps.T, soft_assignments.T,
                                                                           test_size=HLDOUT, random_state=23)
-    classifier = MLPClassifier(**MLP_PARAMS)
-    # classifier = RandomForestClassifier(class_weight='balanced', n_jobs=-1)
+    # classifier = MLPClassifier(**MLP_PARAMS)
+    classifier = RandomForestClassifier(class_weight='balanced', n_jobs=-1)
     classifier.fit(feats_train, labels_train)
     scores = cross_val_score(classifier, feats_test, labels_test, cv=CV_IT, n_jobs=-1)
     print("Classifier accuracy scores: {}".format(scores))
@@ -279,9 +289,9 @@ def validate_classifier():
     df_cm = pd.DataFrame(data, columns=np.unique(labels_test), index = np.unique(labels_test))
     df_cm.index.name = 'Actual'
     df_cm.columns.name = 'Predicted'
-    # plt.figure(figsize = (10,7))
-    # sn.heatmap(df_cm, cmap="Blues", annot=False)
-    # plt.show()
+    plt.figure(figsize = (10,7))
+    sn.heatmap(df_cm, cmap="Blues", annot=False)
+    plt.show()
 
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_clf_results.sav'))), 'wb') as f:
         joblib.dump([feats_test, labels_test, labels_pred, scores, classifier], f)
