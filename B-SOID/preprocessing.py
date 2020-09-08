@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import logging
+import math
 import itertools
 
 def smoothen_data(data, win_len=7):
@@ -55,6 +56,7 @@ def likelihood_filter(data: pd.DataFrame, conf_threshold: float=0.3, forward_fil
         
             perc_filt.append(n_filtered)
         perc_filt = [(p/N)*100 for p in perc_filt]
+    
         logging.info('%% filtered from all features: {}'.format(perc_filt))
     
     return {'conf': conf, 'x': x, 'y': y}
@@ -106,9 +108,9 @@ def extract_bsoid_feats(filtered_data):
     # lengths of links
     link_lens = []
     for i in range(N):
-        curr_link_lens = []
-        for j in range(links.shape[1]):
-            curr_link_lens.append(np.linalg.norm(links[i,j,:]))
+        link_lens.append(np.linalg.norm(links[i,:,:], axis=1))
+    link_lens = np.array(link_lens)
+
     # angles between link position for two timesteps
     angles = []
     for i in range(N-1):
@@ -121,4 +123,9 @@ def extract_bsoid_feats(filtered_data):
     # smoothen all features
     for i in range(dis.shape[1]):
         dis[:,i] = smoothen_data(dis[:,i])
-    for i in range(links.shape[1]):
+    for i in range(link_lens.shape[1]):
+        link_lens[:,i] = smoothen_data(link_lens[:,i])
+        angles[:,i] = smoothen_data(angles[:,i])
+
+    feats = np.hstack((dis, link_lens, angles))
+    return feats

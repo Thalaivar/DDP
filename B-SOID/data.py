@@ -5,7 +5,6 @@ import os
 from tqdm import tqdm
 import ftplib
 import random
-from params import *
 
 # Mapping for data
 NOSE_INDEX = 0
@@ -21,18 +20,9 @@ BASE_TAIL_INDEX = 9
 MID_TAIL_INDEX = 10
 TIP_TAIL_INDEX = 11
 
-# for trimming data files
 RETAIN_WINDOW = 30*60
-
-# data info
 FPS = 30
 
-# data storage
-BASE_PATH = '/Users/dhruvlaad/IIT/DDP/data/'
-# BASE_PATH = '/home/dhruvlaad/data/'
-RAW_DATA_DIR = 'raw/'
-CSV_DATA_DIR = 'preproc/'
-OUTPUT_PATH = BASE_PATH + 'output/'
 
 def conv_bsoid_format(filename, save_dir, clip_data=True):
     f = h5py.File(filename, "r")
@@ -81,7 +71,7 @@ def conv_bsoid_format(filename, save_dir, clip_data=True):
     bsoid_data = pd.DataFrame(bsoid_data)
     bsoid_data.columns = bodypart_headers
 
-    bsoid_data.to_csv(save_dir + filename[:-3] +'.csv', index=False)
+    bsoid_data.to_csv(save_dir + '/' + filename[:-3] +'.csv', index=False)
 
     return bsoid_data
 
@@ -121,7 +111,5 @@ def download_data(bsoid_data_file, pose_est_dir):
 
         # download data file
         filename = movie_name[0:-4] + "_pose_est_v2.h5"
-        session.retrbinary("RETR "+ filename, open(pose_est_dir + filename, 'wb').write)
-        # filename = movie_name[0:-4] + "_timestamps.txt"
-        # session.retrbinary("RETR "+ filename, open(pose_est_dir + filename, 'wb').write)
+        session.retrbinary("RETR "+ filename, open(pose_est_dir + '/' + filename, 'wb').write)
         session.cwd('/')

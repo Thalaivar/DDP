@@ -4,7 +4,7 @@ import joblib
 import logging
 import pandas as pd
 from tqdm import tqdm
-from preprocessing import likelihood_filter
+from preprocessing import likelihood_filter, extract_bsoid_feats
 from data import download_data, conv_bsoid_format
 
 class BSOID:
@@ -47,4 +47,13 @@ class BSOID:
             joblib.dump(filtered_data, f)
 
         return filtered_data
+    
+    def process_features(self):
+        with open(self.output_dir + '/' + self.run_id + '_filtered_data.sav', 'rb') as f:
+            filtered_data = joblib.load(f)
         
+        n_animals = len(filtered_data)
+        logging.info('extracting features from filtered data of {} animals'.format(n_animals))
+        
+        for i in tqdm(range(n_animals)):
+            feats = extract_bsoid_feats(filtered_data[i])
