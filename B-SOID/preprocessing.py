@@ -94,7 +94,7 @@ def extract_bsoid_feats(filtered_data):
         dis.append(np.linalg.norm(dis_vec, axis=0))
     dis = np.array(dis)
 
-    # link lengths of all possible combinations
+    # links of all possible combinations
     links = []
     for k in range(N):
         curr_links = []
@@ -103,6 +103,12 @@ def extract_bsoid_feats(filtered_data):
         links.append(curr_links)
     links = np.array(links)
 
+    # lengths of links
+    link_lens = []
+    for i in range(N):
+        curr_link_lens = []
+        for j in range(links.shape[1]):
+            curr_link_lens.append(np.linalg.norm(links[i,j,:]))
     # angles between link position for two timesteps
     angles = []
     for i in range(N-1):
@@ -112,4 +118,7 @@ def extract_bsoid_feats(filtered_data):
             curr_angles.append(math.atan2(link_dis_cross, links[i,j].dot(links[i+1,j])))
         angles.append(curr_angles)
     
-    
+    # smoothen all features
+    for i in range(dis.shape[1]):
+        dis[:,i] = smoothen_data(dis[:,i])
+    for i in range(links.shape[1]):
