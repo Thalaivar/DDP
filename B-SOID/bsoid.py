@@ -1,14 +1,17 @@
 import os
+import random
 import joblib
 import logging
 import pandas as pd
 from tqdm import tqdm
 from preprocessing import likelihood_filter
+from data import download_data, conv_bsoid_format
 
 class BSOID:
     def __init__(self, run_id: str, base_dir: str, conf_threshold: float=0.3):
         self.conf_threshold = conf_threshold
         self.run_id = run_id
+        self.raw_dir = base_dir + '/raw'
         self.csv_dir = base_dir + '/csv'
         self.output_dir = base_dir + '/output'
 
@@ -16,6 +19,18 @@ class BSOID:
             os.mkdir(self.output_dir)    
         except FileExistsError:
             pass
+    
+    def get_data(self, n=None, download=False):
+        if download:
+            download_data('bsoid_strain_data.csv', self.raw_dir)
+        
+        files = os.listdir(self.raw_dir)
+        logging.info("converting {} HDF5 files to csv files".format(len(files)))
+        if n is not None:
+            files = random.sample(files, n)
+        for i in tqdm(range(len(files))):
+            if files[i][-3:] == ".h5":
+                conv_bsoid_format(self.raw_dir+'/'+files[i], self.csv_dir)
 
     def process_csvs(self):
         csv_data_files = os.listdir(self.csv_dir)
