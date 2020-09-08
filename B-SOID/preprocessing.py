@@ -23,7 +23,7 @@ def likelihood_filter(data: pd.DataFrame, conf_threshold: float=0.3, forward_fil
             y.append(data[col])
     conf, x, y = np.array(conf).T, np.array(x).T, np.array(y).T
 
-    logging.info('extracted {} samples of {} features'.format(N, n_dpoints))
+    logging.debug('extracted {} samples of {} features'.format(N, n_dpoints))
 
     # forward-fill any points below confidence threshold
     if forward_fill:
@@ -57,7 +57,7 @@ def likelihood_filter(data: pd.DataFrame, conf_threshold: float=0.3, forward_fil
             perc_filt.append(n_filtered)
         perc_filt = [(p/N)*100 for p in perc_filt]
     
-        logging.info('%% filtered from all features: {}'.format(perc_filt))
+        logging.debug('%% filtered from all features: {}'.format(perc_filt))
     
     return {'conf': conf, 'x': x, 'y': y}
 
@@ -84,8 +84,13 @@ def feats_from_xy(x, y):
     # relative angles between links
     angles = []
     
-
 def extract_bsoid_feats(filtered_data):
+    """
+    extract the same features as B-SOID:
+        - link lengths
+        - point displacements
+        - angle between link displacements
+    """
     x, y = filtered_data['x'], filtered_data['y']
     N, n_dpoints = x.shape
 
@@ -96,6 +101,8 @@ def extract_bsoid_feats(filtered_data):
         dis.append(np.linalg.norm(dis_vec, axis=0))
     dis = np.array(dis)
 
+    logging.debug('extracted {} displacements of {} data points'.format(dis.shape[0], dis.shape[1]))
+
     # links of all possible combinations
     links = []
     for k in range(N):
@@ -105,27 +112,60 @@ def extract_bsoid_feats(filtered_data):
         links.append(curr_links)
     links = np.array(links)
 
+    logging.debug('extracted {} links from data points'.format(links.shape[1]))
+
     # lengths of links
     link_lens = []
     for i in range(N):
         link_lens.append(np.linalg.norm(links[i,:,:], axis=1))
     link_lens = np.array(link_lens)
 
+    logging.debug('extracted {} link lengths from data points'.format(link_lens.shape[1]))
+
     # angles between link position for two timesteps
     angles = []
     for i in range(N-1):
         curr_angles = []
         for j in range(links.shape[1]):
-            link_dis_cross = np.cross(links[i,j], links[i+1,j])[0]            
+            link_dis_cross = np.cross(links[i,j], links[i+1,j])
             curr_angles.append(math.atan2(link_dis_cross, links[i,j].dot(links[i+1,j])))
         angles.append(curr_angles)
-    
+    angles = np.array(angles)
+
+    logging.debug('extracted {} link displacement angles from data points'.format(angles.shape[1]))
+
     # smoothen all features
     for i in range(dis.shape[1]):
         dis[:,i] = smoothen_data(dis[:,i])
     for i in range(link_lens.shape[1]):
         link_lens[:,i] = smoothen_data(link_lens[:,i])
         angles[:,i] = smoothen_data(angles[:,i])
+    
+    # window features into bins of a specified number of frames (defaults to 16 frames)
+    dis = windowed_feats(dis, mode='mean')
+    angles = windowed_feats(angles, mode='sum')
+    link_lens = windowed_feats(link_lens, mode='mean')
 
-    feats = np.hstack((dis, link_lens, angles))
+    feats = np.hstack((dis, angles, link_lens[1:]))
+    logging.debug('final features extracted have shape: {}'.format(feats.shape))
+
     return feats
+
+
+def windowed_feats(feats, window_len: int=16, mode: str='mean'):
+    """
+    average features over a window of `window_len` frames
+    """
+    win_feats = []
+    N = feats.shape[0]
+    half_window = window_len // 2
+    for i in range(half_window, N - half_window + 1):
+        # if dealing with positive quantities (like link lengths), take mean
+        if mode is 'mean':
+            win_feats.append(feats[i-half_window:i+half_window,:].mean(axis=0))
+        # if dealing with signed quantities (like angles), take sum
+        elif mode is 'sum':
+            win_feats.append(feats[i-half_window:i+half_window,:].sum(axis=0))
+    
+    return np.array(win_feats)
+    

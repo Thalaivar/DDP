@@ -56,4 +56,6 @@ class BSOID:
         logging.info('extracting features from filtered data of {} animals'.format(n_animals))
         
         for i in tqdm(range(n_animals)):
+            # get feats
             feats = extract_bsoid_feats(filtered_data[i])
+
