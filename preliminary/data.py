@@ -125,3 +125,15 @@ def download_data(bsoid_data_file, pose_est_dir):
         # filename = movie_name[0:-4] + "_timestamps.txt"
         # session.retrbinary("RETR "+ filename, open(pose_est_dir + filename, 'wb').write)
         session.cwd('/')
+
+def get_data(n=None, download=False):
+    if download:
+        download_data('bsoid_strain_data.csv', BASE_PATH+RAW_DATA_DIR)
+    
+    print("Converting HDF5 files to csv files...")
+    files = os.listdir(BASE_PATH+RAW_DATA_DIR)
+    if n is not None:
+        files = random.sample(files, n)
+    for i in tqdm(range(len(files))):
+        if files[i][-3:] == ".h5":
+            conv_bsoid_format(BASE_PATH+RAW_DATA_DIR+files[i], BASE_PATH+CSV_DATA_DIR)

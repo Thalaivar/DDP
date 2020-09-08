@@ -20,7 +20,8 @@ UMAP_PARAMS = {
 
 # clustering
 HDBSCAN_PARAMS = {
-    'min_samples': 10  # small value
+    'min_samples': 10,  # small value
+    'prediction_data': True
 }
 
 # classifier

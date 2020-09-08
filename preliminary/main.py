@@ -11,8 +11,8 @@ import hdbscan
 import numpy as np
 import pandas as pd
 
-# import matplotlib as mpl
-# mpl.use('TkAgg')
+import matplotlib as mpl
+mpl.use('TkAgg')
 
 import matplotlib.pyplot as plt
 import seaborn as sn
@@ -180,7 +180,7 @@ def embedding(dimensions=10, train_size=int(4e5)):
         joblib.dump([f_10fps, f_10fps_sc, umap_embeddings, mapper], fr)
 
 
-def incremental_embedding(batch_sz=int(3e5), sliding_window=int(1e5), shuffle=False):
+def incremental_embedding(batch_sz=int(3e5), sliding_window=int(1e5), shuffle=True):
     with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_feats.sav'))), 'rb') as fr:
         f_10fps, f_10fps_sc = joblib.load(fr)
 
@@ -246,16 +246,10 @@ def clustering(umap_embeddings, cluster_range=None):
 
     print('Identified {} clusters...'.format(len(np.unique(soft_assignments))))
 
-def CURE():
-    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'rb') as f:
-        _, _, umap_embeddings = joblib.load(f)
-    
-    clustering(umap_embeddings, cluster_range=[0.3, 1.2]) 
-
 def classifier():
-    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'rb') as fr:
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap_10D.sav'))), 'rb') as fr:
         f_10fps, f_10fps_sc, umap_embeddings = joblib.load(fr)
-    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_clusters.sav'))), 'rb') as fr:
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_clusters_10D.sav'))), 'rb') as fr:
         assignments, soft_clusters, soft_assignments = joblib.load(fr)
 
     print("Training classifier on features...")
@@ -269,9 +263,9 @@ def classifier():
         joblib.dump([clf], f)
 
 def validate_classifier():
-    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap.sav'))), 'rb') as fr:
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_umap_10D.sav'))), 'rb') as fr:
         f_10fps, f_10fps_sc, umap_embeddings = joblib.load(fr)
-    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_clusters.sav'))), 'rb') as fr:
+    with open(os.path.join(OUTPUT_PATH, str.join('', (MODEL_NAME, '_clusters_10D.sav'))), 'rb') as fr:
         assignments, soft_clusters, soft_assignments = joblib.load(fr)
     
     print("Training and testing selected classifier on {}% paritioned data...".format((1 - HLDOUT) * 100))
@@ -421,10 +415,11 @@ def load_predict_outputs():
     return fs_labels, min_frames, out_fps
     
 if __name__ == "__main__":
-    # process_csvs()
+    process_csvs()
     # process_feats()
     # embedding()
     # incremental_embedding(8)
-    # CURE()
+    # CURE(10)
     # clustering()
-    classifier()
+    # valdiate_classifier()
+    # classifier()
