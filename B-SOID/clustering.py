@@ -283,8 +283,8 @@ class bigCURE(CURE):
         
         if create_clusters:
             # create cluster objects from assignments
-            labels = np.unique(assignments)
-            clusters = [[] for i in labels if i >= 0]
+            labels = np.unique(assignments >= 0)
+            clusters = [[] for i in labels]
             for i, label in enumerate(assignments):
                 if label >= 0:
                     clusters[label].append(data[i])
