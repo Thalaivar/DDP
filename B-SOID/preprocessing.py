@@ -3,6 +3,7 @@ import numpy as np
 import logging
 import math
 import itertools
+from sklearn.preprocessing import StandardScaler
 
 def smoothen_data(data, win_len=7):
     data = pd.Series(data)
@@ -140,32 +141,42 @@ def extract_bsoid_feats(filtered_data):
     for i in range(link_lens.shape[1]):
         link_lens[:,i] = smoothen_data(link_lens[:,i])
         angles[:,i] = smoothen_data(angles[:,i])
-    
+
     # window features into bins of a specified number of frames (defaults to 16 frames)
     dis = windowed_feats(dis, mode='mean')
     angles = windowed_feats(angles, mode='sum')
     link_lens = windowed_feats(link_lens, mode='mean')
 
-    feats = np.hstack((dis, angles, link_lens[1:]))
-    logging.debug('final features extracted have shape: {}'.format(feats.shape))
+    feats = np.hstack((dis, angles, link_lens))
+    logging.info('final features extracted have shape: {}'.format(feats.shape))
 
     return feats
 
 
-def windowed_feats(feats, window_len: int=16, mode: str='mean'):
+def windowed_feats(feats, window_len: int=3, mode: str='mean'):
     """
-    average features over a window of `window_len` frames
+    collect features over a window of `window_len` frames
     """
     win_feats = []
     N = feats.shape[0]
-    half_window = window_len // 2
-    for i in range(half_window, N - half_window + 1):
-        # if dealing with positive quantities (like link lengths), take mean
+
+    logging.debug('collecting {} frames into bins of {} frames'.format(N, window_len))
+
+    for i in range(window_len, N, window_len):
         if mode is 'mean':
-            win_feats.append(feats[i-half_window:i+half_window,:].mean(axis=0))
-        # if dealing with signed quantities (like angles), take sum
+            win_feats.append(feats[i-window_len:i,:].mean(axis=0))
         elif mode is 'sum':
-            win_feats.append(feats[i-half_window:i+half_window,:].sum(axis=0))
-    
+            win_feats.append(feats[i-window_len:i,:].sum(axis=0))
+
     return np.array(win_feats)
     
+def normalize_feats(feats):
+    logging.info('normalizing features from {} animals with sklearn StandardScaler()'.format(len(feats)))
+    scaled_feats = []
+
+    scaler = StandardScaler()
+    for i in range(len(feats)):
+        scaler.fit(feats[i])
+        scaled_feats.append(scaler.transform(feats[i]))
+
+    return np.vstack(scaled_feats)
