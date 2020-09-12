@@ -6,15 +6,18 @@ import heapq
 import numpy as np
 import time
 from tqdm import tqdm
-from kdtree import kdtree
+from BSOID.kdtree import kdtree
 
 HDBSCAN_PARAMS = {'min_samples': 10, 'prediction_data': True}
 
 class Cluster:
-    def __init__(self, data: np.ndarray, n_rep=int(1e5), alpha=0.5, calc_mean=True):
+    def __init__(self, data: np.ndarray, n_rep=1000, alpha=0.5, calc_mean=True):
         self.alpha = alpha
         self.n_rep = n_rep
-        self.data = data
+        if len(data.shape) == 1:
+            self.data = data.reshape(1, -1)
+        else:
+            self.data = data
 
         self.mean = self.get_mean() if calc_mean else None
         self.rep = None
@@ -27,7 +30,7 @@ class Cluster:
     def create_representative_points(self):
         scattered_points = well_scattered_points(self.n_rep, self.mean, self.data)
         # shrink points toward mean
-        rep = np.array([p + self.alpha*(self.mean - p) for p in scattered_points])        
+        rep = [p + self.alpha*(self.mean - p) for p in scattered_points]   
         self.rep = rep
         return rep
     
@@ -89,7 +92,7 @@ class Cluster:
 def well_scattered_points(n_rep: int, mean: np.ndarray, data: np.ndarray):
     # if the cluster contains less than no. of rep points, all points are rep points
     if data.shape[0] <= n_rep:
-        return data
+        return list(data)
 
     # get well scattered points
     tmp_set = []
@@ -118,13 +121,15 @@ class CURE:
         self.tree_ = None
         self.rep_cluster_idx = None
 
-    def process(self, clusters: list):
-        self._create_heap(clusters)
-        self._create_kdtree()
+    def process(self, data: np.ndarray):
+        clusters = self._input_points_to_clusters(data)
+        self._create_kdtree(clusters)
+        logging.debug('creating heap with {} clusters'.format(len(clusters)))
+        self._create_heap(data)
 
         iteration = 0
         while len(self.heap_) > self.desired_clusters:
-            logging.info('iteration {} with {} clusters'.format(iteration, len(self.heap_)))
+            logging.debug('iteration {} with {} clusters'.format(iteration, len(self.heap_)))
 
             u = heapq.heappop(self.heap_)
             v = u.closest
@@ -166,6 +171,7 @@ class CURE:
 
     def _create_heap(self, clusters: list):
         self.heap_ = clusters
+
         for cluster in self.heap_:
             for i in range(len(self.heap_)):
                 if self.heap_[i] != cluster:
@@ -177,9 +183,9 @@ class CURE:
         # create heap of clusters sorted by closest distance
         heapq.heapify(self.heap_)
     
-    def _create_kdtree(self):
+    def _create_kdtree(self, clusters: list):
         representatives, payloads = [], []
-        for current_cluster in self.heap_:
+        for current_cluster in clusters:
             for representative_point in current_cluster.rep:
                 representatives.append(representative_point)
                 payloads.append(current_cluster)
@@ -204,6 +210,13 @@ class CURE:
         
         return (nearest_cluster, min_dist)
 
+    def _input_points_to_clusters(self, data):
+        clusters = []
+        for i in range(data.shape[0]):
+            clusters.append(Cluster(data[i]))
+        for c in clusters:
+            c.create_representative_points()
+        return clusters
         
     def _delete_rep_points(self, cluster):
         for point in cluster.rep:
@@ -260,7 +273,7 @@ class bigCURE(CURE):
             n_clusters = assignments.max() + 1
             # break if number of clusters is within desired range
             if n_clusters <= self.clusters_per_part and n_clusters > min_clusters:
-                self.prev_min_cluster_prop = min_cluster_prop
+                # self.prev_min_cluster_prop = min_cluster_prop
                 break
             else:
                 logging.debug('partition clusters: {}; required partition clusters: [{},{}]'.format(n_clusters, min_clusters, self.clusters_per_part))
@@ -279,11 +292,11 @@ class bigCURE(CURE):
                     min_cluster_prop *= 1.2
                     logging.debug('increasing `min_cluster_size`')
         
-        logging.debug('identified {} clusters for partition with samples {}'.format(n_clusters, data.shape[0]))
+        logging.info('identified {} clusters for partition with samples {}'.format(n_clusters, data.shape[0]))
         
         if create_clusters:
             # create cluster objects from assignments
-            labels = np.unique(assignments >= 0)
+            labels = np.unique(assignments)
             clusters = [[] for i in labels]
             for i, label in enumerate(assignments):
                 if label >= 0:

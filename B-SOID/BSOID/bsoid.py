@@ -3,10 +3,12 @@ import random
 import joblib
 import logging
 import pandas as pd
+import numpy as np
 from tqdm import tqdm
-from preprocessing import likelihood_filter, extract_bsoid_feats, normalize_feats
-from data import download_data, conv_bsoid_format
-from clustering import bigCURE
+from BSOID.preprocessing import likelihood_filter, normalize_feats
+from BSOID.features import extract_feats, temporal_features
+from BSOID.data import download_data, conv_bsoid_format
+from BSOID.clustering import bigCURE
 
 class BSOID:
     def __init__(self, run_id: str, 
@@ -53,24 +55,38 @@ class BSOID:
 
         return filtered_data
     
-    def process_features(self, parallel=True):
+    def features_from_points(self, parallel=True, window=16):
         with open(self.output_dir + '/' + self.run_id + '_filtered_data.sav', 'rb') as f:
             filtered_data = joblib.load(f)
-
+        filtered_data = filtered_data[:3]
         n_animals = len(filtered_data)
         logging.info('extracting features from filtered data of {} animals'.format(n_animals))
 
         if not parallel:
-            feats = [extract_bsoid_feats(filtered_data[i]) for i in tqdm(range(n_animals))]
+            feats = [extract_feats(filtered_data[i]) for i in tqdm(range(n_animals))]
         else:
             from joblib import Parallel, delayed
             feats = Parallel(n_jobs=-1, backend="multiprocessing")(
-                    map(delayed(extract_bsoid_feats), filtered_data))
+                    map(delayed(extract_feats), filtered_data))
+
+        N = sum([f.shape[0] for f in feats])
+        logging.info('extracted {} samples of {}D features'.format(N, feats[0].shape[1]))
+
+        # temporal features
+        if not parallel:
+            feats = [temporal_features(f, window) for f in feats]
+        else:
+            from joblib import Parallel, delayed
+            feats = Parallel(n_jobs=-1, backend="multiprocessing")(
+                    delayed(temporal_features)(f, window) for f in feats)
+        
+        logging.info('extracted temporal features for final data set of shape [{},{}]'.format(*feats.shape))
 
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
             joblib.dump(feats, f)
 
         return feats
+        
 
     def cluster_feats(self, desired_clusters, n_parts=100, clusters_per_part=100, soft_cluster=True):
         cure = bigCURE(desired_clusters, n_parts, clusters_per_part, soft_cluster)

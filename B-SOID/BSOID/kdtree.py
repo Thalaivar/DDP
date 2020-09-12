@@ -165,6 +165,8 @@ class kdtree_balanced:
         new_node.right = self.__create_tree(nodes[median + 1:], new_node, depth + 1)
 
         self._length += 1
+        print(self._length)
+        
         return new_node
 
     def _create_point_comparator(self, type_point):
