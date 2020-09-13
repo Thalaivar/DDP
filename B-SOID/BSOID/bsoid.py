@@ -1,4 +1,5 @@
 import os
+import umap
 import random
 import joblib
 import hdbscan
@@ -6,6 +7,7 @@ import logging
 import pandas as pd
 import numpy as np
 from tqdm import tqdm
+from psutil import virtual_memory
 from BSOID.clustering import bigCURE
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
@@ -98,13 +100,55 @@ class BSOID:
             joblib.dump([feats, temporal_feats], f)
 
         return feats, temporal_feats
-        
-    def cluster_feats(self, min_cluster_prop=0.1, scale_feats=True):
+    
+    def umap_reduce(self, reduced_dim=10, sample_size=int(5e5), shuffle=True):
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
             feats, _ = joblib.load(f)
 
-        scaler = StandardScaler().fit(feats)
-        feats_sc = scaler.transform(feats)        
+        # take subset of data
+        if sample_size > 0:
+            if shuffle:
+                idx = np.random.permutation(np.arange(feats.shape[0]))
+            else:
+                idx = np.arange(feats.shape[0])
+            idx = idx[:sample_size]
+            feats_train = feats[idx,:]
+        else:
+            feats_train = feats
+        
+        # scale both datasets
+        feats = StandardScaler().fit_transform(feats)
+        feats_train = StandardScaler().fit_transform(feats_train)
+        
+
+        logging.info('running UMAP on {} samples from {}D to {}D'.format(*feats_train.shape, reduced_dim))
+        mapper = umap.UMAP(n_components=reduced_dim, n_neighbors=100, min_dist=0.0).fit(feats_train)
+
+        logging.info('embedding {} samples from data set to {}D'.format(feats.shape[0], reduced_dim))
+        umap_embeddings = mapper.transform(feats)
+
+        with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'wb') as f:
+            joblib.dump(umap_embeddings, f)
+
+    def max_samples_for_umap(self, feats):
+        mem = virtual_memory()
+        allowed_n = int((mem.available - 256000000)/(feats.shape[1]*32*100))
+        
+        logging.info('max allowed samples for umap: {} and data has: {}'.format(allowed_n, feats.shape[0]))
+        return allowed_n
+
+    def cluster_feats(self, min_cluster_prop=0.1, scale_feats=True, reduced_feats=False):
+        if reduced_feats:
+            # umap embeddings are to be used directly
+            with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
+                feats_sc = joblib.load(f)
+        else:
+            # if clustering features directly, then scale them
+            with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
+                feats, _ = joblib.load(f)
+
+            scaler = StandardScaler().fit(feats)
+            feats_sc = scaler.transform(feats)        
 
         min_cluster_size = int(round(min_cluster_prop * 0.01 * feats_sc.shape[0]))
         clusterer = hdbscan.HDBSCAN(min_cluster_size, min_samples=10, prediction_data=True).fit(feats_sc)
