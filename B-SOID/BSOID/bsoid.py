@@ -106,29 +106,47 @@ class BSOID:
             feats, _ = joblib.load(f)
 
         # take subset of data
-        if sample_size > 0:
-            if shuffle:
-                idx = np.random.permutation(np.arange(feats.shape[0]))
-            else:
-                idx = np.arange(feats.shape[0])
-            idx = idx[:sample_size]
-            feats_train = feats[idx,:]
+        if shuffle:
+            idx = np.random.permutation(np.arange(feats.shape[0]))
         else:
-            feats_train = feats
+            idx = np.arange(feats.shape[0])
+        feats_train = feats[idx[:sample_size],:]
+        rem_feats = feats[idx[sample_size:],:]
         
+        logging.info('divided data into {} and {} samples'.format(feats_train.shape[0], rem_feats.shape[0]))
+
         # scale both datasets
-        feats = StandardScaler().fit_transform(feats)
+        rem_feats = StandardScaler().fit_transform(rem_feats)
         feats_train = StandardScaler().fit_transform(feats_train)
         
         
         logging.info('running UMAP on {} samples from {}D to {}D'.format(*feats_train.shape, reduced_dim))
         mapper = umap.UMAP(n_components=reduced_dim, n_neighbors=100, min_dist=0.0).fit(feats_train)
+        
+        with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'wb') as f:
+            joblib.dump([mapper, mapper.embedding_], f)
 
-        logging.info('embedding {} samples from data set to {}D'.format(feats.shape[0], reduced_dim))
-        umap_embeddings = mapper.transform(feats)
+        # batch transform rest of data
+        embeddings = [mapper.embedding_]
+        pbar = tqdm(total=rem_feats.shape[0])
+        idx = 0
+        batch_sz = sample_size // 10
+        logging.info('embedding {} samples from data set to {}D in batches of {}'.format(rem_feats.shape[0], reduced_dim, batch_sz))
+        while idx < rem_feats.shape[0]:
+            if idx + batch_sz >= rem_feats.shape[0]:
+                batch_embed = mapper.transform(rem_feats[idx:,:])
+                pbar.update(rem_feats.shape[0]-idx)
+            else:
+                batch_embed = mapper.transform(rem_feats[idx:idx+batch_sz,:])
+                pbar.update(batch_sz)
+            embeddings.append(batch_embed)
+            idx += batch_sz
+
+        embeddings = np.vstack(embeddings)
+        logging.info('finished transforming {} samples'.format(idx))
 
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'wb') as f:
-            joblib.dump(umap_embeddings, f)
+            joblib.dump(embeddings, f)
 
     def max_samples_for_umap(self):
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
