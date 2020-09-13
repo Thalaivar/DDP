@@ -6,21 +6,10 @@ from tqdm import tqdm
 import ftplib
 import random
 
-BSOID_DATA = ['NOSE', 'LEFT_EAR', 'RIGHT_EAR', 'BASE_NECK', 'CENTER_SPINE', 'HINDPAW1', 'HINDPAW2', 'MID_TAIL', 'TIP_TAIL']
-
-# Mapping for data
-NOSE_INDEX = 0
-LEFT_EAR_INDEX = 1
-RIGHT_EAR_INDEX = 2
-BASE_NECK_INDEX = 3
-LEFT_FRONT_PAW_INDEX = 4
-RIGHT_FRONT_PAW_INDEX = 5
-CENTER_SPINE_INDEX = 6
-LEFT_REAR_PAW_INDEX = 7
-RIGHT_REAR_PAW_INDEX = 8
-BASE_TAIL_INDEX = 9
-MID_TAIL_INDEX = 10
-TIP_TAIL_INDEX = 11
+BSOID_DATA = ['NOSE', 'LEFT_EAR', 'RIGHT_EAR', 
+        'BASE_NECK', 'FOREPAW1', 'FOREPAW2', 
+        'CENTER_SPINE', 'HINDPAW1', 'HINDPAW2', 
+        'BASE_TAIL', 'MID_TAIL', 'TIP_TAIL']
 
 RETAIN_WINDOW = 30*60
 FPS = 30
@@ -51,13 +40,15 @@ def conv_bsoid_format(filename, save_dir, clip_data=True):
     #                       LEFT_REAR_PAW_INDEX, MID_TAIL_INDEX, TIP_TAIL_INDEX]
     
     bsoid_data = np.zeros((conf.shape[0], 3*conf.shape[1]))
-    for i in range(0, conf.shape[1], 3):
-        bsoid_data[:,i] = conf[:,i]
-        bsoid_data[:,i+1] = pos[:,i,0]
-        bsoid_data[:,i+2] = pos[:,i,1]
+    j = 0
+    for i in range(0, conf.shape[1]):
+        bsoid_data[:,j] = conf[:,i]
+        bsoid_data[:,j+1] = pos[:,i,0]
+        bsoid_data[:,j+2] = pos[:,i,1]
+        j += 3
     
     bodypart_headers = []
-    for i in range(len(BSOID_DATA_INDICES)):
+    for i in range(len(BSOID_DATA)):
         bodypart_headers.append(BSOID_DATA[i]+'_lh')
         bodypart_headers.append(BSOID_DATA[i]+'_x')
         bodypart_headers.append(BSOID_DATA[i]+'_y')

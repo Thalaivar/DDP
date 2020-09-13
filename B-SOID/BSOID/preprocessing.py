@@ -5,6 +5,25 @@ import math
 import itertools
 from sklearn.preprocessing import StandardScaler
 
+# Mapping for data
+NOSE_INDEX = 0
+LEFT_EAR_INDEX = 1
+RIGHT_EAR_INDEX = 2
+BASE_NECK_INDEX = 3
+LEFT_FRONT_PAW_INDEX = 4
+RIGHT_FRONT_PAW_INDEX = 5
+CENTER_SPINE_INDEX = 6
+LEFT_REAR_PAW_INDEX = 7
+RIGHT_REAR_PAW_INDEX = 8
+BASE_TAIL_INDEX = 9
+MID_TAIL_INDEX = 10
+TIP_TAIL_INDEX = 11
+
+bodyparts = [NOSE_INDEX, LEFT_EAR_INDEX, RIGHT_EAR_INDEX,
+            BASE_NECK_INDEX, CENTER_SPINE_INDEX,
+            LEFT_REAR_PAW_INDEX, RIGHT_REAR_PAW_INDEX,
+            BASE_TAIL_INDEX, MID_TAIL_INDEX, TIP_TAIL_INDEX]
+
 def smoothen_data(data, win_len=7):
     data = pd.Series(data)
     smoothed_data = data.rolling(win_len, min_periods=1, center=True)
@@ -12,7 +31,7 @@ def smoothen_data(data, win_len=7):
 
 def likelihood_filter(data: pd.DataFrame, conf_threshold: float=0.3, forward_fill=True):
     N = data.shape[0]
-    n_dpoints = data.shape[1] // 3
+
     # retrieve confidence, x and y data from csv data
     conf, x, y = [], [], []
     for col in data.columns:
@@ -23,7 +42,15 @@ def likelihood_filter(data: pd.DataFrame, conf_threshold: float=0.3, forward_fil
         elif col.endswith('_y'):
             y.append(data[col])
     conf, x, y = np.array(conf).T, np.array(x).T, np.array(y).T
+    conf, x, y = conf[:,bodyparts], x[:,bodyparts], y[:,bodyparts]
+    
+    # take average of nose and ears
+    conf = np.hstack((conf[:,:3].mean(axis=1).reshape(-1,1), conf[:,3:]))
+    x = np.hstack((x[:,:3].mean(axis=1).reshape(-1,1), x[:,3:]))
+    y = np.hstack((y[:,:3].mean(axis=1).reshape(-1,1), y[:,3:]))
 
+    n_dpoints = conf.shape[1]
+    
     logging.debug('extracted {} samples of {} features'.format(N, n_dpoints))
 
     # forward-fill any points below confidence threshold
