@@ -120,7 +120,7 @@ class BSOID:
         feats = StandardScaler().fit_transform(feats)
         feats_train = StandardScaler().fit_transform(feats_train)
         
-
+        
         logging.info('running UMAP on {} samples from {}D to {}D'.format(*feats_train.shape, reduced_dim))
         mapper = umap.UMAP(n_components=reduced_dim, n_neighbors=100, min_dist=0.0).fit(feats_train)
 
@@ -130,7 +130,10 @@ class BSOID:
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'wb') as f:
             joblib.dump(umap_embeddings, f)
 
-    def max_samples_for_umap(self, feats):
+    def max_samples_for_umap(self):
+        with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
+            feats, _ = joblib.load(f)
+            
         mem = virtual_memory()
         allowed_n = int((mem.available - 256000000)/(feats.shape[1]*32*100))
         
@@ -146,9 +149,9 @@ class BSOID:
             # if clustering features directly, then scale them
             with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
                 feats, _ = joblib.load(f)
-
-            scaler = StandardScaler().fit(feats)
-            feats_sc = scaler.transform(feats)        
+            
+            feats_sc = StandardScaler().fit_transform(feats) if scale_feats else feats
+            
 
         min_cluster_size = int(round(min_cluster_prop * 0.01 * feats_sc.shape[0]))
         clusterer = hdbscan.HDBSCAN(min_cluster_size, min_samples=10, prediction_data=True).fit(feats_sc)
