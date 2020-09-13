@@ -133,7 +133,7 @@ class BSOID:
     def max_samples_for_umap(self):
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
             feats, _ = joblib.load(f)
-            
+
         mem = virtual_memory()
         allowed_n = int((mem.available - 256000000)/(feats.shape[1]*32*100))
         
@@ -150,10 +150,14 @@ class BSOID:
             with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
                 feats, _ = joblib.load(f)
             
-            feats_sc = StandardScaler().fit_transform(feats) if scale_feats else feats
+            if scale_feats:
+                feats_sc = StandardScaler().fit_transform(feats) 
+                logging.info('scaling features for clustering')
+            else: 
+                feats_sc = feats
             
-
         min_cluster_size = int(round(min_cluster_prop * 0.01 * feats_sc.shape[0]))
+        logging.info('clustering {} samples in {}D with HDBSCAN for a minimum cluster size of {}'.format(*feats_sc.shape, min_cluster_size))
         clusterer = hdbscan.HDBSCAN(min_cluster_size, min_samples=10, prediction_data=True).fit(feats_sc)
         assignments = clusterer.labels_
         soft_clusters = hdbscan.all_points_membership_vectors(clusterer)
