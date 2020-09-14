@@ -235,11 +235,11 @@ class BSOID:
         feats_train, feats_test, labels_train, labels_test = train_test_split(feats, soft_assignments)
         clf = MLPClassifier(**MLP_PARAMS).fit(feats_train, labels_train)
         scores = cross_val_score(clf, feats_test, labels_test, cv=5, n_jobs=-1)
-        cf = create_confusion_matrix(feats_test, labels_test, clf)
         logging.info('classifier accuracy: {} +- {}'.format(scores.mean(), scores.std()))
+        # cf = create_confusion_matrix(feats_test, labels_test, clf)
 
-        logging.info('validating classifier on {} scaled features'.format(*feats_sc.shape))
         feats_sc = StandardScaler().fit_transform(feats)
+        logging.info('validating classifier on {} scaled features'.format(*feats_sc.shape))
         feats_train, feats_test, labels_train, labels_test = train_test_split(feats_sc, soft_assignments)
         clf = MLPClassifier(**MLP_PARAMS).fit(feats_train, labels_train)
         sc_scores = cross_val_score(clf, feats_test, labels_test, cv=5, n_jobs=-1)
@@ -274,6 +274,6 @@ class BSOID:
         logging.info('saving example videos from {} to {}'.format(video_file, shortvid_dir))
         logging.info('generating {} examples with minimum bout: {} ms'.format(video_args['n_examples'], video_args['bout_length']))
 
-        if video_args['load_feats']:
-            feats = 
+        # if video_args['load_feats']:
+        #     feats = 
         

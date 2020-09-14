@@ -209,8 +209,7 @@ class CURE:
         return clusters
         
     def _delete_rep_points(self, cluster):
-        for point in cluster.rep:
-            self.tree_.remove(point, payload=cluster)
+        
     
     def _insert_rep_points(self, cluster):
         for point in cluster.rep:

@@ -5,7 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix
 
-def create_confusion_matrix(self, feats, labels, clf):
+def create_confusion_matrix(feats, labels, clf):
     pred = clf.predict(feats)
     data = confusion_matrix(labels, pred, normalize='all')
     df_cm = pd.DataFrame(data, columns=np.unique(pred), index=np.unique(pred))
