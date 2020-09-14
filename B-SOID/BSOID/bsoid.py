@@ -8,12 +8,26 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 from psutil import virtual_memory
-from BSOID.clustering import bigCURE
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
+from sklearn.neural_network import MLPClassifier
+from BSOID.utils import create_confusion_matrix, frames_from_video
 from BSOID.data import download_data, conv_bsoid_format
+from sklearn.model_selection import train_test_split, cross_val_score
 from BSOID.features import extract_feats, temporal_features, FPS
 from BSOID.preprocessing import likelihood_filter, normalize_feats, windowed_feats
+
+MLP_PARAMS = {
+    'hidden_layer_sizes': (100, 10),  # 100 units, 10 layers
+    'activation': 'logistic',  # logistics appears to outperform tanh and relu
+    'solver': 'adam',
+    'learning_rate': 'constant',
+    'learning_rate_init': 0.001,  # learning rate not too high
+    'alpha': 0.0001,  # regularization default is better than higher values.
+    'max_iter': 1000,
+    'early_stopping': False,
+    'verbose': 0  # set to 1 for tuning your feedforward neural network
+}
 
 class BSOID:
     def __init__(self, run_id: str, 
@@ -25,6 +39,7 @@ class BSOID:
         self.raw_dir = base_dir + '/raw'
         self.csv_dir = base_dir + '/csvs'
         self.output_dir = base_dir + '/output'
+        self.test_dir = base_dir + '/test'
         self.fps = fps
 
         try:
@@ -33,6 +48,10 @@ class BSOID:
             pass
         try:
             os.mkdir(self.csv_dir)    
+        except FileExistsError:
+            pass
+        try:
+            os.mkdir(self.test_dir)
         except FileExistsError:
             pass
     
@@ -187,4 +206,74 @@ class BSOID:
             joblib.dump([assignments, soft_clusters, soft_assignments], f)
 
         return assignments, soft_clusters, soft_assignments
-            
+
+    def train_classifier(self):
+        with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:
+            _, _, soft_assignments = joblib.load(f)
+
+        with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
+                feats, _ = joblib.load(f)
+
+        feats_sc = StandardScaler().fit_transform(feats)
+
+        logging.info('training neural network on {} unscaled samples in {}D'.format(*feats.shape))
+        clf = MLPClassifier(**MLP_PARAMS).fit(feats, soft_assignments)
+        logging.info('training neural network on {} scaled samples in {}D'.format(*feats_sc.shape))
+        sc_clf = MLPClassifier(**MLP_PARAMS).fit(feats_sc, soft_assignments)
+
+        with open(self.output_dir + '/' + self.run_id + '_classifiers.sav', 'wb') as f:
+            joblib.dump([clf, sc_clf], f)
+
+    def validate_classifier(self):
+        with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:
+            _, _, soft_assignments = joblib.load(f)
+
+        with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
+                feats, _ = joblib.load(f)
+        
+        logging.info('validating classifier on {} unscaled features'.format(*feats.shape))
+        feats_train, feats_test, labels_train, labels_test = train_test_split(feats, soft_assignments)
+        clf = MLPClassifier(**MLP_PARAMS).fit(feats_train, labels_train)
+        scores = cross_val_score(clf, feats_test, labels_test, cv=5, n_jobs=-1)
+        cf = create_confusion_matrix(feats_test, labels_test, clf)
+        logging.info('classifier accuracy: {} +- {}'.format(scores.mean(), scores.std()))
+
+        logging.info('validating classifier on {} scaled features'.format(*feats_sc.shape))
+        feats_sc = StandardScaler().fit_transform(feats)
+        feats_train, feats_test, labels_train, labels_test = train_test_split(feats_sc, soft_assignments)
+        clf = MLPClassifier(**MLP_PARAMS).fit(feats_train, labels_train)
+        sc_scores = cross_val_score(clf, feats_test, labels_test, cv=5, n_jobs=-1)
+        sc_cf = create_confusion_matrix(feats_test, labels_test, clf)
+        logging.info('classifier accuracy: {} +- {}'.format(scores.mean(), scores.std())) 
+         
+        with open(self.output_dir + '/' + self.run_id + '_validation.sav', 'wb') as f:
+            joblib.dump([scores, cf, sc_scores, sc_cf], f)
+
+    def create_results(self, csv_file, video_file, extract_frames=True, **video_args):
+        output_dir = self.test_dir + csv_file.split('/')[-1][:-4]
+        try:
+            os.mkdir(output_dir)
+        except FileExistsError:
+            pass
+        frame_dir = output_dir + '/pngs'
+        try:
+            os.mkdir(frame_dir)
+        except FileExistsError:
+            pass
+        
+        if extract_feats:
+            logging.info('extracting frames from video {} to dir {}'.format(video_file, frame_dir))
+            frames_from_video(video_file, frame_dir)
+        
+        shortvid_dir = output_dir + '/mp4s'
+        try:
+            os.mkdir(shortvid_dir)
+        except FileExistsError:
+            pass
+
+        logging.info('saving example videos from {} to {}'.format(video_file, shortvid_dir))
+        logging.info('generating {} examples with minimum bout: {} ms'.format(video_args['n_examples'], video_args['bout_length']))
+
+        if video_args['load_feats']:
+            feats = 
+        

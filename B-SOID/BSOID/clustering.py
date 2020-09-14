@@ -6,7 +6,7 @@ import heapq
 import numpy as np
 import time
 from tqdm import tqdm
-from BSOID.kdtree import kdtree
+from sklearn.neighbors import BallTree
 
 HDBSCAN_PARAMS = {'min_samples': 10, 'prediction_data': True}
 
@@ -122,9 +122,7 @@ class CURE:
         self.rep_cluster_idx = None
 
     def process(self, data: np.ndarray):
-        clusters = self._input_points_to_clusters(data)
-        self._create_kdtree(clusters)
-        logging.debug('creating heap with {} clusters'.format(len(clusters)))
+        self._create_kdtree(data)
         self._create_heap(data)
 
         iteration = 0
@@ -169,30 +167,22 @@ class CURE:
 
         return self.heap_
 
-    def _create_heap(self, clusters: list):
-        self.heap_ = clusters
-
-        for cluster in self.heap_:
-            for i in range(len(self.heap_)):
-                if self.heap_[i] != cluster:
-                    dist = Cluster._distance(self.heap_[i], cluster)
-                    if dist  < cluster.distance:
-                        cluster.closest = self.heap_[i]
-                        cluster.distance = dist
-
+    def _create_heap(self, data: np.ndarray):
+        self.heap_ = self._input_points_to_clusters(data)
+        for c in self.heap_:
+            dist, closest_point = self.tree_.query(c.data.reshape(1,-1), k=2)
+            dist, closest_point = dist[0,1], closest_point[0,1]
+            c.closest = self.heap_[closest_point]
+            c.distance = dist
+        
         # create heap of clusters sorted by closest distance
         heapq.heapify(self.heap_)
     
-    def _create_kdtree(self, clusters: list):
-        representatives, payloads = [], []
-        for current_cluster in clusters:
-            for representative_point in current_cluster.rep:
-                representatives.append(representative_point)
-                payloads.append(current_cluster)
-
-        # initialize it using constructor to have balanced tree at the beginning to ensure the highest performance
-        # when we have the biggest amount of nodes in the tree.
-        self.tree_ = kdtree(representatives, payloads)
+    def _create_kdtree(self, data: np.ndarray):
+        self.tree_ = BallTree(data)
+        # each point is considered as an individual cluster
+        self.rep_cluster_idx = np.arange(data.shape[0])
+        
 
     def _find_closest_cluster(self, cluster: Cluster, distance: float):
         nearest_cluster = None
