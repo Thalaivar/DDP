@@ -1,306 +1,265 @@
-import logging
 import hdbscan
-import itertools
-import joblib
-import heapq
 import numpy as np
-import time
+import logging
+import itertools
+from _heapq import *
 from tqdm import tqdm
-from sklearn.neighbors import BallTree
+from sklearn.neighbors import KDTree
+# from sklearn.neighbors import BallTree
+from scipy.spatial.distance import cdist, pdist
 
-HDBSCAN_PARAMS = {'min_samples': 10, 'prediction_data': True}
+def dense_dist_mat_at_ij(dist, i, j, n):
+    if i < j:
+        idx = int(i*n - i*(i+1) // 2 - (j-i-1))
+    elif i > j:
+        idx = int(j*n - j*(j+1) // 2 - (i-j-1))
+    else:
+        return 0.0
 
-class Cluster:
-    def __init__(self, data: np.ndarray, n_rep=1000, alpha=0.5, calc_mean=True):
-        self.alpha = alpha
-        self.n_rep = n_rep
+    return dist[idx]
+
+def well_scattered_points(n_rep: int, mean: np.ndarray, data: np.ndarray):
+    n = data.shape[0]
+    # if the cluster contains less than no. of rep points, all points are rep points
+    if n <= n_rep:
+        return list(data), np.arange(data.shape[0])
+    
+    # calculate distances for fast access
+    distances = pdist(data)
+
+    # farthest point from mean
+    idx = np.argmax(np.linalg.norm(data - mean, axis=1))
+    # get well scattered points
+    scatter_idx = [idx]
+    for _ in range(1, n_rep):
+        max_dist = 0.0
+        for j in range(n):
+            # minimum distances from points in scatter_idx
+            min_dist = min([dense_dist_mat_at_ij(distances, idx, j, n) for idx in scatter_idx])
+            if min_dist > max_dist:
+                max_dist = min_dist
+                max_point = j
+        
+        scatter_idx.append(max_point)
+    
+    return [data[i] for i in scatter_idx], scatter_idx
+
+class cure_cluster:
+    def __init__(self, data, index, n_rep, alpha):
         if len(data.shape) == 1:
-            self.data = data.reshape(1, -1)
-        else:
-            self.data = data
+            data = data.reshape(1,-1)
+        self.data = data
+        self.idx = index
+        self.n_rep = n_rep
+        self.alpha = alpha
 
-        self.mean = self.get_mean() if calc_mean else None
-        self.rep = None
-
-        # for use with CURE
-        self.closest = None
-        self.distance = np.inf
+        self.mean = None
+        self.rep = []
         self.rep_idx = []
-    
-    def create_representative_points(self):
-        scattered_points = well_scattered_points(self.n_rep, self.mean, self.data)
-        # shrink points toward mean
-        rep = [p + self.alpha*(self.mean - p) for p in scattered_points]   
-        self.rep = rep
-        return rep
-    
-    def get_mean(self):
-        return self.data.mean(axis=0)
-    
-    def scattered_points_from_rep(self):
-        return (self.rep - self.alpha*self.mean)/(1 - self.alpha)
+
+        if self.data.shape[0] == 1:
+            self._calculate_mean()
+            self.rep = [data]
+            self.rep_idx = [index] 
+
+        self.distance = None
+        self.closest = None
+
+    def _calculate_mean(self):
+        self.mean = self.data.mean(axis=0)
     
     def __lt__(self, c):
         return self.distance < c.distance
-
-    @property
+    
     def __len__(self):
         return self.data.shape[0]
+    
+    def _exemplars_from_data(self):
+        scattered_points, _ = well_scattered_points(self.n_rep, self.mean, self.data)
+        # shrink points toward mean
+        rep = [p + self.alpha*(self.mean - p) for p in scattered_points]   
+        self.rep = rep
 
-    @property
-    def dims(self):
-        return self.data.shape[1]
+    def _unshrink_exemplars(self):
+        return [(rep - self.alpha * self.mean)/(1 - self.alpha) for rep in self.rep]
 
-    @staticmethod
-    def _distance(u, v):
+class CURE:
+    def __init__(self, k, n_parts=-1, k_per_part=None, **cluster_args):
+        self.cluster_args = cluster_args
+        self.desired_clusters = k
+        self.n_parts = n_parts
+        self.k_per_part = k_per_part
+
+        # tracks which point in tree is active
+        self.active_points = None
+        self.tree_ = None
+        self.heap_ = None
+
+        self.labels_ = None
+
+    def _process(self, data, n_clusters, init_w_clusters=False):
+        if init_w_clusters:
+            self._init_w_clusters(data)
+        else:
+            self._create_kdtree(data)
+            self._create_heap(data)
+
+        u = heappop(self.heap_)
+        while len(self.heap_) > n_clusters:
+            logging.info(f'clusters in heap: {len(self.heap_)}, desired clusters: {n_clusters}')
+            v = u.closest
+
+            self.heap_.remove(v)
+
+            self._remove_representative_points(u)
+            self._remove_representative_points(v)
+
+            w = self._merge_clusters(u, v)
+
+            self._insert_representative_points(w)
+
+            w.distance = np.inf
+            relocate_clusters = []
+            for c in self.heap_:
+                dist = self._distance_between_clusters(w, c)
+                if  dist < w.distance:
+                    w.closest = c
+                    w.distance = dist
+                
+                if c.closest is u or c.closest is v:
+                    if c.distance > dist:
+                        c.closest = w
+                        c.distance = dist
+                    else:
+                        (closest_cluster, closest_dist) = self._closest_cluster(c, dist)
+                        
+                        if closest_cluster is None or closest_cluster in w.rep_idx:
+                            c.closest = w
+                            c.distance = dist
+                        
+                        else:
+                            c.closest = self._find_cluster_with_rep_idx(closest_cluster)
+                            c.distance = closest_dist
+
+                    relocate_clusters.append(c)
+
+                elif c.distance > dist:
+                    c.closest = w
+                    c.distance = dist
+                    relocate_clusters.append(c)
+            
+            for c in relocate_clusters:
+                self.heap_.remove(c)
+                heappush(self.heap_, c)
+                
+            u = heappushpop(self.heap_, w)
+
+        # self._create_assignments(data)
+        return self.heap_
+    
+    def _create_heap(self, data):
+        self.heap_ = [cure_cluster(data[i], i, **self.cluster_args) for i in range(data.shape[0])]
+        
+        # calculate representative points
+        for c in self.heap_:
+            c._exemplars_from_data()
+
+        # for each point find nearest neighbor
+        for i in range(len(self.heap_)):
+            d, idx = self.tree_.query(data[i].reshape(1,-1), k=2)
+            d, idx = d[0][1], idx[0][1]
+            self.heap_[i].distance = d
+            self.heap_[i].closest = self.heap_[idx]
+        
+        heapify(self.heap_)
+
+    def _create_kdtree(self, data):
+        self.tree_ = KDTree(data)
+        # initially, every point is active in tree
+        self.active_points = np.ones((data.shape[0],), dtype=np.int8)
+    
+    def _distance_between_clusters(self, u: cure_cluster, v:cure_cluster):        
+        u.rep, v.rep = np.array(u.rep), np.array(v.rep)
+        distances = cdist(u.rep, v.rep)
+        return np.min(distances)
+
+
+    def _remove_representative_points(self, cluster: cure_cluster):
+        for i in cluster.rep_idx:
+            # deactivate point in tree
+            self.active_points[i] = -1
+    
+    def _insert_representative_points(self, cluster: cure_cluster):
+        for i in cluster.rep_idx:
+            self.active_points[i] = 1
+
+    def _closest_cluster(self, cluster: cure_cluster, distance: float):
         min_dist = np.inf
-        for i in range(u.rep.shape[0]):
-            for j in range(v.rep.shape[0]):
-                dist = np.linalg.norm(u.rep[i] - v.rep[j])
-                min_dist = dist if dist < min_dist else min_dist
-        
-        return min_dist
 
-    @staticmethod
-    def _cluster_fast_merge(u, v):
+        for p in cluster.rep:
+            # get all points within distance
+            idx, dist = self.tree_.query_radius(p.reshape(1,-1), distance, return_distance=True)
+            idx, dist = idx[0], dist[0]
+
+            # remove invalid neighbors
+            valid_points = []
+            for i in range(idx.size):
+                # if distance is zero, the neighbor is the same as query
+                if dist[i] == 0.0:
+                    continue
+                # point is in query point's cluster
+                if idx[i] in cluster.rep_idx:
+                    continue
+                # point is deleted from kdtree
+                if self.active_points[idx[i]] < 0:
+                    continue
+                valid_points.append(i)
+            idx, dist = idx[valid_points], dist[valid_points]
+
+            if idx.size == 0:
+                # no points within distance
+                return (None, None)
+            else:
+                # closest point
+                closest_idx = np.argmin(dist)
+                idx, dist = idx[closest_idx], dist[closest_idx]
+
+                if dist < min_dist:
+                    min_dist = dist
+                    closest_rep_idx = idx
+
+        return (closest_rep_idx, min_dist)
+
+    def _find_cluster_with_rep_idx(self, rep_idx):
+        cluster = None
+        for c in self.heap_:
+            if rep_idx in c.rep_idx:
+                cluster = c
+                break
+
+        return cluster
+
+    def _merge_clusters(self, u: cure_cluster, v: cure_cluster):
         combined_data = np.vstack((u.data, v.data))
-        # assuming that both u, v have same alpha and n_rep
-        w = Cluster(combined_data, u.n_rep, u.alpha, calc_mean=False)
+        w = cure_cluster(combined_data, u.idx+v.idx, **self.cluster_args)
+        # w.labels = u.labels + v.labels
 
-        # check that clusters have their means calculate
-        if u.mean is None or v.mean is None:
-            raise ValueError('means of clusters need to be calculated for merging')
         # get new mean
-        w.mean = (u.size*u.mean + v.size*v.mean)/(u.size + v.size)
+        w.mean = (len(u)*u.mean + len(v)*v.mean)/(len(u) + len(v))
 
-        # check that both clusters have representative points assigned
-        if u.rep is None or v.rep is None:
-            raise ValueError('representative points of clusters need to be assigned before merging')
         # get "well scattered" points from both clusters
-        scattered_points = np.vstack((u.scattered_points_from_rep(),
-                                    v.scattered_points_from_rep()))
-        scattered_points = well_scattered_points(w.n_rep, w.mean, w.data)
+        scattered_points = u._unshrink_exemplars() + v._unshrink_exemplars()
+        new_rep_points, retained_idx = well_scattered_points(w.n_rep, w.mean, np.array(scattered_points))
+            
         # get representative points for merged cluster by shrinking
-        w.rep = np.array([p + w.alpha*(w.mean - p) for p in scattered_points])
-        
-        # assign representative point IDs to new cluster
-        w.rep_idx.extend(u.rep_idx)
-        w.rep_idx.extend(v.rep_idx)
+        w.rep = np.array([p + w.alpha*(w.mean - p) for p in new_rep_points])
+        # get indices of representative points from u, v
+        rep_idx = u.rep_idx + v.rep_idx
+        w.rep_idx = list(np.array(rep_idx)[retained_idx])
 
         return w
 
-def well_scattered_points(n_rep: int, mean: np.ndarray, data: np.ndarray):
-    # if the cluster contains less than no. of rep points, all points are rep points
-    if data.shape[0] <= n_rep:
-        return list(data)
-
-    # get well scattered points
-    tmp_set = []
-    for i in range(n_rep):
-        max_dist = 0
-        for j in range(data.shape[0]):
-            p = data[j]
-            if i == 0:
-                min_dist = np.linalg.norm(p - mean)
-            else:
-                min_dist = np.min(np.linalg.norm(p - np.array(tmp_set), axis=1))
-            
-            if min_dist >= max_dist:
-                max_dist = min_dist
-                max_point = p
-        tmp_set.append(max_point)
-    
-    return tmp_set
-
-class CURE:
-    def __init__(self, desired_clusters):
-        self.desired_clusters = desired_clusters
-        self.init_w_clusters = False
-
-        self.heap_ = None
-        self.tree_ = None
-        self.rep_cluster_idx = None
-
-    def process(self, data: np.ndarray):
-        self._create_kdtree(data)
-        self._create_heap(data)
-
-        iteration = 0
-        while len(self.heap_) > self.desired_clusters:
-            logging.debug('iteration {} with {} clusters'.format(iteration, len(self.heap_)))
-
-            u = heapq.heappop(self.heap_)
-            v = u.closest
-
-            self.heap_.remove(u)
-            self.heap_.remove(v)
-
-            self._delete_rep_points(u)
-            self._delete_rep_points(v)
-
-            w = Cluster._cluster_fast_merge(u, v)
-            
-            self._insert_rep_points(w)
-
-            cluster_dist_changed = 0
-            recalc_time_start = time.time()
-            for c in self.heap_:
-                dist = Cluster._distance(w, c)
-                if  dist < w.distance:
-                    w.closest = c
-                
-                if c.closest is u or c.closest is v:
-                    if c.distance < dist:
-                        (c.closest, c.distance) = self._find_closest_cluster(c, dist)
-                        cluster_dist_changed += 1
-                    
-                    if c.closest is None:
-                        c.closest = w
-                        c.distance = dist
-
-            recalc_time = time.time() - recalc_time_start
-            logging.debug('{} cluster distances recalculated in {:.4f} s'.format(cluster_dist_changed, recalc_time))
-            heapq.heapify(self.heap_)
-            heapq.heappush(self.heap_, w)
-            
-            iteration += 1
-
-        return self.heap_
-
-    def _create_heap(self, data: np.ndarray):
-        self.heap_ = self._input_points_to_clusters(data)
-        for c in self.heap_:
-            dist, closest_point = self.tree_.query(c.data.reshape(1,-1), k=2)
-            dist, closest_point = dist[0,1], closest_point[0,1]
-            c.closest = self.heap_[closest_point]
-            c.distance = dist
-        
-        # create heap of clusters sorted by closest distance
-        heapq.heapify(self.heap_)
-    
-    def _create_kdtree(self, data: np.ndarray):
-        self.tree_ = BallTree(data)
-        # each point is considered as an individual cluster
-        self.rep_cluster_idx = np.arange(data.shape[0])
-        
-
-    def _find_closest_cluster(self, cluster: Cluster, distance: float):
-        nearest_cluster = None
-        min_dist = np.inf
-
-        real_euclidean_distance = distance ** 0.5
-
-        for point in cluster.rep:
-            # Nearest nodes should be returned (at least it will return itself).
-            nearest_nodes = self.tree_.find_nearest_dist_nodes(point, real_euclidean_distance)
-            for (candidate_distance, kdtree_node) in nearest_nodes:
-                if (candidate_distance < min_dist) and (kdtree_node is not None) and (kdtree_node.payload is not cluster):
-                    min_dist = candidate_distance
-                    nearest_cluster = kdtree_node.payload
-        
-        return (nearest_cluster, min_dist)
-
-    def _input_points_to_clusters(self, data):
-        clusters = []
-        for i in range(data.shape[0]):
-            clusters.append(Cluster(data[i]))
-        for c in clusters:
-            c.create_representative_points()
-        return clusters
-        
-    def _delete_rep_points(self, cluster):
-        
-    
-    def _insert_rep_points(self, cluster):
-        for point in cluster.rep:
-            self.tree_.insert(point, cluster)
-
-class bigCURE(CURE):
-    def __init__(self, desired_clusters, n_parts, clusters_per_part, soft_cluster=False):
-        super().__init__(desired_clusters)
-        self.n_parts = n_parts
-        self.clusters_per_part = clusters_per_part
-        self.soft_clustering = soft_cluster
-
-        self.prev_min_cluster_prop = None
-    
-    def process(self, data: np.ndarray):
-        partitions = self._partition_dataset(data)
-        
-        # pre-cluster each partition
-        logging.info('pre-clustering {} partitions to have {} clusters each'.format(len(partitions), self.clusters_per_part))
-        partition_clusters = []
-        for i in tqdm(range(len(partitions))):
-            partition_clusters.extend(self._cluster_partition(partitions[i]))
-        
-        logging.info('total {} clusters identified in pre-clustering'.format(len(partition_clusters)))
-
-        # delete after final
-        with open('checkpoint1.sav', 'wb') as f:
-            joblib.dump(partition_clusters, f)
-
-        logging.info('second clustering pass using CURE on {} clusters'.format(len(partition_clusters)))
-        clusters = super().process(partition_clusters)
-
-        return clusters
-
-
-    def _cluster_partition(self, data: np.ndarray, create_clusters=True):
-        min_clusters = 3 * self.desired_clusters
-        min_cluster_prop = 0.01 if self.prev_min_cluster_prop is None else self.prev_min_cluster_prop
-        while True:
-            min_cluster_size = int(round(min_cluster_prop * 0.01 * data.shape[0]))
-            # cluster partition data
-            clusterer = hdbscan.HDBSCAN(min_cluster_size, **HDBSCAN_PARAMS).fit(data)
-            
-            # get assignment labels (from soft assignments)
-            if self.soft_clustering:
-                assignments = np.argmax(hdbscan.all_points_membership_vectors(clusterer), axis=1)
-            else:
-                assignments = clusterer.labels_
-            
-            n_clusters = assignments.max() + 1
-            # break if number of clusters is within desired range
-            if n_clusters <= self.clusters_per_part and n_clusters > min_clusters:
-                # self.prev_min_cluster_prop = min_cluster_prop
-                break
-            else:
-                logging.debug('partition clusters: {}; required partition clusters: [{},{}]'.format(n_clusters, min_clusters, self.clusters_per_part))
-
-                if n_clusters < min_clusters:
-                    if min_cluster_size < HDBSCAN_PARAMS['min_samples']:
-                        # minimum cluster size cannot be reduced any futher -> maximum number of samples identified
-                        logging.warning('maximum possible clusters in partition: {}, less than minimum clusters required: {}'.format(n_clusters, min_clusters))
-                        break
-                    # reduce minimum cluster size to increase number of clusters
-                    min_cluster_prop *= 0.8
-                    logging.debug('decreasing `min_cluster_size`')
-                
-                elif n_clusters > self.clusters_per_part:
-                    # increase minimum cluster size to decrease number of clusters
-                    min_cluster_prop *= 1.2
-                    logging.debug('increasing `min_cluster_size`')
-        
-        logging.info('identified {} clusters for partition with samples {}'.format(n_clusters, data.shape[0]))
-        
-        if create_clusters:
-            # create cluster objects from assignments
-            labels = np.unique(assignments)
-            clusters = [[] for i in labels]
-            for i, label in enumerate(assignments):
-                if label >= 0:
-                    clusters[label].append(data[i])
-            clusters = [Cluster(np.array(cdata)) for cdata in clusters]
-
-            logging.debug('created clusters from assignments and calculating representative points')
-            for cluster in clusters:
-                cluster.create_representative_points()
-
-            return clusters, assignments
-        else:
-            return assignments
-            
-    def _partition_dataset(self, data: np.ndarray):
+    def partition_dataset(self, data):
         partitions = []
         batch_sz = data.shape[0] // self.n_parts
         
@@ -315,3 +274,81 @@ class bigCURE(CURE):
                 partitions.append(data[i:,:])
         
         return partitions
+    
+    def preclustering(self, data):
+        parts = self.partition_dataset(data)
+        min_k_per_part = 3 * self.desired_clusters
+
+        clusters = []
+        logging.info(f'preclustering {len(parts)} partitions of data to have {self.k_per_part} clusters each')
+        min_prop = 0.05
+
+        for i in tqdm(range(len(parts))):
+            assignments, min_prop = cluster_with_hdbscan(parts[i], min_k_per_part, self.k_per_part, min_prop)
+            clusters.append(clusters_from_assignments(parts[i], assignments, **self.cluster_args))
+
+        return clusters
+
+    def _init_w_clusters(self, clusters):
+        data = []
+        i = 0
+        for c in clusters:
+            data.extend(c.rep)
+            c.rep_idx = [i + j for j in range(len(c.rep))]
+            i += len(c.rep)
+        data = np.vstack(data)
+        self._create_kdtree(data)
+
+        self.heap_ = clusters
+        for c in self.heap_:
+            closest_rep_idx, min_dist = self._closest_cluster(c, np.inf)
+            c.closest = self._find_cluster_with_rep_idx(closest_rep_idx)
+            c.distance = min_dist
+            if closest_rep_idx is None or c.closest is None:
+                print('no')
+        
+        heapify(self.heap_)
+
+    def fit(self, data):
+        if self.n_parts > 1:
+            clusters = self.preclustering(data)
+            import joblib
+            with open('preclusters.sav', 'wb') as f:
+                joblib.dump(clusters, f)
+            clusters = self._process(clusters, self.desired_clusters, init_w_clusters=True)
+        else:
+            self._process(data, self.desired_clusters)
+
+        return clusters
+
+def cluster_with_hdbscan(data, min_k, max_k, min_prop=None):
+    min_prop = 0.01 if min_prop is None else min_prop
+
+    while True:
+        min_cluster_size = int(round(min_prop * 0.01 * data.shape[0]))
+        clusterer = hdbscan.HDBSCAN(min_cluster_size, min_samples=10, prediction_data=True).fit(data)
+        soft_assignments = np.argmax(hdbscan.all_points_membership_vectors(clusterer), axis=1)
+        n_clusters = len(np.unique(soft_assignments))
+        if n_clusters <= max_k and n_clusters >= min_k:
+            break
+        elif n_clusters > max_k:
+            logging.debug(f'clusters: {n_clusters} ; max clusters: {max_k} - increasing `min_cluster_size`')
+            min_prop *= 1.2
+        elif n_clusters < min_k:
+            logging.debug(f'clusters: {n_clusters} ; min clusters: {min_k} - decreasing `min_cluster_size`')
+            min_prop *= 0.8
+        
+    logging.debug(f'identified {n_clusters} clusters')
+    return soft_assignments, min_prop
+
+def clusters_from_assignments(data, assignments, **cluster_args):
+    clusters = []
+    for label in np.unique(assignments):
+        label_idx = np.where(assignments == label)[0]
+        print(len(label_idx))
+        c = cure_cluster(data[label_idx], label_idx, **cluster_args)
+        c._calculate_mean()
+        c._exemplars_from_data()
+        clusters.append(c)
+    
+    return clusters

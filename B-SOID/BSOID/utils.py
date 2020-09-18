@@ -3,6 +3,7 @@ import logging
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import seaborn as sn
 from sklearn.metrics import confusion_matrix
 
 def create_confusion_matrix(feats, labels, clf):

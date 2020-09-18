@@ -8,13 +8,12 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 from psutil import virtual_memory
-from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.neural_network import MLPClassifier
 from BSOID.utils import create_confusion_matrix, frames_from_video
 from BSOID.data import download_data, conv_bsoid_format
 from sklearn.model_selection import train_test_split, cross_val_score
-from BSOID.features import extract_feats, temporal_features, FPS
+from BSOID.features import extract_feats, temporal_features, combined_features
 from BSOID.preprocessing import likelihood_filter, normalize_feats, windowed_feats
 
 MLP_PARAMS = {
@@ -33,7 +32,8 @@ class BSOID:
     def __init__(self, run_id: str, 
                 base_dir: str, 
                 conf_threshold: float=0.3,
-                fps: int=30):
+                fps: int=30, 
+                **feature_extraction_args):
         self.conf_threshold = conf_threshold
         self.run_id = run_id
         self.raw_dir = base_dir + '/raw'
@@ -41,6 +41,7 @@ class BSOID:
         self.output_dir = base_dir + '/output'
         self.test_dir = base_dir + '/test'
         self.fps = fps
+        self.feats_extract_args = feature_extraction_args
 
         try:
             os.mkdir(self.output_dir)    
@@ -89,31 +90,9 @@ class BSOID:
         return filtered_data
     
     def features_from_points(self, temporal_window=16, stride_window=3, temporal_dims=None):
-        with open(self.output_dir + '/' + self.run_id + '_filtered_data.sav', 'rb') as f:
-            filtered_data = joblib.load(f)
+        filtered_data = self.load_filtered_data()
         
-        n_animals = len(filtered_data)
-        logging.info('extracting features from filtered data of {} animals'.format(n_animals))
-
-        feats = [extract_feats(filtered_data[i]) for i in tqdm(range(n_animals))]
-
-        feats = np.vstack((feats))
-        logging.info('extracted {} samples of {}D features'.format(*feats.shape))
-
-        # indices 0-6 are link lengths, during windowing they should be averaged
-        win_feats_ll = windowed_feats(feats[:,:7], stride_window, mode='mean')
-        # indices 7-13 are relative angles, during windowing they should be summed
-        win_feats_rth = windowed_feats(feats[:,7:], stride_window, mode='sum')
-        feats = np.hstack((win_feats_ll, win_feats_rth))        
-        logging.info('collected features into {}ms bins for dataset shape [{},{}]'.format(stride_window*FPS, *feats.shape))
-
-        feats, temporal_feats = temporal_features(feats, temporal_window)
-        if temporal_dims is not None:
-            logging.info('reducing {} temporal features dimension from {}D to {}D'.format(*temporal_feats.shape, temporal_dims))
-            pca = PCA(n_components=temporal_dims).fit(temporal_feats)
-            temporal_feats = pca.transform(temporal_feats)
-        feats = np.hstack((feats, temporal_feats))
-        logging.info('extracted temporal features for final data set of shape [{},{}]'.format(*feats.shape))
+        feats, temporal_feats = combined_features(filtered_data, **self.feats_extract_args)
 
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
             joblib.dump([feats, temporal_feats], f)
@@ -247,9 +226,9 @@ class BSOID:
         logging.info('classifier accuracy: {} +- {}'.format(scores.mean(), scores.std())) 
          
         with open(self.output_dir + '/' + self.run_id + '_validation.sav', 'wb') as f:
-            joblib.dump([scores, cf, sc_scores, sc_cf], f)
+            joblib.dump([scores, sc_scores, sc_cf], f)
 
-    def create_results(self, csv_file, video_file, extract_frames=True, **video_args):
+    def label_frames(self, csv_file, video_file, extract_frames=True, **video_args):
         output_dir = self.test_dir + csv_file.split('/')[-1][:-4]
         try:
             os.mkdir(output_dir)
@@ -274,6 +253,31 @@ class BSOID:
         logging.info('saving example videos from {} to {}'.format(video_file, shortvid_dir))
         logging.info('generating {} examples with minimum bout: {} ms'.format(video_args['n_examples'], video_args['bout_length']))
 
-        # if video_args['load_feats']:
-        #     feats = 
+        if video_args['load_feats']:
+            with open(output_dir + '/feats.sav', 'rb') as f:
+                feats = joblib.load(f)
+        else:
+            logging.info('extracting features from {}'.format(csv_file))
+            data = pd.read_csv(csv_file, low_memory=False)
+            data = likelihood_filter(data, self.conf_threshold)
+
+            feats = extract_feats(data)
+            feats, _ = temporal_features(feats, self.feats_extract_args['temporal_window'])
+
+            with open(self.test_dir + '/_feats.sav', 'wb') as f:
+                joblib.dump(feats, f)
+
+        with open(self.output_dir + '/' + self.run_id + '_classifiers.sav', 'rb') as f:
+            clf, _ = joblib.load(f)
         
+        labels = clf.predict(feats)
+        
+    def load_filtered_data(self):
+        with open(self.output_dir + '/' + self.run_id + '_filtered_data.sav', 'rb') as f:
+            filtered_data = joblib.load(f)
+        
+        return filtered_data
+
+    def save(self):
+        with open(self.output_dir + '/' + self.run_id + '_bsoid.model', 'wb') as f:
+            joblib.dump(self, f)

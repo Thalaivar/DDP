@@ -2,6 +2,7 @@ import math
 import logging
 import itertools
 import numpy as np
+from sklearn.decomposition import PCA
 from BSOID.preprocessing import windowed_feats, smoothen_data
 
 FPS = 30
@@ -58,6 +59,37 @@ def extract_feats(filtered_data):
     
     return feats
     
+
+def window_extracted_feats(feats, stride_window):
+    # indices 0-6 are link lengths, during windowing they should be averaged
+    win_feats_ll = windowed_feats(feats[:,:7], stride_window, mode='mean')
+    # indices 7-13 are relative angles, during windowing they should be summed
+    win_feats_rth = windowed_feats(feats[:,7:], stride_window, mode='sum')
+    feats = np.hstack((win_feats_ll, win_feats_rth))        
+
+    return feats
+
+def combined_features(filtered_data, temporal_window, stride_window, fps, temporal_dims):
+    n_animals = len(filtered_data)
+    
+    logging.info('extracting features from filtered data of {} animals'.format(n_animals))
+    feats = [extract_feats(filtered_data[i]) for i in range(n_animals)]
+    
+    feats = np.vstack((feats))
+    logging.info('extracted {} samples of {}D features'.format(*feats.shape))
+
+    feats = window_extracted_feats(feats, stride_window)
+    logging.info('collected features into {}ms bins for dataset shape [{},{}]'.format(stride_window*FPS, *feats.shape))
+
+    feats, temporal_feats = temporal_features(feats, temporal_window)
+    if temporal_dims is not None:
+        logging.info('reducing {} temporal features dimension from {}D to {}D'.format(*temporal_feats.shape, temporal_dims))
+        pca = PCA(n_components=temporal_dims).fit(temporal_feats)
+        temporal_feats = pca.transform(temporal_feats)
+    feats = np.hstack((feats, temporal_feats))
+    logging.info('extracted temporal features for final data set of shape [{},{}]'.format(*feats.shape))
+
+    return feats, temporal_feats
 
 def temporal_features(feats, window=16):
     window //= 2
