@@ -10,11 +10,12 @@ from tqdm import tqdm
 from psutil import virtual_memory
 from sklearn.preprocessing import StandardScaler
 from sklearn.neural_network import MLPClassifier
-from BSOID.utils import create_confusion_matrix, frames_from_video
-from BSOID.data import download_data, conv_bsoid_format
 from sklearn.model_selection import train_test_split, cross_val_score
-from BSOID.features import extract_feats, temporal_features, combined_features
-from BSOID.preprocessing import likelihood_filter, normalize_feats, windowed_feats
+from BSOID.utils import *
+from BSOID.data import *
+from BSOID.features import extract_feats, temporal_features, combined_temporal_features
+from BSOID.preprocessing import *
+from BSOID.prediction import *
 
 MLP_PARAMS = {
     'hidden_layer_sizes': (100, 10),  # 100 units, 10 layers
@@ -33,15 +34,22 @@ class BSOID:
                 base_dir: str, 
                 conf_threshold: float=0.3,
                 fps: int=30, 
-                **feature_extraction_args):
-        self.conf_threshold = conf_threshold
+                temporal_window: int=16,
+                stride_window: int=3,
+                temporal_dims: int=6):
         self.run_id = run_id
         self.raw_dir = base_dir + '/raw'
         self.csv_dir = base_dir + '/csvs'
         self.output_dir = base_dir + '/output'
         self.test_dir = base_dir + '/test'
+
+        # frame rate for video
         self.fps = fps
-        self.feats_extract_args = feature_extraction_args
+        # feature extraction parameters
+        self.conf_threshold = conf_threshold
+        self.temporal_dims = temporal_dims
+        self.temporal_window = temporal_window
+        self.stride_window = stride_window
 
         try:
             os.mkdir(self.output_dir)    
@@ -89,17 +97,38 @@ class BSOID:
 
         return filtered_data
     
-    def features_from_points(self, temporal_window=16, stride_window=3, temporal_dims=None):
+    def features_from_points(self):
         filtered_data = self.load_filtered_data()
         
-        feats, temporal_feats = combined_features(filtered_data, **self.feats_extract_args)
-
+        feats, temporal_feats = combined_temporal_features(filtered_data, self.temporal_window, 
+                                                self.stride_window, self.fps, self.temporal_dims)
+        
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
             joblib.dump([feats, temporal_feats], f)
 
         return feats, temporal_feats
     
     def umap_reduce(self, reduced_dim=10, sample_size=int(5e5), shuffle=True):
+        with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
+            feats, _ = joblib.load(f)
+
+        # take subset of data
+        if shuffle:
+            idx = np.random.permutation(np.arange(feats.shape[0]))
+        else:
+            idx = np.arange(feats.shape[0])
+        feats_train = feats[idx[:sample_size],:]
+        
+        feats_train = StandardScaler().fit_transform(feats_train)
+        
+        logging.info('running UMAP on {} samples from {}D to {}D'.format(*feats_train.shape, reduced_dim))
+        mapper = umap.UMAP(n_components=reduced_dim, n_neighbors=100, min_dist=0.0).fit(feats_train)
+        
+        with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'wb') as f:
+            joblib.dump([mapper.embedding_], f)
+
+
+    def umap_reduce_all(self, reduced_dim=10, sample_size=int(5e5), shuffle=True):
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
             feats, _ = joblib.load(f)
 
@@ -143,7 +172,7 @@ class BSOID:
         embeddings = np.vstack(embeddings)
         logging.info('finished transforming {} samples'.format(idx))
 
-        with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'wb') as f:
+        with open(self.output_dir + '/' + self.run_id + '_umap_all.sav', 'wb') as f:
             joblib.dump(embeddings, f)
 
     def max_samples_for_umap(self):
@@ -156,21 +185,11 @@ class BSOID:
         logging.info('max allowed samples for umap: {} and data has: {}'.format(allowed_n, feats.shape[0]))
         return allowed_n
 
-    def cluster_feats(self, min_cluster_prop=0.1, scale_feats=True, reduced_feats=False):
-        if reduced_feats:
-            # umap embeddings are to be used directly
-            with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
-                feats_sc = joblib.load(f)
-        else:
-            # if clustering features directly, then scale them
-            with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
-                feats, _ = joblib.load(f)
-            
-            if scale_feats:
-                feats_sc = StandardScaler().fit_transform(feats) 
-                logging.info('scaling features for clustering')
-            else: 
-                feats_sc = feats
+    def identify_clusters_from_umap(self, min_cluster_prop=0.1, use_all=False):
+        umap_data_file = self.output_dir + '/' + self.run_id + '_umap_all.sav' if use_all else self.output_dir + '/' + self.run_id + '_umap.sav'
+        # umap embeddings are to be used directly
+        with open(umap_data_file, 'rb') as f:
+            feats_sc = joblib.load(f)
             
         min_cluster_size = int(round(min_cluster_prop * 0.01 * feats_sc.shape[0]))
         logging.info('clustering {} samples in {}D with HDBSCAN for a minimum cluster size of {}'.format(*feats_sc.shape, min_cluster_size))
@@ -193,15 +212,15 @@ class BSOID:
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
                 feats, _ = joblib.load(f)
 
-        feats_sc = StandardScaler().fit_transform(feats)
+        # try using scaled features to train also
+        # feats_sc = StandardScaler().fit_transform(feats)
+        feats_sc = feats
 
-        logging.info('training neural network on {} unscaled samples in {}D'.format(*feats.shape))
-        clf = MLPClassifier(**MLP_PARAMS).fit(feats, soft_assignments)
         logging.info('training neural network on {} scaled samples in {}D'.format(*feats_sc.shape))
-        sc_clf = MLPClassifier(**MLP_PARAMS).fit(feats_sc, soft_assignments)
+        clf = MLPClassifier(**MLP_PARAMS).fit(feats_sc, soft_assignments)
 
         with open(self.output_dir + '/' + self.run_id + '_classifiers.sav', 'wb') as f:
-            joblib.dump([clf, sc_clf], f)
+            joblib.dump(clf, f)
 
     def validate_classifier(self):
         with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:
@@ -210,25 +229,21 @@ class BSOID:
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
                 feats, _ = joblib.load(f)
         
-        logging.info('validating classifier on {} unscaled features'.format(*feats.shape))
-        feats_train, feats_test, labels_train, labels_test = train_test_split(feats, soft_assignments)
-        clf = MLPClassifier(**MLP_PARAMS).fit(feats_train, labels_train)
-        scores = cross_val_score(clf, feats_test, labels_test, cv=5, n_jobs=-1)
-        logging.info('classifier accuracy: {} +- {}'.format(scores.mean(), scores.std()))
-        # cf = create_confusion_matrix(feats_test, labels_test, clf)
-
-        feats_sc = StandardScaler().fit_transform(feats)
-        logging.info('validating classifier on {} scaled features'.format(*feats_sc.shape))
+        # check with/without scaling
+        # feats_sc = StandardScaler().fit_transform(feats)
+        feats_sc = feats
+        logging.info('validating classifier on {} features'.format(*feats_sc.shape))
         feats_train, feats_test, labels_train, labels_test = train_test_split(feats_sc, soft_assignments)
         clf = MLPClassifier(**MLP_PARAMS).fit(feats_train, labels_train)
         sc_scores = cross_val_score(clf, feats_test, labels_test, cv=5, n_jobs=-1)
         sc_cf = create_confusion_matrix(feats_test, labels_test, clf)
-        logging.info('classifier accuracy: {} +- {}'.format(scores.mean(), scores.std())) 
+        logging.info('classifier accuracy: {} +- {}'.format(sc_scores.mean(), sc_scores.std())) 
          
         with open(self.output_dir + '/' + self.run_id + '_validation.sav', 'wb') as f:
-            joblib.dump([scores, sc_scores, sc_cf], f)
+            joblib.dump([sc_scores, sc_cf], f)
 
     def label_frames(self, csv_file, video_file, extract_frames=True, **video_args):
+        # directory to store results for video
         output_dir = self.test_dir + csv_file.split('/')[-1][:-4]
         try:
             os.mkdir(output_dir)
@@ -240,6 +255,7 @@ class BSOID:
         except FileExistsError:
             pass
         
+        # extract 
         if extract_feats:
             logging.info('extracting frames from video {} to dir {}'.format(video_file, frame_dir))
             frames_from_video(video_file, frame_dir)
@@ -257,20 +273,24 @@ class BSOID:
             with open(output_dir + '/feats.sav', 'rb') as f:
                 feats = joblib.load(f)
         else:
-            logging.info('extracting features from {}'.format(csv_file))
+            logging.debug('extracting features from {}'.format(csv_file))
+            
+            # filter data from test file
             data = pd.read_csv(csv_file, low_memory=False)
             data = likelihood_filter(data, self.conf_threshold)
 
-            feats = extract_feats(data)
-            feats, _ = temporal_features(feats, self.feats_extract_args['temporal_window'])
+            feats = frameshift_features(data, self.stride_window, self.temporal_window, self.temporal_dims, self.fps)
 
-            with open(self.test_dir + '/_feats.sav', 'wb') as f:
+            with open(self.test_dir + '/feats.sav', 'wb') as f:
                 joblib.dump(feats, f)
 
         with open(self.output_dir + '/' + self.run_id + '_classifiers.sav', 'rb') as f:
-            clf, _ = joblib.load(f)
+            clf = joblib.load(f)
         
-        labels = clf.predict(feats)
+        labels = frameshift_predict(feats, clf, self.stride_window)
+        logging.info(f'predicted {len(labels)} frames with trained classifier')
+
+        create_vids(labels, frame_dir, output_dir, self.temporal_window, **video_args)
         
     def load_filtered_data(self):
         with open(self.output_dir + '/' + self.run_id + '_filtered_data.sav', 'rb') as f:

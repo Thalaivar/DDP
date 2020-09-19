@@ -10,37 +10,7 @@ class bigCURE(CURE):
         super().__init__(desired_clusters, n_rep, alpha)
         self.n_parts = n_parts
         self.k_per_part = clusters_per_part
-
-    def partition_dataset(self, data):
-        partitions = []
-        batch_sz = data.shape[0] // self.n_parts
         
-        logging.info('creating {} partitions of {} samples for batch size {}'.format(self.n_parts, data.shape[0], batch_sz))
-
-        i = 0
-        for _ in range(self.n_parts):
-            if i + batch_sz < data.shape[0] - 1:
-                partitions.append(data[i:i+batch_sz,:])
-                i += batch_sz
-            else:
-                partitions.append(data[i:,:])
-        
-        return partitions
-    
-    def preclustering(self, data):
-        parts = self.partition_dataset(data)
-        min_k_per_part = 3 * self.desired_clusters
-
-        clusters = []
-        logging.info(f'preclustering {len(parts)} partitions of data to have {self.k_per_part} clusters each')
-        min_prop = 0.05
-
-        for i in tqdm(range(len(parts))):
-            assignments, min_prop = cluster_with_hdbscan(parts[i], min_k_per_part, self.k_per_part, min_prop)
-            clusters.append(clusters_from_assignments(parts[i], assignments, **self.cluster_args))
-
-        return clusters
-
     def init_w_clusters(self, clusters):
         data = []
         i = 0
@@ -59,14 +29,37 @@ class bigCURE(CURE):
         
         heapify(self.heap_)
 
-    def fit(self, data):
-        pre_clusters = self.preclustering(data)
-        self.init_w_clusters(clusters)
-        super().fit(data)
-        return clusters
+def partition_dataset(data, n_parts):
+    partitions = []
+    batch_sz = data.shape[0] // n_parts
+    
+    logging.info('creating {} partitions of {} samples for batch size {}'.format(n_parts, data.shape[0], batch_sz))
 
+    i = 0
+    for _ in range(n_parts):
+        if i + batch_sz < data.shape[0] - 1:
+            partitions.append(data[i:i+batch_sz,:])
+            i += batch_sz
+        else:
+            partitions.append(data[i:,:])
+    
+    return partitions
+        
+def preclustering(data, n_parts, min_clusters, max_clusters):
+    parts = partition_dataset(data, n_parts)
+
+    assignments = []
+    logging.info(f'preclustering {len(parts)} partitions of data to have {max_clusters} clusters each')
+
+    min_prop = 0.1
+    for i in tqdm(range(len(parts))):
+        part_assgn, min_prop = cluster_with_hdbscan(parts[i], min_k_per_part, max_clusters, min_prop)
+        assignments.append(part_assgn)
+
+    return parts, assignments
+        
 def cluster_with_hdbscan(data, min_k, max_k, min_prop=None):
-    min_prop = 0.01 if min_prop is None else min_prop
+    min_prop = 0.1 if min_prop is None else min_prop
 
     while True:
         min_cluster_size = int(round(min_prop * 0.01 * data.shape[0]))
@@ -85,14 +78,21 @@ def cluster_with_hdbscan(data, min_k, max_k, min_prop=None):
     logging.debug(f'identified {n_clusters} clusters')
     return soft_assignments, min_prop
 
-def clusters_from_assignments(data, assignments, **cluster_args):
+def clusters_from_assignments(partitions, assignments, **cluster_args):
     clusters = []
-    for label in np.unique(assignments):
-        label_idx = np.where(assignments == label)[0]
-        print(len(label_idx))
-        c = cure_cluster(data[label_idx], label_idx, **cluster_args)
-        c._calculate_mean()
-        c._exemplars_from_data()
-        clusters.append(c)
+
+    logging.debug(f'creating clusters from HDBSCAN assignments for {len(partitions)} partitions')
+    start_idx = 0
+    for i in range(len(partitions)):
+        for l in np.unique(assignments[i]):
+            idx = np.where(assignments[i] == l)[0]
+            data = partitions[i][idx]
+            idx += start_idx
+            clusters.append(cure_cluster(data, idx, **cluster_args))
+        start_idx += partitions[i].shape[0]
     
+    for i in tqdm(range(len(clusters))):
+        clusters[i]._calculate_mean()
+        clusters[i]._exemplars_from_data()
+
     return clusters
