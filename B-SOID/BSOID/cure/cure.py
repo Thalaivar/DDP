@@ -6,7 +6,7 @@ from tqdm import tqdm
 from sklearn.neighbors import KDTree
 from sklearn.neighbors import BallTree
 from scipy.spatial.distance import cdist, pdist
-from CURE.cluster_utils import well_scattered_points
+from cluster_utils import well_scattered_points
 
 class cure_cluster:
     def __init__(self, data, index, n_rep, alpha, labels=None):
