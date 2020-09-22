@@ -16,6 +16,7 @@ from BSOID.data import *
 from BSOID.features import *
 from BSOID.preprocessing import *
 from BSOID.prediction import *
+from BSOID.clustering import *
 
 MLP_PARAMS = {
     'hidden_layer_sizes': (100, 10),  # 100 units, 10 layers
@@ -120,20 +121,21 @@ class BSOID:
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
             feats, _ = joblib.load(f)
         
-        feats = StandardScaler().fit_transform(feats)
+        feats_train = StandardScaler().fit_transform(feats)
 
         # take subset of data
         if shuffle:
             idx = np.random.permutation(np.arange(feats.shape[0]))
         else:
             idx = np.arange(feats.shape[0])
-        feats_train = feats[idx[:sample_size],:]
+        feats_train = feats_train[idx[:sample_size],:]
+        feats_usc = feats[idx[:sample_size], :]
         
         logging.info('running UMAP on {} samples from {}D to {}D'.format(*feats_train.shape, reduced_dim))
         mapper = umap.UMAP(n_components=reduced_dim, n_neighbors=100, min_dist=0.0).fit(feats_train)
         
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'wb') as f:
-            joblib.dump([feats_train, mapper.embedding_], f)
+            joblib.dump([feats_usc, feats_train, mapper.embedding_], f)
 
 
     def umap_reduce_all(self, reduced_dim=10, sample_size=int(5e5), shuffle=True):
@@ -193,11 +195,18 @@ class BSOID:
         logging.info('max allowed samples for umap: {} and data has: {}'.format(allowed_n, feats.shape[0]))
         return allowed_n
 
+    def cluster_everything(self, ):
+        feats, _ = self.load_features()
+        partitions, assignments = preclustering(feats, n_parts=10, min_clusters=75, max_clusters=100)
+        clusters = clusters_from_assignments(partitions, assignments, n_rep=1000, alpha=0.5)
+
+        with open(self.output_dir + '/' + self.run_id + '_clusters_all.sav', 'wb') as f:
+            joblib.dump(clusters, f)
+
     def identify_clusters_from_umap(self, min_cluster_prop=0.1, use_all=False):
-        umap_data_file = self.output_dir + '/' + self.run_id + '_umap_all.sav' if use_all else self.output_dir + '/' + self.run_id + '_umap.sav'
         # umap embeddings are to be used directly
-        with open(umap_data_file, 'rb') as f:
-            _, feats_sc = joblib.load(f)
+        with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
+            _, _, feats_sc = joblib.load(f)
             
         min_cluster_size = int(round(min_cluster_prop * 0.01 * feats_sc.shape[0]))
         logging.info('clustering {} samples in {}D with HDBSCAN for a minimum cluster size of {}'.format(*feats_sc.shape, min_cluster_size))
@@ -234,12 +243,17 @@ class BSOID:
         with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:
             _, _, soft_assignments = joblib.load(f)
 
-        with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
-                feats, _ = joblib.load(f)
+        with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
+                feats_usc, feats_sc, _ = joblib.load(f)
         
         # check with/without scaling
-        # feats_sc = StandardScaler().fit_transform(feats)
-        feats_sc = feats
+        logging.info('validating classifier on {} features'.format(*feats_usc.shape))
+        feats_train, feats_test, labels_train, labels_test = train_test_split(feats_usc, soft_assignments)
+        clf = MLPClassifier(**MLP_PARAMS).fit(feats_train, labels_train)
+        usc_scores = cross_val_score(clf, feats_test, labels_test, cv=5, n_jobs=-1)
+        usc_cf = create_confusion_matrix(feats_test, labels_test, clf)
+        logging.info('classifier accuracy: {} +- {}'.format(usc_scores.mean(), usc_scores.std())) 
+
         logging.info('validating classifier on {} features'.format(*feats_sc.shape))
         feats_train, feats_test, labels_train, labels_test = train_test_split(feats_sc, soft_assignments)
         clf = MLPClassifier(**MLP_PARAMS).fit(feats_train, labels_train)
@@ -248,7 +262,7 @@ class BSOID:
         logging.info('classifier accuracy: {} +- {}'.format(sc_scores.mean(), sc_scores.std())) 
          
         with open(self.output_dir + '/' + self.run_id + '_validation.sav', 'wb') as f:
-            joblib.dump([sc_scores, sc_cf], f)
+            joblib.dump([sc_scores, sc_cf, usc_scores, usc_cf], f)
 
     def label_frames(self, csv_file, video_file, extract_frames=True, **video_args):
         # directory to store results for video
@@ -306,6 +320,19 @@ class BSOID:
         
         return filtered_data
 
+    def load_features(self):
+        with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
+            feats, temporal_feats = joblib.load(f)
+        
+        return feats, temporal_feats
+
     def save(self):
         with open(self.output_dir + '/' + self.run_id + '_bsoid.model', 'wb') as f:
             joblib.dump(self, f)
+
+    @staticmethod
+    def load_config(base_dir, run_id):
+        with open(base_dir + '/output/' + run_id + '_bsoid.model', 'rb') as f:
+            config = joblib.load(f)
+        
+        return config

@@ -3,13 +3,11 @@ import hdbscan
 from  _heapq import heapify
 import numpy as np
 from tqdm import tqdm
-from CURE.cure import cure_cluster, CURE
+from BSOID.cure.cure import *
 
 class bigCURE(CURE):
-    def __init__(self, desired_clusters, n_parts, clusters_per_part, n_rep, alpha):
+    def __init__(self, desired_clusters, n_rep, alpha):
         super().__init__(desired_clusters, n_rep, alpha)
-        self.n_parts = n_parts
-        self.k_per_part = clusters_per_part
         
     def init_w_clusters(self, clusters):
         data = []
@@ -28,6 +26,10 @@ class bigCURE(CURE):
             c.distance = min_dist
         
         heapify(self.heap_)
+    
+    def fit(self, clusters):
+        self.init_w_clusters(clusters)
+        super().fit()
 
 def partition_dataset(data, n_parts):
     partitions = []
