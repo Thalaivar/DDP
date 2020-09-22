@@ -53,7 +53,7 @@ def preclustering(data, n_parts, min_clusters, max_clusters):
 
     min_prop = 0.1
     for i in tqdm(range(len(parts))):
-        part_assgn, min_prop = cluster_with_hdbscan(parts[i], min_k_per_part, max_clusters, min_prop)
+        part_assgn, min_prop = cluster_with_hdbscan(parts[i], min_clusters, max_clusters, min_prop)
         assignments.append(part_assgn)
 
     return parts, assignments

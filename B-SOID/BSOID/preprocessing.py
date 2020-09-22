@@ -85,7 +85,7 @@ def likelihood_filter(data: pd.DataFrame, conf_threshold: float=0.3, forward_fil
             perc_filt.append(n_filtered)
         perc_filt = [(p/N)*100 for p in perc_filt]
     
-        logging.debug('%% filtered from all features: {}'.format(perc_filt))
+        logging.debug('% filtered from all features (max): {}'.format(max(perc_filt)))
     
     return {'conf': conf, 'x': x, 'y': y}
 

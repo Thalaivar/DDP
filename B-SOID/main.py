@@ -5,12 +5,12 @@ from BSOID.bsoid import BSOID
 logging.basicConfig(level=logging.INFO)
 
 bsoid_params = {'run_id': 'temporal_feats',
-                'base_dir': '/home',
+                'base_dir': '/home/data',
                 'conf_threshold': 0.3,
                 'fps': 30,
                 'temporal_window': 16,
                 'stride_window': 3,
-                'temporal_dims': 6}
+                'temporal_dims': 7}
 bsoid = BSOID(**bsoid_params)
 
 bsoid.process_csvs()

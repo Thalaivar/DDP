@@ -13,7 +13,7 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split, cross_val_score
 from BSOID.utils import *
 from BSOID.data import *
-from BSOID.features import extract_feats, temporal_features, combined_temporal_features
+from BSOID.features import *
 from BSOID.preprocessing import *
 from BSOID.prediction import *
 
@@ -108,9 +108,19 @@ class BSOID:
 
         return feats, temporal_feats
     
+    def bsoid_features(self):
+        filtered_data = self.load_filtered_data()
+
+        feats = extract_bsoid_feats(filtered_data)
+
+        with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
+            joblib.dump(feats, f)
+
     def umap_reduce(self, reduced_dim=10, sample_size=int(5e5), shuffle=True):
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
             feats, _ = joblib.load(f)
+        
+        feats = StandardScaler().fit_transform(feats)
 
         # take subset of data
         if shuffle:
@@ -119,13 +129,11 @@ class BSOID:
             idx = np.arange(feats.shape[0])
         feats_train = feats[idx[:sample_size],:]
         
-        feats_train = StandardScaler().fit_transform(feats_train)
-        
         logging.info('running UMAP on {} samples from {}D to {}D'.format(*feats_train.shape, reduced_dim))
         mapper = umap.UMAP(n_components=reduced_dim, n_neighbors=100, min_dist=0.0).fit(feats_train)
         
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'wb') as f:
-            joblib.dump([mapper.embedding_], f)
+            joblib.dump([feats_train, mapper.embedding_], f)
 
 
     def umap_reduce_all(self, reduced_dim=10, sample_size=int(5e5), shuffle=True):
@@ -150,7 +158,7 @@ class BSOID:
         logging.info('running UMAP on {} samples from {}D to {}D'.format(*feats_train.shape, reduced_dim))
         mapper = umap.UMAP(n_components=reduced_dim, n_neighbors=100, min_dist=0.0).fit(feats_train)
         
-        with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'wb') as f:
+        with open(self.output_dir + '/' + self.run_id + '_umap_all.sav', 'wb') as f:
             joblib.dump([mapper, mapper.embedding_], f)
 
         # batch transform rest of data
@@ -189,7 +197,7 @@ class BSOID:
         umap_data_file = self.output_dir + '/' + self.run_id + '_umap_all.sav' if use_all else self.output_dir + '/' + self.run_id + '_umap.sav'
         # umap embeddings are to be used directly
         with open(umap_data_file, 'rb') as f:
-            feats_sc = joblib.load(f)
+            _, feats_sc = joblib.load(f)
             
         min_cluster_size = int(round(min_cluster_prop * 0.01 * feats_sc.shape[0]))
         logging.info('clustering {} samples in {}D with HDBSCAN for a minimum cluster size of {}'.format(*feats_sc.shape, min_cluster_size))
@@ -209,7 +217,7 @@ class BSOID:
         with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:
             _, _, soft_assignments = joblib.load(f)
 
-        with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
+        with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
                 feats, _ = joblib.load(f)
 
         # try using scaled features to train also

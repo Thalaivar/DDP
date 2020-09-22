@@ -88,11 +88,11 @@ def combined_temporal_features(filtered_data, temporal_window, stride_window, fp
         pca = PCA(n_components=temporal_dims).fit(temporal_feats)
         temporal_feats = pca.transform(temporal_feats)
     comb_feats = np.hstack((feats, temporal_feats))
-    logging.info('extracted temporal features for final data set of shape [{},{}]'.format(*feats.shape))
+    logging.info('extracted temporal features for final data set of shape [{},{}]'.format(*comb_feats.shape))
 
     # collect combined features into bins
     comb_feats = window_extracted_feats(comb_feats, stride_window)
-    logging.info('collected features into {}ms bins for dataset shape [{},{}]'.format(stride_window*FPS, *feats.shape))
+    logging.info('collected features into {}ms bins for dataset shape [{},{}]'.format(stride_window*FPS, *comb_feats.shape))
 
     return comb_feats, temporal_feats
 
@@ -176,6 +176,6 @@ def extract_bsoid_feats(filtered_data):
     link_lens = windowed_feats(link_lens, mode='mean')
 
     feats = np.hstack((dis, angles, link_lens))
-    logging.info('final features extracted have shape: {}'.format(feats.shape))
+    logging.debug('final features extracted have shape: {}'.format(feats.shape))
 
     return feats
