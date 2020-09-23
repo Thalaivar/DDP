@@ -20,7 +20,7 @@ bsoid.features_from_points()
 bsoid.max_samples_for_umap()
 # bsoid.umap_reduce(reduced_dim=10, sample_size=int(6e5))
 
-bsoid.identify_clusters_from_umap(min_cluster_prop=0.2, use_all=False)
+bsoid.identify_clusters_from_umap(min_cluster_prop=0.3, use_all=False)
 
 bsoid.validate_classifier()
 # bsoid.train_classifier()

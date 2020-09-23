@@ -195,8 +195,10 @@ class BSOID:
         logging.info('max allowed samples for umap: {} and data has: {}'.format(allowed_n, feats.shape[0]))
         return allowed_n
 
-    def cluster_everything(self, ):
+    def cluster_everything(self):
         feats, _ = self.load_features()
+        feats = StandardScaler().fit_transform(feats)
+        
         partitions, assignments = preclustering(feats, n_parts=10, min_clusters=75, max_clusters=100)
         clusters = clusters_from_assignments(partitions, assignments, n_rep=1000, alpha=0.5)
 
@@ -206,7 +208,7 @@ class BSOID:
     def identify_clusters_from_umap(self, min_cluster_prop=0.1, use_all=False):
         # umap embeddings are to be used directly
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
-            _, _, feats_sc = joblib.load(f)
+            _,  _, feats_sc = joblib.load(f)
             
         min_cluster_size = int(round(min_cluster_prop * 0.01 * feats_sc.shape[0]))
         logging.info('clustering {} samples in {}D with HDBSCAN for a minimum cluster size of {}'.format(*feats_sc.shape, min_cluster_size))
@@ -244,15 +246,15 @@ class BSOID:
             _, _, soft_assignments = joblib.load(f)
 
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
-                feats_usc, feats_sc, _ = joblib.load(f)
+                feats_sc, _ = joblib.load(f)
         
         # check with/without scaling
-        logging.info('validating classifier on {} features'.format(*feats_usc.shape))
-        feats_train, feats_test, labels_train, labels_test = train_test_split(feats_usc, soft_assignments)
-        clf = MLPClassifier(**MLP_PARAMS).fit(feats_train, labels_train)
-        usc_scores = cross_val_score(clf, feats_test, labels_test, cv=5, n_jobs=-1)
-        usc_cf = create_confusion_matrix(feats_test, labels_test, clf)
-        logging.info('classifier accuracy: {} +- {}'.format(usc_scores.mean(), usc_scores.std())) 
+        # logging.info('validating classifier on {} features'.format(*feats_usc.shape))
+        # feats_train, feats_test, labels_train, labels_test = train_test_split(feats_usc, soft_assignments)
+        # clf = MLPClassifier(**MLP_PARAMS).fit(feats_train, labels_train)
+        # usc_scores = cross_val_score(clf, feats_test, labels_test, cv=5, n_jobs=-1)
+        # usc_cf = create_confusion_matrix(feats_test, labels_test, clf)
+        # logging.info('classifier accuracy: {} +- {}'.format(usc_scores.mean(), usc_scores.std())) 
 
         logging.info('validating classifier on {} features'.format(*feats_sc.shape))
         feats_train, feats_test, labels_train, labels_test = train_test_split(feats_sc, soft_assignments)
@@ -262,7 +264,7 @@ class BSOID:
         logging.info('classifier accuracy: {} +- {}'.format(sc_scores.mean(), sc_scores.std())) 
          
         with open(self.output_dir + '/' + self.run_id + '_validation.sav', 'wb') as f:
-            joblib.dump([sc_scores, sc_cf, usc_scores, usc_cf], f)
+            joblib.dump([sc_scores, sc_cf], f)
 
     def label_frames(self, csv_file, video_file, extract_frames=True, **video_args):
         # directory to store results for video

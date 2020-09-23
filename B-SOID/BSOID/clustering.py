@@ -55,13 +55,13 @@ def preclustering(data, n_parts, min_clusters, max_clusters):
 
     min_prop = 0.1
     for i in tqdm(range(len(parts))):
-        part_assgn, min_prop = cluster_with_hdbscan(parts[i], min_clusters, max_clusters, min_prop)
+        part_assgn, _ = cluster_with_hdbscan(parts[i], min_clusters, max_clusters)
         assignments.append(part_assgn)
 
     return parts, assignments
         
 def cluster_with_hdbscan(data, min_k, max_k, min_prop=None):
-    min_prop = 0.1 if min_prop is None else min_prop
+    min_prop = float(input('min prop: ')) if min_prop is None else min_prop
 
     while True:
         min_cluster_size = int(round(min_prop * 0.01 * data.shape[0]))
@@ -71,11 +71,13 @@ def cluster_with_hdbscan(data, min_k, max_k, min_prop=None):
         if n_clusters <= max_k and n_clusters >= min_k:
             break
         elif n_clusters > max_k:
-            logging.debug(f'clusters: {n_clusters} ; max clusters: {max_k} - increasing `min_cluster_size`')
-            min_prop *= 1.2
+            logging.debug(f'clusters: {n_clusters} ; max clusters: {max_k} - increase `min_cluster_size` ({min_prop})')
+            # min_prop *= 1.2
+            min_prop = float(input('min prop: '))
         elif n_clusters < min_k:
-            logging.debug(f'clusters: {n_clusters} ; min clusters: {min_k} - decreasing `min_cluster_size`')
-            min_prop *= 0.8
+            logging.debug(f'clusters: {n_clusters} ; min clusters: {min_k} - decreasing `min_cluster_size` ({min_prop})')
+            # min_prop *= 0.8
+            min_prop = float(input('min prop: '))
         
     logging.debug(f'identified {n_clusters} clusters')
     return soft_assignments, min_prop
