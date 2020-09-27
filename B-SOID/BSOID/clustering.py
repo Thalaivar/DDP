@@ -20,7 +20,7 @@ class bigCURE(CURE):
         self._create_kdtree(data)
 
         self.heap_ = clusters
-        for c in self.heap_:
+        for i in tqdm(range(len(self.heap_))):
             closest_rep_idx, min_dist = self._closest_cluster(c, np.inf)
             c.closest = self._find_cluster_with_rep_idx(closest_rep_idx)
             c.distance = min_dist
@@ -73,11 +73,13 @@ def cluster_with_hdbscan(data, min_k, max_k, min_prop=None):
         elif n_clusters > max_k:
             logging.debug(f'clusters: {n_clusters} ; max clusters: {max_k} - increase `min_cluster_size` ({min_prop})')
             # min_prop *= 1.2
-            min_prop = float(input('min prop: '))
+            min_prop = float(input('min prop (< 0 to continue): '))
         elif n_clusters < min_k:
             logging.debug(f'clusters: {n_clusters} ; min clusters: {min_k} - decreasing `min_cluster_size` ({min_prop})')
             # min_prop *= 0.8
-            min_prop = float(input('min prop: '))
+            min_prop = float(input('min prop (< 0 to continue): '))
+        if min_prop < 0:
+            break
         
     logging.debug(f'identified {n_clusters} clusters')
     return soft_assignments, min_prop

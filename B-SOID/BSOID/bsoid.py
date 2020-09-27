@@ -199,17 +199,20 @@ class BSOID:
         feats, _ = self.load_features()
         feats = StandardScaler().fit_transform(feats)
         
-        partitions, assignments = preclustering(feats, n_parts=10, min_clusters=75, max_clusters=100)
+        partitions, assignments = preclustering(feats, n_parts=3, min_clusters=75, max_clusters=100)
+        with open(self.output_dir + '/' + self.run_id + '_clusters_all.sav', 'wb') as f:
+            joblib.dump([partitions, assignments], f)
+
         clusters = clusters_from_assignments(partitions, assignments, n_rep=1000, alpha=0.5)
 
         with open(self.output_dir + '/' + self.run_id + '_clusters_all.sav', 'wb') as f:
             joblib.dump(clusters, f)
 
-    def identify_clusters_from_umap(self, min_cluster_prop=0.1, use_all=False):
+    def identify_clusters_from_umap(self, min_cluster_prop=0.1):
         # umap embeddings are to be used directly
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
-            _,  _, feats_sc = joblib.load(f)
-            
+             _, feats_sc = joblib.load(f)
+
         min_cluster_size = int(round(min_cluster_prop * 0.01 * feats_sc.shape[0]))
         logging.info('clustering {} samples in {}D with HDBSCAN for a minimum cluster size of {}'.format(*feats_sc.shape, min_cluster_size))
         clusterer = hdbscan.HDBSCAN(min_cluster_size, min_samples=10, prediction_data=True).fit(feats_sc)
@@ -266,9 +269,9 @@ class BSOID:
         with open(self.output_dir + '/' + self.run_id + '_validation.sav', 'wb') as f:
             joblib.dump([sc_scores, sc_cf], f)
 
-    def label_frames(self, csv_file, video_file, extract_frames=True, **video_args):
+    def label_frames(self, csv_file, video_file, extract_frames=True, load_feats=False, **video_args):
         # directory to store results for video
-        output_dir = self.test_dir + csv_file.split('/')[-1][:-4]
+        output_dir = self.test_dir + '/' + csv_file.split('/')[-1][:-4]
         try:
             os.mkdir(output_dir)
         except FileExistsError:
@@ -280,7 +283,7 @@ class BSOID:
             pass
         
         # extract 
-        if extract_feats:
+        if extract_frames:
             logging.info('extracting frames from video {} to dir {}'.format(video_file, frame_dir))
             frames_from_video(video_file, frame_dir)
         
@@ -293,7 +296,7 @@ class BSOID:
         logging.info('saving example videos from {} to {}'.format(video_file, shortvid_dir))
         logging.info('generating {} examples with minimum bout: {} ms'.format(video_args['n_examples'], video_args['bout_length']))
 
-        if video_args['load_feats']:
+        if load_feats:
             with open(output_dir + '/feats.sav', 'rb') as f:
                 feats = joblib.load(f)
         else:
@@ -305,7 +308,7 @@ class BSOID:
 
             feats = frameshift_features(data, self.stride_window, self.temporal_window, self.temporal_dims, self.fps)
 
-            with open(self.test_dir + '/feats.sav', 'wb') as f:
+            with open(output_dir + '/feats.sav', 'wb') as f:
                 joblib.dump(feats, f)
 
         with open(self.output_dir + '/' + self.run_id + '_classifiers.sav', 'rb') as f:
@@ -314,7 +317,7 @@ class BSOID:
         labels = frameshift_predict(feats, clf, self.stride_window)
         logging.info(f'predicted {len(labels)} frames with trained classifier')
 
-        create_vids(labels, frame_dir, output_dir, self.temporal_window, **video_args)
+        create_vids(labels, frame_dir, shortvid_dir, self.temporal_window, **video_args)
         
     def load_filtered_data(self):
         with open(self.output_dir + '/' + self.run_id + '_filtered_data.sav', 'rb') as f:
@@ -328,6 +331,13 @@ class BSOID:
         
         return feats, temporal_feats
 
+    def load_identified_clusters(self):
+        with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:
+            assignments, soft_clusters, soft_assignments = joblib.load(f)
+        
+        return assignments, soft_clusters, soft_assignments
+
+
     def save(self):
         with open(self.output_dir + '/' + self.run_id + '_bsoid.model', 'wb') as f:
             joblib.dump(self, f)
@@ -336,5 +346,10 @@ class BSOID:
     def load_config(base_dir, run_id):
         with open(base_dir + '/output/' + run_id + '_bsoid.model', 'rb') as f:
             config = joblib.load(f)
+        
+        config.raw_dir = base_dir + '/raw'
+        config.csv_dir = base_dir + '/csvs'
+        config.output_dir = base_dir + '/output'
+        config.test_dir = base_dir + '/test'
         
         return config

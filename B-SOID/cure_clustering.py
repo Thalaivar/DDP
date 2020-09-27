@@ -1,15 +1,11 @@
 import logging
-from BSOID.bsoid import BSOID
-from BSOID.clustering import *
+import joblib
+from BSOID.clustering import bigCURE
 
 logging.basicConfig(level=logging.DEBUG)
 
-bsoid = BSOID.load_config('/home/dhruvlaad/data', 'temporal_feats')
+with open('../../data/output/temporal_feats_clusters_all.sav', 'rb') as f:
+    clusters = joblib.load(f)
 
-feats, _ = bsoid.load_features()
-
-partitions, assignments = preclustering(feats, n_parts=10, min_clusters=75, max_clusters=100)
-clusters = clusters_from_assignments(partitions, assignments, n_rep=1000, alpha=0.5)
-
-cure = bigCURE(desired_clusters=25, n_rep=1000, alpha=0.5)
-cure.fit(clusters)
+cure = bigCURE(25, 1000, 0.5)
+cure.init_w_clusters(clusters)

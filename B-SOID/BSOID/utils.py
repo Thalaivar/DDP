@@ -1,3 +1,4 @@
+import re
 import os
 import cv2
 import ffmpeg
@@ -58,10 +59,10 @@ def get_all_bouts(labels):
 
 def create_vids(labels, frame_dir, output_path, temporal_window, bout_length, n_examples, output_fps):
     images = [img for img in os.listdir(frame_dir) if img.endswith(".png")]
-    images.sort(key=lambda x:alphanum_key)
+    images.sort(key=lambda x:alphanum_key(x))
     
     # trim frames since we exclude first and last few frames when taking fft
-    images = images[temporal_window:-temporal_window + 1]
+    images = images[temporal_window // 2:-temporal_window // 2 + 1]
     logging.debug(f'using {len(images)} frames for creating example videos')
 
     fourcc = cv2.VideoWriter_fourcc(*'avc1')

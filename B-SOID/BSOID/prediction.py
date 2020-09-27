@@ -8,11 +8,11 @@ def frameshift_features(filtered_data, stride_window, temporal_window, temporal_
     feats = extract_feats(filtered_data)
     feats, temporal_feats = temporal_features(feats, temporal_window)
     
+
     if temporal_dims is not None:
         # reduce temporal dims
-        for i, f in enumerate(temporal_feats):
-            pca = PCA(n_components=temporal_dims).fit(f)
-            temporal_feats[i] = pca.transform(f)
+        pca = PCA(n_components=temporal_dims).fit(temporal_feats)
+        temporal_feats = pca.transform(temporal_feats)
     feats = np.hstack((feats, temporal_feats))
 
     # frameshift and stack features into bins
@@ -21,8 +21,8 @@ def frameshift_features(filtered_data, stride_window, temporal_window, temporal_
        fs_feats.append(window_extracted_feats(feats[s:,:], stride_window)) 
     
     # scaling used for classification also
-    # for i, f in enumerate(fs_feats):
-    #     fs_feats[i] = StandardScaler().fit_transform(f)
+    for i, f in enumerate(fs_feats):
+        fs_feats[i] = StandardScaler().fit_transform(f)
 
     return fs_feats
 
