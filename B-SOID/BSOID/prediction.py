@@ -1,17 +1,22 @@
+import logging
 import numpy as np
 from sklearn.decomposition import PCA
+from BSOID.preprocessing import smoothen_data
 from sklearn.preprocessing import StandardScaler
 from BSOID.features import extract_feats, temporal_features, window_extracted_feats
 
-def frameshift_features(filtered_data, stride_window, temporal_window, temporal_dims, fps):
+def frameshift_features(filtered_data, stride_window, temporal_window, temporal_dims, fps, pca=None):
     # extract geometric and temporal features
     feats = extract_feats(filtered_data)
     feats, temporal_feats = temporal_features(feats, temporal_window)
     
+    for i in range(feats.shape[1]):
+        feats[:,i] = smoothen_data(feats[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
 
-    if temporal_dims is not None:
+    if temporal_dims is not None and pca is not None:
+        logging.debug(f'reducing dimension of temporal features from {temporal_feats.shape[1]}D to {pca.n_features}D')
         # reduce temporal dims
-        pca = PCA(n_components=temporal_dims).fit(temporal_feats)
+        # pca = PCA(n_components=temporal_dims).fit(temporal_feats)
         temporal_feats = pca.transform(temporal_feats)
     feats = np.hstack((feats, temporal_feats))
 

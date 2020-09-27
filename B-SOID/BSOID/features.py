@@ -83,6 +83,7 @@ def combined_temporal_features(filtered_data, temporal_window, stride_window, fp
 
     # extract temporal features and combine
     feats, temporal_feats = temporal_features(feats, temporal_window)
+    pca = None
     if temporal_dims is not None:
         logging.info('reducing {} temporal features dimension from {}D to {}D'.format(*temporal_feats.shape, temporal_dims))
         pca = PCA(n_components=temporal_dims).fit(temporal_feats)
@@ -94,7 +95,7 @@ def combined_temporal_features(filtered_data, temporal_window, stride_window, fp
     comb_feats = window_extracted_feats(comb_feats, stride_window)
     logging.info('collected features into {}ms bins for dataset shape [{},{}]'.format(stride_window*FPS, *comb_feats.shape))
 
-    return comb_feats, temporal_feats
+    return comb_feats, temporal_feats, pca
 
 def temporal_features(feats, window=16):
     window //= 2

@@ -101,11 +101,11 @@ class BSOID:
     def features_from_points(self):
         filtered_data = self.load_filtered_data()
         
-        feats, temporal_feats = combined_temporal_features(filtered_data, self.temporal_window, 
+        feats, temporal_feats, pca = combined_temporal_features(filtered_data, self.temporal_window, 
                                                 self.stride_window, self.fps, self.temporal_dims)
         
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
-            joblib.dump([feats, temporal_feats], f)
+            joblib.dump([feats, temporal_feats, pca], f)
 
         return feats, temporal_feats
     
@@ -118,8 +118,7 @@ class BSOID:
             joblib.dump(feats, f)
 
     def umap_reduce(self, reduced_dim=10, sample_size=int(5e5), shuffle=True):
-        with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
-            feats, _ = joblib.load(f)
+        feats, _, _ = self.load_features()
         
         feats_train = StandardScaler().fit_transform(feats)
 
@@ -196,7 +195,7 @@ class BSOID:
         return allowed_n
 
     def cluster_everything(self):
-        feats, _ = self.load_features()
+        feats, _, _= self.load_features()
         feats = StandardScaler().fit_transform(feats)
         
         partitions, assignments = preclustering(feats, n_parts=3, min_clusters=75, max_clusters=100)
@@ -211,7 +210,7 @@ class BSOID:
     def identify_clusters_from_umap(self, min_cluster_prop=0.1):
         # umap embeddings are to be used directly
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
-             _, feats_sc = joblib.load(f)
+            _, _, feats_sc = joblib.load(f)
 
         min_cluster_size = int(round(min_cluster_prop * 0.01 * feats_sc.shape[0]))
         logging.info('clustering {} samples in {}D with HDBSCAN for a minimum cluster size of {}'.format(*feats_sc.shape, min_cluster_size))
@@ -232,7 +231,7 @@ class BSOID:
             _, _, soft_assignments = joblib.load(f)
 
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
-                feats, _ = joblib.load(f)
+                _, feats, _ = joblib.load(f)
 
         # try using scaled features to train also
         # feats_sc = StandardScaler().fit_transform(feats)
@@ -249,7 +248,7 @@ class BSOID:
             _, _, soft_assignments = joblib.load(f)
 
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
-                feats_sc, _ = joblib.load(f)
+                _, feats_sc, _ = joblib.load(f)
         
         # check with/without scaling
         # logging.info('validating classifier on {} features'.format(*feats_usc.shape))
@@ -327,9 +326,9 @@ class BSOID:
 
     def load_features(self):
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
-            feats, temporal_feats = joblib.load(f)
+            feats, temporal_feats, pca = joblib.load(f)
         
-        return feats, temporal_feats
+        return feats, temporal_feats, pca
 
     def load_identified_clusters(self):
         with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:

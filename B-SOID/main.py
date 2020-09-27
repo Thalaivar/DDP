@@ -23,7 +23,7 @@ bsoid = BSOID(**bsoid_params)
 # bsoid.max_samples_for_umap()
 # bsoid.umap_reduce(reduced_dim=10, sample_size=int(6e5))
 
-# bsoid.identify_clusters_from_umap(min_cluster_prop=0.28)
+# bsoid.identify_clusters_from_umap(min_cluster_prop=0.33)
 
 # bsoid.validate_classifier()
 bsoid.train_classifier()
