@@ -8,7 +8,7 @@ from BSOID.bsoid import BSOID
 logging.basicConfig(level=logging.INFO)
 
 bsoid_params = {'run_id': 'temporal_feats',
-                'base_dir': '/Users/dhruvlaad/IIT/DDP/data',
+                'base_dir': 'D:/IIT/DDP/data',
                 'conf_threshold': 0.3,
                 'fps': 30,
                 'temporal_window': 16,
@@ -17,7 +17,7 @@ bsoid_params = {'run_id': 'temporal_feats',
 bsoid = BSOID(**bsoid_params)
 
 # bsoid.process_csvs()
-# bsoid.features_from_points()
+bsoid.features_from_points()
 
 # original workflow is to use only subset of data
 # bsoid.max_samples_for_umap()
@@ -26,6 +26,6 @@ bsoid = BSOID(**bsoid_params)
 # bsoid.identify_clusters_from_umap(min_cluster_prop=0.28)
 
 # bsoid.validate_classifier()
-bsoid.train_classifier()
+# bsoid.train_classifier()
 
 # bsoid.label_frames()

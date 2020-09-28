@@ -94,7 +94,7 @@ def combined_temporal_features(filtered_data, temporal_window, stride_window, fp
     comb_feats = window_extracted_feats(comb_feats, stride_window)
     logging.info('collected features into {}ms bins for dataset shape [{},{}]'.format(stride_window*FPS, *comb_feats.shape))
 
-    return comb_feats, temporal_feats
+    return comb_feats, temporal_feats, pca
 
 def temporal_features(feats, window=16):
     window //= 2
