@@ -118,7 +118,7 @@ def window_extracted_feats_v2(feats, stride_window):
     # indices 22 onward are temporal feats, for now these are averaged
     win_feats_t = windowed_feats(feats[:,22:], stride_window, mode='mean')
 
-    feats = np.hstack((win_feats_ll, win_feats_dthm win_feats_t))
+    feats = np.hstack((win_feats_ll, win_feats_dth, win_feats_t))
 
     return feats
 
@@ -140,7 +140,7 @@ def combined_temporal_features(filtered_data, temporal_window, stride_window, fp
     # extract geometric features
     logging.info('extracting features from filtered data of {} animals'.format(n_animals))
     # feats = [extract_feats(filtered_data[i]) for i in range(n_animals)]
-    feats = [extract_feats_v2(filtered_data[i]) for i in range(n_animals)]
+    feats = [extract_feats_v2(filtered_data[i], fps) for i in range(n_animals)]
     feats = np.vstack((feats))
     logging.info('extracted {} samples of {}D features'.format(*feats.shape))
 
