@@ -8,7 +8,7 @@ from BSOID.bsoid import BSOID
 logging.basicConfig(level=logging.INFO)
 
 bsoid_params = {'run_id': 'temporal_feats',
-                'base_dir': '/Users/dhruvlaad/IIT/DDP/data',
+                'base_dir': 'D:/IIT/DDP/data',
                 'conf_threshold': 0.3,
                 'fps': 30,
                 'temporal_window': 16,

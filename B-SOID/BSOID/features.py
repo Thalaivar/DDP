@@ -5,7 +5,58 @@ import numpy as np
 from sklearn.decomposition import PCA
 from BSOID.preprocessing import windowed_feats, smoothen_data
 
-FPS = 30
+def extract_feats_v2(filtered_data, fps):
+    x, y = filtered_data['x'], filtered_data['y']
+
+    N, n_dpoints = x.shape
+    logging.debug('extracting features from {} samples of {} points'.format(*x.shape))
+
+    # indices -> features
+    HEAD, BASE_NECK, CENTER_SPINE, HINDPAW1, HINDPAW2, BASE_TAIL, MID_TAIL, TIP_TAIL = np.arange(8)
+
+    # link connections [start, end]
+    link_connections = ([BASE_TAIL, CENTER_SPINE],
+                        [CENTER_SPINE, BASE_NECK],
+                        [BASE_NECK, HEAD],
+                        [BASE_TAIL, HINDPAW1], [BASE_TAIL, HINDPAW2],
+                        [BASE_TAIL, MID_TAIL],
+                        [BASE_TAIL, TIP_TAIL])
+
+    # displacement of points
+    dis = np.array([x[1:,:] - x[0:N-1,:], y[1:,:] - y[0:N-1,:]])
+    dis = np.linalg.norm(dis, axis=0)
+
+    # links
+    links = []
+    for conn in link_connections:
+        links.append(np.array([x[:, conn[0]] - x[:, conn[1]], y[:, conn[0]] - y[:, conn[1]]]).T)    
+    
+    logging.debug('extracted {} links from data points'.format(len(links)))
+
+    # link lengths
+    link_lens = np.vstack([np.linalg.norm(link, axis=1) for link in links]).T
+
+    # angles between link position for consecutive timesteps
+    angles = []
+    for link in links:
+        curr_angles = []
+        for k in range(N-1):
+            link_dis_cross = np.cross(link[k], link[k+1])
+            curr_angles.append(math.atan2(link_dis_cross, link[k].dot(link[k+1])))
+        angles.append(np.array(curr_angles))
+    angles = np.vstack(angles).T
+
+    logging.debug(f'{angles.shape} displacement angles extracted')
+    
+    feats = np.hstack((link_lens[1:], dis, angles))
+    
+    # smoothen data
+    for i in range(feats.shape[1]):
+        feats[:,i] = smoothen_data(feats[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
+
+    logging.debug('extracted {} samples of {}D features'.format(*feats.shape))
+
+    return feats
 
 # calculate required features from x, y position data
 def extract_feats(filtered_data):
@@ -55,10 +106,21 @@ def extract_feats(filtered_data):
     
     # smoothen data
     for i in range(feats.shape[1]):
-        feats[:,i] = smoothen_data(feats[:,i], win_len=np.int(np.round(0.05 / (1 / FPS)) * 2 - 1))
+        feats[:,i] = smoothen_data(feats[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
     
     return feats
     
+def window_extracted_feats_v2(feats, stride_window):
+    # indices 0-15 are link lengths, during windowing they should be averaged
+    win_feats_ll = windowed_feats(feats[:,:15], stride_window, mode='mean')
+    # indices 15-22 are displacement angles, during windowing they should be summed
+    win_feats_dth = windowed_feats(feats[:,15:22]. stride_window, mode='sum')
+    # indices 22 onward are temporal feats, for now these are averaged
+    win_feats_t = windowed_feats(feats[:,22:], stride_window, mode='mean')
+
+    feats = np.hstack((win_feats_ll, win_feats_dthm win_feats_t))
+
+    return feats
 
 def window_extracted_feats(feats, stride_window):
     # indices 0-6 are link lengths, during windowing they should be averaged
@@ -77,7 +139,8 @@ def combined_temporal_features(filtered_data, temporal_window, stride_window, fp
     
     # extract geometric features
     logging.info('extracting features from filtered data of {} animals'.format(n_animals))
-    feats = [extract_feats(filtered_data[i]) for i in range(n_animals)]
+    # feats = [extract_feats(filtered_data[i]) for i in range(n_animals)]
+    feats = [extract_feats_v2(filtered_data[i]) for i in range(n_animals)]
     feats = np.vstack((feats))
     logging.info('extracted {} samples of {}D features'.format(*feats.shape))
 
@@ -92,8 +155,8 @@ def combined_temporal_features(filtered_data, temporal_window, stride_window, fp
     logging.info('extracted temporal features for final data set of shape [{},{}]'.format(*comb_feats.shape))
 
     # collect combined features into bins
-    comb_feats = window_extracted_feats(comb_feats, stride_window)
-    logging.info('collected features into {}ms bins for dataset shape [{},{}]'.format(stride_window*FPS, *comb_feats.shape))
+    comb_feats = window_extracted_feats_v2(comb_feats, stride_window)
+    logging.info('collected features into {}ms bins for dataset shape [{},{}]'.format(stride_window*fps, *comb_feats.shape))
 
     return comb_feats, temporal_feats, pca
 
@@ -166,10 +229,10 @@ def extract_bsoid_feats(filtered_data):
 
     # smoothen all features
     for i in range(dis.shape[1]):
-        dis[:,i] = smoothen_data(dis[:,i], win_len=np.int(np.round(0.05 / (1 / FPS)) * 2 - 1))
+        dis[:,i] = smoothen_data(dis[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
     for i in range(link_lens.shape[1]):
-        link_lens[:,i] = smoothen_data(link_lens[:,i], win_len=np.int(np.round(0.05 / (1 / FPS)) * 2 - 1))
-        angles[:,i] = smoothen_data(angles[:,i], win_len=np.int(np.round(0.05 / (1 / FPS)) * 2 - 1))
+        link_lens[:,i] = smoothen_data(link_lens[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
+        angles[:,i] = smoothen_data(angles[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
 
     # window features into bins of a specified number of frames (defaults to 16 frames)
     dis = windowed_feats(dis, mode='mean')

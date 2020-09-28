@@ -10,6 +10,7 @@ def frameshift_features(filtered_data, stride_window, temporal_window, temporal_
     feats = extract_feats(filtered_data)
     feats, temporal_feats = temporal_features(feats, temporal_window)
     
+    # smoothen geometric features
     for i in range(feats.shape[1]):
         feats[:,i] = smoothen_data(feats[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
 
