@@ -7,13 +7,13 @@ from BSOID.bsoid import BSOID
 
 logging.basicConfig(level=logging.INFO)
 
-bsoid_params = {'run_id': 'temporal_feats',
-                'base_dir': '/Users/dhruvlaad/IIT/DDP/data',
+bsoid_params = {'run_id': 'dis_feats',
+                'base_dir': '/home/dhruvlaad/data',
                 'conf_threshold': 0.3,
                 'fps': 30,
                 'temporal_window': 16,
                 'stride_window': 3,
-                'temporal_dims': 7}
+                'temporal_dims': 6}
 bsoid = BSOID(**bsoid_params)
 
 # bsoid.process_csvs()
