@@ -7,6 +7,10 @@ from BSOID.preprocessing import windowed_feats, smoothen_data
 
 FPS = 30
 
+#########################################################################################################
+#               modify these functions according to the features you want to extract                    #
+#########################################################################################################
+
 # calculate required features from x, y position data
 def extract_feats(filtered_data):
     x, y = filtered_data['x'], filtered_data['y']
@@ -47,10 +51,6 @@ def extract_feats(filtered_data):
     # link lengths
     link_lens = np.vstack([np.linalg.norm(np.array(link).T, axis=1) for link in links]).T
 
-    # velocities of points
-    # PX_TO_CM = 19.5 * 2.54 / 400
-    # velocities = np.hstack([x[:-1] - x[1:], y[:-1] - y[1:]])*PX_TO_CM*30
-
     feats = np.hstack((link_lens, r_thetas))
     
     # smoothen data
@@ -59,19 +59,6 @@ def extract_feats(filtered_data):
     
     return feats
     
-
-def window_extracted_feats(feats, stride_window):
-    # indices 0-6 are link lengths, during windowing they should be averaged
-    win_feats_ll = windowed_feats(feats[:,:7], stride_window, mode='mean')
-    # indices 7-13 are relative angles, during windowing they should be summed
-    win_feats_rth = windowed_feats(feats[:,7:13], stride_window, mode='sum')
-    # indices 13 onwards are temporal feats, for now these are averaged
-    win_feats_t = windowed_feats(feats[:,13:], stride_window, mode='mean')
-
-    feats = np.hstack((win_feats_ll, win_feats_rth, win_feats_t))        
-
-    return feats
-
 def combined_temporal_features(filtered_data, temporal_window, stride_window, fps, temporal_dims):
     n_animals = len(filtered_data)
     
@@ -178,5 +165,33 @@ def extract_bsoid_feats(filtered_data):
 
     feats = np.hstack((dis, angles, link_lens))
     logging.debug('final features extracted have shape: {}'.format(feats.shape))
+
+    return feats
+
+#########################################################################################################
+#                                      functions to be called in B-SOID                                 #
+#########################################################################################################
+def extract_geo_feats(filtered_data):
+    n_animals = len(filtered_data)
+    logging.info('extracting features from filtered data of {} animals'.format(n_animals))
+
+    feats = [extract_feats(filtered_data[i]) for i in range(n_animals)]
+    feats = np.vstack((feats))
+    logging.info('extracted {} samples of {}D features'.format(*feats.shape))
+
+    return feats
+
+def window_extracted_feats(feats, stride_window):
+    # indices 0-6 are link lengths, during windowing they should be averaged
+    win_feats_ll = windowed_feats(feats[:,:7], stride_window, mode='mean')
+    
+    # indices 7-13 are relative angles, during windowing they should be summed
+    win_feats_rth = windowed_feats(feats[:,7:13], stride_window, mode='sum')
+    
+    # indices 13 onwards are temporal feats, for now these are averaged
+    # win_feats_t = windowed_feats(feats[:,13:], stride_window, mode='mean')
+
+    # feats = np.hstack((win_feats_ll, win_feats_rth, win_feats_t))        
+    feats = np.hstack((win_feats_ll, win_feats_rth))
 
     return feats

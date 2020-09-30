@@ -101,14 +101,28 @@ class BSOID:
     def features_from_points(self):
         filtered_data = self.load_filtered_data()
         
-        feats, temporal_feats, pca = combined_temporal_features(filtered_data, self.temporal_window, 
-                                                self.stride_window, self.fps, self.temporal_dims)
+        feats = extract_geo_feats(filtered_data)
+
+        pca = None
+        temporal_feats = None
+        if self.temporal_window is not None:
+            feats, temporal_feats = temporal_features(feats, self.temporal_window)
         
+            if self.temporal_dims is not None:
+                logging.info('reducing {} temporal features dimension from {}D to {}D'.format(*temporal_feats.shape, self.temporal_dims))
+                pca = PCA(n_components=self.temporal_dims).fit(temporal_feats)
+                temporal_feats = pca.transform(temporal_feats)          
+            
+            feats = np.hstack((feats, temporal_feats))
+            logging.info('extracted temporal features for final data set of shape [{},{}]'.format(*feats.shape))
+        
+        feats = window_extracted_feats(feats, self.stride_window)
+
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
             joblib.dump([feats, temporal_feats, pca], f)
 
         return feats, temporal_feats
-    
+        
     def bsoid_features(self):
         filtered_data = self.load_filtered_data()
 
@@ -303,7 +317,7 @@ class BSOID:
             
             # filter data from test file
             data = pd.read_csv(csv_file, low_memory=False)
-            data = likelihood_filter(data, self.conf_threshold)
+            data = [likelihood_filter(data, self.conf_threshold)]
 
             feats = frameshift_features(data, self.stride_window, self.temporal_window, self.temporal_dims, self.fps)
 
@@ -317,7 +331,7 @@ class BSOID:
         logging.info(f'predicted {len(labels)} frames with trained classifier')
 
         create_vids(labels, frame_dir, shortvid_dir, self.temporal_window, **video_args)
-        
+    
     def load_filtered_data(self):
         with open(self.output_dir + '/' + self.run_id + '_filtered_data.sav', 'rb') as f:
             filtered_data = joblib.load(f)
@@ -351,4 +365,4 @@ class BSOID:
         config.output_dir = base_dir + '/output'
         config.test_dir = base_dir + '/test'
         
-        return config
+        return config)
