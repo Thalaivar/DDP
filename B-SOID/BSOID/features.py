@@ -241,9 +241,9 @@ def window_extracted_feats(feats, stride_window):
     win_feats_rth = windowed_feats(feats[:,7:13], stride_window, mode='sum')
     
     # indices 13 onwards are temporal feats, for now these are averaged
-    # win_feats_t = windowed_feats(feats[:,13:], stride_window, mode='mean')
+    win_feats_t = windowed_feats(feats[:,13:], stride_window, mode='mean')
 
-    # feats = np.hstack((win_feats_ll, win_feats_rth, win_feats_t))        
-    feats = np.hstack((win_feats_ll, win_feats_rth))
+    feats = np.hstack((win_feats_ll, win_feats_rth, win_feats_t))        
+    # feats = np.hstack((win_feats_ll, win_feats_rth))
 
     return feats
