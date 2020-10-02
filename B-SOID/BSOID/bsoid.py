@@ -101,7 +101,7 @@ class BSOID:
     def features_from_points(self):
         filtered_data = self.load_filtered_data()
         
-        feats = extract_geo_feats(filtered_data)
+        feats = extract_geo_feats(filtered_data, self.fps)
 
         pca = None
         temporal_feats = None
@@ -117,7 +117,7 @@ class BSOID:
             logging.info('extracted temporal features for final data set of shape [{},{}]'.format(*feats.shape))
         
         feats = window_extracted_feats(feats, self.stride_window)
-
+        logging.info('collecting {} samples of {}D features into bins of {} ms'.format(*feats.shape, self.fps*self.stride_window))
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
             joblib.dump([feats, temporal_feats, pca], f)
 
@@ -212,20 +212,22 @@ class BSOID:
         feats, _, _= self.load_features()
         feats = StandardScaler().fit_transform(feats)
         
-        partitions, assignments = preclustering(feats, n_parts=3, min_clusters=75, max_clusters=100)
-        with open(self.output_dir + '/' + self.run_id + '_clusters_all.sav', 'wb') as f:
-            joblib.dump([partitions, assignments], f)
+        # partitions, assignments = preclustering(feats, n_parts=3, min_clusters=75, max_clusters=100)
+        # with open(self.output_dir + '/' + self.run_id + '_clusters_all.sav', 'wb') as f:
+        #     joblib.dump([partitions, assignments], f)
 
-        clusters = clusters_from_assignments(partitions, assignments, n_rep=1000, alpha=0.5)
+        # clusters = clusters_from_assignments(partitions, assignments, n_rep=1000, alpha=0.5)
 
-        with open(self.output_dir + '/' + self.run_id + '_clusters_all.sav', 'wb') as f:
-            joblib.dump(clusters, f)
+        # with open(self.output_dir + '/' + self.run_id + '_clusters_all.sav', 'wb') as f:
+        #     joblib.dump(clusters, f)
+
+        raise NotImplementedError
 
     def identify_clusters_from_umap(self, min_cluster_prop=0.1):
         # umap embeddings are to be used directly
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
             _, _, feats_sc = joblib.load(f)
-
+        
         min_cluster_size = int(round(min_cluster_prop * 0.01 * feats_sc.shape[0]))
         logging.info('clustering {} samples in {}D with HDBSCAN for a minimum cluster size of {}'.format(*feats_sc.shape, min_cluster_size))
         clusterer = hdbscan.HDBSCAN(min_cluster_size, min_samples=10, prediction_data=True).fit(feats_sc)
@@ -236,7 +238,7 @@ class BSOID:
         logging.info('identified {} clusters from {} samples in {}D'.format(len(np.unique(assignments)), *feats_sc.shape))
 
         with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'wb') as f:
-            joblib.dump([assignments, soft_clusters, soft_assignments], f)
+            joblib.dump([feats_sc, assignments, soft_clusters, soft_assignments], f)
 
         return assignments, soft_clusters, soft_assignments
 
@@ -319,7 +321,8 @@ class BSOID:
             data = pd.read_csv(csv_file, low_memory=False)
             data = [likelihood_filter(data, self.conf_threshold)]
 
-            feats = frameshift_features(data, self.stride_window, self.temporal_window, self.temporal_dims, self.fps)
+            _, _, pca = self.load_features()
+            feats = frameshift_features(data, self.stride_window, self.fps, self.temporal_window, self.temporal_dims, pca)
 
             with open(output_dir + '/feats.sav', 'wb') as f:
                 joblib.dump(feats, f)
@@ -365,4 +368,4 @@ class BSOID:
         config.output_dir = base_dir + '/output'
         config.test_dir = base_dir + '/test'
         
-        return config)
+        return config

@@ -7,17 +7,17 @@ from BSOID.bsoid import BSOID
 
 logging.basicConfig(level=logging.INFO)
 
-bsoid_params = {'run_id': 'dis_feats',
+bsoid_params = {'run_id': 'geo_feats',
                 'base_dir': '/home/dhruvlaad/data',
                 'conf_threshold': 0.3,
                 'fps': 30,
-                'temporal_window': 16,
+                'temporal_window': None,
                 'stride_window': 3,
-                'temporal_dims': 6}
+                'temporal_dims': None}
 bsoid = BSOID(**bsoid_params)
 
 # bsoid.process_csvs()
-# bsoid.features_from_points()
+bsoid.features_from_points()
 
 # original workflow is to use only subset of data
 # bsoid.max_samples_for_umap()

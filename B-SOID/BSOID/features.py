@@ -63,7 +63,7 @@ def extract_feats_v2(filtered_data, fps):
 #########################################################################################################
 
 # calculate required features from x, y position data
-def extract_feats(filtered_data):
+def extract_feats(filtered_data, fps):
     x, y = filtered_data['x'], filtered_data['y']
 
     logging.debug('extracting features from {} samples of {} points'.format(*x.shape))
@@ -223,11 +223,11 @@ def extract_bsoid_feats(filtered_data):
 #########################################################################################################
 #                                      functions to be called in B-SOID                                 #
 #########################################################################################################
-def extract_geo_feats(filtered_data):
+def extract_geo_feats(filtered_data, fps):
     n_animals = len(filtered_data)
     logging.info('extracting features from filtered data of {} animals'.format(n_animals))
 
-    feats = [extract_feats(filtered_data[i]) for i in range(n_animals)]
+    feats = [extract_feats(filtered_data[i], fps) for i in range(n_animals)]
     feats = np.vstack((feats))
     logging.info('extracted {} samples of {}D features'.format(*feats.shape))
 
