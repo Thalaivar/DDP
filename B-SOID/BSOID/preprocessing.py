@@ -103,9 +103,9 @@ def windowed_feats(feats, window_len: int=3, mode: str='mean'):
     logging.debug('collecting {} frames into bins of {} frames'.format(N, window_len))
 
     for i in range(window_len, N, window_len):
-        if mode is 'mean':
+        if mode == 'mean':
             win_feats.append(feats[i-window_len:i,:].mean(axis=0))
-        elif mode is 'sum':
+        elif mode == 'sum':
             win_feats.append(feats[i-window_len:i,:].sum(axis=0))
 
     return np.array(win_feats)

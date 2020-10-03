@@ -248,7 +248,7 @@ class BSOID:
         logging.info('identified {} clusters from {} samples in {}D'.format(len(np.unique(assignments)), *feats_sc.shape))
 
         with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'wb') as f:
-            joblib.dump([feats_sc, assignments, soft_clusters, soft_assignments], f)
+            joblib.dump([assignments, soft_clusters, soft_assignments], f)
 
         return assignments, soft_clusters, soft_assignments
 
@@ -329,7 +329,7 @@ class BSOID:
             
             # filter data from test file
             data = pd.read_csv(csv_file, low_memory=False)
-            data = [likelihood_filter(data, self.conf_threshold)]
+            data, _ = likelihood_filter(data, self.conf_threshold)
 
             feats = frameshift_features(data, self.stride_window, self.fps, self.temporal_window, self.temporal_dims)
 
@@ -340,7 +340,7 @@ class BSOID:
             clf = joblib.load(f)
         
         labels = frameshift_predict(feats, clf, self.stride_window)
-        logging.info(f'predicted {len(labels)} frames with trained classifier')
+        logging.info(f'predicted {len(labels)} frames in {feats[0].shape[1]}D with trained classifier')
 
         create_vids(labels, frame_dir, shortvid_dir, self.temporal_window, **video_args)
     
