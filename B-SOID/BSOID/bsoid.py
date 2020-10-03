@@ -94,7 +94,7 @@ class BSOID:
                 skipped += 1
         
         logging.info(f'skipped {skipped}/{len(csv_data_files)} datasets')
-        
+
         with open(self.output_dir + '/' + self.run_id + '_filtered_data.sav', 'wb') as f:
             joblib.dump(filtered_data, f)
 
@@ -126,7 +126,7 @@ class BSOID:
         
         logging.info(f'collecting features into bins of {1000 * self.stride_window // self.fps} ms')
         feats = window_extracted_feats(feats, self.stride_window)
-        logging.info('collecting {} samples of {}D features into bins of {} ms'.format(*feats.shape, self.fps*self.stride_window))
+        
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
             joblib.dump([feats, temporal_feats], f)
 
