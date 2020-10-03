@@ -331,8 +331,7 @@ class BSOID:
             data = pd.read_csv(csv_file, low_memory=False)
             data = [likelihood_filter(data, self.conf_threshold)]
 
-            _, _, pca = self.load_features()
-            feats = frameshift_features(data, self.stride_window, self.fps, self.temporal_window, self.temporal_dims, pca)
+            feats = frameshift_features(data, self.stride_window, self.fps, self.temporal_window, self.temporal_dims)
 
             with open(output_dir + '/feats.sav', 'wb') as f:
                 joblib.dump(feats, f)
