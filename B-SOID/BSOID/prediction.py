@@ -8,7 +8,8 @@ from BSOID.features import (extract_feats,
                             window_extracted_feats)
 
 def frameshift_features(filtered_data, stride_window, fps, temporal_window=None, temporal_dims=None):
-    filtered_data = [filtered_data]
+    if not isinstance(filtered_data, list):
+        filtered_data = [filtered_data]
 
     feats = [extract_feats(data, fps) for data in filtered_data]
 
