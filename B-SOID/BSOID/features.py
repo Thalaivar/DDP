@@ -201,7 +201,6 @@ def extract_bsoid_feats(filtered_data, fps):
 #########################################################################################################
 #                                      functions to be called in B-SOID                                 #
 #########################################################################################################
-<<<<<<< HEAD
 def window_extracted_feats(feats, stride_window):
     for i in range(len(feats)):
         # indices 0-6 are link lengths, during windowing they should be averaged
@@ -215,29 +214,5 @@ def window_extracted_feats(feats, stride_window):
 
         # feats = np.hstack((win_feats_ll, win_feats_rth, win_feats_t))        
         feats[i] = np.hstack((win_feats_ll, win_feats_rth))
-=======
-def extract_geo_feats(filtered_data, fps):
-    n_animals = len(filtered_data)
-    logging.info('extracting features from filtered data of {} animals'.format(n_animals))
-
-    feats = [extract_feats(filtered_data[i], fps) for i in range(n_animals)]
-    feats = np.vstack((feats))
-    logging.info('extracted {} samples of {}D features'.format(*feats.shape))
-
-    return feats
-
-def window_extracted_feats(feats, stride_window):
-    # indices 0-6 are link lengths, during windowing they should be averaged
-    win_feats_ll = windowed_feats(feats[:,:7], stride_window, mode='mean')
-    
-    # indices 7-13 are relative angles, during windowing they should be summed
-    win_feats_rth = windowed_feats(feats[:,7:13], stride_window, mode='sum')
-    
-    # indices 13 onwards are temporal feats, for now these are averaged
-    win_feats_t = windowed_feats(feats[:,13:], stride_window, mode='mean')
-
-    feats = np.hstack((win_feats_ll, win_feats_rth, win_feats_t))        
-    # feats = np.hstack((win_feats_ll, win_feats_rth))
->>>>>>> 94b509359ab60670d4a4de71d15ced26f460dc28
 
     return feats

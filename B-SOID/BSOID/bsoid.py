@@ -96,13 +96,9 @@ class BSOID:
     def features_from_points(self):
         filtered_data = self.load_filtered_data()
         
-<<<<<<< HEAD
         # extract geometric features
         feats = [extract_feats(data, self.fps) for data in filtered_data]
         logging.info(f'extracted {len(feats)} datasets of {feats[0].shape[1]}D features')
-=======
-        feats = extract_geo_feats(filtered_data, self.fps)
->>>>>>> 94b509359ab60670d4a4de71d15ced26f460dc28
 
         # extract temporal features
         temporal_feats = None
@@ -215,7 +211,7 @@ class BSOID:
         return allowed_n
 
     def cluster_everything(self):
-        feats, _, _= self.load_features()
+        feats, _ = self.load_features()
         feats = StandardScaler().fit_transform(feats)
         
         # partitions, assignments = preclustering(feats, n_parts=3, min_clusters=75, max_clusters=100)
@@ -355,7 +351,7 @@ class BSOID:
             feats = np.vstack(feats)
             temporal_feats = np.vstack(temporal_feats)
 
-        return feats, temporal_feats, pca
+        return feats, temporal_feats
 
     def load_identified_clusters(self):
         with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:

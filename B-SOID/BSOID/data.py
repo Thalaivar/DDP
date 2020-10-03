@@ -40,7 +40,7 @@ def extract_from_csv(filename, save_dir):
         bsoid_data.append(_bsoid_format(clip_conf, clip_pos))
     
     for i, df in enumerate(bsoid_data):
-        df.to_csv(save_dir + '/' + filename[:-3] +'_1.csv', index=False)
+        df.to_csv(save_dir + '/' + filename[:-3] + f'_{i}.csv', index=False)
         
 def _bsoid_format(conf, pos):
     bsoid_data = np.zeros((conf.shape[0], 3*conf.shape[1]))
