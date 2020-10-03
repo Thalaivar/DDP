@@ -43,7 +43,7 @@ def extract_from_csv(filename, save_dir, trim=True):
         for i, df in enumerate(bsoid_data):
             df.to_csv(save_dir + '/' + filename[:-3] + f'_{i}.csv', index=False)
     else:
-        bsoid_data = _bsoid_format(cong, pos)
+        bsoid_data = _bsoid_format(conf, pos)
         bsoid_data.to_csv(save_dir + '/' + filename[:-3] +'.csv', index=False)
         
 def _bsoid_format(conf, pos):

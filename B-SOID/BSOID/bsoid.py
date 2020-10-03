@@ -75,7 +75,7 @@ class BSOID:
             files = random.sample(files, n)
         for i in tqdm(range(len(files))):
             if files[i][-3:] == ".h5":
-                conv_bsoid_format(self.raw_dir+'/'+files[i], self.csv_dir)
+                extract_from_csv(self.raw_dir+'/'+files[i], self.csv_dir)
 
     def process_csvs(self):
         csv_data_files = os.listdir(self.csv_dir)
