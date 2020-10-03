@@ -129,7 +129,7 @@ def temporal_features(geo_feats, window=16):
         feats.append(geo_feats[i][window:-window + 1])
         temporal_feats.append(spectral_feats)
     
-    return feats, spectral_feats
+    return feats, temporal_feats
 
 def extract_bsoid_feats(filtered_data, fps):
     """

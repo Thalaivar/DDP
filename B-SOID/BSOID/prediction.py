@@ -31,8 +31,8 @@ def frameshift_features(filtered_data, stride_window, fps, temporal_window=None,
     fs_feats = []
     for s in range(stride_window):
        fs_feats.append(feats[s:,:])
-    
-     
+
+    fs_feats = window_extracted_feats(fs_feats, stride_window)
     
     # scaling used for classification also
     for i, f in enumerate(fs_feats):
