@@ -125,7 +125,7 @@ class BSOID:
                 feats[i] = np.hstack((feats[i], temporal_feats[i]))
         
         logging.info(f'collecting features into bins of {1000 * self.stride_window // self.fps} ms')
-        feats = window_extracted_feats(feats, self.stride_window)
+        feats = window_extracted_feats_v2(feats, self.stride_window)
         
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
             joblib.dump([feats, temporal_feats], f)
