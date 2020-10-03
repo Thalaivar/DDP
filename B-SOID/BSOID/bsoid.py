@@ -115,7 +115,7 @@ class BSOID:
             
             # reduce dimension of temporal features
             if self.temporal_dims is not None:
-                logging.info('reducing {} temporal features dimension from {}D to {}D'.format(*temporal_feats[0].shape, self.temporal_dims))
+                logging.info('reducing temporal features dimension from {}D to {}D'.format(temporal_feats[0].shape[1], self.temporal_dims))
                 for i in range(len(temporal_feats)):
                     pca = PCA(n_components=self.temporal_dims).fit(temporal_feats[i])
                     temporal_feats[i] = pca.transform(temporal_feats[i])          
@@ -357,7 +357,7 @@ class BSOID:
         
         if collect:
             feats = np.vstack(feats)
-            temporal_feats = np.vstack(temporal_feats)
+            temporal_feats = np.vstack(temporal_feats) if temporal_feats is not None else None
 
         return feats, temporal_feats
 
