@@ -11,13 +11,13 @@ def frameshift_features(filtered_data, stride_window, fps, temporal_window=None,
     if not isinstance(filtered_data, list):
         filtered_data = [filtered_data]
 
-    feats = extract_geo_feats(filtered_data)
+    feats = extract_geo_feats(filtered_data, fps)
 
     if temporal_window is not None:
         feats, temporal_feats = temporal_features(feats, temporal_window)
 
         if temporal_dims is not None and pca is not None:
-            logging.debug(f'reducing dimension of temporal features from {temporal_feats.shape[1]}D to {pca.n_features}D')
+            logging.debug(f'reducing dimension of temporal features from {temporal_feats.shape[1]}D to {pca.n_components_}D')
             temporal_feats = pca.transform(temporal_feats)
     
         feats = np.hstack((feats, temporal_feats))
