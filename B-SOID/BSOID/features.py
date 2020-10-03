@@ -117,7 +117,7 @@ def temporal_features(geo_feats, window=16):
         N = geo_feats[i].shape[0]
 
         # extract spectral features over `window` frames
-        window_feats = [geo_feats[i][i - window:i + window] for i in range(window, N - window + 1)]
+        window_feats = [geo_feats[i][j - window:j + window] for j in range(window, N - window + 1)]
         spectral_feats = []
         for features in window_feats:
             win_fft = np.fft.rfftn(features, axes=[0])
