@@ -63,7 +63,7 @@ def extract_feats_v2(filtered_data, fps):
 #########################################################################################################
 
 # calculate required features from x, y position data
-def extract_feats(filtered_data):
+def extract_feats(filtered_data, fps):
     x, y = filtered_data['x'], filtered_data['y']
 
     logging.debug('extracting features from {} samples of {} points'.format(*x.shape))
@@ -109,51 +109,29 @@ def extract_feats(filtered_data):
         feats[:,i] = smoothen_data(feats[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
     
     return feats
-    
-def combined_temporal_features(filtered_data, temporal_window, stride_window, fps, temporal_dims):
-    n_animals = len(filtered_data)
-    
-    # extract geometric features
-    logging.info('extracting features from filtered data of {} animals'.format(n_animals))
-    # feats = [extract_feats(filtered_data[i]) for i in range(n_animals)]
-    feats = [extract_feats_v2(filtered_data[i], fps) for i in range(n_animals)]
-    feats = np.vstack((feats))
-    logging.info('extracted {} samples of {}D features'.format(*feats.shape))
 
-    # extract temporal features and combine
-    feats, temporal_feats = temporal_features(feats, temporal_window)
-    pca = None
-    if temporal_dims is not None:
-        logging.info('reducing {} temporal features dimension from {}D to {}D'.format(*temporal_feats.shape, temporal_dims))
-        pca = PCA(n_components=temporal_dims).fit(temporal_feats)
-        temporal_feats = pca.transform(temporal_feats)
-    comb_feats = np.hstack((feats, temporal_feats))
-    logging.info('extracted temporal features for final data set of shape [{},{}]'.format(*comb_feats.shape))
-
-    # collect combined features into bins
-    comb_feats = window_extracted_feats_v2(comb_feats, stride_window)
-    logging.info('collected features into {}ms bins for dataset shape [{},{}]'.format(stride_window*fps, *comb_feats.shape))
-
-    return comb_feats, temporal_feats, pca
-
-def temporal_features(feats, window=16):
+def temporal_features(geo_feats, window=16):
+    feats, temporal_feats  = [], []
     window //= 2
-    N = feats.shape[0]
+    for i in range(len(geo_feats)):
+        N = geo_feats[i].shape[0]
 
-    # extract spectral features over `window` frames
-    window_feats = [feats[i - window:i + window] for i in range(window, N - window + 1)]
-    spectral_feats = []
-    for features in window_feats:
-        win_fft = np.fft.rfftn(features, axes=[0])
-        spectral_feats.append(win_fft.real ** 2 + win_fft.imag ** 2)
-    spectral_feats = np.array(spectral_feats)
+        # extract spectral features over `window` frames
+        window_feats = [geo_feats[i][i - window:i + window] for i in range(window, N - window + 1)]
+        spectral_feats = []
+        for features in window_feats:
+            win_fft = np.fft.rfftn(features, axes=[0])
+            spectral_feats.append(win_fft.real ** 2 + win_fft.imag ** 2)
+        spectral_feats = np.array(spectral_feats)
+        
+        # spectral features are of shape (N-M+1, window, d), reshape to (N-M+1, window*d)
+        spectral_feats = spectral_feats.reshape(-1, spectral_feats.shape[1]*spectral_feats.shape[2])
+        feats.append(geo_feats[i][window:-window + 1])
+        temporal_feats.append(spectral_feats)
     
-    # spectral features are of shape (N-M+1, window, d), reshape to (N-M+1, window*d)
-    spectral_feats = spectral_feats.reshape(-1, spectral_feats.shape[1]*spectral_feats.shape[2])
-    
-    return feats[window:-window + 1], spectral_feats
+    return feats, spectral_feats
 
-def extract_bsoid_feats(filtered_data):
+def extract_bsoid_feats(filtered_data, fps):
     """
     extract the same features as B-SOID:
         - link lengths
@@ -223,27 +201,18 @@ def extract_bsoid_feats(filtered_data):
 #########################################################################################################
 #                                      functions to be called in B-SOID                                 #
 #########################################################################################################
-def extract_geo_feats(filtered_data):
-    n_animals = len(filtered_data)
-    logging.info('extracting features from filtered data of {} animals'.format(n_animals))
-
-    feats = [extract_feats(filtered_data[i]) for i in range(n_animals)]
-    feats = np.vstack((feats))
-    logging.info('extracted {} samples of {}D features'.format(*feats.shape))
-
-    return feats
-
 def window_extracted_feats(feats, stride_window):
-    # indices 0-6 are link lengths, during windowing they should be averaged
-    win_feats_ll = windowed_feats(feats[:,:7], stride_window, mode='mean')
-    
-    # indices 7-13 are relative angles, during windowing they should be summed
-    win_feats_rth = windowed_feats(feats[:,7:13], stride_window, mode='sum')
-    
-    # indices 13 onwards are temporal feats, for now these are averaged
-    # win_feats_t = windowed_feats(feats[:,13:], stride_window, mode='mean')
+    for i in range(len(feats)):
+        # indices 0-6 are link lengths, during windowing they should be averaged
+        win_feats_ll = windowed_feats(feats[i][:,:7], stride_window, mode='mean')
+        
+        # indices 7-13 are relative angles, during windowing they should be summed
+        win_feats_rth = windowed_feats(feats[i][:,7:13], stride_window, mode='sum')
+        
+        # indices 13 onwards are temporal feats, for now these are averaged
+        # win_feats_t = windowed_feats(feats[:,13:], stride_window, mode='mean')
 
-    # feats = np.hstack((win_feats_ll, win_feats_rth, win_feats_t))        
-    feats = np.hstack((win_feats_ll, win_feats_rth))
+        # feats = np.hstack((win_feats_ll, win_feats_rth, win_feats_t))        
+        feats[i] = np.hstack((win_feats_ll, win_feats_rth))
 
     return feats

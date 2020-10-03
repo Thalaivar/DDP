@@ -77,21 +77,16 @@ class BSOID:
             if files[i][-3:] == ".h5":
                 conv_bsoid_format(self.raw_dir+'/'+files[i], self.csv_dir)
 
-    def process_csvs(self, parallel=True):
+    def process_csvs(self):
         csv_data_files = os.listdir(self.csv_dir)
-        csv_data_files = [self.csv_dir + '/' + f for f in csv_data_files]
+        csv_data_files = [self.csv_dir + '/' + f for f in csv_data_files if f.endswith('.csv')]
 
         logging.info('processing {} csv files from {}'.format(len(csv_data_files), self.csv_dir))
 
-        if not parallel:
-            filtered_data = []
-            for i in tqdm(range(len(csv_data_files))):
-                data = pd.read_csv(csv_data_files[i])
-                filtered_data.append(likelihood_filter(data, self.conf_threshold))
-        else:
-            from joblib import Parallel, delayed
-            filtered_data = Parallel(n_jobs=-1, backend="multiprocessing")(
-                    delayed(likelihood_filter)(pd.read_csv(data), self.conf_threshold) for data in csv_data_files)
+        filtered_data = []
+        for i in tqdm(range(len(csv_data_files))):
+            data = pd.read_csv(csv_data_files[i])
+            filtered_data.append(likelihood_filter(data, self.conf_threshold))
         
         with open(self.output_dir + '/' + self.run_id + '_filtered_data.sav', 'wb') as f:
             joblib.dump(filtered_data, f)
@@ -101,38 +96,45 @@ class BSOID:
     def features_from_points(self):
         filtered_data = self.load_filtered_data()
         
-        feats = extract_geo_feats(filtered_data)
+        # extract geometric features
+        feats = [extract_feats(data, self.fps) for data in filtered_data]
+        logging.info(f'extracted {len(feats)} datasets of {feats[0].shape[1]}D features')
 
-        pca = None
+        # extract temporal features
         temporal_feats = None
         if self.temporal_window is not None:
             feats, temporal_feats = temporal_features(feats, self.temporal_window)
-        
-            if self.temporal_dims is not None:
-                logging.info('reducing {} temporal features dimension from {}D to {}D'.format(*temporal_feats.shape, self.temporal_dims))
-                pca = PCA(n_components=self.temporal_dims).fit(temporal_feats)
-                temporal_feats = pca.transform(temporal_feats)          
+            logging.info(f'extracted {temporal_feats[0].shape[1]} temporal features using window of {1000 * self.temporal_window // self.fps} ms')
             
-            feats = np.hstack((feats, temporal_feats))
-            logging.info('extracted temporal features for final data set of shape [{},{}]'.format(*feats.shape))
+            # reduce dimension of temporal features
+            if self.temporal_dims is not None:
+                logging.info('reducing {} temporal features dimension from {}D to {}D'.format(*temporal_feats[0].shape, self.temporal_dims))
+                for i in range(len(temporal_feats)):
+                    pca = PCA(n_components=self.temporal_dims).fit(temporal_feats[i])
+                    temporal_feats[i] = pca.transform(temporal_feats[i])          
+            
+            # concatenate geometric and temporal features
+            for i in range(len(feats)):   
+                feats[i] = np.hstack((feats[i], temporal_feats[i]))
         
+        logging.info(f'collecting features into bins of {1000 * self.stride_window // self.fps} ms')
         feats = window_extracted_feats(feats, self.stride_window)
 
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
-            joblib.dump([feats, temporal_feats, pca], f)
+            joblib.dump([feats, temporal_feats], f)
 
         return feats, temporal_feats
         
     def bsoid_features(self):
         filtered_data = self.load_filtered_data()
 
-        feats = extract_bsoid_feats(filtered_data)
+        feats = extract_bsoid_feats(filtered_data, self.fps)
 
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
             joblib.dump(feats, f)
 
     def umap_reduce(self, reduced_dim=10, sample_size=int(5e5), shuffle=True):
-        feats, _, _ = self.load_features()
+        feats, _ = self.load_features()
         
         feats_train = StandardScaler().fit_transform(feats)
 
@@ -338,10 +340,14 @@ class BSOID:
         
         return filtered_data
 
-    def load_features(self):
+    def load_features(self, collect=True):
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
-            feats, temporal_feats, pca = joblib.load(f)
+            feats, temporal_feats = joblib.load(f)
         
+        if collect:
+            feats = np.vstack(feats)
+            temporal_feats = np.vstack(temporal_feats)
+
         return feats, temporal_feats, pca
 
     def load_identified_clusters(self):
@@ -365,4 +371,4 @@ class BSOID:
         config.output_dir = base_dir + '/output'
         config.test_dir = base_dir + '/test'
         
-        return config)
+        return config
