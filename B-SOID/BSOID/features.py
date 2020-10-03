@@ -202,17 +202,18 @@ def extract_bsoid_feats(filtered_data, fps):
 #                                      functions to be called in B-SOID                                 #
 #########################################################################################################
 def window_extracted_feats(feats, stride_window):
-    for i in range(len(feats)):
+    win_feats = []
+    for f in feats:
         # indices 0-6 are link lengths, during windowing they should be averaged
-        win_feats_ll = windowed_feats(feats[i][:,:7], stride_window, mode='mean')
+        win_feats_ll = windowed_feats(f[:,:7], stride_window, mode='mean')
         
         # indices 7-13 are relative angles, during windowing they should be summed
-        win_feats_rth = windowed_feats(feats[i][:,7:13], stride_window, mode='sum')
+        win_feats_rth = windowed_feats(f[:,7:13], stride_window, mode='sum')
         
         # indices 13 onwards are temporal feats, for now these are averaged
-        # win_feats_t = windowed_feats(feats[:,13:], stride_window, mode='mean')
+        win_feats_t = windowed_feats(f[:,13:], stride_window, mode='mean')
 
-        # feats = np.hstack((win_feats_ll, win_feats_rth, win_feats_t))        
-        feats[i] = np.hstack((win_feats_ll, win_feats_rth))
+        win_feats.append(np.hstack((win_feats_ll, win_feats_rth, win_feats_t)))
+        # win_feats.append(np.hstack((win_feats_ll, win_feats_rth)))
 
-    return feats
+    return win_feats

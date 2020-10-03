@@ -24,10 +24,15 @@ def frameshift_features(filtered_data, stride_window, fps, temporal_window=None,
         for i in range(len(feats)):   
             feats[i] = np.hstack((feats[i], temporal_feats[i]))        
 
+    assert len(feats) == 1
+    feats = feats[0]
+
     # frameshift and stack features into bins
     fs_feats = []
     for s in range(stride_window):
-       fs_feats.append(window_extracted_feats(feats[s:,:], stride_window)) 
+       fs_feats.append(feats[s:,:])
+    
+     
     
     # scaling used for classification also
     for i, f in enumerate(fs_feats):

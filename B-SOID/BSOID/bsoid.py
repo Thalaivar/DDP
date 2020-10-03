@@ -84,9 +84,16 @@ class BSOID:
         logging.info('processing {} csv files from {}'.format(len(csv_data_files), self.csv_dir))
 
         filtered_data = []
+        skipped = 0
         for i in tqdm(range(len(csv_data_files))):
             data = pd.read_csv(csv_data_files[i])
-            filtered_data.append(likelihood_filter(data, self.conf_threshold))
+            fdata, perc_filt = likelihood_filter(data, self.conf_threshold)
+            if fdata is not None and perc_filt < 5:
+                filtered_data.append(fdata)
+            else:
+                skipped += 1
+        
+        logging.info(f'skipped {skipped}/{len(csv_data_files)} datasets')
         
         with open(self.output_dir + '/' + self.run_id + '_filtered_data.sav', 'wb') as f:
             joblib.dump(filtered_data, f)
@@ -136,6 +143,7 @@ class BSOID:
     def umap_reduce(self, reduced_dim=10, sample_size=int(5e5), shuffle=True):
         feats, _ = self.load_features()
         
+        logging.info('loaded data set with {} samples of {}D features'.format(*feats.shape))
         feats_train = StandardScaler().fit_transform(feats)
 
         # take subset of data

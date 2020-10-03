@@ -64,6 +64,10 @@ def likelihood_filter(data: pd.DataFrame, conf_threshold: float=0.3, forward_fil
                 while conf[k,i] < conf_threshold:
                     n_filtered += 1
                     k += 1
+
+                    if k >= conf.shape[0]:
+                        return None, 100
+
                 # replace all points with first good conf point
                 conf[0:k,i] = conf[k,i]*np.ones_like(conf[0:k,i])
                 x[0:k,i] = x[k,i]*np.ones_like(x[0:k,i])
@@ -87,7 +91,7 @@ def likelihood_filter(data: pd.DataFrame, conf_threshold: float=0.3, forward_fil
     
         logging.debug('% filtered from all features (max): {}'.format(max(perc_filt)))
     
-    return {'conf': conf, 'x': x, 'y': y}
+    return {'conf': conf, 'x': x, 'y': y}, max(perc_filt)
 
 def windowed_feats(feats, window_len: int=3, mode: str='mean'):
     """
