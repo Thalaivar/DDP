@@ -75,24 +75,26 @@ class BSOID:
             files = random.sample(files, n)
         for i in tqdm(range(len(files))):
             if files[i][-3:] == ".h5":
-                conv_bsoid_format(self.raw_dir+'/'+files[i], self.csv_dir)
+                extract_from_csv(self.raw_dir+'/'+files[i], self.csv_dir)
 
-    def process_csvs(self, parallel=True):
+    def process_csvs(self):
         csv_data_files = os.listdir(self.csv_dir)
-        csv_data_files = [self.csv_dir + '/' + f for f in csv_data_files]
+        csv_data_files = [self.csv_dir + '/' + f for f in csv_data_files if f.endswith('.csv')]
 
         logging.info('processing {} csv files from {}'.format(len(csv_data_files), self.csv_dir))
 
-        if not parallel:
-            filtered_data = []
-            for i in tqdm(range(len(csv_data_files))):
-                data = pd.read_csv(csv_data_files[i])
-                filtered_data.append(likelihood_filter(data, self.conf_threshold))
-        else:
-            from joblib import Parallel, delayed
-            filtered_data = Parallel(n_jobs=-1, backend="multiprocessing")(
-                    delayed(likelihood_filter)(pd.read_csv(data), self.conf_threshold) for data in csv_data_files)
+        filtered_data = []
+        skipped = 0
+        for i in tqdm(range(len(csv_data_files))):
+            data = pd.read_csv(csv_data_files[i])
+            fdata, perc_filt = likelihood_filter(data, self.conf_threshold)
+            if fdata is not None and perc_filt < 5:
+                filtered_data.append(fdata)
+            else:
+                skipped += 1
         
+        logging.info(f'skipped {skipped}/{len(csv_data_files)} datasets')
+
         with open(self.output_dir + '/' + self.run_id + '_filtered_data.sav', 'wb') as f:
             joblib.dump(filtered_data, f)
 
@@ -101,25 +103,56 @@ class BSOID:
     def features_from_points(self):
         filtered_data = self.load_filtered_data()
         
+<<<<<<< HEAD
         feats, temporal_feats, pca = combined_temporal_features(filtered_data, self.temporal_window, 
                                                 self.stride_window, self.fps, self.temporal_dims)
+=======
+        # extract geometric features
+        feats = [extract_feats_v2(data, self.fps) for data in filtered_data]
+        logging.info(f'extracted {len(feats)} datasets of {feats[0].shape[1]}D features')
+
+        # extract temporal features
+        temporal_feats = None
+        if self.temporal_window is not None:
+            feats, temporal_feats = temporal_features(feats, self.temporal_window)
+            logging.info(f'extracted {temporal_feats[0].shape[1]} temporal features using window of {1000 * self.temporal_window // self.fps} ms')
+            
+            # reduce dimension of temporal features
+            if self.temporal_dims is not None:
+                logging.info('reducing temporal features dimension from {}D to {}D'.format(temporal_feats[0].shape[1], self.temporal_dims))
+                for i in range(len(temporal_feats)):
+                    pca = PCA(n_components=self.temporal_dims).fit(temporal_feats[i])
+                    temporal_feats[i] = pca.transform(temporal_feats[i])          
+            
+            # concatenate geometric and temporal features
+            for i in range(len(feats)):   
+                feats[i] = np.hstack((feats[i], temporal_feats[i]))
+        
+        logging.info(f'collecting features into bins of {1000 * self.stride_window // self.fps} ms')
+        feats = window_extracted_feats_v2(feats, self.stride_window)
+>>>>>>> displacement
         
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
             joblib.dump([feats, temporal_feats, pca], f)
 
         return feats, temporal_feats
-    
+        
     def bsoid_features(self):
         filtered_data = self.load_filtered_data()
 
-        feats = extract_bsoid_feats(filtered_data)
+        feats = extract_bsoid_feats(filtered_data, self.fps)
 
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
             joblib.dump(feats, f)
 
     def umap_reduce(self, reduced_dim=10, sample_size=int(5e5), shuffle=True):
+<<<<<<< HEAD
         feats, _, _ = self.load_features()
+=======
+        feats, _ = self.load_features()
+>>>>>>> displacement
         
+        logging.info('loaded data set with {} samples of {}D features'.format(*feats.shape))
         feats_train = StandardScaler().fit_transform(feats)
 
         # take subset of data
@@ -198,20 +231,26 @@ class BSOID:
         feats, _, _ = self.load_features()
         feats = StandardScaler().fit_transform(feats)
         
-        partitions, assignments = preclustering(feats, n_parts=3, min_clusters=75, max_clusters=100)
-        with open(self.output_dir + '/' + self.run_id + '_clusters_all.sav', 'wb') as f:
-            joblib.dump([partitions, assignments], f)
+        # partitions, assignments = preclustering(feats, n_parts=3, min_clusters=75, max_clusters=100)
+        # with open(self.output_dir + '/' + self.run_id + '_clusters_all.sav', 'wb') as f:
+        #     joblib.dump([partitions, assignments], f)
 
-        clusters = clusters_from_assignments(partitions, assignments, n_rep=1000, alpha=0.5)
+        # clusters = clusters_from_assignments(partitions, assignments, n_rep=1000, alpha=0.5)
 
-        with open(self.output_dir + '/' + self.run_id + '_clusters_all.sav', 'wb') as f:
-            joblib.dump(clusters, f)
+        # with open(self.output_dir + '/' + self.run_id + '_clusters_all.sav', 'wb') as f:
+        #     joblib.dump(clusters, f)
+
+        raise NotImplementedError
 
     def identify_clusters_from_umap(self, min_cluster_prop=0.1):
         # umap embeddings are to be used directly
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
             _, _, feats_sc = joblib.load(f)
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> displacement
         min_cluster_size = int(round(min_cluster_prop * 0.01 * feats_sc.shape[0]))
         logging.info('clustering {} samples in {}D with HDBSCAN for a minimum cluster size of {}'.format(*feats_sc.shape, min_cluster_size))
         clusterer = hdbscan.HDBSCAN(min_cluster_size, min_samples=10, prediction_data=True).fit(feats_sc)
@@ -231,7 +270,15 @@ class BSOID:
             _, _, soft_assignments = joblib.load(f)
 
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
+<<<<<<< HEAD
                 _, feats_sc, _ = joblib.load(f)
+=======
+                _, feats, _ = joblib.load(f)
+
+        # try using scaled features to train also
+        # feats_sc = StandardScaler().fit_transform(feats)
+        feats_sc = feats
+>>>>>>> displacement
 
         logging.info('training neural network on {} scaled samples in {}D'.format(*feats_sc.shape))
         clf = MLPClassifier(**MLP_PARAMS).fit(feats_sc, soft_assignments)
@@ -299,9 +346,9 @@ class BSOID:
             
             # filter data from test file
             data = pd.read_csv(csv_file, low_memory=False)
-            data = likelihood_filter(data, self.conf_threshold)
+            data, _ = likelihood_filter(data, self.conf_threshold)
 
-            feats = frameshift_features(data, self.stride_window, self.temporal_window, self.temporal_dims, self.fps)
+            feats = frameshift_features(data, self.stride_window, self.fps, self.temporal_window, self.temporal_dims)
 
             with open(output_dir + '/feats.sav', 'wb') as f:
                 joblib.dump(feats, f)
@@ -310,21 +357,29 @@ class BSOID:
             clf = joblib.load(f)
         
         labels = frameshift_predict(feats, clf, self.stride_window)
-        logging.info(f'predicted {len(labels)} frames with trained classifier')
+        logging.info(f'predicted {len(labels)} frames in {feats[0].shape[1]}D with trained classifier')
 
         create_vids(labels, frame_dir, shortvid_dir, self.temporal_window, **video_args)
-        
+    
     def load_filtered_data(self):
         with open(self.output_dir + '/' + self.run_id + '_filtered_data.sav', 'rb') as f:
             filtered_data = joblib.load(f)
         
         return filtered_data
 
-    def load_features(self):
+    def load_features(self, collect=True):
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
             feats, temporal_feats, pca = joblib.load(f)
         
+<<<<<<< HEAD
         return feats, temporal_feats, pca
+=======
+        if collect:
+            feats = np.vstack(feats)
+            temporal_feats = np.vstack(temporal_feats) if temporal_feats is not None else None
+
+        return feats, temporal_feats
+>>>>>>> displacement
 
     def load_identified_clusters(self):
         with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:
