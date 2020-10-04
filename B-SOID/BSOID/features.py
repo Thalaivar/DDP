@@ -5,7 +5,7 @@ import numpy as np
 from sklearn.decomposition import PCA
 from BSOID.preprocessing import windowed_feats, smoothen_data
 
-def extract_feats_v2(filtered_data, fps):
+def extract_displacement_feats(filtered_data, fps):
     x, y = filtered_data['x'], filtered_data['y']
 
     N, n_dpoints = x.shape
@@ -63,7 +63,7 @@ def extract_feats_v2(filtered_data, fps):
 #########################################################################################################
 
 # calculate required features from x, y position data
-def extract_feats(filtered_data, fps):
+def extract_geometric_feats(filtered_data, fps):
     x, y = filtered_data['x'], filtered_data['y']
 
     logging.debug('extracting features from {} samples of {} points'.format(*x.shape))
@@ -124,7 +124,7 @@ def temporal_features(geo_feats, window=16):
             spectral_feats.append(win_fft.real ** 2 + win_fft.imag ** 2)
         spectral_feats = np.array(spectral_feats)
         
-        # spectral features are of shape (N-M+1, window, d), reshape to (N-M+1, window*d)
+        # spectral features are of shape (N-M+1, window/2 + 1, d), reshape to (N-M+1, (window/2 + 1)*d)
         spectral_feats = spectral_feats.reshape(-1, spectral_feats.shape[1]*spectral_feats.shape[2])
         feats.append(geo_feats[i][window:-window + 1])
         temporal_feats.append(spectral_feats)

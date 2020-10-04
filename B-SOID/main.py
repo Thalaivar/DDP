@@ -7,13 +7,8 @@ from BSOID.bsoid import BSOID
 
 logging.basicConfig(level=logging.INFO)
 
-<<<<<<< HEAD
-bsoid_params = {'run_id': 'temporal_feats',
-                'base_dir': 'D:/IIT/DDP/data',
-=======
 bsoid_params = {'run_id': 'geo_feats',
                 'base_dir': '/home/dhruvlaad/data',
->>>>>>> displacement
                 'conf_threshold': 0.3,
                 'fps': 30,
                 'temporal_window': None,

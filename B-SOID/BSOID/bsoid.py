@@ -104,7 +104,7 @@ class BSOID:
         filtered_data = self.load_filtered_data()
         
         # extract geometric features
-        feats = [extract_feats_v2(data, self.fps) for data in filtered_data]
+        feats = [extract_displacement_feats(data, self.fps) for data in filtered_data]
         logging.info(f'extracted {len(feats)} datasets of {feats[0].shape[1]}D features')
 
         # extract temporal features
@@ -354,15 +354,11 @@ class BSOID:
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
             feats, temporal_feats, pca = joblib.load(f)
         
-<<<<<<< HEAD
-        return feats, temporal_feats, pca
-=======
         if collect:
             feats = np.vstack(feats)
             temporal_feats = np.vstack(temporal_feats) if temporal_feats is not None else None
 
         return feats, temporal_feats
->>>>>>> displacement
 
     def load_identified_clusters(self):
         with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:
