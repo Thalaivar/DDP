@@ -5,7 +5,15 @@ import numpy as np
 from sklearn.decomposition import PCA
 from BSOID.preprocessing import windowed_feats, smoothen_data
 
-def extract_displacement_feats(filtered_data, fps):
+#########################################################################################################
+#               modify these functions according to the features you want to extract                    #
+#########################################################################################################
+def extract_displacement_feats(filtered_data, fps, pbar):
+    """
+    0-6 : lenghts of 7 body links
+    8-15 : magnitude of displacements for all 8 points
+    15-21 : displacement angles for links 
+    """
     x, y = filtered_data['x'], filtered_data['y']
 
     N, n_dpoints = x.shape
@@ -56,11 +64,11 @@ def extract_displacement_feats(filtered_data, fps):
 
     logging.debug('extracted {} samples of {}D features'.format(*feats.shape))
 
+    if pbar is not None:
+        pbar.update(1)
+
     return feats
 
-#########################################################################################################
-#               modify these functions according to the features you want to extract                    #
-#########################################################################################################
 
 # calculate required features from x, y position data
 def extract_geometric_feats(filtered_data, fps):
@@ -124,14 +132,14 @@ def temporal_features(geo_feats, window=16):
             spectral_feats.append(win_fft.real ** 2 + win_fft.imag ** 2)
         spectral_feats = np.array(spectral_feats)
         
-        # spectral features are of shape (N-M+1, window/2 + 1, d), reshape to (N-M+1, (window/2 + 1)*d)
+        # spectral features are of shape (N-M+1, window, d), reshape to (N-M+1, window*d)
         spectral_feats = spectral_feats.reshape(-1, spectral_feats.shape[1]*spectral_feats.shape[2])
         feats.append(geo_feats[i][window:-window + 1])
         temporal_feats.append(spectral_feats)
     
     return feats, temporal_feats
 
-def extract_bsoid_feats(filtered_data, fps):
+def extract_bsoid_feats(filtered_data, fps, pbar=None):
     """
     extract the same features as B-SOID:
         - link lengths
@@ -139,6 +147,9 @@ def extract_bsoid_feats(filtered_data, fps):
         - angle between link displacements
     """
     x, y = filtered_data['x'], filtered_data['y']
+    x = np.hstack((x[:,:5], x[:,6:]))
+    y = np.hstack((y[:,:5], y[:,6:]))
+
     N, n_dpoints = x.shape
 
     # displacements of all points
@@ -196,41 +207,58 @@ def extract_bsoid_feats(filtered_data, fps):
     feats = np.hstack((dis, angles, link_lens))
     logging.debug('final features extracted have shape: {}'.format(feats.shape))
 
+    if pbar is not None:
+        pbar.update(1)
+
     return feats
 
 #########################################################################################################
 #                                      functions to be called in B-SOID                                 #
-#########################################################################################################
-def window_extracted_feats_v2(feats, stride_window):
+#########################################################################################################  
+def window_extracted_feats_geo(feats, stride_window):
     win_feats = []
     for f in feats:
-        # indices 0-13 are link lengths and point displacements (magnitude), during windowing they should be averaged
-        win_feats_ll_d = windowed_feats(f[:,:14], stride_window, mode='mean')
-        
-        # indices 14-22 are displacement angles, they should be summed
-        win_feats_th = windowed_feats(f[:,14:22], stride_window, mode='sum')
+        win_feats_ll_d = windowed_feats(f[:,:16], stride_window, mode='mean')
+        win_feats_th = windowed_feats(f[:,16:22], stride_window, mode='sum')
 
-        # indices 22 onward are temporal features
-        win_feats_t = windowed_feats(f[:,22:], stride_window, mode='mean')
-
-        win_feats.append(np.hstack((win_feats_ll_d, win_feats_th, win_feats_t)))
-        # win_feats.append(np.hstack((win_feats_ll, win_feats_rth)))
+        win_feats.append(np.hstack((win_feats_ll_d, win_feats_th)))
 
     return win_feats
 
-def window_extracted_feats(feats, stride_window):
+def window_extracted_feats(feats, stride_window, temporal_window, temporal_dims=None):
     win_feats = []
+    temporal_feats = []
+
     for f in feats:
         # indices 0-6 are link lengths, during windowing they should be averaged
-        win_feats_ll = windowed_feats(f[:,:7], stride_window, mode='mean')
+        clip_len = (temporal_window - stride_window) // 2
         
-        # indices 7-13 are relative angles, during windowing they should be summed
-        win_feats_rth = windowed_feats(f[:,7:13], stride_window, mode='sum')
+        win_feats_ll_d = windowed_feats(f[clip_len:-clip_len,:16], stride_window, mode='mean')
+        win_feats_th = windowed_feats(f[clip_len:-clip_len,16:22], stride_window, mode='sum')
+
+        win_fft = windowed_fft(f, stride_window, temporal_window)
         
-        # indices 13 onwards are temporal feats, for now these are averaged
-        win_feats_t = windowed_feats(f[:,13:], stride_window, mode='mean')
+        if temporal_dims is not None:
+            win_fft = PCA(n_components=temporal_dims).fit_transform(win_fft)
+        
+        win_feats.append(np.hstack((win_feats_ll_d, win_feats_th, win_fft)))
+        temporal_feats.append(win_fft)
 
-        win_feats.append(np.hstack((win_feats_ll, win_feats_rth, win_feats_t)))
-        # win_feats.append(np.hstack((win_feats_ll, win_feats_rth)))
+    return win_feats, temporal_feats
 
-    return win_feats
+def windowed_fft(feats, stride_window, temporal_window):
+    assert temporal_window > stride_window + 2
+
+    fft_feats = []
+    N = feats.shape[0]
+
+    temporal_window = (temporal_window - stride_window) // 2
+    for i in range(stride_window + temporal_window, N - temporal_window, stride_window):
+        win_feats = feats[i - stride_window - temporal_window:i + temporal_window, :]
+        win_fft = np.fft.rfftn(win_feats, axes=[0])
+        win_fft = win_fft.real ** 2 + win_fft.imag ** 2
+        fft_feats.append(win_fft.reshape(1, -1))
+
+    fft_feats = np.vstack(fft_feats)
+
+    return fft_feats

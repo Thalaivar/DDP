@@ -3,27 +3,13 @@ import numpy as np
 from sklearn.decomposition import PCA
 from BSOID.preprocessing import smoothen_data
 from sklearn.preprocessing import StandardScaler
-from BSOID.features import (extract_feats_v2, 
-                            temporal_features,
-                            window_extracted_feats_v2)
+from BSOID.features import *
 
 def frameshift_features(filtered_data, stride_window, fps, temporal_window=None, temporal_dims=None):
     if not isinstance(filtered_data, list):
         filtered_data = [filtered_data]
 
-    feats = [extract_feats_v2(data, fps) for data in filtered_data]
-
-    if temporal_window is not None:
-        feats, temporal_feats = temporal_features(feats, temporal_window)
-
-        if temporal_dims is not None:
-            logging.debug(f'reducing dimension of temporal features from {temporal_feats[0].shape[1]}D to {temporal_dims}D')
-            for i in range(len(temporal_feats)):
-                pca = PCA(n_components=temporal_dims).fit(temporal_feats[i])
-                temporal_feats[i] = pca.transform(temporal_feats[i])
-    
-        for i in range(len(feats)):   
-            feats[i] = np.hstack((feats[i], temporal_feats[i]))        
+    feats = [extract_geometric_feats(data, fps) for data in filtered_data]
 
     assert len(feats) == 1
     feats = feats[0]
@@ -33,7 +19,7 @@ def frameshift_features(filtered_data, stride_window, fps, temporal_window=None,
     for s in range(stride_window):
        fs_feats.append(feats[s:,:])
 
-    fs_feats = window_extracted_feats_v2(fs_feats, stride_window)
+    fs_feats, _ = window_extracted_feats(fs_feats, stride_window, temporal_window, temporal_dims)
     
     # scaling used for classification also
     for i, f in enumerate(fs_feats):

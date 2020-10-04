@@ -1,7 +1,10 @@
 import re
 import os
-import cv2
-import ffmpeg
+try:
+    import cv2
+    import ffmpeg
+except:
+    pass
 import logging
 import numpy as np
 import pandas as pd

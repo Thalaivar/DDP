@@ -1,19 +1,16 @@
-import matplotlib as mpl
-mpl.use('tKAgg')
-
 import joblib
 import logging
 from BSOID.bsoid import BSOID
 
 logging.basicConfig(level=logging.INFO)
 
-bsoid_params = {'run_id': 'geo_feats',
+bsoid_params = {'run_id': 'temporal_new_geo',
                 'base_dir': '/home/dhruvlaad/data',
                 'conf_threshold': 0.3,
                 'fps': 30,
-                'temporal_window': None,
+                'temporal_window': 16,
                 'stride_window': 3,
-                'temporal_dims': None}
+                'temporal_dims': 6}
 bsoid = BSOID(**bsoid_params)
 
 # bsoid.process_csvs()

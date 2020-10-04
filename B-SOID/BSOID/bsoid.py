@@ -104,31 +104,18 @@ class BSOID:
         filtered_data = self.load_filtered_data()
         
         # extract geometric features
-        feats = [extract_displacement_feats(data, self.fps) for data in filtered_data]
+        from joblib import Parallel, delayed
+        # feats = [extract_displacement_feats(data, self.fps) for data in filtered_data]
+        pbar = tqdm(total=len(filtered_data))
+        feats = Parallel(n_jobs=-1)(delayed(extract_displacement_feats)(data, self.fps, pbar) for data in filtered_data)
+
         logging.info(f'extracted {len(feats)} datasets of {feats[0].shape[1]}D features')
 
-        # extract temporal features
-        temporal_feats = None
-        if self.temporal_window is not None:
-            feats, temporal_feats = temporal_features(feats, self.temporal_window)
-            logging.info(f'extracted {temporal_feats[0].shape[1]} temporal features using window of {1000 * self.temporal_window // self.fps} ms')
-            
-            # reduce dimension of temporal features
-            if self.temporal_dims is not None:
-                logging.info('reducing temporal features dimension from {}D to {}D'.format(temporal_feats[0].shape[1], self.temporal_dims))
-                for i in range(len(temporal_feats)):
-                    pca = PCA(n_components=self.temporal_dims).fit(temporal_feats[i])
-                    temporal_feats[i] = pca.transform(temporal_feats[i])          
-            
-            # concatenate geometric and temporal features
-            for i in range(len(feats)):   
-                feats[i] = np.hstack((feats[i], temporal_feats[i]))
+        feats, temporal_feats = window_extracted_feats(feats, self.stride_window, self.temporal_window, self.temporal_dims)
         
-        logging.info(f'collecting features into bins of {1000 * self.stride_window // self.fps} ms')
-        feats = window_extracted_feats_v2(feats, self.stride_window)
-        
+        logging.info('combined temporal features to get {} datasets of {}D'.format(len(feats), feats[0].shape[1]))
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
-            joblib.dump([feats, temporal_feats, pca], f)
+            joblib.dump([feats, temporal_feats], f)
 
         return feats, temporal_feats
         
@@ -352,7 +339,7 @@ class BSOID:
 
     def load_features(self, collect=True):
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
-            feats, temporal_feats, pca = joblib.load(f)
+            feats, temporal_feats = joblib.load(f)
         
         if collect:
             feats = np.vstack(feats)
