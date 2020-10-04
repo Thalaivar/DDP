@@ -7,22 +7,6 @@ from BSOID.features import (extract_feats_v2,
                             temporal_features,
                             window_extracted_feats_v2)
 
-<<<<<<< HEAD
-def frameshift_features(filtered_data, stride_window, temporal_window, temporal_dims, fps, pca=None):
-    # extract geometric and temporal features
-    feats = extract_feats(filtered_data)
-    feats, temporal_feats = temporal_features(feats, temporal_window)
-    
-    # smoothen geometric features
-    for i in range(feats.shape[1]):
-        feats[:,i] = smoothen_data(feats[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
-
-    if temporal_dims is not None and pca is not None:
-        # reduce temporal dims
-        # pca = PCA(n_components=temporal_dims).fit(temporal_feats)
-        temporal_feats = pca.transform(temporal_feats)
-    feats = np.hstack((feats, temporal_feats))
-=======
 def frameshift_features(filtered_data, stride_window, fps, temporal_window=None, temporal_dims=None):
     if not isinstance(filtered_data, list):
         filtered_data = [filtered_data]
@@ -43,7 +27,6 @@ def frameshift_features(filtered_data, stride_window, fps, temporal_window=None,
 
     assert len(feats) == 1
     feats = feats[0]
->>>>>>> displacement
 
     # frameshift and stack features into bins
     fs_feats = []

@@ -110,40 +110,8 @@ def extract_feats(filtered_data, fps):
     
     return feats
 
-<<<<<<< HEAD
-    feats = np.hstack((win_feats_ll, win_feats_rth, win_feats_t))        
-
-    return feats
-
-def combined_temporal_features(filtered_data, temporal_window, stride_window, fps, temporal_dims):
-    n_animals = len(filtered_data)
-    
-    # extract geometric features
-    logging.info('extracting features from filtered data of {} animals'.format(n_animals))
-    feats = [extract_feats(filtered_data[i]) for i in range(n_animals)]
-    feats = np.vstack((feats))
-    logging.info('extracted {} samples of {}D features'.format(*feats.shape))
-
-    # extract temporal features and combine
-    feats, temporal_feats = temporal_features(feats, temporal_window)
-    if temporal_dims is not None:
-        logging.info('reducing {} temporal features dimension from {}D to {}D'.format(*temporal_feats.shape, temporal_dims))
-        pca = PCA(n_components=temporal_dims).fit(temporal_feats)
-        temporal_feats = pca.transform(temporal_feats)
-    comb_feats = np.hstack((feats, temporal_feats))
-    logging.info('extracted temporal features for final data set of shape [{},{}]'.format(*comb_feats.shape))
-
-    # collect combined features into bins
-    comb_feats = window_extracted_feats(comb_feats, stride_window)
-    logging.info('collected features into {}ms bins for dataset shape [{},{}]'.format(stride_window*FPS, *comb_feats.shape))
-
-    return comb_feats, temporal_feats, pca
-
-def temporal_features(feats, window=16):
-=======
 def temporal_features(geo_feats, window=16):
     feats, temporal_feats  = [], []
->>>>>>> displacement
     window //= 2
     for i in range(len(geo_feats)):
         N = geo_feats[i].shape[0]

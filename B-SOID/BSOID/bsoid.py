@@ -103,10 +103,6 @@ class BSOID:
     def features_from_points(self):
         filtered_data = self.load_filtered_data()
         
-<<<<<<< HEAD
-        feats, temporal_feats, pca = combined_temporal_features(filtered_data, self.temporal_window, 
-                                                self.stride_window, self.fps, self.temporal_dims)
-=======
         # extract geometric features
         feats = [extract_feats_v2(data, self.fps) for data in filtered_data]
         logging.info(f'extracted {len(feats)} datasets of {feats[0].shape[1]}D features')
@@ -130,7 +126,6 @@ class BSOID:
         
         logging.info(f'collecting features into bins of {1000 * self.stride_window // self.fps} ms')
         feats = window_extracted_feats_v2(feats, self.stride_window)
->>>>>>> displacement
         
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
             joblib.dump([feats, temporal_feats, pca], f)
@@ -146,11 +141,7 @@ class BSOID:
             joblib.dump(feats, f)
 
     def umap_reduce(self, reduced_dim=10, sample_size=int(5e5), shuffle=True):
-<<<<<<< HEAD
-        feats, _, _ = self.load_features()
-=======
         feats, _ = self.load_features()
->>>>>>> displacement
         
         logging.info('loaded data set with {} samples of {}D features'.format(*feats.shape))
         feats_train = StandardScaler().fit_transform(feats)
@@ -246,11 +237,7 @@ class BSOID:
         # umap embeddings are to be used directly
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
             _, _, feats_sc = joblib.load(f)
-<<<<<<< HEAD
-
-=======
         
->>>>>>> displacement
         min_cluster_size = int(round(min_cluster_prop * 0.01 * feats_sc.shape[0]))
         logging.info('clustering {} samples in {}D with HDBSCAN for a minimum cluster size of {}'.format(*feats_sc.shape, min_cluster_size))
         clusterer = hdbscan.HDBSCAN(min_cluster_size, min_samples=10, prediction_data=True).fit(feats_sc)
@@ -270,15 +257,11 @@ class BSOID:
             _, _, soft_assignments = joblib.load(f)
 
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
-<<<<<<< HEAD
-                _, feats_sc, _ = joblib.load(f)
-=======
                 _, feats, _ = joblib.load(f)
 
         # try using scaled features to train also
         # feats_sc = StandardScaler().fit_transform(feats)
         feats_sc = feats
->>>>>>> displacement
 
         logging.info('training neural network on {} scaled samples in {}D'.format(*feats_sc.shape))
         clf = MLPClassifier(**MLP_PARAMS).fit(feats_sc, soft_assignments)
