@@ -3,15 +3,15 @@ import numpy as np
 from sklearn.decomposition import PCA
 from BSOID.preprocessing import smoothen_data
 from sklearn.preprocessing import StandardScaler
-from BSOID.features import (extract_feats, 
+from BSOID.features import (extract_feats_v2, 
                             temporal_features,
-                            window_extracted_feats)
+                            window_extracted_feats_v2)
 
 def frameshift_features(filtered_data, stride_window, fps, temporal_window=None, temporal_dims=None):
     if not isinstance(filtered_data, list):
         filtered_data = [filtered_data]
 
-    feats = [extract_feats(data, fps) for data in filtered_data]
+    feats = [extract_feats_v2(data, fps) for data in filtered_data]
 
     if temporal_window is not None:
         feats, temporal_feats = temporal_features(feats, temporal_window)
@@ -33,7 +33,7 @@ def frameshift_features(filtered_data, stride_window, fps, temporal_window=None,
     for s in range(stride_window):
        fs_feats.append(feats[s:,:])
 
-    fs_feats = window_extracted_feats(fs_feats, stride_window)
+    fs_feats = window_extracted_feats_v2(fs_feats, stride_window)
     
     # scaling used for classification also
     for i, f in enumerate(fs_feats):

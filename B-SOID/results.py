@@ -8,7 +8,7 @@ from BSOID.bsoid import BSOID
 logging.basicConfig(level=logging.INFO)
 
 base_dir = 'D:/IIT/DDP/data'
-bsoid = BSOID.load_config(base_dir, 'geo_feats')
+bsoid = BSOID.load_config(base_dir, 'dis_temporal')
 
 video_dir = bsoid.test_dir + '/videos'
 vid_files = [video_dir + '/' + f for f in os.listdir(video_dir) if f.endswith('.avi')]
