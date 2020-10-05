@@ -69,7 +69,7 @@ def likelihood_filter(data: pd.DataFrame, conf_threshold: float=0.3, forward_fil
         
         perc_rect[k] = np.sum(data_lh_float < llh) / conf.shape[0]
         
-        filt_x[0, k], filt_y = x[0, k], y[0,k]
+        filt_x[0, k], filt_y[0, k] = x[0, k], y[0,k]
         for i in range(1, conf.shape[0] - 1):
             if data_lh_float[i] < llh:
                 filt_x[i,k] = filt_x[i - 1, k]
@@ -77,7 +77,7 @@ def likelihood_filter(data: pd.DataFrame, conf_threshold: float=0.3, forward_fil
             else:
                 filt_x[i,k], filt_y[i,k] = x[i,k], y[i,k]
     
-    logging.debug(f'filtered {max(perc_rect)}% of data (max)')
+    logging.debug(f'filtered {max(perc_rect) * 100}% of data (max)')
     return {'conf': conf, 'x': filt_x, 'y': filt_y}, max(perc_rect)
 
 def windowed_feats(feats, window_len: int=3, mode: str='mean'):
