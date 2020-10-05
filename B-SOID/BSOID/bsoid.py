@@ -107,20 +107,22 @@ class BSOID:
         from joblib import Parallel, delayed
         # feats = [extract_displacement_feats(data, self.fps) for data in filtered_data]
         feats = Parallel(n_jobs=-1)(delayed(extract_bsoid_feats)(data, self.fps) for data in filtered_data)
+        
+        feats_sc = [data[1] for data in feats]
+        feats = [data[0] for data in feats]
+
         with open('/home/dhruvlaad/data/feats.sav', 'wb') as f:
-            joblib.dump(feats, f)
+            joblib.dump(feats, feats_sc, f)
 
         logging.info(f'extracted {len(feats)} datasets of {feats[0].shape[1]}D features')
 
-        # feats, temporal_feats = window_extracted_feats(feats, self.stride_window, self.temporal_window, self.temporal_dims)
-        temporal_feats = None
+        # feats = window_extracted_feats(feats, self.stride_window, self.temporal_window, self.temporal_dims)
         feats = window_extracted_feats_geo(feats, self.stride_window)
+        feats_sc = window_extracted_feats_geo(feats_sc, self.stride_window)
         
         logging.info('combined temporal features to get {} datasets of {}D'.format(len(feats), feats[0].shape[1]))
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
-            joblib.dump([feats, temporal_feats], f)
-
-        return feats, temporal_feats
+            joblib.dump([feats, feats_sc], f)
         
     def bsoid_features(self):
         filtered_data = self.load_filtered_data()
@@ -131,17 +133,16 @@ class BSOID:
             joblib.dump(feats, f)
 
     def umap_reduce(self, reduced_dim=10, sample_size=int(5e5), shuffle=True):
-        feats, _ = self.load_features()
+        feats, feats_sc = self.load_features()
         
         logging.info('loaded data set with {} samples of {}D features'.format(*feats.shape))
-        feats_train = StandardScaler().fit_transform(feats)
 
         # take subset of data
         if shuffle:
             idx = np.random.permutation(np.arange(feats.shape[0]))
         else:
             idx = np.arange(feats.shape[0])
-        feats_train = feats_train[idx[:sample_size],:]
+        feats_train = feats_sc[idx[:sample_size],:]
         feats_usc = feats[idx[:sample_size], :]
         
         logging.info('running UMAP on {} samples from {}D to {}D'.format(*feats_train.shape, reduced_dim))
@@ -342,13 +343,13 @@ class BSOID:
 
     def load_features(self, collect=True):
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
-            feats, temporal_feats = joblib.load(f)
+            feats, feats_sc = joblib.load(f)
         
         if collect:
             feats = np.vstack(feats)
-            temporal_feats = np.vstack(temporal_feats) if temporal_feats is not None else None
+            feats_sc = np.vstack(feats_sc)
 
-        return feats, temporal_feats
+        return feats, feats_sc
 
     def load_identified_clusters(self):
         with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:

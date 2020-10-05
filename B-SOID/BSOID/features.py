@@ -3,6 +3,7 @@ import logging
 import itertools
 import numpy as np
 from sklearn.decomposition import PCA
+from sklearn.preprocessing import StandardScaler
 from BSOID.preprocessing import windowed_feats, smoothen_data
 
 #########################################################################################################
@@ -199,10 +200,11 @@ def extract_bsoid_feats(filtered_data, fps):
         link_lens[:,i] = smoothen_data(link_lens[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
         angles[:,i] = smoothen_data(angles[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
 
-    feats = np.hstack((dis, angles, link_lens[:-1]))
+    feats = np.hstack((link_lens[1:], -angles, dis))
+    feats_sc = StandardScaler().fit_transform(feats)
     logging.debug('final features extracted have shape: {}'.format(feats.shape))
 
-    return feats
+    return (feats, feats_sc)
 
 #########################################################################################################
 #                                      functions to be called in B-SOID                                 #
@@ -223,7 +225,6 @@ def window_extracted_feats_geo(feats, stride_window):
 
 def window_extracted_feats(feats, stride_window, temporal_window, temporal_dims=None):
     win_feats = []
-    temporal_feats = []
 
     for f in feats:
         # indices 0-6 are link lengths, during windowing they should be averaged
@@ -241,9 +242,8 @@ def window_extracted_feats(feats, stride_window, temporal_window, temporal_dims=
             win_fft = PCA(n_components=temporal_dims).fit_transform(win_fft)
         
         win_feats.append(np.hstack((win_feats_d, win_feats_th, win_feats_ll, win_fft)))
-        temporal_feats.append(win_fft)
 
-    return win_feats, temporal_feats
+    return win_feats
 
 def windowed_fft(feats, stride_window, temporal_window):
     assert temporal_window > stride_window + 2
