@@ -30,11 +30,11 @@ def extract_from_csv(filename, save_dir, trim=True):
         END_TRIM = FPS*2*60
         conf, pos = conf[END_TRIM:-END_TRIM,:], pos[END_TRIM:-END_TRIM,:]
 
-        eq_space = conf.shape[0] // 4
-        eq_spaced_idx = [i*eq_space for i in range(1,4)]
+        eq_space = conf.shape[0] // 3
+        eq_spaced_idx = [i*eq_space for i in range(1,3)]
 
         bsoid_data = []
-        CLIP_WINDOW = FPS*10*60 // 2
+        CLIP_WINDOW = FPS*15*60 // 2
         for idx in eq_spaced_idx:
             clip_conf = conf[idx-CLIP_WINDOW:idx+CLIP_WINDOW,:]
             clip_pos = pos[idx-CLIP_WINDOW:idx+CLIP_WINDOW,:]
