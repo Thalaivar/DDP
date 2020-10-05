@@ -13,10 +13,10 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split, cross_val_score
 from BSOID.utils import *
 from BSOID.data import *
-from BSOID.features import *
 from BSOID.preprocessing import *
 from BSOID.prediction import *
-# from BSOID.clustering import *
+
+from BSOID.features.bsoid_features import *
 
 MLP_PARAMS = {
     'hidden_layer_sizes': (100, 10),  # 100 units, 10 layers
@@ -105,15 +105,17 @@ class BSOID:
         
         # extract geometric features
         from joblib import Parallel, delayed
-        # feats = [extract_displacement_feats(data, self.fps) for data in filtered_data]
-        feats = Parallel(n_jobs=-1)(delayed(extract_bsoid_feats)(data, self.fps) for data in filtered_data)
+        feats = Parallel(n_jobs=-1)(delayed(extract_feats)(data, self.fps) for data in filtered_data)
 
         logging.info(f'extracted {len(feats)} datasets of {feats[0].shape[1]}D features')
 
         # feats = window_extracted_feats(feats, self.stride_window, self.temporal_window, self.temporal_dims)
-        feats = window_extracted_feats_geo(feats, self.stride_window)
+        feats = window_extracted_feats(feats, self.stride_window, self.temporal_window, self.temporal_dims)
+        logging.info(f'collected features into bins of {1000 * self.stride_window // self.fps} ms')
         
-        logging.info('combined temporal features to get {} datasets of {}D'.format(len(feats), feats[0].shape[1]))
+        if self.temporal_window is not None:
+            logging.info('combined temporal features to get {} datasets of {}D'.format(len(feats), feats[0].shape[1]))
+
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
             joblib.dump(feats, f)
         

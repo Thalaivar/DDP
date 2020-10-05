@@ -120,3 +120,20 @@ def normalize_feats(feats):
         scaled_feats.append(scaler.transform(feats[i]))
 
     return np.vstack(scaled_feats)
+
+def windowed_fft(feats, stride_window, temporal_window):
+    assert temporal_window > stride_window + 2
+
+    fft_feats = []
+    N = feats.shape[0]
+
+    temporal_window = (temporal_window - stride_window) // 2
+    for i in range(stride_window + temporal_window, N - temporal_window, stride_window):
+        win_feats = feats[i - stride_window - temporal_window:i + temporal_window, :]
+        win_fft = np.fft.rfftn(win_feats, axes=[0])
+        win_fft = win_fft.real ** 2 + win_fft.imag ** 2
+        fft_feats.append(win_fft.reshape(1, -1))
+
+    fft_feats = np.vstack(fft_feats)
+
+    return fft_feats
