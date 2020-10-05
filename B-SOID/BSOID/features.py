@@ -81,7 +81,7 @@ def extract_geometric_feats(filtered_data, fps):
     
     # link connections [start, end]
     link_connections = ([BASE_TAIL, CENTER_SPINE],
-                        [CENTER_SPINE, BASE_NECK],
+                        [CENTER_SPINE, BASE_NECK], 
                         [BASE_NECK, HEAD],
                         [BASE_TAIL, HINDPAW1], [BASE_TAIL, HINDPAW2],
                         [BASE_TAIL, MID_TAIL],
@@ -139,12 +139,12 @@ def temporal_features(geo_feats, window=16):
     
     return feats, temporal_feats
 
-def extract_bsoid_feats(filtered_data, fps, pbar=None):
+def extract_bsoid_feats(filtered_data, fps):
     """
     extract the same features as B-SOID:
-        - link lengths
-        - point displacements
-        - angle between link displacements
+        0-6 : displacements (magnitude)
+        7-27 : angle between link displacements
+        28-48 : link lengths
     """
     x, y = filtered_data['x'], filtered_data['y']
     x = np.hstack((x[:,:5], x[:,6:]))
@@ -207,9 +207,6 @@ def extract_bsoid_feats(filtered_data, fps, pbar=None):
     feats = np.hstack((dis, angles, link_lens))
     logging.debug('final features extracted have shape: {}'.format(feats.shape))
 
-    if pbar is not None:
-        pbar.update(1)
-
     return feats
 
 #########################################################################################################
@@ -218,10 +215,14 @@ def extract_bsoid_feats(filtered_data, fps, pbar=None):
 def window_extracted_feats_geo(feats, stride_window):
     win_feats = []
     for f in feats:
-        win_feats_ll_d = windowed_feats(f[:,:16], stride_window, mode='mean')
-        win_feats_th = windowed_feats(f[:,16:22], stride_window, mode='sum')
+        # win_feats_ll_d = windowed_feats(f[:,:16], stride_window, mode='mean')
+        # win_feats_th = windowed_feats(f[:,16:22], stride_window, mode='sum')
 
-        win_feats.append(np.hstack((win_feats_ll_d, win_feats_th)))
+        win_feats_d = windowed_feats(f[:,:7], stride_window, mode='mean')
+        win_feats_th = windowed_feats(f[:,7:28], stride_window, mode='sum')
+        win_feats_ll = windowed_feats(f[:,28:49], stride_window, mode='mean') 
+
+        win_feats.append(np.hstack((win_feats_d, win_feats_th, win_feats_ll)))
 
     return win_feats
 
@@ -233,15 +234,18 @@ def window_extracted_feats(feats, stride_window, temporal_window, temporal_dims=
         # indices 0-6 are link lengths, during windowing they should be averaged
         clip_len = (temporal_window - stride_window) // 2
         
-        win_feats_ll_d = windowed_feats(f[clip_len:-clip_len,:16], stride_window, mode='mean')
-        win_feats_th = windowed_feats(f[clip_len:-clip_len,16:22], stride_window, mode='sum')
+        # win_feats_ll_d = windowed_feats(f[clip_len:-clip_len,:16], stride_window, mode='mean')
+        # win_feats_th = windowed_feats(f[clip_len:-clip_len,16:22], stride_window, mode='sum')
+        win_feats_d = windowed_feats(f[clip_len:-clip_len,:7], stride_window, mode='mean')
+        win_feats_th = windowed_feats(f[clip_len:-clip_len,7:28], stride_window, mode='sum')
+        win_feats_ll = windowed_feats(f[clip_len:-clip_len,28:49], stride_window, mode='mean') 
 
         win_fft = windowed_fft(f, stride_window, temporal_window)
         
         if temporal_dims is not None:
             win_fft = PCA(n_components=temporal_dims).fit_transform(win_fft)
         
-        win_feats.append(np.hstack((win_feats_ll_d, win_feats_th, win_fft)))
+        win_feats.append(np.hstack((win_feats_d, win_feats_th, win_feats_ll, win_fft)))
         temporal_feats.append(win_fft)
 
     return win_feats, temporal_feats
