@@ -106,12 +106,15 @@ class BSOID:
         # extract geometric features
         from joblib import Parallel, delayed
         # feats = [extract_displacement_feats(data, self.fps) for data in filtered_data]
-        pbar = tqdm(total=len(filtered_data))
-        feats = Parallel(n_jobs=-1)(delayed(extract_displacement_feats)(data, self.fps, pbar) for data in filtered_data)
+        feats = Parallel(n_jobs=-1)(delayed(extract_bsoid_feats)(data, self.fps) for data in filtered_data)
+        with open('/home/dhruvlaad/data/feats.sav', 'wb') as f:
+            joblib.dump(feats, f)
 
         logging.info(f'extracted {len(feats)} datasets of {feats[0].shape[1]}D features')
 
-        feats, temporal_feats = window_extracted_feats(feats, self.stride_window, self.temporal_window, self.temporal_dims)
+        # feats, temporal_feats = window_extracted_feats(feats, self.stride_window, self.temporal_window, self.temporal_dims)
+        temporal_feats = None
+        feats = window_extracted_feats_geo(feats, self.stride_window)
         
         logging.info('combined temporal features to get {} datasets of {}D'.format(len(feats), feats[0].shape[1]))
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
