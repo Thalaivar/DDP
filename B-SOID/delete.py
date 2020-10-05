@@ -4,7 +4,7 @@ import itertools
 import math
 from sklearn.preprocessing import StandardScaler
 from BSOID.preprocessing import smoothen_data
-from BSOID.features import extract_bsoid_feats, window_extracted_feats_geo
+from BSOID.features.bsoid_features import *
 
 def format_data(training_data):
     data = []
@@ -101,9 +101,9 @@ def process_feats(training_data, FPS):
 
 def me(filtered_data, fps):
     from joblib import Parallel, delayed
-    feats = Parallel(n_jobs=-1)(delayed(extract_bsoid_feats)(data, fps) for data in filtered_data)
+    feats = Parallel(n_jobs=-1)(delayed(extract_feats)(data, fps) for data in filtered_data)
 
-    feats = window_extracted_feats_geo(feats, 3)
+    feats = window_extracted_feats(feats, 3)
 
     return feats
 

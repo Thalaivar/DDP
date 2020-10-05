@@ -88,7 +88,7 @@ def extract_feats(filtered_data, fps):
         link_lens[:,i] = smoothen_data(link_lens[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
         angles[:,i] = smoothen_data(angles[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
 
-    feats = np.hstack((link_lens[1:], -angles, dis))
+    feats = np.hstack((link_lens[1:], -angles*180/np.pi, dis))
     logging.debug('final features extracted have shape: {}'.format(feats.shape))
 
     return feats

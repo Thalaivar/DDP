@@ -118,14 +118,6 @@ class BSOID:
 
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
             joblib.dump(feats, f)
-        
-    def bsoid_features(self):
-        filtered_data = self.load_filtered_data()
-
-        feats = extract_bsoid_feats(filtered_data, self.fps)
-
-        with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
-            joblib.dump(feats, f)
 
     def umap_reduce(self, reduced_dim=10, sample_size=int(5e5), shuffle=True):
         feats, feats_sc = self.load_features()
@@ -317,7 +309,7 @@ class BSOID:
             data = pd.read_csv(csv_file, low_memory=False)
             data, _ = likelihood_filter(data, self.conf_threshold)
 
-            feats = frameshift_features(data, self.stride_window, self.fps, self.temporal_window, self.temporal_dims)
+            feats = frameshift_features(data, self.stride_window, self.fps, extract_feats, window_extracted_feats, self.temporal_window, self.temporal_dims)
 
             with open(output_dir + '/feats.sav', 'wb') as f:
                 joblib.dump(feats, f)

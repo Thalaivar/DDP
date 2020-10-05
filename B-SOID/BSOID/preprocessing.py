@@ -53,45 +53,32 @@ def likelihood_filter(data: pd.DataFrame, conf_threshold: float=0.3, forward_fil
     
     logging.debug('extracted {} samples of {} features'.format(N, n_dpoints))
 
-    # forward-fill any points below confidence threshold
-    if forward_fill:
-        perc_filt = []
-        for i in range(n_dpoints):
-            n_filtered = 0
-            if conf[0,i] < conf_threshold:
-                # find first good confidence point
-                k = 0
-                while conf[k,i] < conf_threshold:
-                    n_filtered += 1
-                    k += 1
+    filt_x, filt_y = np.zeros_like(x), np.zeros_like(y)
+    perc_rect = []
 
-                    if k >= conf.shape[0]:
-                        return None, 100
-
-                # replace all points with first good conf point
-                conf[0:k,i] = conf[k,i]*np.ones_like(conf[0:k,i])
-                x[0:k,i] = x[k,i]*np.ones_like(x[0:k,i])
-                y[0:k,i] = y[k,i]*np.ones_like(y[0:k,i])
-                
-                prev_lh_idx = k
-            else:
-                prev_lh_idx = 0                
-                k = 0
-
-            for j in range(k, N):
-                if conf[j,i] < conf_threshold:
-                    # if current point is low confidence, replace with last confident point
-                    x[j,i], y[j,i] = x[prev_lh_idx,i], y[prev_lh_idx,i]
-                    n_filtered += 1
-                else:
-                    prev_lh_idx = j
+    for i in range(conf.shape[1]):
+        perc_rect.append(0)
+    for k in range(conf.shape[1]):
+        a, b = np.histogram(conf[1:, k].astype(np.float))
+        rise_a = np.where(np.diff(a) >= 0)
+        if rise_a[0][0] > 1:
+            llh = b[rise_a[0][0]]
+        else:
+            llh = b[rise_a[0][1]]
+        data_lh_float = conf[1:, k].astype(np.float)
         
-            perc_filt.append(n_filtered)
-        perc_filt = [(p/N)*100 for p in perc_filt]
+        perc_rect[k] = np.sum(data_lh_float < llh) / conf.shape[0]
+        
+        filt_x[0, k], filt_y = x[0, k], y[0,k]
+        for i in range(1, conf.shape[0] - 1):
+            if data_lh_float[i] < llh:
+                filt_x[i,k] = filt_x[i - 1, k]
+                filt_y[i,k] = filt_y[i - 1, k]
+            else:
+                filt_x[i,k], filt_y[i,k] = x[i,k], y[i,k]
     
-        logging.debug('% filtered from all features (max): {}'.format(max(perc_filt)))
-    
-    return {'conf': conf, 'x': x, 'y': y}, max(perc_filt)
+    logging.debug(f'filtered {max(perc_rect)}% of data (max)')
+    return {'conf': conf, 'x': filt_x, 'y': filt_y}, max(perc_rect)
 
 def windowed_feats(feats, window_len: int=3, mode: str='mean'):
     """
@@ -109,17 +96,6 @@ def windowed_feats(feats, window_len: int=3, mode: str='mean'):
             win_feats.append(feats[i-window_len:i,:].sum(axis=0))
 
     return np.array(win_feats)
-    
-def normalize_feats(feats):
-    logging.info('normalizing features from {} animals with sklearn StandardScaler()'.format(len(feats)))
-    scaled_feats = []
-
-    scaler = StandardScaler()
-    for i in range(len(feats)):
-        scaler.fit(feats[i])
-        scaled_feats.append(scaler.transform(feats[i]))
-
-    return np.vstack(scaled_feats)
 
 def windowed_fft(feats, stride_window, temporal_window):
     assert temporal_window > stride_window + 2
@@ -137,3 +113,4 @@ def windowed_fft(feats, stride_window, temporal_window):
     fft_feats = np.vstack(fft_feats)
 
     return fft_feats
+
