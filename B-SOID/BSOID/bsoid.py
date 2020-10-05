@@ -107,22 +107,15 @@ class BSOID:
         from joblib import Parallel, delayed
         # feats = [extract_displacement_feats(data, self.fps) for data in filtered_data]
         feats = Parallel(n_jobs=-1)(delayed(extract_bsoid_feats)(data, self.fps) for data in filtered_data)
-        
-        feats_sc = [data[1] for data in feats]
-        feats = [data[0] for data in feats]
-
-        with open('/home/dhruvlaad/data/feats.sav', 'wb') as f:
-            joblib.dump(feats, feats_sc, f)
 
         logging.info(f'extracted {len(feats)} datasets of {feats[0].shape[1]}D features')
 
         # feats = window_extracted_feats(feats, self.stride_window, self.temporal_window, self.temporal_dims)
         feats = window_extracted_feats_geo(feats, self.stride_window)
-        feats_sc = window_extracted_feats_geo(feats_sc, self.stride_window)
         
         logging.info('combined temporal features to get {} datasets of {}D'.format(len(feats), feats[0].shape[1]))
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
-            joblib.dump([feats, feats_sc], f)
+            joblib.dump(feats, f)
         
     def bsoid_features(self):
         filtered_data = self.load_filtered_data()
@@ -343,11 +336,11 @@ class BSOID:
 
     def load_features(self, collect=True):
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
-            feats, feats_sc = joblib.load(f)
+            feats = joblib.load(f)
         
         if collect:
             feats = np.vstack(feats)
-            feats_sc = np.vstack(feats_sc)
+            feats_sc = StandardScaler().fit_transform(feats)
 
         return feats, feats_sc
 

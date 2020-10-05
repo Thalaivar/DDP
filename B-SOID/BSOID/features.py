@@ -201,10 +201,9 @@ def extract_bsoid_feats(filtered_data, fps):
         angles[:,i] = smoothen_data(angles[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
 
     feats = np.hstack((link_lens[1:], -angles, dis))
-    feats_sc = StandardScaler().fit_transform(feats)
     logging.debug('final features extracted have shape: {}'.format(feats.shape))
 
-    return (feats, feats_sc)
+    return feats
 
 #########################################################################################################
 #                                      functions to be called in B-SOID                                 #
