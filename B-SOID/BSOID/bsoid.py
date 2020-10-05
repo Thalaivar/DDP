@@ -89,6 +89,7 @@ class BSOID:
             data = pd.read_csv(csv_data_files[i])
             fdata, perc_filt = likelihood_filter(data, self.conf_threshold)
             if fdata is not None and perc_filt < 5:
+                logging.info(f'skpping {i}-th dataset since % filtered is {perc_filt}')
                 filtered_data.append(fdata)
             else:
                 skipped += 1

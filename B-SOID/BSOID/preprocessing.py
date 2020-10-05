@@ -61,6 +61,8 @@ def likelihood_filter(data: pd.DataFrame, conf_threshold: float=0.3, forward_fil
     for k in range(conf.shape[1]):
         a, b = np.histogram(conf[1:, k].astype(np.float))
         rise_a = np.where(np.diff(a) >= 0)
+        if rise_a[0].size == 0:
+            return None, 100
         if rise_a[0][0] > 1:
             llh = b[rise_a[0][0]]
         else:
@@ -78,7 +80,7 @@ def likelihood_filter(data: pd.DataFrame, conf_threshold: float=0.3, forward_fil
                 filt_x[i,k], filt_y[i,k] = x[i,k], y[i,k]
     
     logging.debug(f'filtered {max(perc_rect) * 100}% of data (max)')
-    return {'conf': conf, 'x': filt_x, 'y': filt_y}, max(perc_rect)
+    return {'conf': conf, 'x': filt_x, 'y': filt_y}, max(perc_rect) * 100
 
 def windowed_feats(feats, window_len: int=3, mode: str='mean'):
     """
