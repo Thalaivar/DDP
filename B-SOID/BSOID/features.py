@@ -199,11 +199,6 @@ def extract_bsoid_feats(filtered_data, fps):
         link_lens[:,i] = smoothen_data(link_lens[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
         angles[:,i] = smoothen_data(angles[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
 
-    # window features into bins of a specified number of frames (defaults to 16 frames)
-    dis = windowed_feats(dis, mode='mean')
-    angles = windowed_feats(angles, mode='sum')
-    link_lens = windowed_feats(link_lens, mode='mean')
-
     feats = np.hstack((dis, angles, link_lens))
     logging.debug('final features extracted have shape: {}'.format(feats.shape))
 
