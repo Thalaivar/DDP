@@ -116,4 +116,6 @@ def main():
     return hsu, me
 
 if __name__ == "__main__":
-    main()
+    # main()
+
+    from BSOID.bsoid import 

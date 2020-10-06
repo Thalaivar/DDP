@@ -30,6 +30,16 @@ MLP_PARAMS = {
     'verbose': 0  # set to 1 for tuning your feedforward neural network
 }
 
+UMAP_PARAMS = {
+    'min_dist': 0.0,  # small value
+    'random_state': 23,
+}
+
+HDBSCAN_PARAMS = {
+    'min_samples': 10,
+    'prediction_data': True,
+}
+
 class BSOID:
     def __init__(self, run_id: str, 
                 base_dir: str, 
@@ -126,12 +136,12 @@ class BSOID:
         logging.info('loaded data set with {} samples of {}D features'.format(*feats.shape))
 
         # take subset of data
-        idx = np.random.permutation(np.arange(feats.shape[0]))
-        feats_train = feats_sc[idx[:sample_size],:]
-        feats_usc = feats[idx[:sample_size], :]
+        idx = np.random.permutation(np.arange(feats.shape[0]))[0:sample_size]
+        feats_train = feats_sc[idx,:]
+        feats_usc = feats[idx, :]
         
         logging.info('running UMAP on {} samples from {}D to {}D'.format(*feats_train.shape, reduced_dim))
-        mapper = umap.UMAP(n_components=reduced_dim, n_neighbors=100, min_dist=0.0).fit(feats_train)
+        mapper = umap.UMAP(n_components=reduced_dim, n_neighbors=100, **UMAP_PARAMS).fit(feats_train)
         
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'wb') as f:
             joblib.dump([feats_usc, feats_train, mapper.embedding_], f)
@@ -194,20 +204,28 @@ class BSOID:
         logging.info('max allowed samples for umap: {} and data has: {}'.format(allowed_n, feats.shape[0]))
         return allowed_n
 
-    def identify_clusters_from_umap(self, min_cluster_prop=0.1):
+    def identify_clusters_from_umap(self, cluster_range=[0.4,1.2]):
         # umap embeddings are to be used directly
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
-            _, _, feats_sc = joblib.load(f)
-        
-        min_cluster_size = int(round(min_cluster_prop * 0.01 * feats_sc.shape[0]))
-        logging.info('clustering {} samples in {}D with HDBSCAN for a minimum cluster size of {}'.format(*feats_sc.shape, min_cluster_size))
-        clusterer = hdbscan.HDBSCAN(min_cluster_size, min_samples=10, prediction_data=True).fit(feats_sc)
-        assignments = clusterer.labels_
-        soft_clusters = hdbscan.all_points_membership_vectors(clusterer)
+            _, _, umap_embeddings = joblib.load(f)
+
+        highest_numulab = -np.infty
+        numulab = []
+        min_cluster_range = np.linspace(cluster_range[0], cluster_range[1], 25)
+        for min_c in min_cluster_range:
+            trained_classifier = hdbscan.HDBSCAN(min_cluster_size=int(round(min_c * 0.01 * umap_embeddings.shape[0])),
+                                                **HDBSCAN_PARAMS).fit(umap_embeddings)
+            numulab.append(len(np.unique(trained_classifier.labels_)))
+            if numulab[-1] > highest_numulab:
+                logging.info('adjusting minimum cluster size to maximize cluster number')
+                highest_numulab = numulab[-1]
+                best_clf = trained_classifier
+        assignments = best_clf.labels_
+        soft_clusters = hdbscan.all_points_membership_vectors(best_clf)
         soft_assignments = np.argmax(soft_clusters, axis=1)
         
-        logging.info('identified {} clusters from {} samples in {}D'.format(len(np.unique(assignments)), *feats_sc.shape))
-
+        logging.info('identified {} clusters from {} samples in {}D'.format(len(np.unique(assignments)), *umap_embeddings.shape))
+        
         with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'wb') as f:
             joblib.dump([assignments, soft_clusters, soft_assignments], f)
 
