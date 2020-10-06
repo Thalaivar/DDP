@@ -89,9 +89,9 @@ class BSOID:
             data = pd.read_csv(csv_data_files[i])
             fdata, perc_filt = likelihood_filter(data, self.conf_threshold)
             if fdata is not None and perc_filt < 5:
-                logging.info(f'skpping {i}-th dataset since % filtered is {perc_filt}')
                 filtered_data.append(fdata)
             else:
+                logging.info(f'skpping {i}-th dataset since % filtered is {perc_filt}')
                 skipped += 1
         
         logging.info(f'skipped {skipped}/{len(csv_data_files)} datasets')
@@ -120,16 +120,13 @@ class BSOID:
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
             joblib.dump(feats, f)
 
-    def umap_reduce(self, reduced_dim=10, sample_size=int(5e5), shuffle=True):
+    def umap_reduce(self, reduced_dim=10, sample_size=int(5e5)):
         feats, feats_sc = self.load_features()
         
         logging.info('loaded data set with {} samples of {}D features'.format(*feats.shape))
 
         # take subset of data
-        if shuffle:
-            idx = np.random.permutation(np.arange(feats.shape[0]))
-        else:
-            idx = np.arange(feats.shape[0])
+        idx = np.random.permutation(np.arange(feats.shape[0]))
         feats_train = feats_sc[idx[:sample_size],:]
         feats_usc = feats[idx[:sample_size], :]
         
@@ -197,21 +194,6 @@ class BSOID:
         logging.info('max allowed samples for umap: {} and data has: {}'.format(allowed_n, feats.shape[0]))
         return allowed_n
 
-    def cluster_everything(self):
-        feats, _, _ = self.load_features()
-        feats = StandardScaler().fit_transform(feats)
-        
-        # partitions, assignments = preclustering(feats, n_parts=3, min_clusters=75, max_clusters=100)
-        # with open(self.output_dir + '/' + self.run_id + '_clusters_all.sav', 'wb') as f:
-        #     joblib.dump([partitions, assignments], f)
-
-        # clusters = clusters_from_assignments(partitions, assignments, n_rep=1000, alpha=0.5)
-
-        # with open(self.output_dir + '/' + self.run_id + '_clusters_all.sav', 'wb') as f:
-        #     joblib.dump(clusters, f)
-
-        raise NotImplementedError
-
     def identify_clusters_from_umap(self, min_cluster_prop=0.1):
         # umap embeddings are to be used directly
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
@@ -236,11 +218,7 @@ class BSOID:
             _, _, soft_assignments = joblib.load(f)
 
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
-                _, feats, _ = joblib.load(f)
-
-        # try using scaled features to train also
-        # feats_sc = StandardScaler().fit_transform(feats)
-        feats_sc = feats
+                _, feats_sc, _ = joblib.load(f)
 
         logging.info('training neural network on {} scaled samples in {}D'.format(*feats_sc.shape))
         clf = MLPClassifier(**MLP_PARAMS).fit(feats_sc, soft_assignments)
@@ -334,10 +312,12 @@ class BSOID:
             feats = joblib.load(f)
         
         if collect:
-            feats = np.vstack(feats)
-            feats_sc = StandardScaler().fit_transform(feats)
+            feats_sc = [StandardScaler().fit_transform(data) for data in feats]
+            feats, feats_sc = np.vstack(feats), np.vstack(feats_sc)
 
-        return feats, feats_sc
+            return feats, feats_sc
+        
+        return feats
 
     def load_identified_clusters(self):
         with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:

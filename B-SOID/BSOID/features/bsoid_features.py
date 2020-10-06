@@ -31,9 +31,9 @@ def temporal_features(geo_feats, window=16):
 def extract_feats(filtered_data, fps):
     """
     extract the same features as B-SOID:
-        0-6 : displacements (magnitude)
-        7-27 : angle between link displacements
-        28-48 : link lengths
+        0-20 : link lengths
+        21-41 : angle between link displacements
+        42-48 : displacements (magnitude)
     """
     x, y = filtered_data['x'], filtered_data['y']
     x = np.hstack((x[:,:5], x[:,6:]))
@@ -74,8 +74,12 @@ def extract_feats(filtered_data, fps):
     for i in range(N-1):
         curr_angles = []
         for j in range(links.shape[1]):
-            link_dis_cross = np.cross(links[i,j], links[i+1,j])
-            curr_angles.append(math.atan2(link_dis_cross, links[i,j].dot(links[i+1,j])))
+            link_dis_cross = np.cross(links[i+1,j], links[i,j])
+            # curr_angles.append(math.atan2(link_dis_cross, links[i,j].dot(links[i+1,j])))
+            th =  np.dot(np.dot(np.sign(link_dis_cross), 180) / np.pi,
+                        math.atan2(np.linalg.norm(link_dis_cross),
+                        np.dot(links[i+1,j], links[i,j])))
+            curr_angles.append(th)
         angles.append(curr_angles)
     angles = np.array(angles)
 
@@ -88,7 +92,7 @@ def extract_feats(filtered_data, fps):
         link_lens[:,i] = smoothen_data(link_lens[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
         angles[:,i] = smoothen_data(angles[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
 
-    feats = np.hstack((link_lens[1:], -angles*180/np.pi, dis))
+    feats = np.hstack((link_lens[1:], angles, dis))
     logging.debug('final features extracted have shape: {}'.format(feats.shape))
 
     return feats
@@ -102,20 +106,18 @@ def window_extracted_feats(feats, stride_window, temporal_window=None, temporal_
             clip_len = (temporal_window - stride_window) // 2
             
             win_feats_ll = windowed_feats(f[clip_len:-clip_len,0:21], stride_window, mode='mean')
-            win_feats_th = windowed_feats(f[clip_len:-clip_len,21:42], stride_window, mode='sum')
-            win_feats_d = windowed_feats(f[clip_len:-clip_len,42:49], stride_window, mode='mean') 
+            win_feats_th = windowed_feats(f[clip_len:-clip_len,21:], stride_window, mode='sum')
 
             win_fft = windowed_fft(f, stride_window, temporal_window)
         
             if temporal_dims is not None:
                 win_fft = PCA(n_components=temporal_dims).fit_transform(win_fft)
             
-            win_feats.append(np.hstack((win_feats_ll, win_feats_th, win_feats_d, win_fft)))
+            win_feats.append(np.hstack((win_feats_ll, win_feats_th, win_fft)))
 
         else:
             win_feats_ll = windowed_feats(f[:,0:21], stride_window, mode='mean')
-            win_feats_th = windowed_feats(f[:,21:42], stride_window, mode='sum')
-            win_feats_d = windowed_feats(f[:,42:49], stride_window, mode='mean') 
-            win_feats.append(np.hstack((win_feats_ll, win_feats_th, win_feats_d)))
+            win_feats_th = windowed_feats(f[:,21:], stride_window, mode='sum')
+            win_feats.append(np.hstack((win_feats_ll, win_feats_th)))
             
     return win_feats

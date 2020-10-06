@@ -1,32 +1,29 @@
-import numpy as np
-from tqdm import tqdm
-import itertools
-import math
+import logging
+logging.basicConfig(level=logging.INFO)
+
 from sklearn.preprocessing import StandardScaler
-from BSOID.preprocessing import smoothen_data
 from BSOID.features.bsoid_features import *
 
-def format_data(training_data):
-    data = []
-    for tdata in training_data:
-        x, y = tdata['x'], tdata['y']
-        x = np.hstack((x[:,:5], x[:,6:]))
-        y = np.hstack((y[:,:5], y[:,6:]))
-        data_ = np.zeros((x.shape[0], 2*x.shape[1]))
-        j = 0
-        for i in range(x.shape[1]):
-            data_[:, j:j+2] = np.array([x[:,i], y[:,i]]).T
-            j += 2
-        
-        data.append(data_)
+def format_data(data):
+    fdata  = {}
+    fdata['x'] = np.hstack((data['x'][:,:5], data['x'][:,6:]))
+    fdata['y'] = np.hstack((data['y'][:,:5], data['y'][:,6:]))
 
+    N, d = fdata['x'].shape
+    data = np.zeros((N, 2*d))
+    j = 0
+    for i in range(d):
+        data[:,j] = fdata['x'][:,i]
+        data[:,j+1] = fdata['y'][:,i]
+        j += 2
+    
     return data
 
 def process_feats(training_data, FPS):
     win_len = np.int(np.round(0.05 / (1 / FPS)) * 2 - 1)
     feats = []
     print("Extracting features from {} CSV files..".format(len(training_data)))
-    for m in tqdm(range(len(training_data))):
+    for m in range(len(training_data)):
         dataRange = len(training_data[m])
         dxy_r = []
         dis_r = []
@@ -58,7 +55,7 @@ def process_feats(training_data, FPS):
                     c = np.cross(b_3d, a_3d)
                     ang[kk, k] = np.dot(np.dot(np.sign(c[2]), 180) / np.pi,
                                         math.atan2(np.linalg.norm(c),
-                                                    np.dot(dxy_r[kk, k, :], dxy_r[kk + 1, k, :])))
+                                                   np.dot(dxy_r[kk, k, :], dxy_r[kk + 1, k, :])))
             dxy_smth.append(smoothen_data(dxy_eu[:, k], win_len))
             ang_smth.append(smoothen_data(ang[:, k], win_len))
         dis_smth = np.array(dis_smth)
@@ -81,45 +78,42 @@ def process_feats(training_data, FPS):
                                     np.sum((feats[n][dxy_smth.shape[0]:feats[n].shape[0],
                                             range(k - round(FPS / 10), k)]), axis=1))).reshape(len(feats[0]), 1)
         if n > 0:
-            # f_10fps = np.concatenate((f_10fps, feats1), axis=1)
-            f_10fps.append(feats1)
+            f_10fps = np.concatenate((f_10fps, feats1), axis=1)
+            # f_10fps.append(feats1)
 
             scaler = StandardScaler()
             scaler.fit(feats1.T)
             feats1_sc = scaler.transform(feats1.T).T
 
-            # f_10fps_sc = np.concatenate((f_10fps_sc, feats1_sc), axis=1)
-            f_10fps_sc.append(feats1_sc)
+            f_10fps_sc = np.concatenate((f_10fps_sc, feats1_sc), axis=1)
+            # f_10fps_sc.append(feats1_sc)
         else:
-            f_10fps = [feats1]
+            f_10fps = feats1
             scaler = StandardScaler()
             scaler.fit(feats1.T)
             feats1_sc = scaler.transform(feats1.T).T
-            f_10fps_sc = [feats1_sc]
+            f_10fps_sc = feats1_sc
 
-    return f_10fps, f_10fps_sc
+    return f_10fps.T, f_10fps_sc.T
 
-def me(filtered_data, fps):
-    from joblib import Parallel, delayed
-    feats = Parallel(n_jobs=-1)(delayed(extract_feats)(data, fps) for data in filtered_data)
+def main():
+    from BSOID.bsoid import BSOID
+    bsoid = BSOID.load_config('D:/IIT/DDP/data', 'bsoid_feats')
+    fdata = bsoid.load_filtered_data()[23:25]
+    format_fdata = [format_data(data) for data in fdata]
 
-    feats = window_extracted_feats(feats, 3)
+    hsu = process_feats(format_fdata, 30)
 
-    return feats
+    me = [extract_feats(data, 30) for data in fdata]
+    me = window_extracted_feats(me, 3)
+
+    me_sc = [StandardScaler().fit_transform(data) for data in me]
+    me = np.vstack(me)
+    me_sc = np.vstack(me_sc)
+
+    me = (me, me_sc)
+
+    return hsu, me
 
 if __name__ == "__main__":
-    import joblib
-    with open('../../data/output/geo_feats_filtered_data.sav', 'rb') as f:
-        fdata  = joblib.load(f)
-    
-    format_fdata = format_data(fdata)
-
-    feats_hsu = process_feats(format_fdata, 30)
-    
-    feats_me = me(fdata)
-    feats_me = np.vstack(feats_me)
-
-    pritn(np.linalg.norm(feats_hsu - feats_me))
-    
-    
-
+    main()
