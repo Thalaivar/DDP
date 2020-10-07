@@ -16,7 +16,7 @@ from BSOID.data import *
 from BSOID.preprocessing import *
 from BSOID.prediction import *
 
-from BSOID.features.vinit_feats import *
+from BSOID.features.displacement_feats import *
 
 MLP_PARAMS = {
     'hidden_layer_sizes': (100, 10),  # 100 units, 10 layers
