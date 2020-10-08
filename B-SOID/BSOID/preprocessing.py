@@ -106,7 +106,7 @@ def windowed_fft(feats, stride_window, temporal_window):
     N = feats.shape[0]
 
     temporal_window = (temporal_window - stride_window) // 2
-    for i in range(stride_window + temporal_window, N - temporal_window, stride_window):
+    for i in range(stride_window + temporal_window, N - temporal_window + 1, stride_window):
         win_feats = feats[i - stride_window - temporal_window:i + temporal_window, :]
         win_fft = np.fft.rfftn(win_feats, axes=[0])
         win_fft = win_fft.real ** 2 + win_fft.imag ** 2
@@ -115,4 +115,3 @@ def windowed_fft(feats, stride_window, temporal_window):
     fft_feats = np.vstack(fft_feats)
 
     return fft_feats
-

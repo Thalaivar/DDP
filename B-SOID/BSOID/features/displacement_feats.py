@@ -10,7 +10,7 @@ from BSOID.preprocessing import (windowed_feats,
 def extract_feats(filtered_data, fps):
     """
     0-6 : lenghts of 7 body links
-    8-15 : magnitude of displacements for all 8 points
+    7-14 : magnitude of displacements for all 8 points
     15-21 : displacement angles for links 
     """
     x, y = filtered_data['x'], filtered_data['y']
@@ -73,8 +73,8 @@ def window_extracted_feats(feats, stride_window, temporal_window=None, temporal_
             # indices 0-6 are link lengths, during windowing they should be averaged
             clip_len = (temporal_window - stride_window) // 2
             
-            win_feats_ll_d = windowed_feats(f[clip_len:-clip_len,:16], stride_window, mode='mean')
-            win_feats_th = windowed_feats(f[clip_len:-clip_len,16:22], stride_window, mode='sum')
+            win_feats_ll_d = windowed_feats(f[clip_len:-clip_len+1,:16], stride_window, mode='mean')
+            win_feats_th = windowed_feats(f[clip_len:-clip_len+1,16:22], stride_window, mode='sum')
 
             win_fft = windowed_fft(f, stride_window, temporal_window)
         

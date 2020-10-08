@@ -49,6 +49,7 @@ class BSOID:
                 stride_window: int=3,
                 temporal_dims: int=6):
         self.run_id = run_id
+        self.base_dir = base_dir
         self.raw_dir = base_dir + '/raw'
         self.csv_dir = base_dir + '/csvs'
         self.output_dir = base_dir + '/output'
@@ -131,7 +132,10 @@ class BSOID:
             joblib.dump(feats, f)
 
     def umap_reduce(self, reduced_dim=10, sample_size=int(5e5)):
-        feats, feats_sc = self.load_features()
+        # feats, feats_sc = self.load_features()
+        with open(self.output_dir + '/' + self.run_id + '_split_features.sav', 'rb') as f:
+            feats, _ = joblib.load(f)
+        feats_sc = StandardScaler().fit_transform(feats)
         
         logging.info('loaded data set with {} samples of {}D features'.format(*feats.shape))
 
@@ -269,47 +273,63 @@ class BSOID:
         with open(self.output_dir + '/' + self.run_id + '_validation.sav', 'wb') as f:
             joblib.dump([sc_scores, sc_cf], f)
 
-    def label_frames(self, csv_file, video_file, extract_frames=True, load_feats=False, **video_args):
+    def create_examples(self, csv_dir, vid_dir, bout_length=3, n_examples=10):
+        csv_files = [csv_dir + '/' + f for f in os.listdir(csv_dir) if f.endswith('.csv')]
+        video_files = [vid_dir + '/' + f for f in os.listdir(vid_dir) if f.endswith('.avi')]
+
+        csv_files.sort()
+        video_files.sort()
+
+        n_animals = len(csv_files)
+        logging.info(f'generating {n_examples} examples from {n_animals} videos each with minimum bout length of {1000 * bout_length / self.fps} ms')
+
+        labels = []
+        frame_dirs = []
+        for i in range(n_animals):
+            label, frame_dir = self.label_frames(csv_files[i], video_files[i], bout_length=bout_length, n_examples=n_examples)
+            labels.append(label)
+            frame_dirs.append(frame_dir)
+        
+        output_path = self.base_dir + '/' + self.run_id + '_results'
+        try:
+            os.mkdir(output_path)
+        except FileExistsError:
+            logging.info(f'results directory: {output_path} already exists, deleting')
+            os.rmdir(output_path)
+            os.mkdir(output_path)
+
+        clip_len = None
+        if self.temporal_window is not None:
+            clip_len = (self.temporal_window - self.stride_window) // 2
+        collect_all_examples(labels, frame_dirs, output_path, clip_len, bout_length, n_examples, self.fps)
+
+    def label_frames(self, csv_file, video_file, bout_length=3, n_examples=10):
         # directory to store results for video
         output_dir = self.test_dir + '/' + csv_file.split('/')[-1][:-4]
         try:
             os.mkdir(output_dir)
         except FileExistsError:
             pass
+        
         frame_dir = output_dir + '/pngs'
+        extract_frames = True
         try:
             os.mkdir(frame_dir)
         except FileExistsError:
-            pass
+            extract_frames = False
         
         # extract 
         if extract_frames:
             logging.info('extracting frames from video {} to dir {}'.format(video_file, frame_dir))
             frames_from_video(video_file, frame_dir)
         
-        shortvid_dir = output_dir + '/mp4s'
-        try:
-            os.mkdir(shortvid_dir)
-        except FileExistsError:
-            pass
+        logging.debug('extracting features from {}'.format(csv_file))
+        
+        # filter data from test file
+        data = pd.read_csv(csv_file, low_memory=False)
+        data, _ = likelihood_filter(data, self.conf_threshold)
 
-        logging.info('saving example videos from {} to {}'.format(video_file, shortvid_dir))
-        logging.info('generating {} examples with minimum bout: {} ms'.format(video_args['n_examples'], video_args['bout_length']))
-
-        if load_feats:
-            with open(output_dir + '/feats.sav', 'rb') as f:
-                feats = joblib.load(f)
-        else:
-            logging.debug('extracting features from {}'.format(csv_file))
-            
-            # filter data from test file
-            data = pd.read_csv(csv_file, low_memory=False)
-            data, _ = likelihood_filter(data, self.conf_threshold)
-
-            feats = frameshift_features(data, self.stride_window, self.fps, extract_feats, window_extracted_feats, self.temporal_window, self.temporal_dims)
-
-            with open(output_dir + '/feats.sav', 'wb') as f:
-                joblib.dump(feats, f)
+        feats = frameshift_features(data, self.stride_window, self.fps, extract_feats, window_extracted_feats, self.temporal_window, self.temporal_dims)
 
         with open(self.output_dir + '/' + self.run_id + '_classifiers.sav', 'rb') as f:
             clf = joblib.load(f)
@@ -317,7 +337,7 @@ class BSOID:
         labels = frameshift_predict(feats, clf, self.stride_window)
         logging.info(f'predicted {len(labels)} frames in {feats[0].shape[1]}D with trained classifier')
 
-        create_vids(labels, frame_dir, shortvid_dir, self.temporal_window, **video_args)
+        return labels, frame_dir
     
     def load_filtered_data(self):
         with open(self.output_dir + '/' + self.run_id + '_filtered_data.sav', 'rb') as f:
@@ -353,6 +373,7 @@ class BSOID:
         with open(base_dir + '/output/' + run_id + '_bsoid.model', 'rb') as f:
             config = joblib.load(f)
         
+        config.base_dir = base_dir
         config.raw_dir = base_dir + '/raw'
         config.csv_dir = base_dir + '/csvs'
         config.output_dir = base_dir + '/output'

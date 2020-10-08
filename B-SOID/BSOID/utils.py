@@ -60,13 +60,80 @@ def get_all_bouts(labels):
         i += 1
     return vid_locs 
 
-def create_vids(labels, frame_dir, output_path, temporal_window, bout_length, n_examples, output_fps):
+def example_video_segments(labels, clip_len, frame_dir, bout_length, n_examples):
+    images = [img for img in os.listdir(frame_dir) if img.endswith(".png")]
+    images.sort(key=lambda x:alphanum_key(x))
+
+    # trim frames since we exclude first and last few frames when taking fft
+    if clip_len is not None:
+        images = images[clip_len:-clip_len]
+
+    class_vid_locs = get_all_bouts(labels)
+
+    # filter out all videos smaller than len bout_length
+    for k, class_vids in enumerate(class_vid_locs):
+        for i, vid in enumerate(class_vids):
+            if vid['end'] - vid['start'] < bout_length:
+                del class_vid_locs[k][i]
+
+    # get longest vids
+    for k, class_vids in enumerate(class_vid_locs):
+        class_vids.sort(key=lambda loc: loc['start']-loc['end'])
+        if len(class_vids) > n_examples:
+            class_vid_locs[k] = class_vids[0:n_examples]        
+
+    return class_vid_locs, images
+
+def collect_all_examples(labels, frame_dirs, output_path, clip_window, bout_length, n_examples, output_fps):
+    n_animals = len(frame_dirs)
+
+    all_class_vid_locs = []
+    all_frames = []
+    for i in range(n_animals):
+        class_vid_locs, frames = example_video_segments(labels[i], clip_window, frame_dirs[i], bout_length, n_examples)
+        all_class_vid_locs.append(class_vid_locs)
+        all_frames.append(frames)
+
+    n_groups = len(all_class_vid_locs[0])
+    for i in range(1, n_animals):
+        assert len(all_class_vid_locs[i]) == n_groups, 'number of groups not consistent across test animals'
+
+    frame = cv2.imread(os.path.join(frame_dirs[0], all_frames[0][0]))
+    height, width, layers = frame.shape
+
+    fourcc = cv2.VideoWriter_fourcc(*'avc1')
+    for k in range(n_groups):
+        video_name = 'group_{}.mp4'.format(k)
+        video = cv2.VideoWriter(os.path.join(output_path, video_name), fourcc, output_fps, (width, height))
+
+        for i in range(n_animals):
+            curr_frame_dir = frame_dirs[i]
+            curr_frames = all_frames[i]
+            curr_vid_locs = all_class_vid_locs[i][k]
+
+            curr_video_frames = []
+            for j, vid in enumerate(curr_vid_locs):
+                for idx in range(vid['start'], vid['end']+1):
+                    curr_video_frames.append(curr_frames[idx])
+                for idx in range(output_fps):
+                    curr_video_frames.append(np.zeros(shape=(height, width, layers), dtype=np.uint8))
+
+            for image in curr_video_frames:
+                if isinstance(image, str):
+                    video.write(cv2.imread(os.path.join(curr_frame_dir, image)))
+                elif isinstance(image, np.ndarray):
+                    video.write(image)
+        
+        cv2.destroyAllWindows()
+        video.release()
+
+def create_vids(labels, frame_dir, output_path, clip_len, bout_length, n_examples, output_fps):
     images = [img for img in os.listdir(frame_dir) if img.endswith(".png")]
     images.sort(key=lambda x:alphanum_key(x))
     
     # trim frames since we exclude first and last few frames when taking fft
-    if temporal_window is not None:
-        images = images[temporal_window // 2:-temporal_window // 2 + 1]
+    if clip_len is not None:
+        images = images[clip_len:-clip_len + 1]
     logging.debug(f'using {len(images)} frames for creating example videos')
 
     fourcc = cv2.VideoWriter_fourcc(*'avc1')

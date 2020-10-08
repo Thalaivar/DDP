@@ -61,8 +61,8 @@ def window_extracted_feats(feats, stride_window, temporal_window=None, temporal_
             # indices 0-6 are link lengths, during windowing they should be averaged
             clip_len = (temporal_window - stride_window) // 2
             
-            win_feats_ll = windowed_feats(f[clip_len:-clip_len,:7], stride_window, mode='mean')
-            win_feats_rth = windowed_feats(f[clip_len:-clip_len,7:], stride_window, mode='sum')
+            win_feats_ll = windowed_feats(f[clip_len:-clip_len+1,:7], stride_window, mode='mean')
+            win_feats_rth = windowed_feats(f[clip_len:-clip_len+1,7:], stride_window, mode='sum')
 
             win_fft = windowed_fft(f, stride_window, temporal_window)
         
