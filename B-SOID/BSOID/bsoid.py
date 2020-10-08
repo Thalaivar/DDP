@@ -132,11 +132,7 @@ class BSOID:
             joblib.dump(feats, f)
 
     def umap_reduce(self, reduced_dim=10, sample_size=int(5e5)):
-        # feats, feats_sc = self.load_features()
-        with open(self.output_dir + '/' + self.run_id + '_split_features.sav', 'rb') as f:
-            feats, _ = joblib.load(f)
-        feats_sc = StandardScaler().fit_transform(feats)
-        
+        feats, feats_sc = self.load_features()
         logging.info('loaded data set with {} samples of {}D features'.format(*feats.shape))
 
         # take subset of data
