@@ -5,7 +5,8 @@ from BSOID.bsoid import BSOID
 
 bsoid = BSOID.load_config('/home/dhruvlaad/data', 'dis')
 
-feats = bsoid.load_features(collect=False)
+with open(bsoid.output_dir + '/' + bsoid.run_id + '_features.sav', 'rb') as f:
+    feats = joblib.load(f)
 feats = np.vstack(feats)
 
 # split data according to displacement threshold
