@@ -33,6 +33,7 @@ MLP_PARAMS = {
 UMAP_PARAMS = {
     'min_dist': 0.0,  # small value
     'random_state': 23,
+    'metric': 'manhattan'
 }
 
 HDBSCAN_PARAMS = {
@@ -132,21 +133,24 @@ class BSOID:
             joblib.dump(feats, f)
 
     def umap_reduce(self, reduced_dim=10, sample_size=int(5e5)):
-        feats = self.load_features(collect=False)
+        comb_feats = self.load_features(collect=False)
         logging.info('loaded data set with {} samples of {}D features'.format(*feats.shape))
+        
+        umap_results = []
+        for feats in comb_feats:
+            feats_sc = StandardScaler().fit_transform(feats)
+            # take subset of data
+            idx = np.random.permutation(np.arange(feats.shape[0]))[0:sample_size]
+            feats_train = feats_sc[idx,:]
+            feats_usc = feats[idx, :]
+            
+            logging.info('running UMAP on {} samples from {}D to {}D'.format(*feats_train.shape, reduced_dim))
+            mapper = umap.UMAP(n_components=reduced_dim, n_neighbors=100, **UMAP_PARAMS).fit(feats_train)
 
-        feats_sc = StandardScaler().fit_transform(feats)
-        
-        # take subset of data
-        idx = np.random.permutation(np.arange(feats.shape[0]))[0:sample_size]
-        feats_train = feats_sc[idx,:]
-        feats_usc = feats[idx, :]
-        
-        logging.info('running UMAP on {} samples from {}D to {}D'.format(*feats_train.shape, reduced_dim))
-        mapper = umap.UMAP(n_components=reduced_dim, n_neighbors=100, **UMAP_PARAMS).fit(feats_train)
-        
+            umap_results.append([feats_usc, feats_train, mapper.embedding_])
+
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'wb') as f:
-            joblib.dump([feats_usc, feats_train, mapper.embedding_], f)
+            joblib.dump(umap_results, f)
 
 
     def umap_reduce_all(self, reduced_dim=10, sample_size=int(5e5), shuffle=True):
@@ -345,15 +349,9 @@ class BSOID:
 
     def load_features(self, collect=True):
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
-            feats = joblib.load(f)
+            active_feats, inactive_feats = joblib.load(f)
         
-        if collect:
-            feats_sc = [StandardScaler().fit_transform(data) for data in feats]
-            feats, feats_sc = np.vstack(feats), np.vstack(feats_sc)
-
-            return feats, feats_sc
-        
-        return feats
+        return active_feats, inactive_feats
 
     def load_identified_clusters(self):
         with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:
