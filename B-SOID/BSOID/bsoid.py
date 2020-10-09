@@ -132,9 +132,11 @@ class BSOID:
             joblib.dump(feats, f)
 
     def umap_reduce(self, reduced_dim=10, sample_size=int(5e5)):
-        feats, feats_sc = self.load_features()
+        feats = self.load_features(collect=False)
         logging.info('loaded data set with {} samples of {}D features'.format(*feats.shape))
 
+        feats_sc = StandardScaler().fit_transform(feats)
+        
         # take subset of data
         idx = np.random.permutation(np.arange(feats.shape[0]))[0:sample_size]
         feats_train = feats_sc[idx,:]
