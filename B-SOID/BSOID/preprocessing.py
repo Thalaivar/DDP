@@ -29,7 +29,7 @@ def smoothen_data(data, win_len=7):
     smoothed_data = data.rolling(win_len, min_periods=1, center=True)
     return np.array(smoothed_data.mean())
 
-def likelihood_filter(data: pd.DataFrame, conf_threshold: float=0.3, forward_fill=True):
+def likelihood_filter(data: pd.DataFrame):
     N = data.shape[0]
 
     # retrieve confidence, x and y data from csv data

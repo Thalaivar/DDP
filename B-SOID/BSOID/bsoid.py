@@ -57,7 +57,6 @@ class BSOID:
         # frame rate for video
         self.fps = fps
         # feature extraction parameters
-        self.conf_threshold = conf_threshold
         self.temporal_dims = temporal_dims
         self.temporal_window = temporal_window
         self.stride_window = stride_window
@@ -224,32 +223,9 @@ class BSOID:
 
         return assignments, soft_clusters, soft_assignments
 
-    def _format_split_data(self):
-        with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
-            active, inactive = joblib.load(f)
-        
-        with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:
-            _, _, soft_assignments = joblib.load(f)
-
-        assert active[1].shape[0] == soft_assignments.size
-
-        idx = np.random.permutation(np.arange(inactive[1].shape[0]))[:int(1e5)]
-        inactive_feats_sc = inactive[1][idx]
-        
-        feats_sc = np.vstack((active[1], inactive_feats_sc))
-        inactive_cluster_label = soft_assignments.max() + 1
-        soft_assignments = np.hstack((soft_assignments, inactive_cluster_label*np.ones(idx.size,)))
-
-        return feats_sc, soft_assignments
-
     def train_classifier(self):
-        with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:
-            _, _, soft_assignments = joblib.load(f)
-
-        with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
-                _, feats_sc, _ = joblib.load(f)
-
-        # feats_sc, soft_assignments = self._format_split_data()
+        _, _, soft_assignments = self.load_identified_clusters()
+        _, feats_sc, _ = self.load_umap_results(collect=True)
 
         logging.info('training neural network on {} scaled samples in {}D'.format(*feats_sc.shape))
         clf = MLPClassifier(**MLP_PARAMS).fit(feats_sc, soft_assignments)
@@ -258,13 +234,8 @@ class BSOID:
             joblib.dump(clf, f)
 
     def validate_classifier(self):
-        with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:
-            _, _, soft_assignments = joblib.load(f)
-
-        with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
-                _, feats_sc, _ = joblib.load(f)
-        
-        feats_sc, soft_assignments = self._format_split_data()
+        _, _, soft_assignments = self.load_identified_clusters()
+        _, feats_sc, _ = self.load_umap_results(collect=True)
 
         logging.info('validating classifier on {} features'.format(*feats_sc.shape))
         feats_train, feats_test, labels_train, labels_test = train_test_split(feats_sc, soft_assignments)
@@ -330,7 +301,7 @@ class BSOID:
         
         # filter data from test file
         data = pd.read_csv(csv_file, low_memory=False)
-        data, _ = likelihood_filter(data, self.conf_threshold)
+        data, _ = likelihood_filter(data)
 
         feats = frameshift_features(data, self.stride_window, self.fps, extract_feats, window_extracted_feats, self.temporal_window, self.temporal_dims)
 
@@ -370,6 +341,26 @@ class BSOID:
         
         return assignments, soft_clusters, soft_assignments
 
+    def load_umap_results(self, collect=None):
+        if self.active_split:
+            with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
+                umap_results = joblib.load(f)
+
+            if collect is not None and collect is True:
+                feats_usc = [f[0] for f in umap_results]
+                feats_sc = [f[1] for f in umap_results]
+                umap_embeddings = [f[2] for f in umap_results]
+
+                feats_usc, feats_sc, umap_embeddings = np.vstack(feats_usc), np.vstack(feats_sc), np.vstack(umap_embeddings)
+                return feats_usc, feats_sc, umap_embeddings
+            
+            else:
+                return umap_results
+        
+        else:
+            with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
+                feats_usc, feats_sc, umap_embeddings = joblib.load(f)
+            return feats_usc, feats_sc, umap_embeddings
 
     def save(self):
         with open(self.output_dir + '/' + self.run_id + '_bsoid.model', 'wb') as f:
