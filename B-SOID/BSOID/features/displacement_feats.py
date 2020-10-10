@@ -54,6 +54,8 @@ def extract_feats(filtered_data, fps):
     r_thetas[:,3] = thetas[:,4] - thetas[:,0]   # between (hindpaw2 -> base-tail) and (center-spine -> base-tail)
     r_thetas[:,4] = thetas[:,5] - thetas[:,0]   # between (mid-tail -> base-tail) and (center-spine -> base-tail)
     r_thetas[:,5] = thetas[:,6] - thetas[:,5]   # between (tip-tail -> mid-tail) and (mid-tail -> base-tail)
+    r_thetas += np.pi
+    r_thetas %= 2*np.pi
 
     # link lengths
     link_lens = np.vstack([np.linalg.norm(link, axis=1) for link in links]).T

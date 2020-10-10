@@ -2,7 +2,6 @@ import os
 import umap
 import random
 import joblib
-import hdbscan
 import logging
 import pandas as pd
 import numpy as np
@@ -189,21 +188,8 @@ class BSOID:
             for results in umap_results:
                 _, _, umap_embeddings = results
                 
-                highest_numulab = -np.infty
-                numulab = []
-                min_cluster_range = np.linspace(cluster_range[0], cluster_range[1], 25)
-                for min_c in min_cluster_range:
-                    trained_classifier = hdbscan.HDBSCAN(min_cluster_size=int(round(min_c * 0.01 * umap_embeddings.shape[0])),
-                                                        **HDBSCAN_PARAMS).fit(umap_embeddings)
-                    numulab.append(len(np.unique(trained_classifier.labels_)))
-                    if numulab[-1] > highest_numulab:
-                        logging.info('adjusting minimum cluster size to maximize cluster number')
-                        highest_numulab = numulab[-1]
-                        best_clf = trained_classifier
-                assignments = best_clf.labels_
-                soft_clusters = hdbscan.all_points_membership_vectors(best_clf)
-                soft_assignments = np.argmax(soft_clusters, axis=1)
-
+                cluster_range = [float(x) for x in input('Enter cluster range: ').split()]
+                assignments, soft_clusters, soft_assignments = cluster_with_hdbscan(umap_embeddings, cluster_range, HDBSCAN_PARAMS)
                 comb_assignments.append(assignments)
                 comb_soft_clusters.append(soft_clusters)
                 comb_soft_assignments.append(soft_assignments)
@@ -220,7 +206,20 @@ class BSOID:
             assignments[n_1:] = comb_assignments[1]
 
             soft_clusters = -1 * np.ones((n_1 + n_2, n_cluster_1 + n_cluster_2))
-            soft_clusters[:n_1]
+            soft_clusters[:n_1,:n_cluster_1] = comb_soft_clusters[0]
+            soft_clusters[n_1:, n_cluster_1:] = comb_soft_clusters[1]
+
+            soft_assignments = np.zeros((n_1 + n_2,))
+            soft_assignments[:n_1] = comb_soft_assignments[0]
+            soft_assignments[n_1:] = comb_soft_assignments[1] + comb_soft_assignments[0].max() + 1
+        
+        else:
+            with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
+                _, _, umap_embeddings = joblib.load(f)
+
+            assignments, soft_clusters, soft_assignments = cluster_with_hdbscan(umap_embeddings, cluster_range, HDBSCAN_PARAMS)
+            logging.info('identified {} clusters from {} samples in {}D'.format(len(np.unique(soft_assignments)), *umap_embeddings.shape))
+
         with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'wb') as f:
             joblib.dump([assignments, soft_clusters, soft_assignments], f)
 
@@ -245,13 +244,13 @@ class BSOID:
         return feats_sc, soft_assignments
 
     def train_classifier(self):
-        # with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:
-        #     _, _, soft_assignments = joblib.load(f)
+        with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:
+            _, _, soft_assignments = joblib.load(f)
 
-        # with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
-        #         _, feats_sc, _ = joblib.load(f)
+        with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
+                _, feats_sc, _ = joblib.load(f)
 
-        feats_sc, soft_assignments = self._format_split_data()
+        # feats_sc, soft_assignments = self._format_split_data()
 
         logging.info('training neural network on {} scaled samples in {}D'.format(*feats_sc.shape))
         clf = MLPClassifier(**MLP_PARAMS).fit(feats_sc, soft_assignments)
@@ -260,21 +259,13 @@ class BSOID:
             joblib.dump(clf, f)
 
     def validate_classifier(self):
-        # with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:
-        #     _, _, soft_assignments = joblib.load(f)
+        with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:
+            _, _, soft_assignments = joblib.load(f)
 
-        # with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
-        #         _, feats_sc, _ = joblib.load(f)
+        with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
+                _, feats_sc, _ = joblib.load(f)
         
         feats_sc, soft_assignments = self._format_split_data()
-        
-        # check with/without scaling
-        # logging.info('validating classifier on {} features'.format(*feats_usc.shape))
-        # feats_train, feats_test, labels_train, labels_test = train_test_split(feats_usc, soft_assignments)
-        # clf = MLPClassifier(**MLP_PARAMS).fit(feats_train, labels_train)
-        # usc_scores = cross_val_score(clf, feats_test, labels_test, cv=5, n_jobs=-1)
-        # usc_cf = create_confusion_matrix(feats_test, labels_test, clf)
-        # logging.info('classifier accuracy: {} +- {}'.format(usc_scores.mean(), usc_scores.std())) 
 
         logging.info('validating classifier on {} features'.format(*feats_sc.shape))
         feats_train, feats_test, labels_train, labels_test = train_test_split(feats_sc, soft_assignments)

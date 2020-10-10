@@ -6,11 +6,30 @@ try:
 except:
     pass
 import logging
+import hdbscan
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sn
 from sklearn.metrics import confusion_matrix
+
+def cluster_with_hdbscan(feats, cluster_range, HDBSCAN_PARAMS):
+    highest_numulab = -np.infty
+    numulab = []
+    min_cluster_range = np.linspace(cluster_range[0], cluster_range[1], 25)
+    for min_c in min_cluster_range:
+        trained_classifier = hdbscan.HDBSCAN(min_cluster_size=int(round(min_c * 0.01 * feats.shape[0])),
+                                            **HDBSCAN_PARAMS).fit(feats)
+        numulab.append(len(np.unique(trained_classifier.labels_)))
+        if numulab[-1] > highest_numulab:
+            logging.info('adjusting minimum cluster size to maximize cluster number')
+            highest_numulab = numulab[-1]
+            best_clf = trained_classifier
+    assignments = best_clf.labels_
+    soft_clusters = hdbscan.all_points_membership_vectors(best_clf)
+    soft_assignments = np.argmax(soft_clusters, axis=1)
+
+    return assignments, soft_clusters, soft_assignments
 
 def create_confusion_matrix(feats, labels, clf):
     pred = clf.predict(feats)
