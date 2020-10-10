@@ -98,7 +98,7 @@ class BSOID:
         skipped = 0
         for i in range(len(csv_data_files)):
             data = pd.read_csv(csv_data_files[i])
-            fdata, perc_filt = likelihood_filter(data, self.conf_threshold)
+            fdata, perc_filt = likelihood_filter(data)
             if fdata is not None and perc_filt < 5:
                 filtered_data.append(fdata)
             else:
