@@ -10,8 +10,9 @@ from BSOID.preprocessing import (windowed_feats,
 def extract_feats(filtered_data, fps):
     """
     0-6 : lenghts of 7 body links
-    7-14 : magnitude of displacements for all 8 points
-    15-21 : displacement angles for links 
+    7-12 : relative angles of links
+    13-20 : magnitude of displacements for all 8 points
+    21-27 : displacement angles for links 
     """
     x, y = filtered_data['x'], filtered_data['y']
 
@@ -37,8 +38,22 @@ def extract_feats(filtered_data, fps):
     links = []
     for conn in link_connections:
         links.append(np.array([x[:, conn[0]] - x[:, conn[1]], y[:, conn[0]] - y[:, conn[1]]]).T)    
-    
-    logging.debug('extracted {} links from data points'.format(len(links)))
+
+    thetas = []
+    for link in links:
+        thetas.append(np.arctan2(link[:,0], link[:,1]))
+    thetas = np.vstack(thetas).T
+
+    logging.debug('{} links and {} angles extracted'.format(len(links), thetas.shape))
+
+    # relative angles between links
+    r_thetas = np.zeros((thetas.shape[0], thetas.shape[1]-1))
+    r_thetas[:,0] = thetas[:,1] - thetas[:,0]   # between (neck -> center-spine) and (center-spine -> base-tail)
+    r_thetas[:,1] = thetas[:,2] - thetas[:,1]   # between (head -> neck) and (neck -> center-spine)
+    r_thetas[:,2] = thetas[:,3] - thetas[:,0]   # between (hindpaw1 -> base-tail) and (center-spine -> base-tail)
+    r_thetas[:,3] = thetas[:,4] - thetas[:,0]   # between (hindpaw2 -> base-tail) and (center-spine -> base-tail)
+    r_thetas[:,4] = thetas[:,5] - thetas[:,0]   # between (mid-tail -> base-tail) and (center-spine -> base-tail)
+    r_thetas[:,5] = thetas[:,6] - thetas[:,5]   # between (tip-tail -> mid-tail) and (mid-tail -> base-tail)
 
     # link lengths
     link_lens = np.vstack([np.linalg.norm(link, axis=1) for link in links]).T
@@ -55,7 +70,7 @@ def extract_feats(filtered_data, fps):
 
     logging.debug(f'{angles.shape} displacement angles extracted')
     
-    feats = np.hstack((link_lens[1:], dis, angles))
+    feats = np.hstack((link_lens[1:], r_thetas, dis, angles))
     
     # smoothen data
     for i in range(feats.shape[1]):
@@ -73,8 +88,8 @@ def window_extracted_feats(feats, stride_window, temporal_window=None, temporal_
             # indices 0-6 are link lengths, during windowing they should be averaged
             clip_len = (temporal_window - stride_window) // 2
             
-            win_feats_ll_d = windowed_feats(f[clip_len:-clip_len+1,:16], stride_window, mode='mean')
-            win_feats_th = windowed_feats(f[clip_len:-clip_len+1,16:22], stride_window, mode='sum')
+            win_feats_ll_d = windowed_feats(f[clip_len:-clip_len+1,:21], stride_window, mode='mean')
+            win_feats_th = windowed_feats(f[clip_len:-clip_len+1,21:28], stride_window, mode='sum')
 
             win_fft = windowed_fft(f, stride_window, temporal_window)
         
@@ -84,8 +99,8 @@ def window_extracted_feats(feats, stride_window, temporal_window=None, temporal_
             win_feats.append(np.hstack((win_feats_ll_d, win_feats_th, win_fft)))
 
         else:
-            win_feats_ll_d = windowed_feats(f[:,:16], stride_window, mode='mean')
-            win_feats_th = windowed_feats(f[:,16:22], stride_window, mode='sum')
+            win_feats_ll_d = windowed_feats(f[:,:21], stride_window, mode='mean')
+            win_feats_th = windowed_feats(f[:,21:28], stride_window, mode='sum')
             win_feats.append(np.hstack((win_feats_ll_d, win_feats_th)))
             
     return win_feats

@@ -134,7 +134,6 @@ class BSOID:
 
     def umap_reduce(self, reduced_dim=10, sample_size=int(5e5)):
         comb_feats = self.load_features(collect=False)
-        logging.info('loaded data set with {} samples of {}D features'.format(*feats.shape))
         
         umap_results = []
         for feats in comb_feats:
@@ -213,8 +212,9 @@ class BSOID:
     def identify_clusters_from_umap(self, cluster_range=[0.4,1.2]):
         # umap embeddings are to be used directly
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
-            _, _, umap_embeddings = joblib.load(f)
+            umap_results = joblib.load(f)
 
+        _, _, umap_embeddings = umap_results[0]
         highest_numulab = -np.infty
         numulab = []
         min_cluster_range = np.linspace(cluster_range[0], cluster_range[1], 25)
@@ -229,20 +229,40 @@ class BSOID:
         assignments = best_clf.labels_
         soft_clusters = hdbscan.all_points_membership_vectors(best_clf)
         soft_assignments = np.argmax(soft_clusters, axis=1)
-        
-        logging.info('identified {} clusters from {} samples in {}D'.format(len(np.unique(assignments)), *umap_embeddings.shape))
+
+        logging.info('identified {} clusters from {} samples in {}D'.format(len(np.unique(soft_assignments)), *umap_embeddings.shape))
         
         with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'wb') as f:
             joblib.dump([assignments, soft_clusters, soft_assignments], f)
 
         return assignments, soft_clusters, soft_assignments
 
-    def train_classifier(self):
+    def _format_split_data(self):
+        with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
+            active, inactive = joblib.load(f)
+        
         with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:
             _, _, soft_assignments = joblib.load(f)
 
-        with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
-                _, feats_sc, _ = joblib.load(f)
+        assert active[1].shape[0] == soft_assignments.size
+
+        idx = np.random.permutation(np.arange(inactive[1].shape[0]))[:int(1e5)]
+        inactive_feats_sc = inactive[1][idx]
+        
+        feats_sc = np.vstack((active[1], inactive_feats_sc))
+        inactive_cluster_label = soft_assignments.max() + 1
+        soft_assignments = np.hstack((soft_assignments, inactive_cluster_label*np.ones(idx.size,)))
+
+        return feats_sc, soft_assignments
+
+    def train_classifier(self):
+        # with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:
+        #     _, _, soft_assignments = joblib.load(f)
+
+        # with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
+        #         _, feats_sc, _ = joblib.load(f)
+
+        feats_sc, soft_assignments = self._format_split_data()
 
         logging.info('training neural network on {} scaled samples in {}D'.format(*feats_sc.shape))
         clf = MLPClassifier(**MLP_PARAMS).fit(feats_sc, soft_assignments)
@@ -251,11 +271,13 @@ class BSOID:
             joblib.dump(clf, f)
 
     def validate_classifier(self):
-        with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:
-            _, _, soft_assignments = joblib.load(f)
+        # with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:
+        #     _, _, soft_assignments = joblib.load(f)
 
-        with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
-                _, feats_sc, _ = joblib.load(f)
+        # with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
+        #         _, feats_sc, _ = joblib.load(f)
+        
+        feats_sc, soft_assignments = self._format_split_data()
         
         # check with/without scaling
         # logging.info('validating classifier on {} features'.format(*feats_usc.shape))
