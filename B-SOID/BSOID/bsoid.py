@@ -32,7 +32,6 @@ MLP_PARAMS = {
 UMAP_PARAMS = {
     'min_dist': 0.0,  # small value
     'random_state': 23,
-    'metric': 'manhattan'
 }
 
 HDBSCAN_PARAMS = {
