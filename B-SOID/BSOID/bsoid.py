@@ -44,11 +44,11 @@ HDBSCAN_PARAMS = {
 class BSOID:
     def __init__(self, run_id: str, 
                 base_dir: str, 
-                conf_threshold: float=0.3,
                 fps: int=30, 
                 temporal_window: int=16,
                 stride_window: int=3,
-                temporal_dims: int=6):
+                temporal_dims: int=6,
+                active_split: bool=False):
         self.run_id = run_id
         self.base_dir = base_dir
         self.raw_dir = base_dir + '/raw'
@@ -76,7 +76,9 @@ class BSOID:
             os.mkdir(self.test_dir)
         except FileExistsError:
             pass
-    
+        
+        self.active_split = active_split
+
     def get_data(self, n=None, download=False):
         if download:
             download_data('bsoid_strain_data.csv', self.raw_dir)
@@ -132,7 +134,8 @@ class BSOID:
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
             joblib.dump(feats, f)
 
-    def umap_reduce(self, reduced_dim=10, sample_size=int(5e5)):
+    def umap_reduce_split(self, reduced_dim=10, sample_size=int(5e5)):
+        assert self.active_split is True
         comb_feats = self.load_features(collect=False)
         
         umap_results = []
@@ -142,7 +145,7 @@ class BSOID:
             idx = np.random.permutation(np.arange(feats.shape[0]))[0:sample_size]
             feats_train = feats_sc[idx,:]
             feats_usc = feats[idx, :]
-            
+
             logging.info('running UMAP on {} samples from {}D to {}D'.format(*feats_train.shape, reduced_dim))
             mapper = umap.UMAP(n_components=reduced_dim, n_neighbors=100, **UMAP_PARAMS).fit(feats_train)
 
@@ -151,53 +154,20 @@ class BSOID:
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'wb') as f:
             joblib.dump(umap_results, f)
 
-
-    def umap_reduce_all(self, reduced_dim=10, sample_size=int(5e5), shuffle=True):
-        with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
-            feats, _ = joblib.load(f)
-
-        # take subset of data
-        if shuffle:
-            idx = np.random.permutation(np.arange(feats.shape[0]))
-        else:
-            idx = np.arange(feats.shape[0])
-        feats_train = feats[idx[:sample_size],:]
-        rem_feats = feats[idx[sample_size:],:]
+    def umap_reduce_all(self, reduced_dim, sample_size=int(5e5)):
+        assert self.active_split is not True
         
-        logging.info('divided data into {} and {} samples'.format(feats_train.shape[0], rem_feats.shape[0]))
+        feats, feats_sc = self.load_features()
+    
+        idx = np.random.permutation(np.arange(feats.shape[0]))[0:sample_size]
+        feats_train = feats_sc[idx,:]
+        feats_usc = feats[idx, :]
 
-        # scale both datasets
-        rem_feats = StandardScaler().fit_transform(rem_feats)
-        feats_train = StandardScaler().fit_transform(feats_train)
-        
-        
         logging.info('running UMAP on {} samples from {}D to {}D'.format(*feats_train.shape, reduced_dim))
-        mapper = umap.UMAP(n_components=reduced_dim, n_neighbors=100, min_dist=0.0).fit(feats_train)
-        
-        with open(self.output_dir + '/' + self.run_id + '_umap_all.sav', 'wb') as f:
-            joblib.dump([mapper, mapper.embedding_], f)
+        mapper = umap.UMAP(n_components=reduced_dim, n_neighbors=100, **UMAP_PARAMS).fit(feats_train)
 
-        # batch transform rest of data
-        embeddings = [mapper.embedding_]
-        pbar = tqdm(total=rem_feats.shape[0])
-        idx = 0
-        batch_sz = sample_size // 10
-        logging.info('embedding {} samples from data set to {}D in batches of {}'.format(rem_feats.shape[0], reduced_dim, batch_sz))
-        while idx < rem_feats.shape[0]:
-            if idx + batch_sz >= rem_feats.shape[0]:
-                batch_embed = mapper.transform(rem_feats[idx:,:])
-                pbar.update(rem_feats.shape[0]-idx)
-            else:
-                batch_embed = mapper.transform(rem_feats[idx:idx+batch_sz,:])
-                pbar.update(batch_sz)
-            embeddings.append(batch_embed)
-            idx += batch_sz
-
-        embeddings = np.vstack(embeddings)
-        logging.info('finished transforming {} samples'.format(idx))
-
-        with open(self.output_dir + '/' + self.run_id + '_umap_all.sav', 'wb') as f:
-            joblib.dump(embeddings, f)
+        with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'wb') as f:
+            joblib.dump([feats_usc, feats_train, mapper.embedding_], f)
 
     def max_samples_for_umap(self):
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
@@ -211,27 +181,46 @@ class BSOID:
 
     def identify_clusters_from_umap(self, cluster_range=[0.4,1.2]):
         # umap embeddings are to be used directly
-        with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
-            umap_results = joblib.load(f)
+        if self.active_split:
+            with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
+                umap_results = joblib.load(f)
 
-        _, _, umap_embeddings = umap_results[0]
-        highest_numulab = -np.infty
-        numulab = []
-        min_cluster_range = np.linspace(cluster_range[0], cluster_range[1], 25)
-        for min_c in min_cluster_range:
-            trained_classifier = hdbscan.HDBSCAN(min_cluster_size=int(round(min_c * 0.01 * umap_embeddings.shape[0])),
-                                                **HDBSCAN_PARAMS).fit(umap_embeddings)
-            numulab.append(len(np.unique(trained_classifier.labels_)))
-            if numulab[-1] > highest_numulab:
-                logging.info('adjusting minimum cluster size to maximize cluster number')
-                highest_numulab = numulab[-1]
-                best_clf = trained_classifier
-        assignments = best_clf.labels_
-        soft_clusters = hdbscan.all_points_membership_vectors(best_clf)
-        soft_assignments = np.argmax(soft_clusters, axis=1)
+            comb_assignments, comb_soft_clusters, comb_soft_assignments = [], [], []
+            for results in umap_results:
+                _, _, umap_embeddings = results
+                
+                highest_numulab = -np.infty
+                numulab = []
+                min_cluster_range = np.linspace(cluster_range[0], cluster_range[1], 25)
+                for min_c in min_cluster_range:
+                    trained_classifier = hdbscan.HDBSCAN(min_cluster_size=int(round(min_c * 0.01 * umap_embeddings.shape[0])),
+                                                        **HDBSCAN_PARAMS).fit(umap_embeddings)
+                    numulab.append(len(np.unique(trained_classifier.labels_)))
+                    if numulab[-1] > highest_numulab:
+                        logging.info('adjusting minimum cluster size to maximize cluster number')
+                        highest_numulab = numulab[-1]
+                        best_clf = trained_classifier
+                assignments = best_clf.labels_
+                soft_clusters = hdbscan.all_points_membership_vectors(best_clf)
+                soft_assignments = np.argmax(soft_clusters, axis=1)
 
-        logging.info('identified {} clusters from {} samples in {}D'.format(len(np.unique(soft_assignments)), *umap_embeddings.shape))
-        
+                comb_assignments.append(assignments)
+                comb_soft_clusters.append(soft_clusters)
+                comb_soft_assignments.append(soft_assignments)
+
+                logging.info('identified {} clusters from {} samples in {}D'.format(len(np.unique(soft_assignments)), *umap_embeddings.shape))
+
+            n_1, n_2 = comb_assignments[0].size, comb_assignments[1].size
+            n_cluster_1, n_cluster_2 = comb_soft_clusters[0].shape[1], comb_soft_clusters[1].shape[1]
+            assignments = np.zeros((n_1+n_2,))
+            assignments[:n_1] = comb_assignments[0]
+            for i in range(n_2):
+                if comb_assignments[1][i] >= 0:
+                    comb_assignments[1][i] += comb_assignments[0].max() + 1
+            assignments[n_1:] = comb_assignments[1]
+
+            soft_clusters = -1 * np.ones((n_1 + n_2, n_cluster_1 + n_cluster_2))
+            soft_clusters[:n_1]
         with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'wb') as f:
             joblib.dump([assignments, soft_clusters, soft_assignments], f)
 
@@ -370,10 +359,20 @@ class BSOID:
         return filtered_data
 
     def load_features(self, collect=True):
-        with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
-            active_feats, inactive_feats = joblib.load(f)
+        if self.active_split:
+            with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
+                active_feats, inactive_feats = joblib.load(f)
+            
+            return active_feats, inactive_feats
         
-        return active_feats, inactive_feats
+        else:
+            with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
+                feats = joblib.load(f)
+            if collect:
+                feats_sc = [StandardScaler().fit_transform(data) for data in feats]
+                feats, feats_sc = np.vstack(feats), np.vstack(feats_sc)
+                return feats, feats_sc
+            return feats
 
     def load_identified_clusters(self):
         with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:

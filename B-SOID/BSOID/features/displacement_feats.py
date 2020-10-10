@@ -70,7 +70,7 @@ def extract_feats(filtered_data, fps):
 
     logging.debug(f'{angles.shape} displacement angles extracted')
     
-    feats = np.hstack((link_lens[1:], r_thetas, dis, angles))
+    feats = np.hstack((link_lens[1:], r_thetas[1:], dis, angles))
     
     # smoothen data
     for i in range(feats.shape[1]):
