@@ -82,8 +82,8 @@ def window_extracted_feats(feats, stride_window, temporal_window=None, temporal_
             win_feats.append(np.hstack((win_feats_ll_d, win_feats_th, win_fft)))
 
         else:
-            win_feats_ll_d = windowed_feats(f[:,:15], stride_window, mode='mean')
-            win_feats_th = windowed_feats(f[:,15:22], stride_window, mode='sum')
+            win_feats_ll_d = windowed_feats(f[:,:7], stride_window, mode='mean')
+            win_feats_th = windowed_feats(f[:,7:22], stride_window, mode='sum')
             win_feats.append(np.hstack((win_feats_ll_d, win_feats_th)))
             
     return win_feats
