@@ -12,7 +12,7 @@ feats = np.vstack(feats)
 
 # split data according to displacement threshold
 dis_threshold = 1.0
-displacements = feats[:,7:15].mean(axis=1)
+displacements = feats[:,12].mean(axis=1)
 
 active_idx = np.where(displacements >= dis_threshold)[0]
 inactive_idx = np.where(displacements < dis_threshold)[0]
