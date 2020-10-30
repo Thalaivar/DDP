@@ -39,3 +39,13 @@ def correlation_similarity(data_dir):
 def compare_two_clusterings(clustering_1, clustering_2):
     feats_1, labels_1 = clustering_1
     feats_2, labels_2 = clustering_2
+
+if __name__ == "__main__":
+    output_dir = '/mnt/tmp'
+    try:
+        os.makedirs(output_dir)
+    except FileExistsError:
+        pass
+
+    n = 10
+    generate_umap_embeddings(n, output_dir)
