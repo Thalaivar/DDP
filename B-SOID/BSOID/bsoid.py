@@ -45,8 +45,7 @@ class BSOID:
                 fps: int=30, 
                 temporal_window: int=16,
                 stride_window: int=3,
-                temporal_dims: int=6,
-                active_split: bool=False):
+                temporal_dims: int=6):
         self.run_id = run_id
         self.base_dir = base_dir
         self.raw_dir = base_dir + '/raw'
@@ -73,8 +72,6 @@ class BSOID:
             os.mkdir(self.test_dir)
         except FileExistsError:
             pass
-        
-        self.active_split = active_split
 
     def get_data(self, n=None, download=False):
         if download:
@@ -131,29 +128,7 @@ class BSOID:
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
             joblib.dump(feats, f)
 
-    def umap_reduce_split(self, reduced_dim=10, sample_size=int(5e5)):
-        assert self.active_split is True
-        comb_feats = self.load_features(collect=False)
-        
-        umap_results = []
-        for feats in comb_feats:
-            feats_sc = StandardScaler().fit_transform(feats)
-            # take subset of data
-            idx = np.random.permutation(np.arange(feats.shape[0]))[0:sample_size]
-            feats_train = feats_sc[idx,:]
-            feats_usc = feats[idx, :]
-
-            logging.info('running UMAP on {} samples from {}D to {}D'.format(*feats_train.shape, reduced_dim))
-            mapper = umap.UMAP(n_components=reduced_dim, n_neighbors=100, **UMAP_PARAMS).fit(feats_train)
-
-            umap_results.append([feats_usc, feats_train, mapper.embedding_])
-
-        with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'wb') as f:
-            joblib.dump(umap_results, f)
-
-    def umap_reduce_all(self, reduced_dim, sample_size=int(5e5)):
-        assert self.active_split is not True
-        
+    def umap_reduce(self, reduced_dim, sample_size=int(5e5)):        
         feats, feats_sc = self.load_features()
     
         idx = np.random.permutation(np.arange(feats.shape[0]))[0:sample_size]
@@ -179,46 +154,11 @@ class BSOID:
         return allowed_n
 
     def identify_clusters_from_umap(self, cluster_range=[0.4,1.2]):
-        # umap embeddings are to be used directly
-        if self.active_split:
-            with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
-                umap_results = joblib.load(f)
+        with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
+            _, _, umap_embeddings = joblib.load(f)
 
-            comb_assignments, comb_soft_clusters, comb_soft_assignments = [], [], []
-            for results in umap_results:
-                _, _, umap_embeddings = results
-                
-                cluster_range = [float(x) for x in input('Enter cluster range: ').split()]
-                assignments, soft_clusters, soft_assignments = cluster_with_hdbscan(umap_embeddings, cluster_range, HDBSCAN_PARAMS)
-                comb_assignments.append(assignments)
-                comb_soft_clusters.append(soft_clusters)
-                comb_soft_assignments.append(soft_assignments)
-
-                logging.info('identified {} clusters from {} samples in {}D'.format(len(np.unique(soft_assignments)), *umap_embeddings.shape))
-
-            n_1, n_2 = comb_assignments[0].size, comb_assignments[1].size
-            n_cluster_1, n_cluster_2 = comb_soft_clusters[0].shape[1], comb_soft_clusters[1].shape[1]
-            assignments = np.zeros((n_1+n_2,))
-            assignments[:n_1] = comb_assignments[0]
-            for i in range(n_2):
-                if comb_assignments[1][i] >= 0:
-                    comb_assignments[1][i] += comb_assignments[0].max() + 1
-            assignments[n_1:] = comb_assignments[1]
-
-            soft_clusters = -1 * np.ones((n_1 + n_2, n_cluster_1 + n_cluster_2))
-            soft_clusters[:n_1,:n_cluster_1] = comb_soft_clusters[0]
-            soft_clusters[n_1:, n_cluster_1:] = comb_soft_clusters[1]
-
-            soft_assignments = np.zeros((n_1 + n_2,))
-            soft_assignments[:n_1] = comb_soft_assignments[0]
-            soft_assignments[n_1:] = comb_soft_assignments[1] + comb_soft_assignments[0].max() + 1
-        
-        else:
-            with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
-                _, _, umap_embeddings = joblib.load(f)
-
-            assignments, soft_clusters, soft_assignments = cluster_with_hdbscan(umap_embeddings, cluster_range, HDBSCAN_PARAMS)
-            logging.info('identified {} clusters from {} samples in {}D'.format(len(np.unique(soft_assignments)), *umap_embeddings.shape))
+        assignments, soft_clusters, soft_assignments = cluster_with_hdbscan(umap_embeddings, cluster_range, HDBSCAN_PARAMS)
+        logging.info('identified {} clusters from {} samples in {}D'.format(len(np.unique(soft_assignments)), *umap_embeddings.shape))
 
         with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'wb') as f:
             joblib.dump([assignments, soft_clusters, soft_assignments], f)
@@ -321,21 +261,14 @@ class BSOID:
         
         return filtered_data
 
-    def load_features(self, collect=True):
-        if self.active_split:
-            with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
-                active_feats, inactive_feats = joblib.load(f)
-            
-            return active_feats, inactive_feats
-        
-        else:
-            with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
-                feats = joblib.load(f)
-            if collect:
-                feats_sc = [StandardScaler().fit_transform(data) for data in feats]
-                feats, feats_sc = np.vstack(feats), np.vstack(feats_sc)
-                return feats, feats_sc
-            return feats
+    def load_features(self, collect=True):        
+        with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
+            feats = joblib.load(f)
+        if collect:
+            feats_sc = [StandardScaler().fit_transform(data) for data in feats]
+            feats, feats_sc = np.vstack(feats), np.vstack(feats_sc)
+            return feats, feats_sc
+        return feats
 
     def load_identified_clusters(self):
         with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:
@@ -344,25 +277,9 @@ class BSOID:
         return assignments, soft_clusters, soft_assignments
 
     def load_umap_results(self, collect=None):
-        if self.active_split:
-            with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
-                umap_results = joblib.load(f)
-
-            if collect is not None and collect is True:
-                feats_usc = [f[0] for f in umap_results]
-                feats_sc = [f[1] for f in umap_results]
-                umap_embeddings = [f[2] for f in umap_results]
-
-                feats_usc, feats_sc, umap_embeddings = np.vstack(feats_usc), np.vstack(feats_sc), np.vstack(umap_embeddings)
-                return feats_usc, feats_sc, umap_embeddings
-            
-            else:
-                return umap_results
-        
-        else:
-            with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
-                feats_usc, feats_sc, umap_embeddings = joblib.load(f)
-            return feats_usc, feats_sc, umap_embeddings
+        with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
+            feats_usc, feats_sc, umap_embeddings = joblib.load(f)
+        return feats_usc, feats_sc, umap_embeddings
 
     def save(self):
         with open(self.output_dir + '/' + self.run_id + '_bsoid.model', 'wb') as f:
