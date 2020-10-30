@@ -165,6 +165,8 @@ class BSOID:
 
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'wb') as f:
             joblib.dump([feats_usc, feats_train, mapper.embedding_], f)
+        
+        return [feats_usc, feats_train, mapper.embedding_]
 
     def max_samples_for_umap(self):
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
