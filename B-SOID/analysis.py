@@ -40,10 +40,12 @@ def correlation_similarity(data_dir):
     feats_files = [f'{data_dir}/{f}' for f in os.listdir(data_dir) if f.endswith('umap.sav')]
     cluster_files = [f'{data_dir}/{f}' for f in os.listdir(data_dir) if f.endswith('clusters.sav')]
 
+    feats_files.sort()
+    cluster_files.sort()
+
     assert len(feats_files) == len(cluster_files)
     
-    correlations = []
-    for i, j in combinations(range(len(feats_files)), 2):
+    def compare(i, j, feats_files, cluster_files):
         with open(feats_files[i], 'rb') as f:
             _, feats_1, _ = joblib.load(f)
         with open(cluster_files[i], 'rb') as f:
@@ -53,7 +55,10 @@ def correlation_similarity(data_dir):
         with open(cluster_files[j], 'rb') as f:
             _, _, labels_2 = joblib.load(f)
         
-        correlations.append(compare_two_clusterings([feats_1, labels_1], [feats_2, labels_2]))
+        return compare_two_clusterings([feats_1, labels_1], [feats_2, labels_2])
+    
+    from joblib import Parallel, delayed
+    correlations = Parallel(n_jobs=-1)(delayed(compare)(i, j, feats_files, cluster_files) for i, j in combinations(range(len(feats_files)), 2))
     
     return correlations
 
@@ -64,11 +69,13 @@ def compare_two_clusterings(clustering_1, clustering_2):
     assert len(feats_1) == len(feats_2)
     intersect_labels_1, intersect_labels_2 = [], []
     n_intersect = 0
-    for i, j in combinations(range(len(feats_1)), 2):
-        if np.allclose(feats_1[i], feats_2[j]):
-            intersect_labels_1.append(labels_1[i])
-            intersect_labels_2.append(labels_2[j])
-            n_intersect += 1
+        
+    for i in tqdm(range(len(feats_1))):
+        for j in range(len(feats_2)):
+            if np.allclose(feats_1[i], feats_2[j]):
+                intersect_labels_1.append(labels_1[i])
+                intersect_labels_2.append(labels_2[j])
+                n_intersect += 1
 
     logging.info(f'found {n_intersect} common samples in the two datasets')
 
@@ -78,6 +85,44 @@ def compare_two_clusterings(clustering_1, clustering_2):
     
     return correlation_dot_prod
     
+
+def stability_by_classification(feats, labels):
+    feats_train, feats_test = feats
+    labels_train, labels_test = labels
+
+    from sklearn.neural_network import MLPClassifier
+    MLP_PARAMS = {
+        'hidden_layer_sizes': (128, 64),  # 100 units, 10 layers
+        'activation': 'logistic',  # logistics appears to outperform tanh and relu
+        'solver': 'adam',
+        'learning_rate': 'constant',
+        'learning_rate_init': 0.001,  # learning rate not too high
+        'alpha': 0.0001,  # regularization default is better than higher values.
+        'max_iter': 1000,
+        'early_stopping': False,
+        'verbose': 0  # set to 1 for tuning your feedforward neural network
+    }
+    model = MLPClassifier(**MLP_PARAMS).fit(feats_train, labels_train)
+    preds = model.fit(feats_test)
+
+    def calculate_minimum_dist(labels_test, preds):
+        assert len(labels_test) == len(preds)
+        n = len(labels_test)
+
+        dist = 0
+        for i in range(n):
+            dist += 1*(preds[i] == labels_test[i])
+        
+        return dist / n
+    
+    def premute_labels(labels):
+        original_labels = np.unique(labels)
+        perm_labels = np.random.permutation(original_labels)
+
+        for i in range(len(labels)):
+            labels[i] = perm_labels[labels[i]]
+        
+        return labels
 
 if __name__ == "__main__":
     output_dir = '/mnt/tmp'

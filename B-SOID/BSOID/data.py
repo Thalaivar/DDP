@@ -1,4 +1,7 @@
-import h5py
+try:
+    import h5py
+except:
+    pass
 import pandas as pd
 import numpy as np
 import os

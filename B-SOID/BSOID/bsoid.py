@@ -1,5 +1,8 @@
 import os
-import umap
+try:
+    import umap
+except ModuleNotFoundError:
+    pass
 import random
 import joblib
 import logging
@@ -286,7 +289,7 @@ class BSOID:
             joblib.dump(self, f)
 
     @staticmethod
-    def load_config(base_dir, run_id):
+    def load_config(base_dir, run_id) -> BSOID:
         with open(base_dir + '/output/' + run_id + '_bsoid.model', 'rb') as f:
             config = joblib.load(f)
         

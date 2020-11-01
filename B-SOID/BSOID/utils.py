@@ -5,12 +5,21 @@ try:
     import ffmpeg
 except:
     pass
+try:
+    import hdbscan
+except:
+    pass
 import logging
-import hdbscan
 import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sn
+try:
+    import matplotlib.pyplot as plt
+except:
+    pass
+try:
+    import seaborn as sn
+except:
+    pass
 from sklearn.metrics import confusion_matrix
 
 def cluster_with_hdbscan(feats, cluster_range, HDBSCAN_PARAMS):
