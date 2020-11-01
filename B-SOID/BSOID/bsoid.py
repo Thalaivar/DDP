@@ -160,11 +160,11 @@ class BSOID:
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
             _, _, umap_embeddings = joblib.load(f)
 
-        assignments, soft_clusters, soft_assignments = cluster_with_hdbscan(umap_embeddings, cluster_range, HDBSCAN_PARAMS)
+        assignments, soft_clusters, soft_assignments, best_clf = cluster_with_hdbscan(umap_embeddings, cluster_range, HDBSCAN_PARAMS)
         logging.info('identified {} clusters from {} samples in {}D'.format(len(np.unique(soft_assignments)), *umap_embeddings.shape))
 
         with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'wb') as f:
-            joblib.dump([assignments, soft_clusters, soft_assignments], f)
+            joblib.dump([assignments, soft_clusters, soft_assignments, best_clf], f)
 
         return assignments, soft_clusters, soft_assignments
 
@@ -289,7 +289,7 @@ class BSOID:
             joblib.dump(self, f)
 
     @staticmethod
-    def load_config(base_dir, run_id) -> BSOID:
+    def load_config(base_dir, run_id):
         with open(base_dir + '/output/' + run_id + '_bsoid.model', 'rb') as f:
             config = joblib.load(f)
         
