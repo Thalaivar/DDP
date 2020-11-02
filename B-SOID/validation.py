@@ -69,7 +69,7 @@ def min_transient_bout(min_bout_length=100):
 
 def fit_markov_models():
     with open(f'{SAVE_DIR}/feats_labels.sav', 'rb') as f:
-        _, labels, fps = joblib.load(f)
+        _, labels, _ = joblib.load(f)
 
     n = len(labels)
     n_clusters = max([len(np.unique(x)) for x in labels])
@@ -92,7 +92,44 @@ def fit_markov_models():
             markov_1st_order[idx1, idx2] += 1
     
     for i in range(n_clusters):
-        
+        markov_1st_order[i] /= markov_1st_order[i].sum()
+    
+    with open(f'{SAVE_DIR}/markov_transitions.sav', 'wb') as f:
+        joblib.dump([markov_0th_order, markov_1st_order], f)
+
+    return markov_0th_order, markov_1st_order
+
+def log_likelihood():
+    with open(f'{SAVE_DIR}/markov_transitions.sav', 'rb') as f:
+        markov_0th_order, markov_1st_order = joblib.load(f)
+    with open(f'{SAVE_DIR}/feats_labels.sav', 'rb') as f:
+        _, labels, _ = joblib.load(f)
+
+    log_markov0th, log_markov1st = np.log(markov_0th_order), np.log(markov_1st_order)
+
+    score = 0
+    for i in range(len(labels)):
+        for j in range(len(labels[i]) - 1):
+            idx1, idx2 = labels[i][j], labels[i][j+1]
+            score += (log_markov1st[idx1, idx2] - log_markov0th[idx1])
+
+    return score
+
+def entropy():
+    with open(f'{SAVE_DIR}/feats_labels.sav', 'rb') as f:
+        _, labels, _ = joblib.load(f)
+    
+    n_clusters = max([len(np.unique(x)) for x in labels])
+    count = np.zeros_like(n_clusters)
+    for i in range(len(labels)):
+        for j in range(len(labels[i])):
+            count[labels[i][j]] += 1
+    
+    pmf = count/count.sum()
+    return -(pmf*np.log2(pmf)).sum()
+
+
+    
 if __name__ == "__main__":
     # csv_files = [BASE_DIR + '/test/' + f for f in os.listdir(BASE_DIR+'/test') if f.endswith('.csv')]
     # extract_analysis_data(csv_files)

@@ -166,10 +166,10 @@ class BSOID:
         with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'wb') as f:
             joblib.dump([assignments, soft_clusters, soft_assignments, best_clf], f)
 
-        return assignments, soft_clusters, soft_assignments
+        return assignments, soft_clusters, soft_assignments, best_clf
 
     def train_classifier(self):
-        _, _, soft_assignments = self.load_identified_clusters()
+        _, _, soft_assignments, _ = self.load_identified_clusters()
         _, feats_sc, _ = self.load_umap_results(collect=True)
 
         logging.info('training neural network on {} scaled samples in {}D'.format(*feats_sc.shape))
@@ -179,7 +179,7 @@ class BSOID:
             joblib.dump(clf, f)
 
     def validate_classifier(self):
-        _, _, soft_assignments = self.load_identified_clusters()
+        _, _, soft_assignments, _ = self.load_identified_clusters()
         _, feats_sc, _ = self.load_umap_results(collect=True)
 
         logging.info('validating classifier on {} features'.format(*feats_sc.shape))
@@ -275,9 +275,9 @@ class BSOID:
 
     def load_identified_clusters(self):
         with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:
-            assignments, soft_clusters, soft_assignments = joblib.load(f)
+            assignments, soft_clusters, soft_assignments, best_clf = joblib.load(f)
         
-        return assignments, soft_clusters, soft_assignments
+        return assignments, soft_clusters, soft_assignments, best_clf
 
     def load_umap_results(self, collect=None):
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
