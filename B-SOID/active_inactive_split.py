@@ -39,6 +39,7 @@ def embed_split_data(reduced_dim: int, sample_size: int):
     with open(bsoid.output_dir + '/' + bsoid.run_id + '_features.sav', 'rb') as f:
         active_feats, inactive_feats = joblib.load(f)
 
+    comb_feats = [active_feats, inactive_feats]
     umap_results = []
     for feats in comb_feats:
         feats_sc = StandardScaler().fit_transform(feats)
@@ -57,13 +58,8 @@ def embed_split_data(reduced_dim: int, sample_size: int):
 
         umap_results.append([feats_usc, feats_train, mapper.embedding_])
 
-    if only_active:
-        assert len(umap_results) == 1
-        with open(bsoid.output_dir + '/' + bsoid.run_id + '_umap.sav', 'wb') as f:
-            joblib.dump(umap_results[0], f)
-    else:
-        with open(bsoid.output_dir + '/' + bsoid.run_id + '_umap.sav', 'wb') as f:
-            joblib.dump(umap_results, f)
+    with open(bsoid.output_dir + '/' + bsoid.run_id + '_umap.sav', 'wb') as f:
+        joblib.dump(umap_results, f)
 
 def cluster_split_data():
     bsoid = BSOID.load_config(BASE_DIR, RUN_ID)
