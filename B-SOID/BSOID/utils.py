@@ -38,7 +38,7 @@ def cluster_with_hdbscan(feats, cluster_range, HDBSCAN_PARAMS):
     soft_clusters = hdbscan.all_points_membership_vectors(best_clf)
     soft_assignments = np.argmax(soft_clusters, axis=1)
 
-    return assignments, soft_clusters, soft_assignments
+    return assignments, soft_clusters, soft_assignments, best_clf
 
 def create_confusion_matrix(feats, labels, clf):
     pred = clf.predict(feats)
