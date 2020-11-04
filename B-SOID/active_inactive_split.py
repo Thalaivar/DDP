@@ -33,15 +33,15 @@ def split_data(dis_threshold: float, dis_idx: list):
     with open(bsoid.output_dir + '/' + bsoid.run_id + '_features.sav', 'wb') as f:
         joblib.dump([active_feats, inactive_feats], f)
 
-def embed_split_data(reduced_dim: int, sample_size: int):
+def embed_split_data(reduced_dim: int, sample_size: int, parallel=False):
     bsoid = BSOID.load_config(BASE_DIR, RUN_ID)
 
     with open(bsoid.output_dir + '/' + bsoid.run_id + '_features.sav', 'rb') as f:
         active_feats, inactive_feats = joblib.load(f)
 
     comb_feats = [active_feats, inactive_feats]
-    umap_results = []
-    for feats in comb_feats:
+
+    def embed_subset(feats, sample_size, reduced_dim, umap_params):
         feats_sc = StandardScaler().fit_transform(feats)
     
         # take subset of data
@@ -54,9 +54,15 @@ def embed_split_data(reduced_dim: int, sample_size: int):
             feats_usc = feats
 
         logging.info('running UMAP on {} samples from {}D to {}D'.format(*feats_train.shape, reduced_dim))
-        mapper = umap.UMAP(n_components=reduced_dim, n_neighbors=int(round(np.sqrt(feats_train.shape[0]))), **UMAP_PARAMS).fit(feats_train)
+        mapper = umap.UMAP(n_components=reduced_dim, n_neighbors=100, **umap_params).fit(feats_train)
 
-        umap_results.append([feats_usc, feats_train, mapper.embedding_])
+        return [feats_usc, feats_train, mapper.embedding_]
+    
+    if parallel:
+        from joblib import Parallel, delayed
+        umap_results = Parallel(n_jobs=-1)(delayed(embed_subset)(feats, sample_size, reduced_dim, UMAP_PARAMS) for feats in comb_feats)
+    else:
+        umap_results = [embed_subset(feats, sample_size, reduced_dim, UMAP_PARAMS) for feats in comb_feats]
 
     with open(bsoid.output_dir + '/' + bsoid.run_id + '_umap.sav', 'wb') as f:
         joblib.dump(umap_results, f)
