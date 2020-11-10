@@ -116,8 +116,7 @@ class BSOID:
         filtered_data = self.load_filtered_data()
         
         # extract geometric features
-        from joblib import Parallel, delayed
-        feats = Parallel(n_jobs=-1)(delayed(extract_feats)(data, self.fps) for data in filtered_data)
+        feats = [extract_feats(data, self.fps) for data in filtered_data]
 
         logging.info(f'extracted {len(feats)} datasets of {feats[0].shape[1]}D features')
 
