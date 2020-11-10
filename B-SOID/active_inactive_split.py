@@ -8,10 +8,10 @@ from sklearn.preprocessing import StandardScaler
 from BSOID.utils import cluster_with_hdbscan
 
 RUN_ID = 'split'
-BASE_DIR = '/home/dhruvlaad/data'
+BASE_DIR = 'D:/IIT/DDP/data'
 
 def split_data(dis_threshold: float, dis_idx: list):
-    bsoid = BSOID.load_config(BASE_DIR, 'dis')
+    bsoid = BSOID.load_config(BASE_DIR, RUN_ID)
 
     with open(bsoid.output_dir + '/' + bsoid.run_id + '_features.sav', 'rb') as f:
         feats = joblib.load(f)
@@ -73,15 +73,16 @@ def cluster_split_data():
     with open(bsoid.output_dir + '/' + bsoid.run_id + '_umap.sav', 'rb') as f:
         umap_results = joblib.load(f)
 
-    comb_assignments, comb_soft_clusters, comb_soft_assignments = [], [], []
+    comb_assignments, comb_soft_clusters, comb_soft_assignments, comb_clf = [], [], [], []
     for results in umap_results:
         _, _, umap_embeddings = results
         
         cluster_range = [float(x) for x in input('Enter cluster range: ').split()]
-        assignments, soft_clusters, soft_assignments = cluster_with_hdbscan(umap_embeddings, cluster_range, HDBSCAN_PARAMS)
+        assignments, soft_clusters, soft_assignments, best_clf = cluster_with_hdbscan(umap_embeddings, cluster_range, HDBSCAN_PARAMS)
         comb_assignments.append(assignments)
         comb_soft_clusters.append(soft_clusters)
         comb_soft_assignments.append(soft_assignments)
+        comb_clf.append(best_clf)
 
         logging.info('identified {} clusters from {} samples in {}D'.format(len(np.unique(soft_assignments)), *umap_embeddings.shape))
 
@@ -103,6 +104,6 @@ def cluster_split_data():
     soft_assignments[n_1:] = comb_soft_assignments[1] + comb_soft_assignments[0].max() + 1
 
     with open(bsoid.output_dir + '/' + bsoid.run_id + '_clusters.sav', 'wb') as f:
-        joblib.dump([assignments, soft_clusters, soft_assignments], f)
+        joblib.dump([assignments, soft_clusters, soft_assignments, comb_clf], f)
 
     return assignments, soft_clusters, soft_assignments
