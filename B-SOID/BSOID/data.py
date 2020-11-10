@@ -38,8 +38,8 @@ def extract_from_csv(filename, save_dir, trim=True):
         clip_conf = conf[mid_idx-clip_window:mid_idx+clip_window,:]
         clip_pos = pos[mid_idx-clip_window:mid_idx+clip_window,:]
         bsoid_data = _bsoid_format(clip_conf, clip_pos)
-        bsoid_data.to_csv(save_dir + '/' + filename[:-3] + f'_{i}.csv', index=False)
-        
+        bsoid_data.to_csv(save_dir + f'/{filename[:-3]}.csv', index=False)
+
     else:
         bsoid_data = _bsoid_format(conf, pos)
         bsoid_data.to_csv(save_dir + '/' + filename[:-3] +'.csv', index=False)
