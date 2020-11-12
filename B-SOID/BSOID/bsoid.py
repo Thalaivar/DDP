@@ -142,7 +142,7 @@ class BSOID:
             feats_usc = feats
 
         logging.info('running UMAP on {} samples from {}D to {}D'.format(*feats_train.shape, reduced_dim))
-        mapper = umap.UMAP(n_components=reduced_dim, n_neighbors=nt(round(np.sqrt(feats_train.shape[0]))), **UMAP_PARAMS).fit(feats_train)
+        mapper = umap.UMAP(n_components=reduced_dim, n_neighbors=100, **UMAP_PARAMS).fit(feats_train)
 
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'wb') as f:
             joblib.dump([feats_usc, feats_train, mapper.embedding_], f)
