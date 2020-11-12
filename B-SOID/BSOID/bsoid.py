@@ -132,10 +132,14 @@ class BSOID:
 
     def umap_reduce(self, reduced_dim, sample_size=int(5e5)):        
         feats, feats_sc = self.load_features()
-    
-        idx = np.random.permutation(np.arange(feats.shape[0]))[0:sample_size]
-        feats_train = feats_sc[idx,:]
-        feats_usc = feats[idx, :]
+
+        if sample_size > 1:
+            idx = np.random.permutation(np.arange(feats.shape[0]))[0:sample_size]
+            feats_train = feats_sc[idx,:]
+            feats_usc = feats[idx, :]
+        else:
+            feats_train = feats_sc
+            feats_usc = feats
 
         logging.info('running UMAP on {} samples from {}D to {}D'.format(*feats_train.shape, reduced_dim))
         mapper = umap.UMAP(n_components=reduced_dim, n_neighbors=nt(round(np.sqrt(feats_train.shape[0]))), **UMAP_PARAMS).fit(feats_train)
