@@ -17,6 +17,12 @@ DATASETS = ["strain-survey-batch-2019-05-29-e/", "strain-survey-batch-2019-05-29
 
 BASE_DIR = 'D:/IIT/DDP/data'
 MICE_DIR = BASE_DIR + '/analysis/mice'
+RAW_DIR = BASE_DIR + '/raw'
+
+try:
+    os.makedirs(RAW_DIR)
+except FileExistsError:
+    pass
 
 FPS = 30
 STRIDE_WINDOW = 3
@@ -58,13 +64,47 @@ class Mouse:
 
         return bigram_mat
 
+    def get_behaviour_info(self, labels, behaviour_idx, min_bout_len):
+        if not isinstance(behaviour_idx, list):
+            behaviour_idx = [behaviour_idx]
+        
+        labels = self.get_behaviour_labels()
+
+        counts = [0 for _ in range(labels.max() + 1)]
+        for lab in labels:
+            counts[lab] += 1
+        
+        # total bout duration in entire video
+        bin_length = STRIDE_WINDOW / FPS
+        total_duration = [counts[idx] * bin_length for idx in behaviour_idx]
+
+        # no. of bouts and their lengths
+        n_bouts = [0 for _ in range(labels.max() + 1)]
+        bout_lengths = [[] for _ in range(labels.max() + 1)]
+
+        start_lab = labels[0]
+        i = 1
+        while i < len(labels):
+            bout_len = 0
+            while start_lab == labels[i]:
+                bout_len += 1
+                i += 1
+            bout_lengths[start_lab].append(bout_len)
+            if bout_len > min_bout_len:
+                n_bouts[start_lab] += 1
+            start_lab = labels[i]
+        
+        bout_lengths = [sum(lens)/len(lens) for lens in bout_lengths]
+
+        return total_duration
+
     def get_behaviour_labels(self):
         if os.path.exists(f'{self.save_dir}/feats.npy'):
             feats = self.load_features()
         else:
             feats = self.extract_features()
         labels = self.clf.predict(feats)
-        return labels            
+        return labels
         
     def extract_features(self, window=True, features_type='dis'):
         data = self._get_raw_data()
@@ -80,41 +120,13 @@ class Mouse:
         return feats
 
     def _get_raw_data(self):
-        # code to retrieve data from the server
-        strain, data, movie_name = self.filename.split('/')
-        logging.info(f'extracting data for strain {self.strain} from dataset {data} with mouse ID {self.id}')
-        
-        session = ftplib.FTP("ftp.box.com")
-        session.login("ae16b011@smail.iitm.ac.in", "Q0w9e8r7t6Y%Z")
-
-        master_dir = 'JAX-IITM Shared Folder/Datasets/'
-        idx = STRAINS.index(strain)
-        if idx == 0:
-            movie_dir = master_dir + DATASETS[0] + strain + "/" + data + "/"
-            session.cwd(movie_dir)
-        elif idx == 5:
-            movie_dir = master_dir + DATASETS[4] + strain + "/" + data + "/" 
-            session.cwd(movie_dir)
-        else:
-            try:
-                movie_dir = master_dir + DATASETS[idx-1] + strain + "/" + data + "/"
-                session.cwd(movie_dir)
-            except:
-                movie_dir = master_dir + DATASETS[idx] + strain + "/" + data + "/"
-                session.cwd(movie_dir)
-        
-        filename = movie_name[0:-4] + "_pose_est_v2.h5"
-        session.retrbinary("RETR "+ filename, open(BASE_DIR + '/' + filename, 'wb').write)
-        session.close()
-        filename = f'{BASE_DIR}/{filename}'
-        logging.info(f'temporarily saved downloaded file to {filename}')
-        
+        _, _, movie_name = self.filename.split('/')
+        filename = f'{RAW_DIR}/{movie_name[0:-4]}_pose_est_v2.h5'
         f = h5py.File(filename, 'r')
         data = list(f.keys())[0]
         keys = list(f[data].keys())
         conf, pos = np.array(f[data][keys[0]]), np.array(f[data][keys[1]])
         f.close()
-        os.remove(filename)
 
         # trim start and end
         end_trim = FPS*2*60
@@ -123,7 +135,7 @@ class Mouse:
         fdata, perc_filt = likelihood_filter(data)
 
         if perc_filt > 10:
-            logging.warn(f'% data filtered from raw data is too high ({perc_filt} %)')
+            logging.warn(f'mouse:{self.strain}/{self.id}: % data filtered from raw data is too high ({perc_filt} %)')
         
         data_shape = fdata['x'].shape
         logging.info(f'preprocessed raw data of shape: {data_shape}')
@@ -151,7 +163,7 @@ def extract_features_per_mouse(data_lookup_file, clf_file):
                 'mouse_id': data.loc[i]['MouseID']
             }
         mouse = Mouse(**mouse_data, bsoid_clf_file=clf_file)
-        if os.path.exists(mouse.save_dir):
+        if os.path.exists(f'{mouse.save_dir}/feats.npy'):
             pass
         else:
             mouse.extract_features()

@@ -217,8 +217,7 @@ class BSOID:
             os.mkdir(output_path)
         except FileExistsError:
             logging.info(f'results directory: {output_path} already exists, deleting')
-            os.rmdir(output_path)
-            os.mkdir(output_path)
+            [os.remove(output_path+'/'+f) for f in os.listdir(output_path)]
 
         clip_len = None
         if self.temporal_window is not None:

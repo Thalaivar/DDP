@@ -9,6 +9,9 @@ from tqdm import tqdm
 import ftplib
 import random
 
+import logging
+logger = logging.getLogger(__name__)
+
 BSOID_DATA = ['NOSE', 'LEFT_EAR', 'RIGHT_EAR', 
         'BASE_NECK', 'FOREPAW1', 'FOREPAW2', 
         'CENTER_SPINE', 'HINDPAW1', 'HINDPAW2', 
@@ -81,25 +84,27 @@ def download_data(bsoid_data_file, pose_est_dir):
     print("Downloading data sets from box...")
     for i in tqdm(range(n_data)):
         strain, data, movie_name = bsoid_data['NetworkFilename'][i].split('/')
-        
-        # change to correct box directory
-        idx = strains.index(strain)
+        if not os.path.exists(pose_est_dir + '/' + movie_name[0:-4] + "_pose_est_v2.h5"):
+            # change to correct box directory
+            idx = strains.index(strain)
 
-        if idx == 0:
-            movie_dir = master_dir + datasets[0] + strain + "/" + data + "/"
-            session.cwd(movie_dir)
-        elif idx == 5:
-            movie_dir = master_dir + datasets[4] + strain + "/" + data + "/"
-            session.cwd(movie_dir)
+            if idx == 0:
+                movie_dir = master_dir + datasets[0] + strain + "/" + data + "/"
+                session.cwd(movie_dir)
+            elif idx == 5:
+                movie_dir = master_dir + datasets[4] + strain + "/" + data + "/"
+                session.cwd(movie_dir)
+            else:
+                try:
+                    movie_dir = master_dir + datasets[idx-1] + strain + "/" + data + "/"
+                    session.cwd(movie_dir)
+                except:
+                    movie_dir = master_dir + datasets[idx] + strain + "/" + data + "/"
+                    session.cwd(movie_dir)
+
+            # download data file
+            filename = movie_name[0:-4] + "_pose_est_v2.h5"
+            session.retrbinary("RETR "+ filename, open(pose_est_dir + '/' + filename, 'wb').write)
+            session.cwd('/')
         else:
-            try:
-                movie_dir = master_dir + datasets[idx-1] + strain + "/" + data + "/"
-                session.cwd(movie_dir)
-            except:
-                movie_dir = master_dir + datasets[idx] + strain + "/" + data + "/"
-                session.cwd(movie_dir)
-
-        # download data file
-        filename = movie_name[0:-4] + "_pose_est_v2.h5"
-        session.retrbinary("RETR "+ filename, open(pose_est_dir + '/' + filename, 'wb').write)
-        session.cwd('/')
+            logger.info(f'skipping {pose_est_dir}/{movie_name[0:-4]}_pose_est_v2.h5')
