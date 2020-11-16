@@ -10,15 +10,17 @@ from BSOID.utils import cluster_with_hdbscan
 RUN_ID = 'split'
 BASE_DIR = 'D:/IIT/DDP/data'
 
-def split_data(dis_threshold: float, dis_idx: list):
-    bsoid = BSOID.load_config(BASE_DIR, RUN_ID)
+def split_data(dis_threshold: float):
+    bsoid = BSOID.load_config(BASE_DIR, 'dis')
 
     with open(bsoid.output_dir + '/' + bsoid.run_id + '_features.sav', 'rb') as f:
         feats = joblib.load(f)
     feats = np.vstack(feats)
 
     # split data according to displacement threshold
-    displacements = feats[:,dis_idx].mean(axis=1)
+    head_dis = feats[:,7].reshape(-1,1)
+    tail_dis = feats[:,12:15].mean(axis=1).reshape(-1,1)
+    displacements = np.hstack((head_dis, tail_dis)).mean(axis=1).reshape(-1,1)
 
     active_idx = np.where(displacements >= dis_threshold)[0]
     inactive_idx = np.where(displacements < dis_threshold)[0]
@@ -107,3 +109,18 @@ def cluster_split_data():
         joblib.dump([assignments, soft_clusters, soft_assignments, comb_clf], f)
 
     return assignments, soft_clusters, soft_assignments
+
+def train_classifier():
+    bsoid = BSOID.load_config(BASE_DIR, RUN_ID)
+    _, _, soft_assignments, _ = bsoid.load_identified_clusters()
+
+    with open(bsoid.output_dir + '/' + bsoid.run_id + '_umap.sav', 'rb') as f:
+        umap_results = joblib.load(f)
+    
+    feats_sc = np.vstack([data[1] for data in umap_results])
+    logging.info('training neural network on {} scaled samples in {}D'.format(*feats_sc.shape))
+    clf = MLPClassifier(**MLP_PARAMS).fit(feats_sc, soft_assignments)
+
+    with open(bsoid.output_dir + '/' + bsoid.run_id + '_classifiers.sav', 'wb') as f:
+        joblib.dump(clf, f)
+

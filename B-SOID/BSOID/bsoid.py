@@ -224,7 +224,7 @@ class BSOID:
             clip_len = (self.temporal_window - self.stride_window) // 2
         collect_all_examples(labels, frame_dirs, output_path, clip_len, bout_length, n_examples, self.fps)
 
-    def label_frames(self, csv_file, video_file, bout_length=3, n_examples=10):
+    def label_frames(self, csv_file, video_file):
         # directory to store results for video
         output_dir = self.test_dir + '/' + csv_file.split('/')[-1][:-4]
         try:
@@ -254,7 +254,7 @@ class BSOID:
 
         with open(self.output_dir + '/' + self.run_id + '_classifiers.sav', 'rb') as f:
             clf = joblib.load(f)
-        
+
         labels = frameshift_predict(feats, clf, self.stride_window)
         logging.info(f'predicted {len(labels)} frames in {feats[0].shape[1]}D with trained classifier')
 

@@ -8,7 +8,7 @@ from BSOID.bsoid import BSOID
 logging.basicConfig(level=logging.INFO)
 
 base_dir = 'D:/IIT/DDP/data'
-bsoid = BSOID.load_config(base_dir, 'dis')
+bsoid = BSOID.load_config(base_dir, 'split')
 
 video_dir = bsoid.test_dir + '/videos'
 csv_dir = bsoid.test_dir
