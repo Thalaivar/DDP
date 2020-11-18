@@ -29,7 +29,7 @@ MLP_PARAMS = {
     'alpha': 0.0001,  # regularization default is better than higher values.
     'max_iter': 1000,
     'early_stopping': False,
-    'verbose': 0  # set to 1 for tuning your feedforward neural network
+    'verbose': 1  # set to 1 for tuning your feedforward neural network
 }
 
 UMAP_PARAMS = {
@@ -208,7 +208,7 @@ class BSOID:
         labels = []
         frame_dirs = []
         for i in range(n_animals):
-            label, frame_dir = self.label_frames(csv_files[i], video_files[i], bout_length=bout_length, n_examples=n_examples)
+            label, frame_dir = self.label_frames(csv_files[i], video_files[i])
             labels.append(label)
             frame_dirs.append(frame_dir)
         

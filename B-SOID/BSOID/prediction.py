@@ -12,6 +12,8 @@ def frameshift_features(filtered_data, stride_window, fps, feats_extractor, wind
 
     assert len(feats) == 1
     feats = feats[0]
+    # scaling used for classification also
+    feats = StandardScaler().fit_transform(feats)
 
     # frameshift and stack features into bins
     fs_feats = []
@@ -20,9 +22,7 @@ def frameshift_features(filtered_data, stride_window, fps, feats_extractor, wind
 
     fs_feats = windower(fs_feats, stride_window, temporal_window, temporal_dims)
     
-    # scaling used for classification also
-    for i, f in enumerate(fs_feats):
-        fs_feats[i] = StandardScaler().fit_transform(f)
+
 
     return fs_feats
 

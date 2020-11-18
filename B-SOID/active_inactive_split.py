@@ -10,6 +10,12 @@ from BSOID.utils import cluster_with_hdbscan
 RUN_ID = 'split'
 BASE_DIR = 'D:/IIT/DDP/data'
 
+def calc_dis_threshold(feats):
+    head_dis = feats[:,7].reshape(-1,1)
+    tail_dis = feats[:,12:15].mean(axis=1).reshape(-1,1)
+    displacements = np.hstack((head_dis, tail_dis)).mean(axis=1).reshape(-1,1)
+    return displacements
+
 def split_data(dis_threshold: float):
     bsoid = BSOID.load_config(BASE_DIR, 'dis')
 
@@ -35,16 +41,26 @@ def split_data(dis_threshold: float):
     with open(bsoid.output_dir + '/' + bsoid.run_id + '_features.sav', 'wb') as f:
         joblib.dump([active_feats, inactive_feats], f)
 
-def embed_split_data(reduced_dim: int, sample_size: int):
+def embed_split_data(reduced_dim: int, sample_size: int, dis_threshold=None):
     bsoid = BSOID.load_config(BASE_DIR, RUN_ID)
 
     with open(bsoid.output_dir + '/' + bsoid.run_id + '_features.sav', 'rb') as f:
         active_feats, inactive_feats = joblib.load(f)
 
+    logging.info(f'active feats have {active_feats.shape[0]} samples and inactive feats have {inactive_feats.shape[0]} samples')
+    scaler = StandardScaler().fit(np.vstack((active_feats, inactive_feats)))
+    
+    if dis_threshold is not None:
+            displacements = calc_dis_threshold(active_feats)
+            assert np.any(displacements < dis_threshold)
+
+            displacements = calc_dis_threshold(inactive_feats)
+            assert np.any(displacements >= dis_threshold)
+
     comb_feats = [active_feats, inactive_feats]
 
     def embed_subset(feats, sample_size, reduced_dim, umap_params):
-        feats_sc = StandardScaler().fit_transform(feats)
+        feats_sc = scaler.transform(feats)
     
         # take subset of data
         if sample_size > 0 and sample_size < feats.shape[0]:
@@ -64,7 +80,7 @@ def embed_split_data(reduced_dim: int, sample_size: int):
     for i, feats in enumerate(comb_feats):
         results = embed_subset(feats, sample_size, reduced_dim, UMAP_PARAMS)
         if i == 0:
-            with open('~/active_umap.sav', 'wb') as f:
+            with open('/home/dhruvlaad/active_umap.sav', 'wb') as f:
                 joblib.dump(results, f)
         umap_results.append(results)
 
@@ -118,11 +134,38 @@ def train_classifier():
 
     with open(bsoid.output_dir + '/' + bsoid.run_id + '_umap.sav', 'rb') as f:
         umap_results = joblib.load(f)
-    
+
     feats_sc = np.vstack([data[1] for data in umap_results])
+
+    # shuffle dataset
+    shuffled_idx = np.random.permutation(np.arange(feats_sc.shape[0]))
+    feats_sc, soft_assignments = feats_sc[shuffled_idx], soft_assignments[shuffled_idx]
+
     logging.info('training neural network on {} scaled samples in {}D'.format(*feats_sc.shape))
     clf = MLPClassifier(**MLP_PARAMS).fit(feats_sc, soft_assignments)
 
     with open(bsoid.output_dir + '/' + bsoid.run_id + '_classifiers.sav', 'wb') as f:
         joblib.dump(clf, f)
 
+    
+def validate_classifier():
+    bsoid = BSOID.load_config(BASE_DIR, RUN_ID)
+    _, _, soft_assignments, _ = bsoid.load_identified_clusters()
+    
+    with open(bsoid.output_dir + '/' + bsoid.run_id + '_umap.sav', 'rb') as f:
+        umap_results = joblib.load(f)
+
+    feats_sc = np.vstack([data[1] for data in umap_results])
+    shuffled_idx = np.random.permutation(np.arange(feats_sc.shape[0]))
+    feats_sc, soft_assignments = feats_sc[shuffled_idx], soft_assignments[shuffled_idx]
+    
+    logging.info('validating classifier on {} features'.format(*feats_sc.shape))
+
+    feats_train, feats_test, labels_train, labels_test = train_test_split(feats_sc, soft_assignments)
+    clf = MLPClassifier(**MLP_PARAMS).fit(feats_train, labels_train)
+    sc_scores = cross_val_score(clf, feats_test, labels_test, cv=5, n_jobs=-1)
+    sc_cf = create_confusion_matrix(feats_test, labels_test, clf)
+    logging.info('classifier accuracy: {} +- {}'.format(sc_scores.mean(), sc_scores.std())) 
+        
+    with open(bsoid.output_dir + '/' + bsoid.run_id + '_validation.sav', 'wb') as f:
+        joblib.dump([sc_scores, sc_cf], f)

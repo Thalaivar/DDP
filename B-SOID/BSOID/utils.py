@@ -22,6 +22,8 @@ except:
     pass
 from sklearn.metrics import confusion_matrix
 
+logger = logging.getLogger(__name__)
+
 def cluster_with_hdbscan(feats, cluster_range, HDBSCAN_PARAMS):
     highest_numulab = -np.infty
     numulab = []
@@ -124,7 +126,8 @@ def collect_all_examples(labels, frame_dirs, output_path, clip_window, bout_leng
 
     n_groups = len(all_class_vid_locs[0])
     for i in range(1, n_animals):
-        assert len(all_class_vid_locs[i]) == n_groups, 'number of groups not consistent across test animals'
+        if len(all_class_vid_locs[i]) != n_groups:
+            logger.warn('number of groups not consistent across test animals')
 
     frame = cv2.imread(os.path.join(frame_dirs[0], all_frames[0][0]))
     height, width, layers = frame.shape
