@@ -5,7 +5,7 @@ import numpy as np
 logging.basicConfig(level=logging.INFO)
 
 RUN_ID = 'split'
-BASE_DIR = 'D:/IIT/DDP/data'
+BASE_DIR = '/home/dhruvlaad/data'
 DIS_THRESH = 1.0
 SAMPLE_SIZE = int(7e5)
 
@@ -23,9 +23,9 @@ logging.info(f'active feats have {active_feats.shape[0]} samples and inactive fe
 scaler = StandardScaler().fit(np.vstack((active_feats, inactive_feats)))
 
 displacements = calc_dis_threshold(active_feats)
-assert np.any(displacements < DIS_THRESH)
+assert not np.any(displacements < DIS_THRESH)
 displacements = calc_dis_threshold(inactive_feats)
-assert np.any(displacements >= DIS_THRESH)
+assert not np.any(displacements >= DIS_THRESH)
 
 del inactive_feats
 del displacements
