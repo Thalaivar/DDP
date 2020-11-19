@@ -41,8 +41,8 @@ def cluster_with_hdbscan(feats, cluster_range, HDBSCAN_PARAMS, detailed=False):
         prop = np.array(prop)
         prop = prop/prop.sum()
         entropy.append(-sum([p*np.log2(p) for p in prop]))
-    
-        logging.info(f'identified {numulab[-1]} clusters (max is {max(numulab)}) with min_sample_prop={round(min_c, 2)} and entropy={round(entropy[-1], 2)}')
+
+        logging.info(f'identified {numulab[-1]} clusters (max is {max(numulab)}) with min_sample_prop={round(min_c, 2)} and entropy_ratio={round(entropy[-1]/max_entropy(numulab[-1]), 3)}')
         
         # retain max_clusters
         if numulab[-1] > highest_numulab:
@@ -236,3 +236,7 @@ def alphanum_key(s):
             return s
 
     return [convert_int(c) for c in re.split('([0-9]+)', s)]
+
+def max_entropy(n):
+    probs = [1/n for _ in range(n)]
+    return -sum([p*np.log2(p) for p in probs])

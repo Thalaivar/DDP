@@ -19,9 +19,7 @@ def calc_dis_threshold(feats):
 def split_data(dis_threshold: float):
     bsoid = BSOID.load_config(BASE_DIR, 'dis')
 
-    with open(bsoid.output_dir + '/' + bsoid.run_id + '_features.sav', 'rb') as f:
-        feats = joblib.load(f)
-    feats = np.vstack(feats)
+    feats, feats_sc = bsoid.load_features()
 
     # split data according to displacement threshold
     head_dis = feats[:,7].reshape(-1,1)
@@ -30,13 +28,14 @@ def split_data(dis_threshold: float):
 
     active_idx = np.where(displacements >= dis_threshold)[0]
     inactive_idx = np.where(displacements < dis_threshold)[0]
-    active_feats = feats[active_idx]
-    inactive_feats = feats[inactive_idx]
 
     # create bsoid model for later use
-    print(f'divided data into active ({round(active_feats.shape[0]/feats.shape[0], 2)}%) and in-active ({round(inactive_feats.shape[0]/feats.shape[0], 2)}%) based on displacement threshold of {dis_threshold}')
+    print(f'divided data into active ({round(active_idx.shape[0]/feats.shape[0], 2)}%) and in-active ({round(inactive_idx.shape[0]/feats.shape[0], 2)}%) based on displacement threshold of {dis_threshold}')
     bsoid = BSOID(RUN_ID, BASE_DIR, fps=30, temporal_dims=None, temporal_window=None, stride_window=3)
     bsoid.save()
+
+    active_feats = [feats[active_idx], feats_sc[active_idx]]
+    inactive_feats = [feats[inactive_idx], feats_sc[inactive_idx]]
 
     with open(bsoid.output_dir + '/' + bsoid.run_id + '_features.sav', 'wb') as f:
         joblib.dump([active_feats, inactive_feats], f)
@@ -48,8 +47,10 @@ def embed_split_data(reduced_dim: int, sample_size: int, dis_threshold=None):
         active_feats, inactive_feats = joblib.load(f)
 
     logging.info(f'active feats have {active_feats.shape[0]} samples and inactive feats have {inactive_feats.shape[0]} samples')
-    scaler = StandardScaler().fit(np.vstack((active_feats, inactive_feats)))
     
+    active_feats, active_feats_sc = active_feats
+    inactive_feats, inactive_feats_sc = inactive_feats
+
     if dis_threshold is not None:
             displacements = calc_dis_threshold(active_feats)
             assert not np.any(displacements < dis_threshold)
@@ -58,10 +59,9 @@ def embed_split_data(reduced_dim: int, sample_size: int, dis_threshold=None):
             assert not np.any(displacements >= dis_threshold)
 
     comb_feats = [active_feats, inactive_feats]
+    comb_feats_sc = [active_feats_sc, inactive_feats_sc]
 
-    def embed_subset(feats, sample_size, reduced_dim, umap_params):
-        feats_sc = scaler.transform(feats)
-    
+    def embed_subset(feats, feats_sc, sample_size, reduced_dim, umap_params):    
         # take subset of data
         if sample_size > 0 and sample_size < feats.shape[0]:
             idx = np.random.permutation(np.arange(feats.shape[0]))[0:sample_size]
@@ -77,8 +77,8 @@ def embed_split_data(reduced_dim: int, sample_size: int, dis_threshold=None):
         return [feats_usc, feats_train, mapper.embedding_]
 
     umap_results = []
-    for i, feats in enumerate(comb_feats):
-        results = embed_subset(feats, sample_size, reduced_dim, UMAP_PARAMS)
+    for i in range(2):
+        results = embed_subset(comb_feats[i], comb_feats_sc[i], sample_size, reduced_dim, UMAP_PARAMS)
         if i == 0:
             with open('/home/dhruvlaad/active_umap.sav', 'wb') as f:
                 joblib.dump(results, f)

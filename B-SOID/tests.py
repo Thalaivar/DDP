@@ -14,8 +14,7 @@ from sklearn.preprocessing import StandardScaler
 from active_inactive_split import split_data, calc_dis_threshold
 from BSOID.utils import cluster_with_hdbscan
 
-def embed(feats, n_neighbors):
-    feats_sc = StandardScaler().fit_transform(feats)
+def embed(feats, feats_sc, n_neighbors):
     if SAMPLE_SIZE > 0 and SAMPLE_SIZE < feats_sc.shape[0]:
         idx = np.random.permutation(np.arange(feats_sc.shape[0]))[0:SAMPLE_SIZE]
         feats_train = feats_sc[idx,:]
@@ -39,18 +38,20 @@ def nbrs_test(n_neighbors, parallel=True):
 
     print(f'active feats have {active_feats.shape[0]} samples and inactive feats have {inactive_feats.shape[0]} samples')
 
+    active_feats, active_feats_sc = active_feats
+    inactive_feats, inactive_feats_sc = inactive_feats
+
     displacements = calc_dis_threshold(active_feats)
     assert not np.any(displacements < DIS_THRESH)
     displacements = calc_dis_threshold(inactive_feats)
     assert not np.any(displacements >= DIS_THRESH)
 
-    del inactive_feats
-    del displacements
+    del inactive_feats, displacements, inactive_feats_sc
 
     if parallel:
-        Parallel(n_jobs=2)(delayed(embed)(active_feats, nbr) for nbr in n_neighbors)
+        Parallel(n_jobs=2)(delayed(embed)(active_feats, active_feats_sc, nbr) for nbr in n_neighbors)
     else:  
-        [embed(active_feats, nbr) for nbr in n_neighbors]
+        [embed(active_feats, active_feats_sc, nbr) for nbr in n_neighbors]
 
 def cluster_test_embeddings(filename, cluster_range):
     # cluster_range = [0.05, 0.5]
@@ -80,5 +81,5 @@ if __name__ == "__main__":
     import logging
     logging.basicConfig(level=logging.INFO)
 
-    filename = 'D:/IIT/DDP/umap_test_nbrs_300.sav'
-    cluster_test_embeddings(filename, [0.1, 0.25])
+    filename = 'D:/IIT/DDP/scale_together/umap_test_nbrs_3  50.sav'
+    cluster_test_embeddings(filename, [0.1, 1.2])

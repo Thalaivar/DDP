@@ -3,12 +3,16 @@ import joblib
 import ftplib
 import h5py
 import numpy as np
+import pandas as pd
 
 import logging
 logging.basicConfig(level=logging.INFO)
 
+from tqdm import tqdm
+from joblib import Parallel, delayed
 from BSOID.data import _bsoid_format
 from BSOID.preprocessing import likelihood_filter
+from BSOID.prediction import *
 
 STRAINS = ["LL6-B2B", "LL5-B2B", "LL4-B2B", "LL3-B2B", "LL2-B2B", "LL1-B2B"]
 DATASETS = ["strain-survey-batch-2019-05-29-e/", "strain-survey-batch-2019-05-29-d/", 
@@ -26,8 +30,6 @@ except FileExistsError:
 
 FPS = 30
 STRIDE_WINDOW = 3
-TEMPORAL_WINDOW = None
-TEMPORAL_DIMS = None
 
 class Mouse:
     def __init__(self, metadata: dict):
@@ -46,18 +48,16 @@ class Mouse:
         self.metadata = metadata
         self.save()
 
-    def extract_features(self, window_feats=True, features_type='dis'):
+    def extract_features(self, features_type='dis'):
         data = self._get_raw_data()
         if features_type == 'dis':
             from BSOID.features.displacement_feats import extract_feats, window_extracted_feats
         
-        feats = extract_feats(data, FPS)
-        if window_feats:
-            feats = window_extracted_feats([feats], STRIDE_WINDOW, TEMPORAL_WINDOW, TEMPORAL_DIMS)[0]
-            
-        logging.info(f'extracted features of shape {feats.shape}')
+        feats = frameshift_features(data, STRIDE_WINDOW, FPS, extract_feats, window_extracted_feats)
 
-        np.save(f'{self.save_dir}/feats.npy', feats)
+        with open(f'{self.save_dir}/feats.sav', 'wb') as f:
+            joblib.dump(feats, f)
+        
         return feats
 
     def get_behaviour_labels(self, clf):
@@ -65,7 +65,7 @@ class Mouse:
             feats = self.load_features()
         else:
             feats = self.extract_features()
-        labels = clf.predict(feats)
+        labels = frameshift_predict(feats, clf, STRIDE_WINDOW)
         return labels
 
     def _get_raw_data(self):
@@ -107,46 +107,118 @@ class Mouse:
         return mouse
 
     def load_features(self):
-        return np.load(f'{self.save_dir}/feats.npy')
+        with open(f'{self.save_dir}/feats.sav', 'rb') as f:
+            feats = joblib.load(f)
+        return feats
+        
+"""
+    Helper functions for carrying out analysis per mouse:
+        - transition_matrix_from_assay : calculates the transition matrix for a given assay
+        - get_behaviour_info_from_assay : extracts statistics of all behaviours from given assay
+"""
+def transition_matrix_from_assay(mouse: Mouse, labels, savefile=None):
+    n_lab = labels.max() + 1
+    tmat = np.zeros((n_lab, n_lab))
+    curr_lab = labels[0]
+    for i in range(1, labels.size):
+        lab = labels[i]
+        tmat[curr_lab, lab] += 1
+        curr_lab = lab
+    
+    for i in range(n_lab):
+        tmat[i] /= tmat[i].sum()    
+    
+    if savefile is not None:
+        np.save(f'{mouse.save_dir}/{savefile}', tmat)
 
+    return tmat
+
+def get_behaviour_info_from_assay(mouse: Mouse, labels, min_bout_len):
+    n_lab = labels.max() + 1
+
+    # total behaviour duration
+    total_duration = [0 for _ in range(n_lab)]
+    for i in range(len(labels)):
+        total_duration[labels[i]] += 1
+    
+    # no. of bouts and their average length
+    n_bouts = [0 for _ in range(n_lab)]
+    bout_lens = [[] for _ in range(n_lab)]
+    i = 0
+    while i < len(labels):
+        curr_idx = labels[i]
+        curr_bout_len, j = 0, i + 1
+        while curr_idx == labels[j] and j < len(labels):
+            curr_idx = labels[j]
+            curr_bout_len += 1
+            j += 1
+        
+        if curr_bout_len > min_bout_len:
+            n_bouts[labels[i]] += 1
+            bout_lens[labels[i]] = curr_bout_len
+        
+        i = j
+
+    avg_bout_lens = [sum(x)/len(x) for x in bout_lens]
+
+    # get durations in seconds
+    total_duration = np.array(total_duration) / FPS
+    avg_bout_lens = np.array(avg_bout_lens) / FPS
+
+    with open(f'{mouse.save_dir}/behaviour_info.sav', 'wb') as f:
+        joblib.dump([total_duration, np.array(n_bouts), avg_bout_lens], f)
+
+    return total_duration, np.array(n_bouts), avg_bout_lens
+
+"""
+    modules to run different analyses for all mice
+"""
 def extract_features_per_mouse(data_lookup_file):
-    import pandas as pd
     data = pd.read_csv(data_lookup_file)
     N = data.shape[0]
 
-    logging.info(f'extracting raw data for {N} mice')
+    print(f'extracting raw data for {N} mice')
 
     def extract(i, data):
         mouse_data = dict(data.iloc[i])
         mouse = Mouse(**mouse_data)
-        if os.path.exists(f'{mouse.save_dir}/feats.npy'):
+        if os.path.isfile(f'{mouse.save_dir}/feats.sav'):
             pass
         else:
             mouse.extract_features()
-            mouse.save()
 
-    from joblib import Parallel, delayed
     Parallel(n_jobs=-1)(delayed(extract)(i, data) for i in range(N))
-        
-def transition_matrix_full_assay(mouse: Mouse, clf):
-    labels = mouse.get_behaviour_labels(clf)
-    
-    n_lab = labels.max() + 1
-    t_mat_full = np.zeros((n_lab, n_lab))
-    curr_lab = labels[0]
-    for i in range(1, labels.size):
-        lab = labels[i]
-        t_mat_full[curr_lab, lab] += 1
-        curr_lab = lab
-    
-    for i in range(n_lab):
-        t_mat_full[i] /= t_mat_full[i].sum()    
-    
-    np.save(f'{mouse.save_dir}/transition_matrix_full.npy', t_mat_full)
 
-    return t_mat_full
+    # validate that all mice were included
+    total_mice = 0
+    strains = os.listdir(MICE_DIR)
+    for strain in strains:
+        ids = os.listdir(f'{MICE_DIR}/{strain}')
+        total_mice += len(ids)
+    
+    assert total_mice == N, 'some mice were overwritten'
 
-def 
-if __name__ == "__main__":
+def calculate_transition_matrix_for_entire_assay(data_lookup_file, parallel=True):
     clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
-    extract_features_per_mouse('bsoid_strain_data.csv', clf_file)
+    with open(clf_file, 'rb') as f:
+        clf = joblib.load(f)
+    
+    data = pd.read_csv(data_lookup_file)
+    N = data.shape[0]
+
+    print(f'calculating transition matrix for full assay of {N} mice')
+    def calculate_tmat(i, data, clf):
+        # load mouse from metadata 
+        metadata = dict(data.iloc[i])
+        mouse = Mouse.load(metadata)
+
+        # get behaviour labels for entire assay
+        labels = mouse.get_behaviour_labels(clf)
+        transition_matrix_from_assay(mouse, labels, savefile='full_assay_tmat')
+
+    if parallel:
+        Parallel(n_jobs=-1)(delayed(calculate_tmat)(i, data, clf) for i in range(N))
+    else:
+        for i in tqdm(range(N)):
+            calculate_tmat(i, data, clf)
+
