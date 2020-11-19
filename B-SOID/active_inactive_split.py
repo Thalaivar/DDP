@@ -52,10 +52,10 @@ def embed_split_data(reduced_dim: int, sample_size: int, dis_threshold=None):
     
     if dis_threshold is not None:
             displacements = calc_dis_threshold(active_feats)
-            assert np.any(displacements < dis_threshold)
+            assert not np.any(displacements < dis_threshold)
 
             displacements = calc_dis_threshold(inactive_feats)
-            assert np.any(displacements >= dis_threshold)
+            assert not np.any(displacements >= dis_threshold)
 
     comb_feats = [active_feats, inactive_feats]
 

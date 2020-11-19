@@ -32,6 +32,7 @@ def cluster_with_hdbscan(feats, cluster_range, HDBSCAN_PARAMS):
         trained_classifier = hdbscan.HDBSCAN(min_cluster_size=int(round(min_c * 0.01 * feats.shape[0])),
                                             **HDBSCAN_PARAMS).fit(feats)
         numulab.append(len(np.unique(trained_classifier.labels_)))
+        logging.info(f'identified {numulab[-1]} clusters (max is {max(numulab)}')
         if numulab[-1] > highest_numulab:
             logging.info('adjusting minimum cluster size to maximize cluster number')
             highest_numulab = numulab[-1]
