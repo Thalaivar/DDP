@@ -14,7 +14,8 @@ from sklearn.preprocessing import StandardScaler
 from active_inactive_split import split_data, calc_dis_threshold
 from BSOID.utils import cluster_with_hdbscan
 
-def embed(feats, feats_sc, n_neighbors):
+def embed(feats, n_neighbors):
+    feats_sc = StandardScaler().fit_transform(feats)
     if SAMPLE_SIZE > 0 and SAMPLE_SIZE < feats_sc.shape[0]:
         idx = np.random.permutation(np.arange(feats_sc.shape[0]))[0:SAMPLE_SIZE]
         feats_train = feats_sc[idx,:]
@@ -37,7 +38,6 @@ def nbrs_test(n_neighbors):
         active_feats, inactive_feats = joblib.load(f)
 
     print(f'active feats have {active_feats.shape[0]} samples and inactive feats have {inactive_feats.shape[0]} samples')
-    scaler = StandardScaler().fit(np.vstack((active_feats, inactive_feats)))
 
     displacements = calc_dis_threshold(active_feats)
     assert not np.any(displacements < DIS_THRESH)
@@ -47,8 +47,7 @@ def nbrs_test(n_neighbors):
     del inactive_feats
     del displacements
 
-    feats_sc = scaler.transform(active_feats)
-    [embed(active_feats, feats_sc, nbr) for nbr in n_neighbors]
+    [embed(active_feats, nbr) for nbr in n_neighbors]
 
 def cluster_test_embeddings(filename, cluster_range):
     # cluster_range = [0.05, 0.5]
@@ -58,7 +57,7 @@ def cluster_test_embeddings(filename, cluster_range):
         _, embedding = joblib.load(f)
     
     print(f'clustering {embedding.shape[0]} samples from {filename}')
-    assignments, soft_clusters, soft_assignments, best_clf = cluster_with_hdbscan(embedding, cluster_range, hdbscan_params)
+    assignments, soft_clusters, soft_assignments, best_clf = cluster_with_hdbscan(embedding, cluster_range, hdbscan_params, detailed=True)
 
     filename = filename[:-4] + '_clusters.sav'
     with open(filename, 'wb') as f:
@@ -73,3 +72,10 @@ def cluster_test_embeddings(filename, cluster_range):
     count = [d/soft_assignments.shape[0] for d in count]
     sn.barplot(x=labels, y=count)
     plt.show()
+
+if __name__ == "__main__":
+    import logging
+    logging.basicConfig(level=logging.INFO)
+
+    filename = 'D:/IIT/DDP/umap_test_nbrs_300.sav'
+    cluster_test_embeddings(filename, [0.1, 0.25])

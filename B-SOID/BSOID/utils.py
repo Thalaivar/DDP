@@ -24,19 +24,41 @@ from sklearn.metrics import confusion_matrix
 
 logger = logging.getLogger(__name__)
 
-def cluster_with_hdbscan(feats, cluster_range, HDBSCAN_PARAMS):
-    highest_numulab = -np.infty
-    numulab = []
+def cluster_with_hdbscan(feats, cluster_range, HDBSCAN_PARAMS, detailed=False):
+    highest_numulab, highest_entropy = -np.infty, -np.infty
+    numulab, entropy = [], []
     min_cluster_range = np.linspace(cluster_range[0], cluster_range[1], 25)
     for min_c in min_cluster_range:
         trained_classifier = hdbscan.HDBSCAN(min_cluster_size=int(round(min_c * 0.01 * feats.shape[0])),
                                             **HDBSCAN_PARAMS).fit(feats)
-        numulab.append(len(np.unique(trained_classifier.labels_)))
-        logging.info(f'identified {numulab[-1]} clusters (max is {max(numulab)}')
+        
+        labels = trained_classifier.labels_
+        numulab.append(labels.max() + 1)
+        prop = [0 for i in range(labels.max() + 1)]
+        for i in range(labels.size):
+            if labels[i] >= 0:
+                prop[labels[i]] += 1
+        prop = np.array(prop)
+        prop = prop/prop.sum()
+        entropy.append(-sum([p*np.log2(p) for p in prop]))
+    
+        logging.info(f'identified {numulab[-1]} clusters (max is {max(numulab)}) with min_sample_prop={round(min_c, 2)} and entropy={round(entropy[-1], 2)}')
+        
+        # retain max_clusters
         if numulab[-1] > highest_numulab:
-            logging.info('adjusting minimum cluster size to maximize cluster number')
             highest_numulab = numulab[-1]
             best_clf = trained_classifier
+
+        # retain best distribution
+        if numulab[-1] == highest_numulab and entropy[-1] > highest_entropy:
+            highest_entropy = entropy[-1]
+            best_clf = trained_classifier
+            
+    plt.plot(min_cluster_range, numulab, 'r', label='n_clusters')
+    plt.plot(min_cluster_range, entropy, 'b', label='entropy')
+    plt.legend(loc='upper right')
+    plt.show()
+
     assignments = best_clf.labels_
     soft_clusters = hdbscan.all_points_membership_vectors(best_clf)
     soft_assignments = np.argmax(soft_clusters, axis=1)

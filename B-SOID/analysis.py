@@ -30,94 +30,43 @@ TEMPORAL_WINDOW = None
 TEMPORAL_DIMS = None
 
 class Mouse:
-    def __init__(self, bsoid_clf_file, window_feats=True, **metadata):
+    def __init__(self, metadata: dict):
         self.strain = metadata['strain']
         self.filename = metadata['network_filename']
         self.sex = metadata['sex']
         self.id = metadata['mouse_id']
-
-        self.window_feats = window_feats
-        with open(bsoid_clf_file, 'rb') as f:
-            self.clf = joblib.load(f)
 
         self.save_dir = f'{MICE_DIR}/{self.strain}/{self.id}'
         try:
             os.makedirs(self.save_dir)
         except:
             pass
-
-    def bigram_probability_matrix(self):
-        labels = self.get_behaviour_labels()
         
-        n_lab = labels.max() + 1
-        bigram_mat = np.zeros((n_lab, n_lab))
-        curr_lab = labels[0]
-        for i in range(1, labels.size):
-            lab = labels[i]
-            bigram_mat[curr_lab, lab] += 1
-            curr_lab = lab
-        
-        for i in range(n_lab):
-            bigram_mat[i] /= bigram_mat[i].sum()    
-        
-        np.save(f'{self.save_dir}/bigram_matrix.npy', bigram_mat)
+        # dump all metadata for future reference
+        self.metadata = metadata
+        self.save()
 
-        return bigram_mat
-
-    def get_behaviour_info(self, labels, behaviour_idx, min_bout_len):
-        if not isinstance(behaviour_idx, list):
-            behaviour_idx = [behaviour_idx]
-        
-        labels = self.get_behaviour_labels()
-
-        counts = [0 for _ in range(labels.max() + 1)]
-        for lab in labels:
-            counts[lab] += 1
-        
-        # total bout duration in entire video
-        bin_length = STRIDE_WINDOW / FPS
-        total_duration = [counts[idx] * bin_length for idx in behaviour_idx]
-
-        # no. of bouts and their lengths
-        n_bouts = [0 for _ in range(labels.max() + 1)]
-        bout_lengths = [[] for _ in range(labels.max() + 1)]
-
-        start_lab = labels[0]
-        i = 1
-        while i < len(labels):
-            bout_len = 0
-            while start_lab == labels[i]:
-                bout_len += 1
-                i += 1
-            bout_lengths[start_lab].append(bout_len)
-            if bout_len > min_bout_len:
-                n_bouts[start_lab] += 1
-            start_lab = labels[i]
-        
-        bout_lengths = [sum(lens)/len(lens) for lens in bout_lengths]
-
-        return total_duration
-
-    def get_behaviour_labels(self):
-        if os.path.exists(f'{self.save_dir}/feats.npy'):
-            feats = self.load_features()
-        else:
-            feats = self.extract_features()
-        labels = self.clf.predict(feats)
-        return labels
-        
-    def extract_features(self, window=True, features_type='dis'):
+    def extract_features(self, window_feats=True, features_type='dis'):
         data = self._get_raw_data()
         if features_type == 'dis':
             from BSOID.features.displacement_feats import extract_feats, window_extracted_feats
         
         feats = extract_feats(data, FPS)
-        if self.window_feats:
+        if window_feats:
             feats = window_extracted_feats([feats], STRIDE_WINDOW, TEMPORAL_WINDOW, TEMPORAL_DIMS)[0]
+            
         logging.info(f'extracted features of shape {feats.shape}')
 
         np.save(f'{self.save_dir}/feats.npy', feats)
         return feats
+
+    def get_behaviour_labels(self, clf):
+        if os.path.isfile(f'{self.save_dir}/feats.npy'):
+            feats = self.load_features()
+        else:
+            feats = self.extract_features()
+        labels = clf.predict(feats)
+        return labels
 
     def _get_raw_data(self):
         _, _, movie_name = self.filename.split('/')
@@ -141,15 +90,26 @@ class Mouse:
         logging.info(f'preprocessed raw data of shape: {data_shape}')
 
         return fdata
-
-    def save(self):
-        with open(f'{self.save_dir}/mouse.pkl', 'wb') as f:
-            joblib.dump(self, f)
     
+    def save(self):
+        with open(f'{self.save_dir}/metadata.info', 'wb') as f:
+            joblib.dump(self.metadata, f)
+    
+    @staticmethod
+    def load(metadata: dict):
+        strain, mouse_id = metadata['strain'], metadata['mouse_id']
+        save_dir = f'{MICE_DIR}/{strain}/{mouse_id}'
+
+        with open(f'{save_dir}/metadata.info', 'wb') as f:
+            metadata = joblib.load(f)
+        
+        mouse = Mouse(metadata)
+        return mouse
+
     def load_features(self):
         return np.load(f'{self.save_dir}/feats.npy')
 
-def extract_features_per_mouse(data_lookup_file, clf_file):
+def extract_features_per_mouse(data_lookup_file):
     import pandas as pd
     data = pd.read_csv(data_lookup_file)
     N = data.shape[0]
@@ -157,12 +117,8 @@ def extract_features_per_mouse(data_lookup_file, clf_file):
     logging.info(f'extracting raw data for {N} mice')
 
     def extract(i, data):
-        mouse_data = {'strain': data.loc[i]['Strain'].replace('/', '-'),
-                'network_filename': data.loc[i]['NetworkFilename'],
-                'sex': data.loc[i]['Sex'],
-                'mouse_id': data.loc[i]['MouseID']
-            }
-        mouse = Mouse(**mouse_data, bsoid_clf_file=clf_file)
+        mouse_data = dict(data.iloc[i])
+        mouse = Mouse(**mouse_data)
         if os.path.exists(f'{mouse.save_dir}/feats.npy'):
             pass
         else:
@@ -172,7 +128,25 @@ def extract_features_per_mouse(data_lookup_file, clf_file):
     from joblib import Parallel, delayed
     Parallel(n_jobs=-1)(delayed(extract)(i, data) for i in range(N))
         
+def transition_matrix_full_assay(mouse: Mouse, clf):
+    labels = mouse.get_behaviour_labels(clf)
+    
+    n_lab = labels.max() + 1
+    t_mat_full = np.zeros((n_lab, n_lab))
+    curr_lab = labels[0]
+    for i in range(1, labels.size):
+        lab = labels[i]
+        t_mat_full[curr_lab, lab] += 1
+        curr_lab = lab
+    
+    for i in range(n_lab):
+        t_mat_full[i] /= t_mat_full[i].sum()    
+    
+    np.save(f'{mouse.save_dir}/transition_matrix_full.npy', t_mat_full)
 
+    return t_mat_full
+
+def 
 if __name__ == "__main__":
     clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
     extract_features_per_mouse('bsoid_strain_data.csv', clf_file)
