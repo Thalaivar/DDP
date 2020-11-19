@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 RUN_ID = 'split'
 BASE_DIR = '/home/dhruvlaad/data'
-DIS_THRESH = 1.0
+DIS_THRESH = 2.0
 SAMPLE_SIZE = int(7e5)
 
 import joblib
@@ -23,14 +23,14 @@ def embed(feats, feats_sc, n_neighbors):
         feats_train = feats_sc
         feats_usc = feats
 
-    print('running UMAP on {} samples with n_neighbors={}'.format(*feats_train.shape, n_neighbors))
+    print(f'running UMAP on {feats_train.shape[0]} samples with n_neighbors={n_neighbors}')
     mapper = umap.UMAP(n_components=3, n_neighbors=n_neighbors, min_dist=0.0).fit(feats_train)
 
     with open(f'/home/dhruvlaad/umap_test_nbrs_{n_neighbors}.sav', 'wb') as f:
         joblib.dump([feats_usc, mapper.embedding_], f)
 
 def nbrs_test(n_neighbors):
-    if not isinstance(n_neighbors):
+    if not isinstance(n_neighbors, list):
         n_neighbors = [n_neighbors]
 
     with open(f'{BASE_DIR}/output/{RUN_ID}_features.sav', 'rb') as f:
