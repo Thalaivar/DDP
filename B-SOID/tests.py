@@ -30,7 +30,7 @@ def embed(feats, n_neighbors):
     with open(f'/home/dhruvlaad/umap_test_nbrs_{n_neighbors}.sav', 'wb') as f:
         joblib.dump([feats_usc, mapper.embedding_], f)
 
-def nbrs_test(n_neighbors):
+def nbrs_test(n_neighbors, parallel=True):
     if not isinstance(n_neighbors, list):
         n_neighbors = [n_neighbors]
 
@@ -47,7 +47,10 @@ def nbrs_test(n_neighbors):
     del inactive_feats
     del displacements
 
-    [embed(active_feats, nbr) for nbr in n_neighbors]
+    if parallel:
+        Parallel(n_jobs=2)(delayed(embed)(active_feats, nbr) for nbr in n_neighbors)
+    else:  
+        [embed(active_feats, nbr) for nbr in n_neighbors]
 
 def cluster_test_embeddings(filename, cluster_range):
     # cluster_range = [0.05, 0.5]
