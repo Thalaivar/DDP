@@ -33,10 +33,10 @@ STRIDE_WINDOW = 3
 
 class Mouse:
     def __init__(self, metadata: dict):
-        self.strain = metadata['strain']
-        self.filename = metadata['network_filename']
-        self.sex = metadata['sex']
-        self.id = metadata['mouse_id']
+        self.strain = metadata['Strain'].replace('/', '-')
+        self.filename = metadata['NetworkFilename']
+        self.sex = metadata['Sex']
+        self.id = metadata['MouseID']
 
         self.save_dir = f'{MICE_DIR}/{self.strain}/{self.id}'
         try:
@@ -181,8 +181,9 @@ def extract_features_per_mouse(data_lookup_file):
 
     def extract(i, data):
         mouse_data = dict(data.iloc[i])
-        mouse = Mouse(**mouse_data)
+        mouse = Mouse(mouse_data)
         if os.path.isfile(f'{mouse.save_dir}/feats.sav'):
+            print(f'skipping {mouse.save_dir}')
             pass
         else:
             mouse.extract_features()

@@ -13,8 +13,11 @@ from joblib import delayed, Parallel
 from sklearn.preprocessing import StandardScaler
 from active_inactive_split import split_data, calc_dis_threshold
 from BSOID.utils import cluster_with_hdbscan
+from BSOID.bsoid import BSOID
 
-def embed(feats, feats_sc, n_neighbors):
+def embed(feats, feats_sc, n_neighbors, savefile=None):
+    if savefile is None:
+        savefile = 'umap_test_nbrs'
     if SAMPLE_SIZE > 0 and SAMPLE_SIZE < feats_sc.shape[0]:
         idx = np.random.permutation(np.arange(feats_sc.shape[0]))[0:SAMPLE_SIZE]
         feats_train = feats_sc[idx,:]
@@ -26,17 +29,31 @@ def embed(feats, feats_sc, n_neighbors):
     print(f'running UMAP on {feats_train.shape[0]} samples with n_neighbors={n_neighbors}')
     mapper = umap.UMAP(n_components=3, n_neighbors=n_neighbors, min_dist=0.0).fit(feats_train)
 
-    with open(f'/home/dhruvlaad/umap_test_nbrs_{n_neighbors}.sav', 'wb') as f:
+    with open(f'/home/dhruvlaad/{savefile}_{n_neighbors}.sav', 'wb') as f:
         joblib.dump([feats_usc, mapper.embedding_], f)
 
-def nbrs_test(n_neighbors, parallel=True):
+def nbrs_test_all(n_neighbors, parallel=True):
+    if not isinstance(n_neighbors, list):
+        n_neighbors = [n_neighbors]
+
+    bsoid = BSOID.load_config(base_dir=BASE_DIR, run_id='dis')
+    feats, feats_sc = bsoid.load_features()
+
+    print(f'feats gave {feats.shape[0]} samples in {feats.shape[1]}D')
+
+    if parallel:
+        Parallel(n_jobs=2)(delayed(embed)(feats, feats_sc, nbr, savefile='umap_test_all_nbrs') for nbr in n_neighbors)
+    else:  
+        [embed(feats, feats_sc, nbr, savefile='umap_test_all_nbrs') for nbr in n_neighbors]
+
+def nbrs_test_active_only(n_neighbors, parallel=True):
     if not isinstance(n_neighbors, list):
         n_neighbors = [n_neighbors]
 
     with open(f'{BASE_DIR}/output/{RUN_ID}_features.sav', 'rb') as f:
         active_feats, inactive_feats = joblib.load(f)
 
-    print(f'active feats have {active_feats.shape[0]} samples and inactive feats have {inactive_feats.shape[0]} samples')
+    print(f'active feats have {active_feats[0].shape[0]} samples and inactive feats have {inactive_feats[0].shape[0]} samples')
 
     active_feats, active_feats_sc = active_feats
     inactive_feats, inactive_feats_sc = inactive_feats
@@ -81,5 +98,8 @@ if __name__ == "__main__":
     import logging
     logging.basicConfig(level=logging.INFO)
 
-    filename = 'D:/IIT/DDP/scale_together/umap_test_nbrs_3  50.sav'
+    filename = 'D:/IIT/DDP/umap_test_nbrs_75.sav'
+    cluster_test_embeddings(filename, [0.1, 1.2])
+
+    filename = 'D:/IIT/DDP/umap_test_nbrs_350.sav'
     cluster_test_embeddings(filename, [0.1, 1.2])
