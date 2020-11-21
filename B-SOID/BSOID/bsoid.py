@@ -38,7 +38,7 @@ UMAP_PARAMS = {
 }
 
 HDBSCAN_PARAMS = {
-    'min_samples': 10,
+    'min_samples': 50,
     'prediction_data': True,
 }
 
@@ -68,15 +68,16 @@ class BSOID:
         except FileExistsError:
             pass
         try:
-            os.mkdir(self.csv_dir)    
-        except FileExistsError:
-            pass
-        try:
             os.mkdir(self.test_dir)
         except FileExistsError:
             pass
 
     def get_data(self, n=None, download=False):
+        try:
+            os.mkdir(self.csv_dir)    
+        except FileExistsError:
+            pass
+
         if download:
             download_data('bsoid_strain_data.csv', self.raw_dir)
         
@@ -97,7 +98,7 @@ class BSOID:
         filtered_data = []
         skipped = 0
         for i in range(len(csv_data_files)):
-            data = pd.read_csv(csv_data_files[i])
+            data = pd.read_csv(csv_data_files[i])   
             fdata, perc_filt = likelihood_filter(data)
             if fdata is not None and perc_filt < 5:
                 filtered_data.append(fdata)
@@ -116,7 +117,9 @@ class BSOID:
         filtered_data = self.load_filtered_data()
         
         # extract geometric features
-        feats = [extract_feats(data, self.fps) for data in filtered_data]
+        feats = []
+        for i in tqdm(range(len(filtered_data))):
+            feats.append(extract_feats(filtered_data[i], self.fps))
 
         logging.info(f'extracted {len(feats)} datasets of {feats[0].shape[1]}D features')
 
