@@ -235,7 +235,6 @@ def calculate_transition_matrix_for_entire_assay(data_lookup_file, parallel=True
         for i in tqdm(range(N)):
             calculate_tmat(i, data, clf)
 
-<<<<<<< HEAD
 def calculate_behaviour_usage(data_lookup_file, parallel=True):
     clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
     with open(clf_file, 'rb') as f:
@@ -258,12 +257,3 @@ def calculate_behaviour_usage(data_lookup_file, parallel=True):
     
     prop = np.vstack(prop)
     return prop.sum(axis=0)/prop.shape[0]
-=======
-def calculate_behaviour_usage(data_lookup_file,  parallel=True):
-    data = pd.read_csv(data_lookup_file)
-    
-    N = data.shape[0]
-
-    clf 
-    def get_behaviour_prop(i, data, clf):
->>>>>>> 69860510b8887d66141e7208d9129618b56a9f20
