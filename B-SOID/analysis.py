@@ -133,6 +133,18 @@ def transition_matrix_from_assay(mouse: Mouse, labels, savefile=None):
 
     return tmat
 
+def behaviour_proportion(labels):
+    n_lab = labels.max() + 1
+    
+    prop = [0 for _ in range(n_lab)]
+    for i in range(labels.size):
+        prop[labels[i]] += 1
+    
+    prop = np.array(prop)
+    prop = prop/prop.sum()
+
+    return prop
+
 def get_behaviour_info_from_assay(mouse: Mouse, labels, min_bout_len):
     n_lab = labels.max() + 1
 
@@ -223,3 +235,25 @@ def calculate_transition_matrix_for_entire_assay(data_lookup_file, parallel=True
         for i in tqdm(range(N)):
             calculate_tmat(i, data, clf)
 
+def calculate_behaviour_usage(data_lookup_file, parallel=True):
+    clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
+    with open(clf_file, 'rb') as f:
+        clf = joblib.load(f)
+    
+    data = pd.read_csv(clf_file)
+    N = data.shape[0]
+
+    def behaviour_usage(i, data, clf):
+        metadata = dict(data.iloc[i])
+        mouse = Mouse(metadata)
+
+        labels = mouse.get_behaviour_labels(clf)
+        return behaviour_proportion(labels)
+    
+    if parallel:
+        prop = Parallel(n_jobs=-1)(delayed(behaviour_usage)(i, data, clf) for i in range(N))
+    else:
+        prop = [behaviour_usage(i, data, clf) for i in range(N)]
+    
+    prop = np.vstack(prop)
+    return prop.sum(axis=0)/prop.shape[0]

@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 RUN_ID = 'split'
 BASE_DIR = '/home/dhruvlaad/data'
 DIS_THRESH = 2.0
-SAMPLE_SIZE = int(7e5)
+SAMPLE_SIZE = -1
 
 import joblib
 from joblib import delayed, Parallel
@@ -70,6 +70,7 @@ def nbrs_test_active_only(n_neighbors, parallel=True):
     else:  
         [embed(active_feats, active_feats_sc, nbr) for nbr in n_neighbors]
 
+
 def cluster_test_embeddings(filename, cluster_range):
     # cluster_range = [0.05, 0.5]
     hdbscan_params = {'min_samples': 10, 'prediction_data': True}
@@ -78,7 +79,7 @@ def cluster_test_embeddings(filename, cluster_range):
         _, embedding = joblib.load(f)
     
     print(f'clustering {embedding.shape[0]} samples from {filename}')
-    assignments, soft_clusters, soft_assignments, best_clf = cluster_with_hdbscan(embedding, cluster_range, hdbscan_params, detailed=True)
+    assignments, soft_clusters, soft_assignments, best_clf = cluster_with_hdbscan(embedding, cluster_range, hdbscan_params)
 
     filename = filename[:-4] + '_clusters.sav'
     with open(filename, 'wb') as f:
@@ -92,14 +93,16 @@ def cluster_test_embeddings(filename, cluster_range):
         count[label] += 1
     count = [d/soft_assignments.shape[0] for d in count]
     sn.barplot(x=labels, y=count)
-    plt.show()
+    plt.savefig(filename[:-4]+'.png')
 
 if __name__ == "__main__":
     import logging
     logging.basicConfig(level=logging.INFO)
 
-    filename = 'D:/IIT/DDP/umap_test_nbrs_75.sav'
-    cluster_test_embeddings(filename, [0.1, 1.2])
+    import os
+    base_dir = '/Users/dhruvlaad/IIT/DDP/'
+    umap_files = [base_dir + f for f in os.listdir(base_dir) if f.endswith('.sav')]
+    print(f'running clustering test on {len(umap_files)} files')
+    umap_files.sort()
 
-    filename = 'D:/IIT/DDP/umap_test_nbrs_350.sav'
-    cluster_test_embeddings(filename, [0.1, 1.2])
+    [cluster_test_embeddings(f, [1, 10]) for f in umap_files]

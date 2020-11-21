@@ -24,7 +24,7 @@ from sklearn.metrics import confusion_matrix
 
 logger = logging.getLogger(__name__)
 
-def cluster_with_hdbscan(feats, cluster_range, HDBSCAN_PARAMS, detailed=False):
+def cluster_with_hdbscan(feats, cluster_range, HDBSCAN_PARAMS):
     highest_numulab, highest_entropy = -np.infty, -np.infty
     numulab, entropy = [], []
     min_cluster_range = np.linspace(cluster_range[0], cluster_range[1], 25)
@@ -40,9 +40,9 @@ def cluster_with_hdbscan(feats, cluster_range, HDBSCAN_PARAMS, detailed=False):
                 prop[labels[i]] += 1
         prop = np.array(prop)
         prop = prop/prop.sum()
-        entropy.append(-sum([p*np.log2(p) for p in prop]))
+        entropy.append(-sum([p*np.log2(p) for p in prop])/max_entropy(numulab[-1]))
 
-        logging.info(f'identified {numulab[-1]} clusters (max is {max(numulab)}) with min_sample_prop={round(min_c, 2)} and entropy_ratio={round(entropy[-1]/max_entropy(numulab[-1]), 3)}')
+        logging.info(f'identified {numulab[-1]} clusters (max is {max(numulab)}) with min_sample_prop={round(min_c, 2)} and entropy_ratio={round(entropy[-1], 3)}')
         
         # retain max_clusters
         if numulab[-1] > highest_numulab:
@@ -53,11 +53,6 @@ def cluster_with_hdbscan(feats, cluster_range, HDBSCAN_PARAMS, detailed=False):
         if numulab[-1] == highest_numulab and entropy[-1] > highest_entropy:
             highest_entropy = entropy[-1]
             best_clf = trained_classifier
-            
-    plt.plot(min_cluster_range, numulab, 'r', label='n_clusters')
-    plt.plot(min_cluster_range, entropy, 'b', label='entropy')
-    plt.legend(loc='upper right')
-    plt.show()
 
     assignments = best_clf.labels_
     soft_clusters = hdbscan.all_points_membership_vectors(best_clf)
