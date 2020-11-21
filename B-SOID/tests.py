@@ -39,7 +39,7 @@ def nbrs_test_all(n_neighbors, parallel=True):
     bsoid = BSOID.load_config(base_dir=BASE_DIR, run_id='dis')
     feats, feats_sc = bsoid.load_features()
 
-    print(f'feats gave {feats.shape[0]} samples in {feats.shape[1]}D')
+    print(f'Features have {feats.shape[0]} samples in {feats.shape[1]}D')
 
     if parallel:
         Parallel(n_jobs=2)(delayed(embed)(feats, feats_sc, nbr, savefile='umap_test_all_nbrs') for nbr in n_neighbors)
@@ -78,7 +78,7 @@ def cluster_test_embeddings(filename, cluster_range):
         _, embedding = joblib.load(f)
     
     print(f'clustering {embedding.shape[0]} samples from {filename}')
-    assignments, soft_clusters, soft_assignments, best_clf = cluster_with_hdbscan(embedding, cluster_range, hdbscan_params, detailed=True)
+    assignments, soft_clusters, soft_assignments, best_clf = cluster_with_hdbscan(embedding, cluster_range, hdbscan_params, detailed=False)
 
     filename = filename[:-4] + '_clusters.sav'
     with open(filename, 'wb') as f:
@@ -98,8 +98,5 @@ if __name__ == "__main__":
     import logging
     logging.basicConfig(level=logging.INFO)
 
-    filename = 'D:/IIT/DDP/umap_test_nbrs_75.sav'
-    cluster_test_embeddings(filename, [0.1, 1.2])
-
-    filename = 'D:/IIT/DDP/umap_test_nbrs_350.sav'
-    cluster_test_embeddings(filename, [0.1, 1.2])
+    filename = 'D:/IIT/DDP/umap_test_nbrs_500.sav'
+    cluster_test_embeddings(filename, [0.3, 0.4, 5])

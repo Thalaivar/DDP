@@ -13,9 +13,9 @@ logging.basicConfig(level=logging.INFO)
 #                 'temporal_dims': 6}
 # bsoid = BSOID(**bsoid_params)
 
-bsoid = BSOID.load_config(base_dir='D:/IIT/DDP/data', run_id='split')
-bsoid.get_data()
-bsoid.process_csvs()
+bsoid = BSOID.load_config(base_dir='D:/IIT/DDP/data', run_id='dis')
+# bsoid.get_data()
+# bsoid.process_csvs()
 
 # bsoid.features_from_points()
 
@@ -23,7 +23,7 @@ bsoid.process_csvs()
 # bsoid.max_samples_for_umap()
 # bsoid.umap_reduce(reduced_dim=10, sample_size=int(6e5))
 
-# bsoid.identify_clusters_from_umap(min_cluster_prop=0.33)
+bsoid.identify_clusters_from_umap(cluster_range=0.06)
 
 # bsoid.validate_classifier()
 # bsoid.train_classifier()

@@ -27,7 +27,13 @@ logger = logging.getLogger(__name__)
 def cluster_with_hdbscan(feats, cluster_range, HDBSCAN_PARAMS, detailed=False):
     highest_numulab, highest_entropy = -np.infty, -np.infty
     numulab, entropy = [], []
-    min_cluster_range = np.linspace(cluster_range[0], cluster_range[1], 25)
+    if not isinstance(cluster_range, list):
+        min_cluster_range = [cluster_range]
+    elif len(cluster_range) == 2:
+        min_cluster_range = np.linspace(*cluster_range, 25)
+    elif len(cluster_range) == 3:
+        min_cluster_range = np.linspace(*cluster_range)
+        
     for min_c in min_cluster_range:
         trained_classifier = hdbscan.HDBSCAN(min_cluster_size=int(round(min_c * 0.01 * feats.shape[0])),
                                             **HDBSCAN_PARAMS).fit(feats)
@@ -53,11 +59,12 @@ def cluster_with_hdbscan(feats, cluster_range, HDBSCAN_PARAMS, detailed=False):
         if numulab[-1] == highest_numulab and entropy[-1] > highest_entropy:
             highest_entropy = entropy[-1]
             best_clf = trained_classifier
-            
-    plt.plot(min_cluster_range, numulab, 'r', label='n_clusters')
-    plt.plot(min_cluster_range, entropy, 'b', label='entropy')
-    plt.legend(loc='upper right')
-    plt.show()
+
+    if detailed: 
+        plt.plot(min_cluster_range, numulab, 'r', label='n_clusters')
+        plt.plot(min_cluster_range, entropy, 'b', label='entropy')
+        plt.legend(loc='upper right')
+        plt.show()
 
     assignments = best_clf.labels_
     soft_clusters = hdbscan.all_points_membership_vectors(best_clf)
