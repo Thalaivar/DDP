@@ -133,7 +133,7 @@ class BSOID:
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
             joblib.dump(feats, f)
 
-    def umap_reduce(self, reduced_dim, sample_size=int(5e5)):        
+    def umap_reduce(self, reduced_dim, sample_size=int(5e5), n_neighbors=200):        
         feats, feats_sc = self.load_features()
 
         if sample_size > 1:
@@ -145,7 +145,7 @@ class BSOID:
             feats_usc = feats
 
         logging.info('running UMAP on {} samples from {}D to {}D'.format(*feats_train.shape, reduced_dim))
-        mapper = umap.UMAP(n_components=reduced_dim, n_neighbors=100, **UMAP_PARAMS).fit(feats_train)
+        mapper = umap.UMAP(n_components=reduced_dim, n_neighbors=n_neighbors, **UMAP_PARAMS).fit(feats_train)
 
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'wb') as f:
             joblib.dump([feats_usc, feats_train, mapper.embedding_], f)

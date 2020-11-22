@@ -59,15 +59,6 @@ def cluster_with_hdbscan(feats, cluster_range, HDBSCAN_PARAMS):
         if numulab[-1] == highest_numulab and entropy[-1] > highest_entropy:
             highest_entropy = entropy[-1]
             best_clf = trained_classifier
-<<<<<<< HEAD
-=======
-
-    if detailed: 
-        plt.plot(min_cluster_range, numulab, 'r', label='n_clusters')
-        plt.plot(min_cluster_range, entropy, 'b', label='entropy')
-        plt.legend(loc='upper right')
-        plt.show()
->>>>>>> 69860510b8887d66141e7208d9129618b56a9f20
 
     assignments = best_clf.labels_
     soft_clusters = hdbscan.all_points_membership_vectors(best_clf)
