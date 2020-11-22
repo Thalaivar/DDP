@@ -23,9 +23,9 @@ bsoid = BSOID.load_config(base_dir='D:/IIT/DDP/data', run_id='dis')
 # bsoid.max_samples_for_umap()
 # bsoid.umap_reduce(reduced_dim=10, sample_size=int(6e5))
 
-bsoid.identify_clusters_from_umap(cluster_range=[1.2, 2.4, 12])
+# bsoid.identify_clusters_from_umap(cluster_range=[0.09, 0.1, 10])
 
-# bsoid.validate_classifier()
-# bsoid.train_classifier()
+bsoid.validate_classifier()
+bsoid.train_classifier()
 
 # bsoid.label_frames()
