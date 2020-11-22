@@ -76,7 +76,8 @@ def cluster_test_embeddings(filename, cluster_range):
     hdbscan_params = {'min_samples': 10, 'prediction_data': True}
 
     with open(filename, 'rb') as f:
-        _, embedding = joblib.load(f)
+        results = joblib.load(f)
+    embedding = results[-1]
     
     print(f'clustering {embedding.shape[0]} samples from {filename}')
     assignments, soft_clusters, soft_assignments, best_clf = cluster_with_hdbscan(embedding, cluster_range, hdbscan_params)
@@ -100,12 +101,12 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     import os
-    base_dir = 'D:/IIT/DDP/'
-    # umap_files = [base_dir + f for f in os.listdir(base_dir) if f.endswith('.sav')]
-    # print(f'running clustering test on {len(umap_files)} files')
-    # umap_files.sort()
+    base_dir = 'D:/IIT/DDP/all_test'
+    umap_files = [base_dir + f for f in os.listdir(base_dir) if f.endswith('.sav')]
+    umap_files.sort()
+    print(f'Running clustering test on {umap_files}')
 
-    # [cluster_test_embeddings(f, [1, 10]) for f in umap_files]
+    [cluster_test_embeddings(f, [1, 5, 5]) for f in umap_files]
 
-    umap_file = base_dir + 'umap_test_nbrs_300.sav'
-    cluster_test_embeddings(umap_file, cluster_range=[0.01, 0.1, 10])
+    # umap_file = base_dir + 'umap_test_nbrs_300.sav'
+    # cluster_test_embeddings(umap_file, cluster_range=[5, 10, 5])
