@@ -14,6 +14,7 @@ from BSOID.data import _bsoid_format
 from BSOID.preprocessing import likelihood_filter
 from BSOID.prediction import *
 
+FEATS_TYPE = 'dis'
 STRAINS = ["LL6-B2B", "LL5-B2B", "LL4-B2B", "LL3-B2B", "LL2-B2B", "LL1-B2B"]
 DATASETS = ["strain-survey-batch-2019-05-29-e/", "strain-survey-batch-2019-05-29-d/", 
             "strain-survey-batch-2019-05-29-c/", "strain-survey-batch-2019-05-29-b/",
@@ -61,10 +62,7 @@ class Mouse:
         return feats
 
     def get_behaviour_labels(self, clf):
-        if os.path.isfile(f'{self.save_dir}/feats.npy'):
-            feats = self.load_features()
-        else:
-            feats = self.extract_features()
+        feats = self.load_features()
         labels = frameshift_predict(feats, clf, STRIDE_WINDOW)
         return labels
 
@@ -97,20 +95,30 @@ class Mouse:
     
     @staticmethod
     def load(metadata: dict):
-        strain, mouse_id = metadata['strain'], metadata['mouse_id']
+        strain, mouse_id = metadata['Strain'].replace('/', '-'), metadata['MouseID']
         save_dir = f'{MICE_DIR}/{strain}/{mouse_id}'
 
-        with open(f'{save_dir}/metadata.info', 'wb') as f:
+        with open(f'{save_dir}/metadata.info', 'rb') as f:
             metadata = joblib.load(f)
         
         mouse = Mouse(metadata)
         return mouse
 
     def load_features(self):
-        with open(f'{self.save_dir}/feats.sav', 'rb') as f:
-            feats = joblib.load(f)
+        if not os.path.isfile(f'{self.save_dir}/feats.sav'):
+            feats = self.extract_features(features_type=FEATS_TYPE)
+        else:
+            with open(f'{self.save_dir}/feats.sav', 'rb') as f:
+                feats = joblib.load(f)
         return feats
-        
+    
+    def load_behaviour_info(self):
+        info_file = f'{self.save_dir}/behaviour_info.sav'
+        if os.path.isfile(info_file):
+            with open(info_file, 'rb') as f:
+                return joblib.load(f)
+        else:
+            raise FileNotFoundError(f'could not find {info_file}')
 """
     Helper functions for carrying out analysis per mouse:
         - transition_matrix_from_assay : calculates the transition matrix for a given assay
@@ -157,19 +165,23 @@ def get_behaviour_info_from_assay(mouse: Mouse, labels, min_bout_len):
     n_bouts = [0 for _ in range(n_lab)]
     bout_lens = [[] for _ in range(n_lab)]
     i = 0
-    while i < len(labels):
+    while i < len(labels) - 1:
         curr_idx = labels[i]
         curr_bout_len, j = 0, i + 1
-        while curr_idx == labels[j] and j < len(labels):
+        while curr_idx == labels[j] and j < len(labels) - 1:
             curr_idx = labels[j]
             curr_bout_len += 1
             j += 1
         
         if curr_bout_len > min_bout_len:
             n_bouts[labels[i]] += 1
-            bout_lens[labels[i]] = curr_bout_len
+            bout_lens[labels[i]].append(curr_bout_len)
         
         i = j
+
+    for i, x in enumerate(bout_lens):
+        if len(x) == 0:
+            bout_lens[i] = [0]
 
     avg_bout_lens = [sum(x)/len(x) for x in bout_lens]
 
@@ -212,7 +224,7 @@ def extract_features_per_mouse(data_lookup_file):
     assert total_mice == N, 'some mice were overwritten'
 
 def calculate_transition_matrix_for_entire_assay(data_lookup_file, parallel=True):
-    clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
+    clf_file = f'{BASE_DIR}/output/dis_active_classifiers.sav'
     with open(clf_file, 'rb') as f:
         clf = joblib.load(f)
     
@@ -257,3 +269,56 @@ def calculate_behaviour_usage(data_lookup_file, parallel=True):
     
     prop = np.vstack(prop)
     return prop.sum(axis=0)/prop.shape[0]
+
+def calculate_behaviour_info_for_all_strains(data_lookup_file, parallel=True):
+    clf_file = f'{BASE_DIR}/output/dis_active_classifiers.sav'
+    with open(clf_file, 'rb') as f:
+        clf = joblib.load(f)
+    
+    data = pd.read_csv(data_lookup_file)
+    N = data.shape[0]
+
+    def behaviour_info(i, data, clf):
+        metadata = dict(data.iloc[i])
+        mouse = Mouse(metadata)
+
+        labels = mouse.get_behaviour_labels(clf)
+        get_behaviour_info_from_assay(mouse, labels, min_bout_len=3)
+        return
+    
+    if parallel:
+        Parallel(n_jobs=-1)(delayed(behaviour_info)(i, data, clf) for i in range(N))
+    else:
+        for i in tqdm(range(N)):
+            behaviour_info(i, data, clf)
+    
+    
+def get_behaviour_info(data_lookup_file, behaviour_idx):
+    data = pd.read_csv(data_lookup_file)
+    N = data.shape[0]
+
+    info = [
+        {'Strain': [], 
+         'Sex': [], 
+         'Total Duration':  [], 
+         'Average Bout Length': [], 
+         'No. of Bouts': []}
+                for _ in range(len(behaviour_idx))
+        ]
+    
+    for i in tqdm(range(N)):
+        metadata = dict(data.iloc[i])
+        mouse = Mouse(metadata)
+
+        total_duration, n_bouts, avg_bout_lens = mouse.load_behaviour_info()
+        for i, idx in enumerate(behaviour_idx):
+            info[i]['Strain'].append(mouse.strain)
+            info[i]['Sex'].append(mouse.sex)
+            info[i]['Total Duration'].append(total_duration[idx])
+            info[i]['Average Bout Length'].append(avg_bout_lens[idx])
+            info[i]['No. of Bouts'].append(n_bouts[idx])
+    
+    return [pd.DataFrame.from_dict(x) for x in info]
+
+if __name__ == "__main__":
+    get_behaviour_info_for_all_strains("bsoid_strain_data.csv", parallel=False)

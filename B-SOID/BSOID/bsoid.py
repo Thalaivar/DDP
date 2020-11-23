@@ -166,6 +166,7 @@ class BSOID:
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
             _, _, umap_embeddings = joblib.load(f)
 
+        logging.info(f'clustering {umap_embeddings.shape[0]} in {umap_embeddings.shape[1]}D with cluster range={cluster_range}')
         assignments, soft_clusters, soft_assignments, best_clf = cluster_with_hdbscan(umap_embeddings, cluster_range, HDBSCAN_PARAMS)
         logging.info('identified {} clusters from {} samples in {}D'.format(len(np.unique(soft_assignments)), *umap_embeddings.shape))
 
