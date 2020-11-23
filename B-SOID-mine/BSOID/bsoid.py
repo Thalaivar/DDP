@@ -10,6 +10,7 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 from psutil import virtual_memory
+from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split, cross_val_score
@@ -35,6 +36,7 @@ MLP_PARAMS = {
 UMAP_PARAMS = {
     'min_dist': 0.0,  # small value
     'random_state': 23,
+    'n_neighbors': 60
 }
 
 HDBSCAN_PARAMS = {
@@ -133,7 +135,13 @@ class BSOID:
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
             joblib.dump(feats, f)
 
-    def umap_reduce(self, reduced_dim, sample_size=int(5e5), n_neighbors=200):        
+    def best_reduced_dim(self, var_prop=0.7):
+        _, feats_sc = self.load_features()
+        pca = PCA().fit(feats_sc)
+        num_dimensions = np.argwhere(np.cumsum(pca.explained_variance_ratio_) >= var_prop)[0][0] + 1
+        print(f'At least {num_dimensions} are needed to retain {var_prop} of the total variance')
+
+    def umap_reduce(self, reduced_dim, sample_size=int(5e5)):        
         feats, feats_sc = self.load_features()
 
         if sample_size > 1:
@@ -145,22 +153,12 @@ class BSOID:
             feats_usc = feats
 
         logging.info('running UMAP on {} samples from {}D to {}D'.format(*feats_train.shape, reduced_dim))
-        mapper = umap.UMAP(n_components=reduced_dim, n_neighbors=n_neighbors, **UMAP_PARAMS).fit(feats_train)
+        mapper = umap.UMAP(n_components=reduced_dim,  **UMAP_PARAMS).fit(feats_train)
 
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'wb') as f:
             joblib.dump([feats_usc, feats_train, mapper.embedding_], f)
         
         return [feats_usc, feats_train, mapper.embedding_]
-
-    def max_samples_for_umap(self):
-        with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
-            feats, _ = joblib.load(f)
-
-        mem = virtual_memory()
-        allowed_n = int((mem.available - 256000000)/(feats.shape[1]*32*100))
-        
-        logging.info('max allowed samples for umap: {} and data has: {}'.format(allowed_n, feats.shape[0]))
-        return allowed_n
 
     def identify_clusters_from_umap(self, cluster_range=[0.4,1.2]):
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:

@@ -24,6 +24,19 @@ BASE_DIR = 'D:/IIT/DDP/data'
 MICE_DIR = BASE_DIR + '/analysis/mice'
 RAW_DIR = BASE_DIR + '/raw'
 
+BEHAVIOUR_LABELS = {
+    'CCW-Turn': 0,
+    'Groom-1': 1,
+    'N/A': [2, 4, 10, 11, 13],
+    'Rear-1': 3,
+    'Groom-2': 5,
+    'CW-Turn': 6,
+    'Rear-CW-Turn': 7,
+    'Locomote-1': 8,
+    'Groom-3': 9,
+    'Groom-4': 12,
+}
+
 try:
     os.makedirs(RAW_DIR)
 except FileExistsError:
@@ -34,12 +47,12 @@ STRIDE_WINDOW = 3
 
 class Mouse:
     def __init__(self, metadata: dict):
-        self.strain = metadata['Strain'].replace('/', '-')
+        self.strain = metadata['Strain']
         self.filename = metadata['NetworkFilename']
         self.sex = metadata['Sex']
         self.id = metadata['MouseID']
 
-        self.save_dir = f'{MICE_DIR}/{self.strain}/{self.id}'
+        self.save_dir = MICE_DIR + '/' + self.strain.replace('/', '-') + '/' + self.id
         try:
             os.makedirs(self.save_dir)
         except:
@@ -111,20 +124,13 @@ class Mouse:
             with open(f'{self.save_dir}/feats.sav', 'rb') as f:
                 feats = joblib.load(f)
         return feats
-    
-    def load_behaviour_info(self):
-        info_file = f'{self.save_dir}/behaviour_info.sav'
-        if os.path.isfile(info_file):
-            with open(info_file, 'rb') as f:
-                return joblib.load(f)
-        else:
-            raise FileNotFoundError(f'could not find {info_file}')
+
 """
     Helper functions for carrying out analysis per mouse:
         - transition_matrix_from_assay : calculates the transition matrix for a given assay
         - get_behaviour_info_from_assay : extracts statistics of all behaviours from given assay
 """
-def transition_matrix_from_assay(mouse: Mouse, labels, savefile=None):
+def transition_matrix_from_assay(mouse: Mouse, labels):
     n_lab = labels.max() + 1
     tmat = np.zeros((n_lab, n_lab))
     curr_lab = labels[0]
@@ -135,9 +141,6 @@ def transition_matrix_from_assay(mouse: Mouse, labels, savefile=None):
     
     for i in range(n_lab):
         tmat[i] /= tmat[i].sum()    
-    
-    if savefile is not None:
-        np.save(f'{mouse.save_dir}/{savefile}', tmat)
 
     return tmat
 
@@ -153,46 +156,43 @@ def behaviour_proportion(labels):
 
     return prop
 
-def get_behaviour_info_from_assay(mouse: Mouse, labels, min_bout_len):
-    n_lab = labels.max() + 1
+def get_behaviour_info_from_assay(mouse: Mouse, labels, behaviour_idx, min_bout_len):
+    if not isinstance(behaviour_idx, list):
+        behaviour_idx = [behaviour_idx]
 
-    # total behaviour duration
-    total_duration = [0 for _ in range(n_lab)]
-    for i in range(len(labels)):
-        total_duration[labels[i]] += 1
-    
-    # no. of bouts and their average length
-    n_bouts = [0 for _ in range(n_lab)]
-    bout_lens = [[] for _ in range(n_lab)]
+    for i in range(labels.size):
+        if labels[i] in behaviour_idx:
+            labels[i] = -1
+
+    total_duration, average_bout_len, n_bouts = 0, [], 0 
     i = 0
     while i < len(labels) - 1:
-        curr_idx = labels[i]
-        curr_bout_len, j = 0, i + 1
-        while curr_idx == labels[j] and j < len(labels) - 1:
-            curr_idx = labels[j]
-            curr_bout_len += 1
-            j += 1
+        if labels[i] < 0:
+            total_duration += 1
+            curr_idx = labels[i]
+            curr_bout_len, j = 0, i + 1
+            while curr_idx == labels[j] and j < len(labels) - 1:
+                total_duration += 1
+                curr_idx = labels[j]
+                curr_bout_len += 1
+                j += 1
         
-        if curr_bout_len > min_bout_len:
-            n_bouts[labels[i]] += 1
-            bout_lens[labels[i]].append(curr_bout_len)
+            if curr_bout_len > min_bout_len:
+                n_bouts += 1
+                average_bout_len.append(curr_bout_len)
         
-        i = j
+            i = j
+        
+        else:
+            i += 1
 
-    for i, x in enumerate(bout_lens):
-        if len(x) == 0:
-            bout_lens[i] = [0]
-
-    avg_bout_lens = [sum(x)/len(x) for x in bout_lens]
+    average_bout_len = sum(average_bout_len)/len(average_bout_len)
 
     # get durations in seconds
-    total_duration = np.array(total_duration) / FPS
-    avg_bout_lens = np.array(avg_bout_lens) / FPS
+    total_duration = total_duration / FPS
+    average_bout_len = average_bout_len / FPS
 
-    with open(f'{mouse.save_dir}/behaviour_info.sav', 'wb') as f:
-        joblib.dump([total_duration, np.array(n_bouts), avg_bout_lens], f)
-
-    return total_duration, np.array(n_bouts), avg_bout_lens
+    return total_duration, n_bouts, average_bout_len
 
 """
     modules to run different analyses for all mice
@@ -224,7 +224,7 @@ def extract_features_per_mouse(data_lookup_file):
     assert total_mice == N, 'some mice were overwritten'
 
 def calculate_transition_matrix_for_entire_assay(data_lookup_file, parallel=True):
-    clf_file = f'{BASE_DIR}/output/dis_active_classifiers.sav'
+    clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
     with open(clf_file, 'rb') as f:
         clf = joblib.load(f)
     
@@ -270,55 +270,37 @@ def calculate_behaviour_usage(data_lookup_file, parallel=True):
     prop = np.vstack(prop)
     return prop.sum(axis=0)/prop.shape[0]
 
-def calculate_behaviour_info_for_all_strains(data_lookup_file, parallel=True):
-    clf_file = f'{BASE_DIR}/output/dis_active_classifiers.sav'
+def calculate_behaviour_info_for_all_strains(data_lookup_file, min_bout_len):
+    clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
     with open(clf_file, 'rb') as f:
         clf = joblib.load(f)
     
     data = pd.read_csv(data_lookup_file)
     N = data.shape[0]
 
-    def behaviour_info(i, data, clf):
-        metadata = dict(data.iloc[i])
-        mouse = Mouse(metadata)
+    info = {
+        'Strain': [], 
+        'Sex': [], 
+        'Total Duration':  [], 
+        'Average Bout Length': [], 
+        'No. of Bouts': []
+    }
 
-        labels = mouse.get_behaviour_labels(clf)
-        get_behaviour_info_from_assay(mouse, labels, min_bout_len=3)
-        return
-    
-    if parallel:
-        Parallel(n_jobs=-1)(delayed(behaviour_info)(i, data, clf) for i in range(N))
-    else:
-        for i in tqdm(range(N)):
-            behaviour_info(i, data, clf)
-    
-    
-def get_behaviour_info(data_lookup_file, behaviour_idx):
-    data = pd.read_csv(data_lookup_file)
-    N = data.shape[0]
-
-    info = [
-        {'Strain': [], 
-         'Sex': [], 
-         'Total Duration':  [], 
-         'Average Bout Length': [], 
-         'No. of Bouts': []}
-                for _ in range(len(behaviour_idx))
-        ]
-    
     for i in tqdm(range(N)):
         metadata = dict(data.iloc[i])
         mouse = Mouse(metadata)
 
-        total_duration, n_bouts, avg_bout_lens = mouse.load_behaviour_info()
-        for i, idx in enumerate(behaviour_idx):
-            info[i]['Strain'].append(mouse.strain)
-            info[i]['Sex'].append(mouse.sex)
-            info[i]['Total Duration'].append(total_duration[idx])
-            info[i]['Average Bout Length'].append(avg_bout_lens[idx])
-            info[i]['No. of Bouts'].append(n_bouts[idx])
+        idx = [BEHAVIOUR_LABELS[key] for key in BEHAVIOUR_LABELS.keys() if key[:5] == 'Groom']
+        labels = mouse.get_behaviour_labels(clf)
+        total_duration, n_bouts, avg_bout_len = get_behaviour_info_from_assay(mouse, labels, idx, min_bout_len)
+
+        info['Strain'].append(mouse.strain)
+        info['Sex'].append(mouse.sex)
+        info['Total Duration'].append(total_duration)
+        info['Average Bout Length'].append(avg_bout_len)
+        info['No. of Bouts'].append(n_bouts)
     
-    return [pd.DataFrame.from_dict(x) for x in info]
+    return pd.DataFrame.from_dict(info)
 
 if __name__ == "__main__":
-    get_behaviour_info_for_all_strains("bsoid_strain_data.csv", parallel=False)
+    extract_features_per_mouse('bsoid_strain_data.csv')
