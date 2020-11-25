@@ -3,10 +3,10 @@ import numpy as np
 import seaborn as sn
 import matplotlib.pyplot as plt
 
-RUN_ID = 'split'
+RUN_ID = 'dis'
 BASE_DIR = '/home/dhruvlaad/data'
 DIS_THRESH = 2.0
-SAMPLE_SIZE = -1
+SAMPLE_SIZE = int(1e6)
 
 import joblib
 from joblib import delayed, Parallel
@@ -27,7 +27,7 @@ def embed(feats, feats_sc, n_neighbors, savefile=None):
         feats_usc = feats
 
     print(f'running UMAP on {feats_train.shape[0]} samples with n_neighbors={n_neighbors}')
-    mapper = umap.UMAP(n_components=3, n_neighbors=n_neighbors, min_dist=0.0).fit(feats_train)
+    mapper = umap.UMAP(n_components=10, n_neighbors=n_neighbors, min_dist=0.0).fit(feats_train)
 
     with open(f'/home/dhruvlaad/{savefile}_{n_neighbors}.sav', 'wb') as f:
         joblib.dump([feats_usc, mapper.embedding_], f)

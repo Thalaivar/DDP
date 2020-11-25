@@ -239,7 +239,7 @@ def calculate_transition_matrix_for_entire_assay(data_lookup_file, parallel=True
 
         # get behaviour labels for entire assay
         labels = mouse.get_behaviour_labels(clf)
-        transition_matrix_from_assay(mouse, labels, savefile='full_assay_tmat')
+        transition_matrix_from_assay(mouse, labels)
 
     if parallel:
         Parallel(n_jobs=-1)(delayed(calculate_tmat)(i, data, clf) for i in range(N))

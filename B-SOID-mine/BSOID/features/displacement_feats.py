@@ -7,7 +7,7 @@ from BSOID.preprocessing import (windowed_feats,
                             windowed_fft)
 
 
-def extract_feats(filtered_data, fps):
+def extract_feats(filtered_data, fps, subsample=None):
     """
     0-6 : lenghts of 7 body links
     7-14 : magnitude of displacements for all 8 points

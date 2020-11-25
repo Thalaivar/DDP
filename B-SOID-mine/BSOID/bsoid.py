@@ -40,7 +40,7 @@ UMAP_PARAMS = {
 }
 
 HDBSCAN_PARAMS = {
-    'min_samples': 50,
+    'min_samples': 10,
     'prediction_data': True,
 }
 
@@ -139,7 +139,7 @@ class BSOID:
         _, feats_sc = self.load_features()
         pca = PCA().fit(feats_sc)
         num_dimensions = np.argwhere(np.cumsum(pca.explained_variance_ratio_) >= var_prop)[0][0] + 1
-        print(f'At least {num_dimensions} are needed to retain {var_prop} of the total variance')
+        print(f'At least {num_dimensions} dimensions are needed to retain {var_prop} of the total variance')
 
     def umap_reduce(self, reduced_dim, sample_size=int(5e5)):        
         feats, feats_sc = self.load_features()
