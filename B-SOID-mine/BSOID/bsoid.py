@@ -120,13 +120,17 @@ class BSOID:
 
         return filtered_data
     
-    def features_from_points(self):
+    def features_from_points(self, parallel=False):
         filtered_data = self.load_filtered_data()
         
         # extract geometric features
-        feats = []
-        for i in tqdm(range(len(filtered_data))):
-            feats.append(extract_feats(filtered_data[i], self.fps))
+        if parallel:
+            from joblib import Parallel, delayed
+            feats = Parallel(n_jobs=2)(delayed(extract_feats)(data, self.fps) for data in filtered_data)
+        else:
+            feats = []
+            for i in tqdm(range(len(filtered_data))):
+                feats.append(extract_feats(filtered_data[i], self.fps))
 
         logging.info(f'extracted {len(feats)} datasets of {feats[0].shape[1]}D features')
 
