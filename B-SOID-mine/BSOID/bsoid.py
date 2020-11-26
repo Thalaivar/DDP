@@ -44,6 +44,11 @@ HDBSCAN_PARAMS = {
     'prediction_data': True,
 }
 
+TRIM_PARAMS = {
+    'end_trim': 2,
+    'clip_window': 30
+}
+
 class BSOID:
     def __init__(self, run_id: str, 
                 base_dir: str, 
@@ -89,7 +94,7 @@ class BSOID:
             files = random.sample(files, n)
         for i in tqdm(range(len(files))):
             if files[i][-3:] == ".h5":
-                extract_from_csv(self.raw_dir+'/'+files[i], self.csv_dir)
+                extract_to_csv(self.raw_dir+'/'+files[i], self.csv_dir)
 
     def process_csvs(self):
         csv_data_files = os.listdir(self.csv_dir)
@@ -101,7 +106,7 @@ class BSOID:
         skipped = 0
         for i in range(len(csv_data_files)):
             data = pd.read_csv(csv_data_files[i])   
-            fdata, perc_filt = likelihood_filter(data)
+            fdata, perc_filt = likelihood_filter(data, self.fps, **TRIM_PARAMS)
             if fdata is not None and perc_filt < 5:
                 filtered_data.append(fdata)
             else:

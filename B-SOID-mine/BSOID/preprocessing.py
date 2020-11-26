@@ -29,7 +29,7 @@ def smoothen_data(data, win_len=7):
     smoothed_data = data.rolling(win_len, min_periods=1, center=True)
     return np.array(smoothed_data.mean())
 
-def likelihood_filter(data: pd.DataFrame):
+def likelihood_filter(data: pd.DataFrame, fps, end_trim=2, clip_window=30):
     N = data.shape[0]
 
     # retrieve confidence, x and y data from csv data
@@ -80,7 +80,25 @@ def likelihood_filter(data: pd.DataFrame):
                 filt_x[i,k], filt_y[i,k] = x[i,k], y[i,k]
     
     logging.debug(f'filtered {max(perc_rect) * 100}% of data (max)')
+
+    x, y, conf = trim_filtered_data(filt_x, filt_y, conf, fps, end_trim, clip_window)
     return {'conf': conf, 'x': filt_x, 'y': filt_y}, max(perc_rect) * 100
+
+def trim_filtered_data(x, y, conf, fps, end_trim=2, clip_window=30):
+    assert x.shape[1] == y.shape[1]
+    assert conf.shape[0] == x.shape[0] == y.shape[0]
+
+    end_trim *= (fps * 60)
+    conf, x, y = conf[end_trim:-end_trim, :], x[end_trim:-end_trim, :], y[end_trim:-end_trim, :]
+
+    clip_window = clip_window * fps // 2
+    mid_idx = conf.shape[0] // 2
+    conf = conf[mid_idx - clip_window : mid_idx + clip_window, :]
+    x = x[mid_idx - clip_window : mid_idx + clip_window, :]
+    y = y[mid_idx - clip_window : mid_idx + clip_window, :]
+
+    return (x, y, conf)
+
 
 def windowed_feats(feats, window_len: int=3, mode: str='mean'):
     """

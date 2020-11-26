@@ -20,7 +20,7 @@ BSOID_DATA = ['NOSE', 'LEFT_EAR', 'RIGHT_EAR',
 RETAIN_WINDOW = 30*60
 FPS = 30
 
-def extract_from_csv(filename, save_dir, trim=True):
+def extract_to_csv(filename, save_dir, trim=True):
     f = h5py.File(filename, "r")
     # retain only filename
     filename = filename.split('/')[-1]
@@ -31,21 +31,22 @@ def extract_from_csv(filename, save_dir, trim=True):
     conf = np.array(f[data][keys[0]])
     pos = np.array(f[data][keys[1]])
 
-    if trim:
-        # trim first and last 2 minutes because there is no mouse
-        END_TRIM = FPS*2*60
-        conf, pos = conf[END_TRIM:-END_TRIM,:], pos[END_TRIM:-END_TRIM,:]
+    bsoid_data = _bsoid_format(conf, pos)
+    bsoid_data.to_csv(save_dir + '/' + filename[:-3] +'.csv', index=False)
+    
+    # if trim:
+    #     # trim first and last 2 minutes because there is no mouse
+    #     END_TRIM = FPS*2*60
+    #     conf, pos = conf[END_TRIM:-END_TRIM,:], pos[END_TRIM:-END_TRIM,:]
 
-        clip_window = (FPS * RETAIN_WINDOW) // 2
-        mid_idx = conf.shape[0] // 2
-        clip_conf = conf[mid_idx-clip_window:mid_idx+clip_window,:]
-        clip_pos = pos[mid_idx-clip_window:mid_idx+clip_window,:]
-        bsoid_data = _bsoid_format(clip_conf, clip_pos)
-        bsoid_data.to_csv(save_dir + f'/{filename[:-3]}.csv', index=False)
+    #     clip_window = (FPS * RETAIN_WINDOW) // 2
+    #     mid_idx = conf.shape[0] // 2
+    #     clip_conf = conf[mid_idx-clip_window:mid_idx+clip_window,:]
+    #     clip_pos = pos[mid_idx-clip_window:mid_idx+clip_window,:]
+    #     bsoid_data = _bsoid_format(clip_conf, clip_pos)
+    #     bsoid_data.to_csv(save_dir + f'/{filename[:-3]}.csv', index=False)
 
-    else:
-        bsoid_data = _bsoid_format(conf, pos)
-        bsoid_data.to_csv(save_dir + '/' + filename[:-3] +'.csv', index=False)
+    # else:
         
 def _bsoid_format(conf, pos):
     bsoid_data = np.zeros((conf.shape[0], 3*conf.shape[1]))
