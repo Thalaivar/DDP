@@ -40,7 +40,7 @@ def split_data(dis_threshold: float):
     with open(bsoid.output_dir + '/' + bsoid.run_id + '_features.sav', 'wb') as f:
         joblib.dump([active_feats, inactive_feats], f)
 
-def embed_split_data(reduced_dim: int, sample_size: int, dis_threshold=None, n_neighbors=100):
+def embed_split_data(reduced_dim: int, sample_size: int, dis_threshold=None):
     bsoid = BSOID.load_config(BASE_DIR, RUN_ID)
 
     with open(bsoid.output_dir + '/' + bsoid.run_id + '_features.sav', 'rb') as f:
@@ -72,7 +72,7 @@ def embed_split_data(reduced_dim: int, sample_size: int, dis_threshold=None, n_n
             feats_usc = feats
 
         logging.info('running UMAP on {} samples from {}D to {}D'.format(*feats_train.shape, reduced_dim))
-        mapper = umap.UMAP(n_components=reduced_dim, n_neighbors=n_neighbors, **umap_params).fit(feats_train)
+        mapper = umap.UMAP(n_components=reduced_dim, **umap_params).fit(feats_train)
 
         return [feats_usc, feats_train, mapper.embedding_]
 

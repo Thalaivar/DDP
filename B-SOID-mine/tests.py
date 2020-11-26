@@ -101,12 +101,16 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     import os
-    base_dir = 'D:/IIT/DDP/all_test'
-    umap_files = [base_dir + f for f in os.listdir(base_dir) if f.endswith('.sav')]
-    umap_files.sort()
+    base_dir = 'D:/IIT/DDP/data/nbrs_test/'
+    # umap_files = [base_dir + f for f in os.listdir(base_dir) if f.endswith('.sav')]
+    # umap_files.sort()
+
+    umap_files = ['umap_test_all_nbrs_150.sav', 'umap_test_all_nbrs_200.sav', 'umap_test_all_nbrs_250.sav', 'umap_test_all_nbrs_300.sav']
+    umap_files = [base_dir + f for f in umap_files]
+    
     print(f'Running clustering test on {umap_files}')
 
-    [cluster_test_embeddings(f, [1, 5, 5]) for f in umap_files]
+    [cluster_test_embeddings(f, [0.1, 1.0, 10]) for f in umap_files]
 
     # umap_file = base_dir + 'umap_test_nbrs_300.sav'
     # cluster_test_embeddings(umap_file, cluster_range=[5, 10, 5])
