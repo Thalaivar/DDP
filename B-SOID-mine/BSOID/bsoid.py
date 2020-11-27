@@ -78,7 +78,7 @@ class BSOID:
         except FileExistsError:
             pass
 
-    def get_data(self, n=None, download=False):
+    def get_data(self, n=None, download=False, parallel=False):
         try:
             os.mkdir(self.csv_dir)    
         except FileExistsError:
@@ -91,9 +91,13 @@ class BSOID:
         logging.info("converting {} HDF5 files to csv files".format(len(files)))
         if n is not None:
             files = random.sample(files, n)
-        for i in tqdm(range(len(files))):
-            if files[i][-3:] == ".h5":
-                extract_to_csv(self.raw_dir+'/'+files[i], self.csv_dir)
+        if parallel:
+            from joblib import Parallel, delayed
+            Parallel(n_jobs=-1)(delayed(extract_to_csv)(self.raw_dir+'/'+files[i], self.csv_dir) for i in range(len(files)))
+        else:
+            for i in tqdm(range(len(files))):
+                if files[i][-3:] == ".h5":
+                    extract_to_csv(self.raw_dir+'/'+files[i], self.csv_dir)
 
     def process_csvs(self):
         csv_data_files = os.listdir(self.csv_dir)

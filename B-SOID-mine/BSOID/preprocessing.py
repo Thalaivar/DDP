@@ -83,7 +83,7 @@ def likelihood_filter(data: pd.DataFrame, fps, end_trim=2, clip_window=30):
 
     x, y, conf = trim_filtered_data(filt_x, filt_y, conf, fps, end_trim, clip_window)
 
-    return {'conf': conf, 'x': filt_x, 'y': filt_y}, max(perc_rect) * 100
+    return {'conf': conf, 'x': x, 'y': y}, max(perc_rect) * 100
 
 def trim_filtered_data(x, y, conf, fps, end_trim=2, clip_window=30):
     assert x.shape[1] == y.shape[1]
