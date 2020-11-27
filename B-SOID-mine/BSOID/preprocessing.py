@@ -82,20 +82,23 @@ def likelihood_filter(data: pd.DataFrame, fps, end_trim=2, clip_window=30):
     logging.debug(f'filtered {max(perc_rect) * 100}% of data (max)')
 
     x, y, conf = trim_filtered_data(filt_x, filt_y, conf, fps, end_trim, clip_window)
+
     return {'conf': conf, 'x': filt_x, 'y': filt_y}, max(perc_rect) * 100
 
 def trim_filtered_data(x, y, conf, fps, end_trim=2, clip_window=30):
     assert x.shape[1] == y.shape[1]
     assert conf.shape[0] == x.shape[0] == y.shape[0]
 
-    end_trim *= (fps * 60)
-    conf, x, y = conf[end_trim:-end_trim, :], x[end_trim:-end_trim, :], y[end_trim:-end_trim, :]
+    if end_trim > 0:
+        end_trim *= (fps * 60)
+        conf, x, y = conf[end_trim:-end_trim, :], x[end_trim:-end_trim, :], y[end_trim:-end_trim, :]
 
-    clip_window = clip_window * fps // 2
-    mid_idx = conf.shape[0] // 2
-    conf = conf[mid_idx - clip_window : mid_idx + clip_window, :]
-    x = x[mid_idx - clip_window : mid_idx + clip_window, :]
-    y = y[mid_idx - clip_window : mid_idx + clip_window, :]
+    if clip_window:
+        clip_window = clip_window * fps // 2
+        mid_idx = conf.shape[0] // 2
+        conf = conf[mid_idx - clip_window : mid_idx + clip_window, :]
+        x = x[mid_idx - clip_window : mid_idx + clip_window, :]
+        y = y[mid_idx - clip_window : mid_idx + clip_window, :]
 
     return (x, y, conf)
 

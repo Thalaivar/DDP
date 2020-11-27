@@ -35,7 +35,6 @@ MLP_PARAMS = {
 
 UMAP_PARAMS = {
     'min_dist': 0.0,  # small value
-    'random_state': 23,
     'n_neighbors': 60
 }
 
@@ -259,7 +258,7 @@ class BSOID:
         
         # filter data from test file
         data = pd.read_csv(csv_file, low_memory=False)
-        data, _ = likelihood_filter(data)
+        data, _ = likelihood_filter(data, self.fps, end_trim=2)
 
         feats = frameshift_features(data, self.stride_window, self.fps, extract_feats, window_extracted_feats, self.temporal_window, self.temporal_dims)
 
@@ -284,7 +283,8 @@ class BSOID:
             feats_sc = [StandardScaler().fit_transform(data) for data in feats]
             feats, feats_sc = np.vstack(feats), np.vstack(feats_sc)
             return feats, feats_sc
-        return feats
+        else:
+            return feats
 
     def load_identified_clusters(self):
         with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:

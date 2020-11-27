@@ -30,7 +30,7 @@ def split_data(dis_threshold: float):
     inactive_idx = np.where(displacements < dis_threshold)[0]
 
     # create bsoid model for later use
-    print(f'divided data into active ({round(active_idx.shape[0]/feats.shape[0], 2)}%) and in-active ({round(inactive_idx.shape[0]/feats.shape[0], 2)}%) based on displacement threshold of {dis_threshold}')
+    print(f'divided data into active ({round(active_idx.shape[0]/feats.shape[0], 2) * 100}%) and in-active ({round(inactive_idx.shape[0]/feats.shape[0], 2) * 100}%) based on displacement threshold of {dis_threshold}')
     bsoid = BSOID(RUN_ID, BASE_DIR, fps=30, temporal_dims=None, temporal_window=None, stride_window=3)
     bsoid.save()
 
