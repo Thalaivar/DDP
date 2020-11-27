@@ -99,7 +99,7 @@ class BSOID:
                 if files[i][-3:] == ".h5":
                     extract_to_csv(self.raw_dir+'/'+files[i], self.csv_dir)
 
-    def process_csvs(self):
+    def process_csvs(self, filter_thresh=5):
         csv_data_files = os.listdir(self.csv_dir)
         csv_data_files = [self.csv_dir + '/' + f for f in csv_data_files if f.endswith('.csv')]
 
@@ -109,11 +109,11 @@ class BSOID:
         skipped = 0
         for i in range(len(csv_data_files)):
             data = pd.read_csv(csv_data_files[i])   
-            fdata, perc_filt = likelihood_filter(data, self.fps, **TRIM_PARAMS)
-            if fdata is not None and perc_filt < 5:
+            fdata, perc_filt = likelihood_filter(data, fps=self.fps, **TRIM_PARAMS)
+            if fdata is not None and perc_filt < filter_thresh:
                 filtered_data.append(fdata)
             else:
-                logging.info(f'skpping {i}-th dataset since % filtered is {perc_filt}')
+                logging.info(f'skpping {i}-th dataset since % filtered is {round(perc_filt, 2)}')
                 skipped += 1
         
         logging.info(f'skipped {skipped}/{len(csv_data_files)} datasets')
