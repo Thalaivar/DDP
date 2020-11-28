@@ -93,24 +93,25 @@ def trim_filtered_data(x, y, conf, fps, end_trim=2, clip_window=30):
         end_trim *= (fps * 60)
         conf, x, y = conf[end_trim:-end_trim, :], x[end_trim:-end_trim, :], y[end_trim:-end_trim, :]
 
-    if clip_window:
-        # clip_window = clip_window * 60 * fps // 2
-        # mid_idx = conf.shape[0] // 2
-        # conf = conf[mid_idx - clip_window : mid_idx + clip_window, :]
-        # x = x[mid_idx - clip_window : mid_idx + clip_window, :]
-        # y = y[mid_idx - clip_window : mid_idx + clip_window, :]
+    if clip_window > 0:
+        try:
+            clip_window //= 3
+            mid_idx = [i*(conf.shape[0] // 4) for i in range(1, 4)]
+            clip_window = clip_window * 60 * fps // 2
+            x_trim, y_trim, conf_trim = [], [], []
 
-        clip_window //= 3
-        mid_idx = [i*(conf.shape[0] // 4) for i in range(1, 4)]
-        clip_window = clip_window * 60 * fps // 2
-        x_trim, y_trim, conf_trim = [], [], []
-
-        assert mid_idx[0] + clip_window < mid_idx[1] - clip_window
-        for idx in mid_idx:
-            x_trim.append(x[idx - clip_window: idx + clip_window, :])
-            y_trim.append(y[idx - clip_window: idx + clip_window, :])
-            conf_trim.append(conf[idx - clip_window: idx + clip_window, :])
-        x, y, conf = np.vstack(x_trim), np.vstack(y_trim), np.vstack(conf_trim)
+            assert mid_idx[0] + clip_window < mid_idx[1] - clip_window
+            for idx in mid_idx:
+                x_trim.append(x[idx - clip_window: idx + clip_window, :])
+                y_trim.append(y[idx - clip_window: idx + clip_window, :])
+                conf_trim.append(conf[idx - clip_window: idx + clip_window, :])
+            x, y, conf = np.vstack(x_trim), np.vstack(y_trim), np.vstack(conf_trim)
+        except AssertionError:
+            clip_window = clip_window * 60 * fps // 2
+            mid_idx = conf.shape[0] // 2
+            conf = conf[mid_idx - clip_window : mid_idx + clip_window, :]
+            x = x[mid_idx - clip_window : mid_idx + clip_window, :]
+            y = y[mid_idx - clip_window : mid_idx + clip_window, :]
 
     return (x, y, conf)
 
