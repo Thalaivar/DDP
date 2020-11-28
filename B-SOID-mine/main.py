@@ -11,8 +11,7 @@ logging.basicConfig(level=logging.INFO)
 #                 'temporal_window': 16,
 #                 'stride_window': 3,
 #                 'temporal_dims': 6}
-# bsoid = BSOID(**bsoid_params)
-
+# bsoid = BSs
 bsoid = BSOID.load_config(base_dir='D:/IIT/DDP/data', run_id='dis')
 # bsoid.get_data()
 # bsoid.process_csvs()

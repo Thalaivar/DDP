@@ -32,6 +32,7 @@ def cluster_with_hdbscan(feats, cluster_range, HDBSCAN_PARAMS):
     elif len(cluster_range) == 2:
         min_cluster_range = np.linspace(*cluster_range, 25)
     elif len(cluster_range) == 3:
+        cluster_range[-1] = int(cluster_range[-1])
         min_cluster_range = np.linspace(*cluster_range)
         
     for min_c in min_cluster_range:
