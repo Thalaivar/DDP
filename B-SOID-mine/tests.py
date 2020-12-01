@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 RUN_ID = 'dis'
 BASE_DIR = '/home/dhruvlaad/data'
 DIS_THRESH = 2.0
-SAMPLE_SIZE = int(1e6)
+SAMPLE_SIZE = int(3e5)
 
 import joblib
 from joblib import delayed, Parallel
@@ -27,10 +27,12 @@ def embed(feats, feats_sc, n_neighbors, savefile=None):
         feats_usc = feats
 
     print(f'running UMAP on {feats_train.shape[0]} samples with n_neighbors={n_neighbors}')
-    mapper = umap.UMAP(n_components=10, n_neighbors=n_neighbors, min_dist=0.0).fit(feats_train)
+    mapper = umap.UMAP(n_components=2, n_neighbors=n_neighbors, min_dist=0.0).fit(feats_train)
 
-    with open(f'/home/dhruvlaad/{savefile}_{n_neighbors}.sav', 'wb') as f:
-        joblib.dump([feats_usc, mapper.embedding_], f)
+    # with open(f'/home/dhruvlaad/{savefile}_{n_neighbors}.sav', 'wb') as f:
+    #     joblib.dump([feats_usc, mapper.embedding_], f)
+
+    return mapper.embedding_
 
 def nbrs_test_all(n_neighbors, parallel=True):
     if not isinstance(n_neighbors, list):
@@ -42,9 +44,11 @@ def nbrs_test_all(n_neighbors, parallel=True):
     print(f'Features have {feats.shape[0]} samples in {feats.shape[1]}D')
 
     if parallel:
-        Parallel(n_jobs=2)(delayed(embed)(feats, feats_sc, nbr, savefile='umap_test_all_nbrs') for nbr in n_neighbors)
+        embeddings = Parallel(n_jobs=2)(delayed(embed)(feats, feats_sc, nbr, savefile='umap_test_all_nbrs') for nbr in n_neighbors)
     else:  
-        [embed(feats, feats_sc, nbr, savefile='umap_test_all_nbrs') for nbr in n_neighbors]
+        embeddings = [embed(feats, feats_sc, nbr, savefile='umap_test_all_nbrs') for nbr in n_neighbors]
+    
+    return embeddings
 
 def nbrs_test_active_only(n_neighbors, parallel=True):
     if not isinstance(n_neighbors, list):

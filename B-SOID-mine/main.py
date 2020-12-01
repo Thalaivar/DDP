@@ -13,15 +13,14 @@ logging.basicConfig(level=logging.INFO)
 #                 'temporal_dims': 6}
 # bsoid = BSs
 bsoid = BSOID.load_config(base_dir='D:/IIT/DDP/data', run_id='dis')
-# bsoid.get_data()
+# bsoid.get_data(parallel=True)
 # bsoid.process_csvs()
 
 # bsoid.features_from_points()
 
 # original workflow is to use only subset of data
 # bsoid.max_samples_for_umap()
-# bsoid.umap_reduce(reduced_dim=10, sample_size=int(6e5))
-
+bsoid.umap_reduce(reduced_dim=12, sample_size=int(3e5))
 results = bsoid.identify_clusters_from_umap(cluster_range=[0.1, 1.0, 10])
 
 import numpy as np
