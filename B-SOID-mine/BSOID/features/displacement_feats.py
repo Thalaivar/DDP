@@ -19,9 +19,9 @@ def extract_feats(filtered_data, fps, subsample=None):
     N, n_dpoints = x.shape
     logging.debug('extracting features from {} samples of {} points'.format(*x.shape))
 
-    # for i in range(x.shape[1]):
-    #     x[:,i] = smoothen_data(x[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
-    #     y[:,i] = smoothen_data(y[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
+    for i in range(x.shape[1]):
+        x[:,i] = smoothen_data(x[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
+        y[:,i] = smoothen_data(y[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
 
     # indices -> features
     HEAD, BASE_NECK, CENTER_SPINE, HINDPAW1, HINDPAW2, BASE_TAIL, MID_TAIL, TIP_TAIL = np.arange(8)
@@ -60,8 +60,8 @@ def extract_feats(filtered_data, fps, subsample=None):
     
     feats = np.hstack((link_lens[1:], dis, angles))
 
-    for i in range(feats.shape[1]):
-        feats[:,i] = smoothen_data(feats[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
+    # for i in range(feats.shape[1]):
+    #     feats[:,i] = smoothen_data(feats[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
 
     logging.debug('extracted {} samples of {}D features'.format(*feats.shape))
 

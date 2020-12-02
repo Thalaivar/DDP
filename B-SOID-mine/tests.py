@@ -15,9 +15,7 @@ from active_inactive_split import split_data, calc_dis_threshold
 from BSOID.utils import cluster_with_hdbscan
 from BSOID.bsoid import BSOID
 
-def embed(feats, feats_sc, n_neighbors, savefile=None):
-    if savefile is None:
-        savefile = 'umap_test_nbrs'
+def embed(feats, feats_sc, n_neighbors, savefile=False):
     if SAMPLE_SIZE > 0 and SAMPLE_SIZE < feats_sc.shape[0]:
         idx = np.random.permutation(np.arange(feats_sc.shape[0]))[0:SAMPLE_SIZE]
         feats_train = feats_sc[idx,:]
@@ -29,25 +27,30 @@ def embed(feats, feats_sc, n_neighbors, savefile=None):
     print(f'running UMAP on {feats_train.shape[0]} samples with n_neighbors={n_neighbors}')
     mapper = umap.UMAP(n_components=2, n_neighbors=n_neighbors, min_dist=0.0).fit(feats_train)
 
-    # with open(f'/home/dhruvlaad/{savefile}_{n_neighbors}.sav', 'wb') as f:
-    #     joblib.dump([feats_usc, mapper.embedding_], f)
+    if savefile is not False:
+        with open(f'/home/dhruvlaad/{savefile}_{n_neighbors}.sav', 'wb') as f:
+            joblib.dump([feats_usc, mapper.embedding_], f)
 
     return mapper.embedding_
 
-def nbrs_test_all(n_neighbors, parallel=True):
+def nbrs_test_all(n_neighbors, run_id='dis', parallel=True):
     if not isinstance(n_neighbors, list):
         n_neighbors = [n_neighbors]
 
-    bsoid = BSOID.load_config(base_dir=BASE_DIR, run_id='dis')
+    bsoid = BSOID.load_config(base_dir=BASE_DIR, run_id=run_id)
     feats, feats_sc = bsoid.load_features()
 
     print(f'Features have {feats.shape[0]} samples in {feats.shape[1]}D')
 
     if parallel:
-        embeddings = Parallel(n_jobs=2)(delayed(embed)(feats, feats_sc, nbr, savefile='umap_test_all_nbrs') for nbr in n_neighbors)
+        embeddings = Parallel(n_jobs=-1)(delayed(embed)(feats, feats_sc, nbr, savefile=False) for nbr in n_neighbors)
     else:  
-        embeddings = [embed(feats, feats_sc, nbr, savefile='umap_test_all_nbrs') for nbr in n_neighbors]
+        embeddings = [embed(feats, feats_sc, nbr, savefile=False) for nbr in n_neighbors]
     
+    save_file = f'/home/dhruvlaad/{run_id}_feats_embeddings_2d.pkl'    
+    with open(save_file, 'wb') as f:
+        joblib.dump([embeddings, n_neighbors], f)
+
     return embeddings
 
 def nbrs_test_active_only(n_neighbors, parallel=True):
@@ -99,7 +102,7 @@ def cluster_test_embeddings(filename, cluster_range):
     count = [d/soft_assignments.shape[0] for d in count]
     sn.barplot(x=labels, y=count)
     plt.savefig(filename[:-4]+'.png')
-
+    
 if __name__ == "__main__":
     import logging
     logging.basicConfig(level=logging.INFO)

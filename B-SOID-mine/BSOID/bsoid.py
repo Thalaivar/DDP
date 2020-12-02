@@ -20,6 +20,7 @@ from BSOID.preprocessing import *
 from BSOID.prediction import *
 
 from BSOID.features.displacement_feats import *
+# from BSOID.features.bsoid_features import *
 
 MLP_PARAMS = {
     'hidden_layer_sizes': (100, 10),  # 100 units, 10 layers
@@ -35,7 +36,7 @@ MLP_PARAMS = {
 
 UMAP_PARAMS = {
     'min_dist': 0.0,  # small value
-    'n_neighbors': 10
+    'n_neighbors': 60
 }
 
 HDBSCAN_PARAMS = {
