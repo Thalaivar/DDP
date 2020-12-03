@@ -103,6 +103,22 @@ def cluster_test_embeddings(filename, cluster_range):
     sn.barplot(x=labels, y=count)
     plt.savefig(filename[:-4]+'.png')
     
+def plot_2d_embeddings(embeddings_data_file):
+    with open(embeddings_data_file, 'rb') as f:
+        embeddings, nbrs = joblib.load(f)
+    
+    nrows, ncols = 2, 3
+    fig, ax = plt.subplots(nrows, ncols)
+    k = 0
+    for i in range(nrows):
+        for j in range(ncols):
+            if k < len(embeddings):
+                ax[i,j].scatter(embeddings[k][:,0], embeddings[k][:,1], s=0.1, alpha=0.01, label=f'nbrs={nbrs[k]}')
+                ax[i,j].legend(loc='upper right')
+                k += 1
+    
+    fig.show()
+
 if __name__ == "__main__":
     import logging
     logging.basicConfig(level=logging.INFO)

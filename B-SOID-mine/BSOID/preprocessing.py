@@ -81,11 +81,11 @@ def likelihood_filter(data: pd.DataFrame, fps, end_trim=2, clip_window=30):
     
     logging.debug(f'filtered {max(perc_rect) * 100}% of data (max)')
 
-    x, y, conf = trim_filtered_data(filt_x, filt_y, conf, fps, end_trim, clip_window)
+    x, y, conf = trim_data(filt_x, filt_y, conf, fps, end_trim, clip_window)
 
     return {'conf': conf, 'x': x, 'y': y}, max(perc_rect) * 100
 
-def trim_filtered_data(x, y, conf, fps, end_trim=2, clip_window=30):
+def trim_data(x, y, conf, fps, end_trim=2, clip_window=30):
     assert x.shape[1] == y.shape[1]
     assert conf.shape[0] == x.shape[0] == y.shape[0]
 
@@ -95,9 +95,9 @@ def trim_filtered_data(x, y, conf, fps, end_trim=2, clip_window=30):
 
     if clip_window > 0:
         try:
-            clip_window //= 3
+            clip_window_ = clip_window // 3
             mid_idx = [i*(conf.shape[0] // 4) for i in range(1, 4)]
-            clip_window = clip_window * 60 * fps // 2
+            clip_window_ = clip_window_ * 60 * fps // 2
             x_trim, y_trim, conf_trim = [], [], []
 
             assert mid_idx[0] + clip_window < mid_idx[1] - clip_window

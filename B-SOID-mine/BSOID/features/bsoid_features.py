@@ -40,9 +40,9 @@ def extract_feats(filtered_data, fps):
     y = np.hstack((y[:,:5], y[:,6:]))
 
     N, n_dpoints = x.shape
-    for i in range(x.shape[1]):
-        x[:,i] = smoothen_data(x[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
-        y[:,i] = smoothen_data(y[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
+    # for i in range(x.shape[1]):
+    #     x[:,i] = smoothen_data(x[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
+    #     y[:,i] = smoothen_data(y[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
 
     # displacements of all points
     dis = []
@@ -89,11 +89,11 @@ def extract_feats(filtered_data, fps):
     logging.debug('extracted {} link displacement angles from data points'.format(angles.shape[1]))
 
     # smoothen all features
-    # for i in range(dis.shape[1]):
-    #     dis[:,i] = smoothen_data(dis[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
-    # for i in range(link_lens.shape[1]):
-    #     link_lens[:,i] = smoothen_data(link_lens[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
-    #     angles[:,i] = smoothen_data(angles[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
+    for i in range(dis.shape[1]):
+        dis[:,i] = smoothen_data(dis[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
+    for i in range(link_lens.shape[1]):
+        link_lens[:,i] = smoothen_data(link_lens[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
+        angles[:,i] = smoothen_data(angles[:,i], win_len=np.int(np.round(0.05 / (1 / fps)) * 2 - 1))
 
     feats = np.hstack((link_lens[1:], angles, dis))
     logging.debug('final features extracted have shape: {}'.format(feats.shape))
