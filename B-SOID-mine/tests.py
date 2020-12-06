@@ -57,7 +57,7 @@ def nbrs_test_active_only(n_neighbors, parallel=True):
     if not isinstance(n_neighbors, list):
         n_neighbors = [n_neighbors]
 
-    with open(f'{BASE_DIR}/output/{RUN_ID}_features.sav', 'rb') as f:
+    with open(f'{BASE_DIR}/output/split_features.sav', 'rb') as f:
         active_feats, inactive_feats = joblib.load(f)
 
     print(f'active feats have {active_feats[0].shape[0]} samples and inactive feats have {inactive_feats[0].shape[0]} samples')
@@ -73,48 +73,74 @@ def nbrs_test_active_only(n_neighbors, parallel=True):
     del inactive_feats, displacements, inactive_feats_sc
 
     if parallel:
-        Parallel(n_jobs=2)(delayed(embed)(active_feats, active_feats_sc, nbr) for nbr in n_neighbors)
+        embeddings = Parallel(n_jobs=2)(delayed(embed)(active_feats, active_feats_sc, nbr) for nbr in n_neighbors)
     else:  
-        [embed(active_feats, active_feats_sc, nbr) for nbr in n_neighbors]
+        embeddings = [embed(active_feats, active_feats_sc, nbr) for nbr in n_neighbors]
 
+    save_file = f'/home/dhruvlaad/split_feats_embeddings_2d.pkl'    
+    with open(save_file, 'wb') as f:
+        joblib.dump([embeddings, n_neighbors], f)
 
-def cluster_test_embeddings(filename, cluster_range):
+def cluster_test_embeddings(embedding, cluster_range):
     # cluster_range = [0.05, 0.5]
     hdbscan_params = {'min_samples': 10, 'prediction_data': True}
-
-    with open(filename, 'rb') as f:
-        results = joblib.load(f)
-    embedding = results[-1]
     
-    print(f'clustering {embedding.shape[0]} samples from {filename}')
     assignments, soft_clusters, soft_assignments, best_clf = cluster_with_hdbscan(embedding, cluster_range, hdbscan_params)
 
-    filename = filename[:-4] + '_clusters.sav'
-    with open(filename, 'wb') as f:
-        joblib.dump([assignments, soft_clusters, soft_assignments, best_clf], f)
+    print(f'identified {soft_assignments.max() + 1} clusters')
+    return assignments, soft_assignments
 
-    print(f'identified {soft_assignments.max() + 1} clusters saved to {filename}')
-    
-    labels = np.unique(soft_assignments).astype(np.int64)
-    count = [0 for i in labels]
-    for label in soft_assignments.astype(np.int64):
-        count[label] += 1
-    count = [d/soft_assignments.shape[0] for d in count]
-    sn.barplot(x=labels, y=count)
-    plt.savefig(filename[:-4]+'.png')
-    
-def plot_2d_embeddings(embeddings_data_file):
+def cluster_nbrs_test(embeddings_data_file):
     with open(embeddings_data_file, 'rb') as f:
         embeddings, nbrs = joblib.load(f)
+
+    labels = []
+    for e in embeddings:
+        labs, _ = cluster_test_embeddings(e, cluster_range=[0.2, 1.0, 8])
+        labels.append(labs)
     
-    nrows, ncols = 2, 3
+    with open(f'{embeddings_data_file[:-4]}_clusters.pkl', 'wb') as f:
+        joblib.dump(labels, f)
+    
+    for i in range(len(labels)):
+        embeddings[i] = embeddings[i][labels[i] >= 0]
+        labels[i] = labels[i][labels[i] >= 0]
+
+    nrows, ncols = 1, 3
     fig, ax = plt.subplots(nrows, ncols)
     k = 0
     for i in range(nrows):
         for j in range(ncols):
             if k < len(embeddings):
-                ax[i,j].scatter(embeddings[k][:,0], embeddings[k][:,1], s=0.1, alpha=0.01, label=f'nbrs={nbrs[k]}')
-                ax[i,j].legend(loc='upper right')
+                if nrows > 1:
+                    ax[i,j].scatter(embeddings[k][:,0], embeddings[k][:,1], s=0.1, alpha=0.1, label=f'nbrs={nbrs[k]}', c=labels[k])
+                    ax[i,j].legend(loc='upper right')
+                else:
+                    ax[j].scatter(embeddings[k][:,0], embeddings[k][:,1], s=0.1, alpha=0.1, label=f'nbrs={nbrs[k]}', c=labels[k])
+                    ax[j].legend(loc='upper right')
+                k += 1
+    
+    fig.show()
+
+def plot_2d_embeddings(embeddings_data_file):
+    with open(embeddings_data_file, 'rb') as f:
+        embeddings, nbrs = joblib.load(f)
+    
+    nrows, ncols = 1, 3
+    fig, ax = plt.subplots(nrows, ncols)
+    k = 0
+    if nrows > 1:
+        for i in range(nrows):
+            for j in range(ncols):
+                if k < len(embeddings):
+                    ax[i,j].scatter(embeddings[k][:,0], embeddings[k][:,1], s=0.1, alpha=0.01, label=f'nbrs={nbrs[k]}')
+                    ax[i,j].legend(loc='upper right')
+                    k += 1
+    else:
+        for i in range(ncols):
+            if k < len(embeddings):
+                ax[i].scatter(embeddings[k][:,0], embeddings[k][:,1], s=0.1, alpha=0.01, label=f'nbrs={nbrs[k]}')
+                ax[i].legend(loc='upper right')
                 k += 1
     
     fig.show()

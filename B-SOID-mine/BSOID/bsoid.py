@@ -36,7 +36,7 @@ MLP_PARAMS = {
 
 UMAP_PARAMS = {
     'min_dist': 0.0,  # small value
-    'n_neighbors': 60
+    'n_neighbors': 700
 }
 
 HDBSCAN_PARAMS = {
