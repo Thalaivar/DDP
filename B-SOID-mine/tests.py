@@ -94,6 +94,8 @@ def cluster_nbrs_test(embeddings_data_file):
     with open(embeddings_data_file, 'rb') as f:
         embeddings, nbrs = joblib.load(f)
 
+    print(f'Saved files contain {len(embeddings)} saved datasets with {embeddings[0].shape} samples for n_neighbors={nbrs}')
+
     labels = []
     for e in embeddings:
         labs, _ = cluster_test_embeddings(e, cluster_range=[0.2, 1.0, 8])
@@ -106,17 +108,17 @@ def cluster_nbrs_test(embeddings_data_file):
         embeddings[i] = embeddings[i][labels[i] >= 0]
         labels[i] = labels[i][labels[i] >= 0]
 
-    nrows, ncols = 1, 3
+    nrows, ncols = [int(x) for x in input(f'Enter (nrows, ncols): ').split()]
     fig, ax = plt.subplots(nrows, ncols)
     k = 0
     for i in range(nrows):
         for j in range(ncols):
             if k < len(embeddings):
                 if nrows > 1:
-                    ax[i,j].scatter(embeddings[k][:,0], embeddings[k][:,1], s=0.1, alpha=0.1, label=f'nbrs={nbrs[k]}', c=labels[k])
+                    ax[i,j].scatter(embeddings[k][:,0], embeddings[k][:,1], s=1, label=f'nbrs={nbrs[k]}', c=labels[k])
                     ax[i,j].legend(loc='upper right')
                 else:
-                    ax[j].scatter(embeddings[k][:,0], embeddings[k][:,1], s=0.1, alpha=0.1, label=f'nbrs={nbrs[k]}', c=labels[k])
+                    ax[j].scatter(embeddings[k][:,0], embeddings[k][:,1], s=1, label=f'nbrs={nbrs[k]}', c=labels[k])
                     ax[j].legend(loc='upper right')
                 k += 1
     
@@ -143,6 +145,67 @@ def plot_2d_embeddings(embeddings_data_file):
                 ax[i].legend(loc='upper right')
                 k += 1
     
+    fig.show()
+
+def plot_2d_embedding_w_labels(embedding_file, label_file):
+    with open(embedding_file, 'rb') as f:
+        embeddings, nbrs = joblib.load(f)
+    
+    with open(label_file, 'rb') as f:
+        labels = joblib.load(f)
+    
+    assert len(labels) == len(embeddings)
+    
+    for i in range(len(labels)):
+        embeddings[i] = embeddings[i][labels[i] >= 0]
+        labels[i] = labels[i][labels[i] >= 0]
+
+    nrows, ncols = [int(x) for x in input(f'Saved files contain {len(embeddings)} saved datasets with {embeddings[0].shape} samples, enter (nrows, ncols): ').split()]
+
+    fig, ax = plt.subplots(nrows, ncols)
+    k = 0
+    if nrows > 1:
+        for i in range(nrows):
+            for j in range(ncols):
+                if k < len(embeddings):
+                    ax[i,j].scatter(embeddings[k][:,0], embeddings[k][:,1], s=0.1, alpha=0.01, label=f'nbrs={nbrs[k]}', c=labels[k])
+                    ax[i,j].legend(loc='upper right')
+                    k += 1
+    else:
+        for i in range(ncols):
+            if k < len(embeddings):
+                ax[i].scatter(embeddings[k][:,0], embeddings[k][:,1], s=0.1, alpha=0.01, label=f'nbrs={nbrs[k]}', c=labels[k])
+                ax[i].legend(loc='upper right')
+                k += 1
+    
+    fig.show()
+
+    props = []
+    for label in labels:
+        prop = [0 for _ in range(label.max() + 1)]
+        for idx in label:
+            if idx >= 0:
+                prop[idx] += 1
+        prop = np.array(prop)
+        prop = prop/prop.sum()
+        props.append(prop)
+
+    fig, ax = plt.subplots(nrows, ncols)
+    k = 0
+    if nrows > 1:
+        for i in range(nrows):
+            for j in range(ncols):
+                if k < len(embeddings):
+                    sn.barplot(ax=ax[i,j], x=np.arange(labels[k].max() + 1), y=props[k])
+                    ax[i,j].set_title(f'n_neighbors = {nbrs[k]}')
+                    k += 1
+    else:
+        for i in range(ncols):
+            if k < len(embeddings):
+                sn.barplot(ax=ax[i], x=np.arange(labels[k].max() + 1), y=props[k])
+                ax[i].set_title(f'n_neighbors = {nbrs[k]}')
+                k += 1
+
     fig.show()
 
 if __name__ == "__main__":

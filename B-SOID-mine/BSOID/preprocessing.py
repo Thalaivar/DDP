@@ -100,11 +100,11 @@ def trim_data(x, y, conf, fps, end_trim=2, clip_window=30):
             clip_window_ = clip_window_ * 60 * fps // 2
             x_trim, y_trim, conf_trim = [], [], []
 
-            assert mid_idx[0] + clip_window < mid_idx[1] - clip_window
+            assert mid_idx[0] + clip_window_ < mid_idx[1] - clip_window_
             for idx in mid_idx:
-                x_trim.append(x[idx - clip_window: idx + clip_window, :])
-                y_trim.append(y[idx - clip_window: idx + clip_window, :])
-                conf_trim.append(conf[idx - clip_window: idx + clip_window, :])
+                x_trim.append(x[idx - clip_window_: idx + clip_window_, :])
+                y_trim.append(y[idx - clip_window_: idx + clip_window_, :])
+                conf_trim.append(conf[idx - clip_window_: idx + clip_window_, :])
             x, y, conf = np.vstack(x_trim), np.vstack(y_trim), np.vstack(conf_trim)
         except AssertionError:
             clip_window = clip_window * 60 * fps // 2
