@@ -5,11 +5,11 @@ from BSOID.bsoid import BSOID
 logging.basicConfig(level=logging.INFO)
 
 
-model_load_params = None
-# model_load_params = {'run_id': 'dis', 'base_dir': '/home/dhruvlaad/data'}
+# model_load_params = None
+model_load_params = {'run_id': 'dis', 'base_dir': '/home/dhruvlaad/data'}
 
-get_data = True
-preprocess = True
+get_data = False
+preprocess = False
 extract_features = True
 embed = True
 
@@ -22,7 +22,7 @@ if model_load_params is None:
         }
     bsoid = BSOID(**bsoid_params)
     bsoid.save()
-else:
+else:   
     bsoid = BSOID.load_config(**model_load_params)
 
 if get_data:

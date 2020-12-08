@@ -67,27 +67,12 @@ def extract_feats(filtered_data, fps, subsample=None):
 
     return feats
 
-def window_extracted_feats(feats, stride_window, temporal_window=None, temporal_dims=None):
+def window_extracted_feats(feats, stride_window):
     win_feats = []
 
     for f in feats:
-        if temporal_window is not None:
-            # indices 0-6 are link lengths, during windowing they should be averaged
-            clip_len = (temporal_window - stride_window) // 2
-            
-            win_feats_ll_d = windowed_feats(f[clip_len:-clip_len+1,:7], stride_window, mode='mean')
-            win_feats_th = windowed_feats(f[clip_len:-clip_len+1,7:22], stride_window, mode='sum')
-
-            win_fft = windowed_fft(f, stride_window, temporal_window)
-        
-            if temporal_dims is not None:
-                win_fft = PCA(n_components=temporal_dims).fit_transform(win_fft)
-            
-            win_feats.append(np.hstack((win_feats_ll_d, win_feats_th, win_fft)))
-
-        else:
-            win_feats_ll_d = windowed_feats(f[:,:7], stride_window, mode='mean')
-            win_feats_th = windowed_feats(f[:,7:22], stride_window, mode='sum')
-            win_feats.append(np.hstack((win_feats_ll_d, win_feats_th)))
+        win_feats_ll_d = windowed_feats(f[:,:7], stride_window, mode='mean')
+        win_feats_th = windowed_feats(f[:,7:22], stride_window, mode='sum')
+        win_feats.append(np.hstack((win_feats_ll_d, win_feats_th)))
             
     return win_feats

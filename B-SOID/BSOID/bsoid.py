@@ -112,7 +112,8 @@ class BSOID:
             if fdata is not None and perc_filt < filter_thresh:
                 assert fdata['x'].shape == fdata['y'].shape == fdata['conf'].shape, 'filtered data shape does not match across x, y, and conf values'
                 filtered_data.append(fdata)
-                logging.info(f'preprocessed {fdata['x'].shape} data from animal #{i}, with {perc_filt}% data filtered')
+                shape = fdata['x'].shape
+                logging.info(f'preprocessed {shape} data from animal #{i}, with {round(perc_filt, 2)}% data filtered')
             else:
                 logging.info(f'skpping {i}-th dataset since % filtered is {round(perc_filt, 2)}')
                 skipped += 1
@@ -125,11 +126,12 @@ class BSOID:
     
     def features_from_points(self, parallel=False):
         filtered_data = self.load_filtered_data()
-        
+        logging.info(f'extracting features from {len(filtered_data)} animals')
+
         # extract geometric features
         if parallel:
             from joblib import Parallel, delayed
-            feats = Parallel(n_jobs=2)(delayed(extract_feats)(data, self.fps) for data in filtered_data)
+            feats = Parallel(n_jobs=-1)(delayed(extract_feats)(data, self.fps) for data in filtered_data)
         else:
             feats = []
             for i in tqdm(range(len(filtered_data))):
@@ -138,11 +140,8 @@ class BSOID:
         logging.info(f'extracted {len(feats)} datasets of {feats[0].shape[1]}D features')
 
         # feats = window_extracted_feats(feats, self.stride_window, self.temporal_window, self.temporal_dims)
-        feats = window_extracted_feats(feats, self.stride_window, self.temporal_window, self.temporal_dims)
+        feats = window_extracted_feats(feats, self.stride_window)
         logging.info(f'collected features into bins of {1000 * self.stride_window // self.fps} ms')
-        
-        if self.temporal_window is not None:
-            logging.info('combined temporal features to get {} datasets of {}D'.format(len(feats), feats[0].shape[1]))
 
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
             joblib.dump(feats, f)
