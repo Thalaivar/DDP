@@ -110,21 +110,14 @@ class BSOID:
             data = pd.read_csv(csv_data_files[i])
             fdata, perc_filt = likelihood_filter(data, fps=self.fps, conf_threshold=self.conf_threshold,**TRIM_PARAMS)
             if fdata is not None and perc_filt < filter_thresh:
+                assert fdata['x'].shape == fdata['y'].shape == fdata['conf'].shape, 'filtered data shape does not match across x, y, and conf values'
                 filtered_data.append(fdata)
+                logging.info(f'preprocessed {fdata['x'].shape} data from animal #{i}, with {perc_filt}% data filtered')
             else:
                 logging.info(f'skpping {i}-th dataset since % filtered is {round(perc_filt, 2)}')
                 skipped += 1
-        
-        # verify shape of all datasets
-        shape = filtered_data[0]['x']
-        for fdata in filtered_data:
-            assert fdata['x'].shape == fdata['y'].shape == fdata['conf'].shape, 'filtered data shape does not match across x, y, and conf values'
-            assert fdata['x'].shape == shape, 'filtered data shape not consistent across animals'
-
 
         logging.info(f'skipped {skipped}/{len(csv_data_files)} datasets')
-        logging.info(f'extracted {len(filtered_data)} datasets of shape: {filtered_data[0]['x'].shape}')
-
         with open(self.output_dir + '/' + self.run_id + '_filtered_data.sav', 'wb') as f:
             joblib.dump(filtered_data, f)
 
