@@ -4,7 +4,7 @@ from sklearn.decomposition import PCA
 from BSOID.preprocessing import smoothen_data
 from sklearn.preprocessing import StandardScaler
 
-def frameshift_features(filtered_data, stride_window, fps, feats_extractor, windower, temporal_window=None, temporal_dims=None):
+def frameshift_features(filtered_data, stride_window, fps, feats_extractor, windower):
     if not isinstance(filtered_data, list):
         filtered_data = [filtered_data]
 
@@ -20,9 +20,7 @@ def frameshift_features(filtered_data, stride_window, fps, feats_extractor, wind
     for s in range(stride_window):
        fs_feats.append(feats[s:,:])
 
-    fs_feats = windower(fs_feats, stride_window, temporal_window, temporal_dims)
-    
-
+    fs_feats = windower(fs_feats, stride_window)
 
     return fs_feats
 

@@ -232,10 +232,8 @@ class BSOID:
             logging.info(f'results directory: {output_path} already exists, deleting')
             [os.remove(output_path+'/'+f) for f in os.listdir(output_path)]
 
-        clip_len = None
-        if self.temporal_window is not None:
-            clip_len = (self.temporal_window - self.stride_window) // 2
-        collect_all_examples(labels, frame_dirs, output_path, clip_len, bout_length, n_examples, self.fps)
+        clip_window = TRIM_PARAMS['end_trim']*60*self.fps
+        collect_all_examples(labels, frame_dirs, output_path, bout_length, n_examples, self.fps, clip_window)
 
     def label_frames(self, csv_file, video_file):
         # directory to store results for video
@@ -261,9 +259,9 @@ class BSOID:
         
         # filter data from test file
         data = pd.read_csv(csv_file, low_memory=False)
-        data, _ = likelihood_filter(data, self.fps, end_trim=2)
+        data, _ = likelihood_filter(data, self.fps, self.conf_threshold, end_trim=TRIM_PARAMS['end_trim'], clip_window=0)
 
-        feats = frameshift_features(data, self.stride_window, self.fps, extract_feats, window_extracted_feats, self.temporal_window, self.temporal_dims)
+        feats = frameshift_features(data, self.stride_window, self.fps, extract_feats, window_extracted_feats)
 
         with open(self.output_dir + '/' + self.run_id + '_classifiers.sav', 'rb') as f:
             clf = joblib.load(f)

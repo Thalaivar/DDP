@@ -31,7 +31,7 @@ def split_data(dis_threshold: float):
 
     # create bsoid model for later use
     print(f'divided data into active ({round(active_idx.shape[0]/feats.shape[0], 2) * 100}%) and in-active ({round(inactive_idx.shape[0]/feats.shape[0], 2) * 100}%) based on displacement threshold of {dis_threshold}')
-    bsoid = BSOID(RUN_ID, BASE_DIR, fps=30, temporal_dims=None, temporal_window=None, stride_window=3)
+    bsoid = BSOID(RUN_ID, BASE_DIR, fps=30, conf_threshold=0.3)
     bsoid.save()
 
     active_feats = [feats[active_idx], feats_sc[active_idx]]
@@ -78,6 +78,11 @@ def embed_split_data(reduced_dim: int, sample_size: int, dis_threshold=None):
 
     umap_results = []
     for i in range(2):
+        if i == 0:
+            UMAP_PARAMS['n_neighbors'] = 150
+        else:
+            UMAP_PARAMS['n_neighbors'] = 300
+            
         results = embed_subset(comb_feats[i], comb_feats_sc[i], sample_size, reduced_dim, UMAP_PARAMS)
         if i == 0:
             with open('/home/dhruvlaad/active_umap.sav', 'wb') as f:

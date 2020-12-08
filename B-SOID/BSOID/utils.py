@@ -115,13 +115,16 @@ def get_all_bouts(labels):
         i += 1
     return vid_locs 
 
-def example_video_segments(labels, clip_len, frame_dir, bout_length, n_examples):
+def example_video_segments(labels, frame_dir, bout_length, n_examples, clip_len):
     images = [img for img in os.listdir(frame_dir) if img.endswith(".png")]
     images.sort(key=lambda x:alphanum_key(x))
 
     # trim frames since we exclude first and last few frames when taking fft
     if clip_len is not None:
         images = images[clip_len:-clip_len]
+
+    if len(labels) != len(images):
+        logger.warn(f'# of labels {len(labels)} and frames {len(images)} do not match')
 
     class_vid_locs = get_all_bouts(labels)
 
@@ -139,13 +142,13 @@ def example_video_segments(labels, clip_len, frame_dir, bout_length, n_examples)
 
     return class_vid_locs, images
 
-def collect_all_examples(labels, frame_dirs, output_path, clip_window, bout_length, n_examples, output_fps):
+def collect_all_examples(labels, frame_dirs, output_path, bout_length, n_examples, output_fps, clip_window):
     n_animals = len(frame_dirs)
 
     all_class_vid_locs = []
     all_frames = []
     for i in range(n_animals):
-        class_vid_locs, frames = example_video_segments(labels[i], clip_window, frame_dirs[i], bout_length, n_examples)
+        class_vid_locs, frames = example_video_segments(labels[i], frame_dirs[i], bout_length, n_examples, clip_window)
         all_class_vid_locs.append(class_vid_locs)
         all_frames.append(frames)
 
