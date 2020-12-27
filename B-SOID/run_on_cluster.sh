@@ -7,7 +7,7 @@
 #SBATCH --partition=high_mem
 #SBATCH --qos=batch
 #SBATCH --mem=400000
-#SBATCH --mail-user=dhruv.laad@jjax.org
+#SBATCH --mail-user=dhruv.laad@jax.org
 #SBATCH --mail-type=ALL
 
 cd /home/laadd/DDP/B-SOID/
