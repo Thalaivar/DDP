@@ -10,6 +10,8 @@
 #SBATCH --mail-user=dhruv.laad@jax.org
 #SBATCH --mail-type=ALL
 
+source /home/laadd/.bashrc
+conda activate bsoid 
+
 cd /home/laadd/DDP/B-SOID/
-conda activate bsoid
 python scripts.py
