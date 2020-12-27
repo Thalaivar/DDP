@@ -9,15 +9,9 @@ logging.basicConfig(level=logging.INFO)
 
 
 # model_load_params = None
-model_load_params = {'run_id': 'dis', 'base_dir': 'D:/IIT/DDP/data'}
+MODEL_LOAD_PARAMS = {'run_id': 'dis', 'base_dir': '/home/laadd/data'}
 
-get_data         = False
-preprocess       = False
-extract_features = False
-embed            = False
-cluster          = True
-
-def main(model_load_params=None, get_data=True, preprocess=True, extract_features=True, embed=True, cluster=True):
+def main(model_load_params=None, get_data=False, preprocess=False, extract_features=False, embed=True, cluster=False):
     if model_load_params is None:
         bsoid_params = {'run_id': 'dis',
                         'base_dir': '/home/dhruvlaad/data',
@@ -28,7 +22,7 @@ def main(model_load_params=None, get_data=True, preprocess=True, extract_feature
         bsoid = BSOID(**bsoid_params)
         bsoid.save()
     else:   
-        bsoid = BSOID.load_config(**model_load_params)
+        bsoid = BSOID.load_config(**MODEL_LOAD_PARAMS)
 
     if get_data:
         bsoid.get_data(parallel=True)
@@ -37,18 +31,18 @@ def main(model_load_params=None, get_data=True, preprocess=True, extract_feature
     if extract_features:
         bsoid.features_from_points(parallel=True)
     if embed:
-        bsoid.best_reduced_dim()
-        reduced_dim = int(input('Enter reduced dimensions for embedding: '))
-        bsoid.umap_reduce(reduced_dim=reduced_dim, sample_size=int(7e5))
+        # bsoid.best_reduced_dim()
+        # reduced_dim = int(input('Enter reduced dimensions for embedding: '))
+        bsoid.umap_reduce(reduced_dim=3, sample_size=-1)
     if cluster:
-        bsoid.identify_clusters_from_umap(cluster_range=[0.2, 1.2, 10])
+        bsoid.identify_clusters_from_umap(cluster_range=[0.2, 1.0, 9])
 
 def get_cluster_information(run_id='dis', base_dir='D:/IIT/DDP/data'):
     bsoid = BSOID.load_config(run_id=run_id, base_dir=base_dir)
 
     assignments, soft_clusters, soft_assignments, clusterer = bsoid.load_identified_clusters()
-
-
+    assignments = assignments.astype(np.int8)
+    
     prop = [0 for _ in range(assignments.max() + 1)]  
     for idx in assignments:
         if idx >= 0:
@@ -71,4 +65,6 @@ def results(run_id='dis', base_dir='D:/IIT/DDP/data'):
     bsoid.create_examples(csv_dir, video_dir, bout_length=3, n_examples=10)
 
 if __name__ == "__main__":
-    results()
+    main(model_load_params=model_load_params, preprocess=True, extract_features=True, embed=True, cluster=False)
+    # results()
+    # get_cluster_information()

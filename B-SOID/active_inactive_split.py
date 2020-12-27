@@ -22,9 +22,7 @@ def split_data(dis_threshold: float):
     feats, feats_sc = bsoid.load_features()
 
     # split data according to displacement threshold
-    head_dis = feats[:,7].reshape(-1,1)
-    tail_dis = feats[:,12:15].mean(axis=1).reshape(-1,1)
-    displacements = np.hstack((head_dis, tail_dis)).mean(axis=1).reshape(-1,1)
+    displacements = calc_dis_threshold(feats)
 
     active_idx = np.where(displacements >= dis_threshold)[0]
     inactive_idx = np.where(displacements < dis_threshold)[0]
@@ -82,7 +80,7 @@ def embed_split_data(reduced_dim: int, sample_size: int, dis_threshold=None):
             UMAP_PARAMS['n_neighbors'] = 150
         else:
             UMAP_PARAMS['n_neighbors'] = 300
-            
+
         results = embed_subset(comb_feats[i], comb_feats_sc[i], sample_size, reduced_dim, UMAP_PARAMS)
         if i == 0:
             with open('/home/dhruvlaad/active_umap.sav', 'wb') as f:
