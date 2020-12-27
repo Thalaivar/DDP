@@ -22,7 +22,7 @@ def main(model_load_params=None, get_data=False, preprocess=False, extract_featu
         bsoid = BSOID(**bsoid_params)
         bsoid.save()
     else:   
-        bsoid = BSOID.load_config(**MODEL_LOAD_PARAMS)
+        bsoid = BSOID.load_config(**model_load_params)
 
     if get_data:
         bsoid.get_data(parallel=True)
@@ -65,6 +65,6 @@ def results(run_id='dis', base_dir='D:/IIT/DDP/data'):
     bsoid.create_examples(csv_dir, video_dir, bout_length=3, n_examples=10)
 
 if __name__ == "__main__":
-    main(model_load_params=model_load_params, preprocess=True, extract_features=True, embed=True, cluster=False)
+    main(model_load_params=MODEL_LOAD_PARAMS, preprocess=True, extract_features=True, embed=True, cluster=False)
     # results()
     # get_cluster_information()
