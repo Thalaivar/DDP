@@ -8,7 +8,7 @@ from sklearn.preprocessing import StandardScaler
 from BSOID.utils import cluster_with_hdbscan
 
 RUN_ID = 'split'
-BASE_DIR = 'D:/IIT/DDP/data'
+BASE_DIR = '/home/laadd/data'
 
 def calc_dis_threshold(feats):
     head_dis = feats[:,7].reshape(-1,1)
@@ -172,3 +172,6 @@ def validate_classifier():
         
     with open(bsoid.output_dir + '/' + bsoid.run_id + '_validation.sav', 'wb') as f:
         joblib.dump([sc_scores, sc_cf], f)
+
+if __name__ == "__main__":
+    embed_split_data(reduced_dim=3, sample_size=-1, dis_threshold=2.0)

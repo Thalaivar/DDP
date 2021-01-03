@@ -15,3 +15,4 @@ conda activate bsoid
 
 cd /home/laadd/DDP/B-SOID/
 python scripts.py
+

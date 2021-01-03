@@ -25,16 +25,14 @@ MICE_DIR = BASE_DIR + '/analysis/mice'
 RAW_DIR = BASE_DIR + '/raw'
 
 BEHAVIOUR_LABELS = {
-    'CCW-Turn': 0,
-    'Groom-1': 1,
-    'N/A': [2, 4, 10, 11, 13],
-    'Rear-1': 3,
-    'Groom-2': 5,
-    'CW-Turn': 6,
-    'Rear-CW-Turn': 7,
-    'Locomote-1': 8,
-    'Groom-3': 9,
-    'Groom-4': 12,
+    'Groom': [0, 1, 2, 3],
+    'Locomote-Run': [4],
+    'CW-Turn': [5],
+    'Locomote-Walk': [6],
+    'CCW-Turn': [7, 8],
+    'Rear': [9, 10, 12, 14],
+    'N/A': [11, 13],
+    'Point Front': [15]   
 }
 
 try:
