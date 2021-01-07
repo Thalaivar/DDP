@@ -25,15 +25,22 @@ MICE_DIR = BASE_DIR + '/analysis/mice'
 RAW_DIR = BASE_DIR + '/raw'
 
 BEHAVIOUR_LABELS = {
-    'Groom': [0, 1, 2, 3],
-    'Locomote-Run': [4],
-    'CW-Turn': [5],
-    'Locomote-Walk': [6],
-    'CCW-Turn': [7, 8],
-    'Rear': [9, 10, 12, 14],
-    'N/A': [11, 13],
-    'Point Front': [15]   
+    'Sniff': [0, 18],
+    'Groom': [1, 2, 3, 8, 10, 11],
+    'Run': [4],
+    'Point-Left': [5],
+    'CW-Turn': [6, 7],
+    'Walk': [9],
+    'CCW-Turn': [12, 13],
+    'Rear (AW)': [14],
+    'Rear': [16],
+    'N/A': [15, 17]
 }
+
+IDX_TO_LABELS = ('Sniff #0', 'Groom #0', 'Groom #1', 'Groom #2', 
+        'Run', 'Point-Left', 'CW-Turn #0', 'CW-Turn #1', 'Groom #3',
+        'Walk', 'Groom #4', 'Groom #5', 'CCW-Turn #0', 'CCW-Turn #1', 
+        'Rear (AW)', 'N/A #0', 'Rear', 'N/A #1', 'Sniff #1')
 
 try:
     os.makedirs(RAW_DIR)
@@ -87,10 +94,8 @@ class Mouse:
         f.close()
 
         # trim start and end
-        end_trim = FPS*2*60
-        conf, pos = conf[end_trim:-end_trim,:], pos[end_trim:-end_trim,:]
         data = _bsoid_format(conf, pos)
-        fdata, perc_filt = likelihood_filter(data)
+        fdata, perc_filt = likelihood_filter(data, fps=FPS, end_trim=2, clip_window=0, conf_threshold=0.3)
 
         if perc_filt > 10:
             logging.warn(f'mouse:{self.strain}/{self.id}: % data filtered from raw data is too high ({perc_filt} %)')
@@ -184,7 +189,7 @@ def get_behaviour_info_from_assay(mouse: Mouse, labels, behaviour_idx, min_bout_
         else:
             i += 1
 
-    average_bout_len = sum(average_bout_len)/len(average_bout_len)
+    average_bout_len = sum(average_bout_len)/len(average_bout_len) if len(average_bout_len) > 0 else 0
 
     # get durations in seconds
     total_duration = total_duration / FPS
@@ -250,7 +255,7 @@ def calculate_behaviour_usage(data_lookup_file, parallel=True):
     with open(clf_file, 'rb') as f:
         clf = joblib.load(f)
     
-    data = pd.read_csv(clf_file)
+    data = pd.read_csv(data_lookup_file)
     N = data.shape[0]
 
     def behaviour_usage(i, data, clf):
@@ -268,7 +273,7 @@ def calculate_behaviour_usage(data_lookup_file, parallel=True):
     prop = np.vstack(prop)
     return prop.sum(axis=0)/prop.shape[0]
 
-def calculate_behaviour_info_for_all_strains(data_lookup_file, min_bout_len):
+def calculate_behaviour_info_for_all_strains(data_lookup_file, min_bout_len, behaviour_idx):
     clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
     with open(clf_file, 'rb') as f:
         clf = joblib.load(f)
@@ -288,9 +293,8 @@ def calculate_behaviour_info_for_all_strains(data_lookup_file, min_bout_len):
         metadata = dict(data.iloc[i])
         mouse = Mouse(metadata)
 
-        idx = [BEHAVIOUR_LABELS[key] for key in BEHAVIOUR_LABELS.keys() if key[:5] == 'Groom']
         labels = mouse.get_behaviour_labels(clf)
-        total_duration, n_bouts, avg_bout_len = get_behaviour_info_from_assay(mouse, labels, idx, min_bout_len)
+        total_duration, n_bouts, avg_bout_len = get_behaviour_info_from_assay(mouse, labels, behaviour_idx, min_bout_len)
 
         info['Strain'].append(mouse.strain)
         info['Sex'].append(mouse.sex)
@@ -300,5 +304,58 @@ def calculate_behaviour_info_for_all_strains(data_lookup_file, min_bout_len):
     
     return pd.DataFrame.from_dict(info)
 
+def behaviour_usage_across_strains(data_lookup_file, min_thresh=None):
+    clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
+    with open(clf_file, 'rb') as f:
+        clf = joblib.load(f)
+
+    data = pd.read_csv(data_lookup_file)
+    N = data.shape[0]
+
+    n_behaviours = 0
+    for key in BEHAVIOUR_LABELS.keys():
+        n_behaviours += len(BEHAVIOUR_LABELS[key])
+
+    behaviours = [None for _ in range(n_behaviours)]
+    for key, val in BEHAVIOUR_LABELS.items():
+        if len(val) > 1:
+            for i, idx in enumerate(val):
+                behaviours[idx] = f'{key} #{i}'
+        else:
+            behaviours[val[0]] = key
+    
+    strain_usage = {}
+    for i in tqdm(range(N)):
+        metadata = dict(data.iloc[i])
+        mouse = Mouse(metadata)
+
+        labels = mouse.get_behaviour_labels(clf)
+        prop = behaviour_proportion(labels)
+
+        if mouse.strain in strain_usage.keys():
+            strain_usage[mouse.strain] += prop
+        else:
+            strain_usage[mouse.strain] = prop
+        
+    for key, val in strain_usage.items():
+        strain_usage[key] = val/val.sum()
+    
+    usage_df = {
+        'Behaviour': [],
+        'Strain': [],
+        'Usage': []
+    }
+
+    for key, val in strain_usage.items():
+        for i in range(len(val)):
+            usage_df['Behaviour'].append(IDX_TO_LABELS[i])
+            usage_df['Strain'].append(key)
+            usage_df['Usage'].append(val[i]) if val[i] > min_thresh else usage_df['Usage'].append(min_thresh)
+    
+    return pd.DataFrame.from_dict(usage_df)
+
+
 if __name__ == "__main__":
-    extract_features_per_mouse('bsoid_strain_data.csv')
+    # extract_features_per_mouse('bsoid_strain_data.csv')
+
+    info = behaviour_usage_across_strains('./bsoid_strain_data.csv')

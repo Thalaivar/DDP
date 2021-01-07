@@ -293,6 +293,12 @@ class BSOID:
         
         return assignments, soft_clusters, soft_assignments, best_clf
 
+    def load_classifier(self):
+        with open(self.output_dir + '/' + self.run_id + '_classifiers.sav', 'rb') as f:
+            clf = joblib.load(f)
+        
+        return clf
+
     def load_umap_results(self, collect=None):
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
             feats_usc, feats_sc, umap_embeddings = joblib.load(f)

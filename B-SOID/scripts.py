@@ -35,7 +35,7 @@ def main(model_load_params=None, get_data=False, preprocess=False, extract_featu
         # reduced_dim = int(input('Enter reduced dimensions for embedding: '))
         bsoid.umap_reduce(reduced_dim=3, sample_size=-1)
     if cluster:
-        bsoid.identify_clusters_from_umap(cluster_range=[0.2, 1.0, 9])
+        bsoid.identify_clusters_from_umap(cluster_range=[0.2, 0.4, 9])
 
 def get_cluster_information(run_id='dis', base_dir='D:/IIT/DDP/data'):
     bsoid = BSOID.load_config(run_id=run_id, base_dir=base_dir)
@@ -55,7 +55,7 @@ def get_cluster_information(run_id='dis', base_dir='D:/IIT/DDP/data'):
 def validate_and_train(run_id='dis', base_dir='D:/IIT/DDP/data'):
     bsoid = BSOID.load_config(run_id=run_id, base_dir=base_dir)
     bsoid.validate_classifier()
-    bsoid.train_classifier()
+    bsoid.train_classifier()    
 
 def results(run_id='dis', base_dir='D:/IIT/DDP/data'):
     bsoid = BSOID.load_config(run_id=run_id, base_dir=base_dir)

@@ -59,7 +59,7 @@ def download_data(bsoid_data_file, pose_est_dir):
     bsoid_data = pd.read_csv(bsoid_data_file)
     
     session = ftplib.FTP("ftp.box.com")
-    session.login("ae16b011@smail.iitm.ac.in", "Q0w9e8r7t6Y%Z")
+    session.login("ae16b011@smail.iitm.ac.in", "rSNxWCBv1407")
 
     strains = ["LL6-B2B", "LL5-B2B", "LL4-B2B", "LL3-B2B", "LL2-B2B", "LL1-B2B"]
     datasets = ["strain-survey-batch-2019-05-29-e/", "strain-survey-batch-2019-05-29-d/", "strain-survey-batch-2019-05-29-c/",
