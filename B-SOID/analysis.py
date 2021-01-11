@@ -175,7 +175,6 @@ def get_behaviour_info_from_assay(mouse: Mouse, labels, behaviour_idx, min_bout_
             curr_idx = labels[i]
             curr_bout_len, j = 0, i + 1
             while curr_idx == labels[j] and j < len(labels) - 1:
-                total_duration += 1
                 curr_idx = labels[j]
                 curr_bout_len += 1
                 j += 1
@@ -183,6 +182,7 @@ def get_behaviour_info_from_assay(mouse: Mouse, labels, behaviour_idx, min_bout_
             if curr_bout_len > min_bout_len:
                 n_bouts += 1
                 average_bout_len.append(curr_bout_len)
+                total_duration += curr_bout_len
         
             i = j
         
@@ -304,7 +304,7 @@ def calculate_behaviour_info_for_all_strains(data_lookup_file, min_bout_len, beh
     
     return pd.DataFrame.from_dict(info)
 
-def behaviour_usage_across_strains(data_lookup_file, min_thresh=None):
+def behaviour_usage_across_strains(data_lookup_file, min_thresh=None, min_bout_len=200):
     clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
     with open(clf_file, 'rb') as f:
         clf = joblib.load(f)
@@ -330,12 +330,19 @@ def behaviour_usage_across_strains(data_lookup_file, min_thresh=None):
         mouse = Mouse(metadata)
 
         labels = mouse.get_behaviour_labels(clf)
-        prop = behaviour_proportion(labels)
+        # prop = behaviour_proportion(labels)
+        duration = []
+        for behaviour_idx in range(len(IDX_TO_LABELS)):
+            total_duration, _, _ = get_behaviour_info_from_assay(mouse, labels, behaviour_idx, min_bout_len * FPS / 1000)
+            duration.append(total_duration)
+        duration = np.array(duration)
+        duration = duration/duration.sum()
+
 
         if mouse.strain in strain_usage.keys():
-            strain_usage[mouse.strain] += prop
+            strain_usage[mouse.strain] += duration
         else:
-            strain_usage[mouse.strain] = prop
+            strain_usage[mouse.strain] = duration
         
     for key, val in strain_usage.items():
         strain_usage[key] = val/val.sum()
@@ -353,7 +360,7 @@ def behaviour_usage_across_strains(data_lookup_file, min_thresh=None):
             usage_df['Usage'].append(val[i]) if val[i] > min_thresh else usage_df['Usage'].append(min_thresh)
     
     return pd.DataFrame.from_dict(usage_df)
-
+    
 
 if __name__ == "__main__":
     # extract_features_per_mouse('bsoid_strain_data.csv')

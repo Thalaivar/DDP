@@ -59,33 +59,19 @@ def embed_split_data(reduced_dim: int, sample_size: int, dis_threshold=None):
     comb_feats = [active_feats, inactive_feats]
     comb_feats_sc = [active_feats_sc, inactive_feats_sc]
 
-    def embed_subset(feats, feats_sc, sample_size, reduced_dim, umap_params):    
-        # take subset of data
-        if sample_size > 0 and sample_size < feats.shape[0]:
-            idx = np.random.permutation(np.arange(feats.shape[0]))[0:sample_size]
-            feats_train = feats_sc[idx,:]
-            feats_usc = feats[idx, :]
-        else:
-            feats_train = feats_sc
-            feats_usc = feats
-
-        logging.info('running UMAP on {} samples from {}D to {}D'.format(*feats_train.shape, reduced_dim))
-        mapper = umap.UMAP(n_components=reduced_dim, **umap_params).fit(feats_train)
-
-        return [feats_usc, feats_train, mapper.embedding_]
-
     umap_results = []
     for i in range(2):
-        if i == 0:
-            UMAP_PARAMS['n_neighbors'] = 150
+        if sample_size > 0 and sample_size < comb_feats[i].shape[0]:
+            idx = np.random.permutation(np.arange(comb_feats[i].shape[0]))[0:sample_size]
+            feats_train = comb_feats_sc[idx,:]
+            feats_usc = comb_feats[idx, :]
         else:
-            UMAP_PARAMS['n_neighbors'] = 300
+            feats_train = comb_feats_sc
+            feats_usc = comb_feats
 
-        results = embed_subset(comb_feats[i], comb_feats_sc[i], sample_size, reduced_dim, UMAP_PARAMS)
-        if i == 0:
-            with open('/home/dhruvlaad/active_umap.sav', 'wb') as f:
-                joblib.dump(results, f)
-        umap_results.append(results)
+        logging.info('running UMAP on {} samples from {}D to {}D'.format(*feats_train.shape, reduced_dim))
+        mapper = umap.UMAP(n_components=reduced_dim, **UMAP_PARAMS).fit(feats_train)
+        umap_results.append([feats_usc, feats_train, mapper.embedding_])
 
     with open(bsoid.output_dir + '/' + bsoid.run_id + '_umap.sav', 'wb') as f:
         joblib.dump(umap_results, f)
