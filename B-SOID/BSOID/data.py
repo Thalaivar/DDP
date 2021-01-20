@@ -95,3 +95,25 @@ def download_data(bsoid_data_file, pose_est_dir):
             session.cwd('/')
         else:
             logger.info(f'skipping {pose_est_dir}/{movie_name[0:-4]}_pose_est_v2.h5')
+
+def get_pose_data_dir(base_dir, network_filename):
+    strain, data, movie_name = network_filename.split('/')
+
+    strains = ["LL6-B2B", "LL5-B2B", "LL4-B2B", "LL3-B2B", "LL2-B2B", "LL1-B2B"]
+    datasets = ["strain-survey-batch-2019-05-29-e/", "strain-survey-batch-2019-05-29-d/", "strain-survey-batch-2019-05-29-c/",
+                "strain-survey-batch-2019-05-29-b/", "strain-survey-batch-2019-05-29-a/"]
+
+    idx = strains.index(strain)
+
+    if idx == 0:
+        data_dir = base_dir + '/' + datasets[0] + strain + '/' + data + '/'
+    elif idx == 5:
+        data_dir = base_dir + '/' + datasets[4] + strain + '/' + data + '/'
+    else:
+        if os.path.exists(base_dir + datasets[idx-1] + strain + '/' + data + '/'):
+            data_dir = base_dir + '/' + datasets[idx-1] + strain + '/' + data + '/'
+        else:
+            data_dir = base_dir + '/' + datasets[idx] + strain + '/' + data + '/'
+    
+    data_file = data_dir + movie_name[0:-4] + '_pose_est_v2.h5'
+    return data_dir, data_file

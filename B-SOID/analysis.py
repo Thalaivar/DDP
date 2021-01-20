@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.INFO)
 
 from tqdm import tqdm
 from joblib import Parallel, delayed
-from BSOID.data import _bsoid_format
+from BSOID.data import _bsoid_format, get_pose_data_dir
 from BSOID.preprocessing import likelihood_filter
 from BSOID.prediction import *
 
@@ -20,7 +20,7 @@ DATASETS = ["strain-survey-batch-2019-05-29-e/", "strain-survey-batch-2019-05-29
             "strain-survey-batch-2019-05-29-c/", "strain-survey-batch-2019-05-29-b/",
             "strain-survey-batch-2019-05-29-a/"]
 
-BASE_DIR = 'D:/IIT/DDP/data'
+BASE_DIR = '/home/laadd/data'
 MICE_DIR = BASE_DIR + '/analysis/mice'
 RAW_DIR = BASE_DIR + '/raw'
 
@@ -67,8 +67,8 @@ class Mouse:
         self.metadata = metadata
         self.save()
 
-    def extract_features(self, features_type='dis'):
-        data = self._get_raw_data()
+    def extract_features(self, features_type='dis', data_dir=None):
+        data = self._get_raw_data(data_dir)
         if features_type == 'dis':
             from BSOID.features.displacement_feats import extract_feats, window_extracted_feats
         
@@ -84,9 +84,11 @@ class Mouse:
         labels = frameshift_predict(feats, clf, STRIDE_WINDOW)
         return labels
 
-    def _get_raw_data(self):
+    def _get_raw_data(self, pose_dir=None):
+        pose_dir = RAW_DIR if pose_dir is None else pose_dir
+
         _, _, movie_name = self.filename.split('/')
-        filename = f'{RAW_DIR}/{movie_name[0:-4]}_pose_est_v2.h5'
+        filename = f'{pose_dir}/{movie_name[0:-4]}_pose_est_v2.h5'
         f = h5py.File(filename, 'r')
         data = list(f.keys())[0]
         keys = list(f[data].keys())
@@ -127,7 +129,6 @@ class Mouse:
             with open(f'{self.save_dir}/feats.sav', 'rb') as f:
                 feats = joblib.load(f)
         return feats
-
 """
     Helper functions for carrying out analysis per mouse:
         - transition_matrix_from_assay : calculates the transition matrix for a given assay
@@ -200,7 +201,7 @@ def get_behaviour_info_from_assay(mouse: Mouse, labels, behaviour_idx, min_bout_
 """
     modules to run different analyses for all mice
 """
-def extract_features_per_mouse(data_lookup_file):
+def extract_features_per_mouse(data_lookup_file, data_dir=None):
     data = pd.read_csv(data_lookup_file)
     N = data.shape[0]
 
@@ -214,6 +215,33 @@ def extract_features_per_mouse(data_lookup_file):
             pass
         else:
             mouse.extract_features()
+
+    Parallel(n_jobs=-1)(delayed(extract)(i, data) for i in range(N))
+
+    # validate that all mice were included
+    total_mice = 0
+    strains = os.listdir(MICE_DIR)
+    for strain in strains:
+        ids = os.listdir(f'{MICE_DIR}/{strain}')
+        total_mice += len(ids)
+    
+    assert total_mice == N, 'some mice were overwritten'
+
+def data_for_mice_from_dataset(data_dir='/projects/kumar-lab/StrainSurveyPoses'):
+    data = pd.read_csv(f'{data_dir}/StrainSurveyMetaList_2019-04-09.tsv', sep='/t')
+    N = data.shape[0]
+
+    print(f'extracting raw data for {N} mice')
+
+    def extract(i, data):
+        mouse_data = dict(data.iloc[i])
+        mouse = Mouse(mouse_data)
+        if os.path.isfile(f'{mouse.save_dir}/feats.sav'):
+            print(f'skipping {mouse.save_dir}')
+            pass
+        else:
+            raw_data_dir, _ = get_pose_data_dir(data_dir, mouse.network_filename)
+            mouse.extract_features(raw_data_dir)
 
     Parallel(n_jobs=-1)(delayed(extract)(i, data) for i in range(N))
 
