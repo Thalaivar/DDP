@@ -63,11 +63,11 @@ def embed_split_data(reduced_dim: int, sample_size: int, dis_threshold=None):
     for i in range(2):
         if sample_size > 0 and sample_size < comb_feats[i].shape[0]:
             idx = np.random.permutation(np.arange(comb_feats[i].shape[0]))[0:sample_size]
-            feats_train = comb_feats_sc[idx,:]
-            feats_usc = comb_feats[idx, :]
+            feats_train = comb_feats_sc[i][idx,:]
+            feats_usc = comb_feats[i][idx, :]
         else:
-            feats_train = comb_feats_sc
-            feats_usc = comb_feats
+            feats_train = comb_feats_sc[i]
+            feats_usc = comb_feats[i]
 
         logging.info('running UMAP on {} samples from {}D to {}D'.format(*feats_train.shape, reduced_dim))
         mapper = umap.UMAP(n_components=reduced_dim, **UMAP_PARAMS).fit(feats_train)
