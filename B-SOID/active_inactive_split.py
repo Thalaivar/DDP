@@ -72,7 +72,7 @@ def embed_split_data(reduced_dim: int, sample_size: int, dis_threshold=None):
         logging.info('running UMAP on {} samples from {}D to {}D'.format(*feats_train.shape, reduced_dim))
         mapper = umap.UMAP(n_components=reduced_dim, **UMAP_PARAMS).fit(feats_train)
         umap_results.append([feats_usc, feats_train, mapper.embedding_])
-
+        
     with open(bsoid.output_dir + '/' + bsoid.run_id + '_umap.sav', 'wb') as f:
         joblib.dump(umap_results, f)
 
