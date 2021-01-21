@@ -241,7 +241,11 @@ def data_for_mice_from_dataset(data_dir='/projects/kumar-lab/StrainSurveyPoses')
                 nfilename = mouse_data['NetworkFilename']
                 logging.warn(f'No directory found for {nfilename}')
             else:
-                mouse.extract_features(data_dir=raw_data_dir)
+                try:
+                    mouse.extract_features(data_dir=raw_data_dir)
+                except:
+                    pass
+
 
     Parallel(n_jobs=4)(delayed(extract)(i, data) for i in range(N))
 
@@ -252,7 +256,7 @@ def data_for_mice_from_dataset(data_dir='/projects/kumar-lab/StrainSurveyPoses')
         ids = os.listdir(f'{MICE_DIR}/{strain}')
         total_mice += len(ids)
     
-    assert total_mice == N, 'some mice were overwritten'
+    print(f'Total mice in strain survey list: {data.shape[0]} ; Data extracted for {total_mice} mice')
 
 def calculate_transition_matrix_for_entire_assay(data_lookup_file, parallel=True):
     clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
