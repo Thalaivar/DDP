@@ -236,14 +236,15 @@ def data_for_mice_from_dataset(data_dir='/projects/kumar-lab/StrainSurveyPoses')
             print(f'skipping {mouse.save_dir}')
             pass
         else:
-            raw_data_dir, _ = get_pose_data_dir(data_dir, mouse.filename)
+            raw_data_dir, _ = get_pose_data_dir(data_dir, mouse_data['NetworkFilename'])
             if raw_data_dir is None:
-                logging.warn(f'No directory found for {mouse.filename}')
+                nfilename = mouse_data['NetworkFilename']
+                logging.warn(f'No directory found for {nfilename}')
             else:
                 mouse.extract_features(data_dir=raw_data_dir)
 
     Parallel(n_jobs=4)(delayed(extract)(i, data) for i in range(N))
-    
+
     # validate that all mice were included
     total_mice = 0
     strains = os.listdir(MICE_DIR)

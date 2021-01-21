@@ -107,14 +107,14 @@ def get_pose_data_dir(base_dir, network_filename):
 
     data_dir = None
     if idx == 0:
-        data_dir = base_dir + '/' + datasets[0] + strain + '/' + data + '/'
+        data_dir = base_dir + '/' + datasets[0] + strain + '/' + data
     elif idx == 5:
-        data_dir = base_dir + '/' + datasets[4] + strain + '/' + data + '/'
+        data_dir = base_dir + '/' + datasets[4] + strain + '/' + data
     else:
-        if os.path.exists(base_dir + datasets[idx-1] + strain + '/' + data + '/'):
-            data_dir = base_dir + '/' + datasets[idx-1] + strain + '/' + data + '/'
+        if os.path.exists(base_dir + datasets[idx-1] + strain + '/' + data):
+            data_dir = base_dir + '/' + datasets[idx-1] + strain + '/' + data
         else:
-            data_dir = base_dir + '/' + datasets[idx] + strain + '/' + data + '/'
+            data_dir = base_dir + '/' + datasets[idx] + strain + '/' + data
     
     if data_dir is None:
         return None, None
