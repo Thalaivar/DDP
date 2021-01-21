@@ -228,7 +228,7 @@ def extract_features_per_mouse(data_lookup_file, data_dir=None):
     assert total_mice == N, 'some mice were overwritten'
 
 def data_for_mice_from_dataset(data_dir='/projects/kumar-lab/StrainSurveyPoses'):
-    data = pd.read_csv(f'{data_dir}/StrainSurveyMetaList_2019-04-09.tsv', sep='/t')
+    data = pd.read_csv(f'{data_dir}/StrainSurveyMetaList_2019-04-09.tsv', sep='\t')
     N = data.shape[0]
 
     print(f'extracting raw data for {N} mice')
@@ -240,7 +240,7 @@ def data_for_mice_from_dataset(data_dir='/projects/kumar-lab/StrainSurveyPoses')
             print(f'skipping {mouse.save_dir}')
             pass
         else:
-            raw_data_dir, _ = get_pose_data_dir(data_dir, mouse.network_filename)
+            raw_data_dir, _ = get_pose_data_dir(data_dir, mouse.filename)
             mouse.extract_features(raw_data_dir)
 
     Parallel(n_jobs=-1)(delayed(extract)(i, data) for i in range(N))
@@ -393,4 +393,6 @@ def behaviour_usage_across_strains(data_lookup_file, min_thresh=None, min_bout_l
 if __name__ == "__main__":
     # extract_features_per_mouse('bsoid_strain_data.csv')
 
-    info = behaviour_usage_across_strains('./bsoid_strain_data.csv')
+    # info = behaviour_usage_across_strains('./bsoid_strain_data.csv')
+
+    data_for_mice_from_dataset()
