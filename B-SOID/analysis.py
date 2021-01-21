@@ -240,7 +240,7 @@ def data_for_mice_from_dataset(data_dir='/projects/kumar-lab/StrainSurveyPoses')
             if raw_data_dir is None:
                 logging.warn(f'No directory found for {mouse.filename}')
             else:
-                mouse.extract_features(raw_data_dir)
+                mouse.extract_features(data_dir=raw_data_dir)
 
     # validate that all mice were included
     total_mice = 0
