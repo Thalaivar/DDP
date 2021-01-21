@@ -105,6 +105,7 @@ def get_pose_data_dir(base_dir, network_filename):
 
     idx = strains.index(strain)
 
+    data_dir = None
     if idx == 0:
         data_dir = base_dir + '/' + datasets[0] + strain + '/' + data + '/'
     elif idx == 5:
@@ -115,5 +116,8 @@ def get_pose_data_dir(base_dir, network_filename):
         else:
             data_dir = base_dir + '/' + datasets[idx] + strain + '/' + data + '/'
     
+    if data_dir is None:
+        return None, None
+        
     data_file = data_dir + movie_name[0:-4] + '_pose_est_v2.h5'
     return data_dir, data_file
