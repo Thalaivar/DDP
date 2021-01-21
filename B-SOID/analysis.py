@@ -206,8 +206,7 @@ def extract_features_per_mouse(data_lookup_file, data_dir=None):
     N = data.shape[0]
 
     print(f'extracting raw data for {N} mice')
-
-    def extract(i, data):
+    for i in tqdm(range(N)):
         mouse_data = dict(data.iloc[i])
         mouse = Mouse(mouse_data)
         if os.path.isfile(f'{mouse.save_dir}/feats.sav'):
@@ -215,8 +214,6 @@ def extract_features_per_mouse(data_lookup_file, data_dir=None):
             pass
         else:
             mouse.extract_features()
-
-    Parallel(n_jobs=-1)(delayed(extract)(i, data) for i in range(N))
 
     # validate that all mice were included
     total_mice = 0
@@ -231,9 +228,8 @@ def data_for_mice_from_dataset(data_dir='/projects/kumar-lab/StrainSurveyPoses')
     data = pd.read_csv(f'{data_dir}/StrainSurveyMetaList_2019-04-09.tsv', sep='\t')
     N = data.shape[0]
 
-    print(f'extracting raw data for {N} mice')
-
-    def extract(i, data):
+    print(f'Extracting raw data for {N} mice:')
+    for i in tqdm(range(N)):
         mouse_data = dict(data.iloc[i])
         mouse = Mouse(mouse_data)
         if os.path.isfile(f'{mouse.save_dir}/feats.sav'):
@@ -242,8 +238,6 @@ def data_for_mice_from_dataset(data_dir='/projects/kumar-lab/StrainSurveyPoses')
         else:
             raw_data_dir, _ = get_pose_data_dir(data_dir, mouse.filename)
             mouse.extract_features(raw_data_dir)
-
-    Parallel(n_jobs=-1)(delayed(extract)(i, data) for i in range(N))
 
     # validate that all mice were included
     total_mice = 0
