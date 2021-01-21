@@ -229,7 +229,7 @@ def data_for_mice_from_dataset(data_dir='/projects/kumar-lab/StrainSurveyPoses')
     N = data.shape[0]
 
     print(f'Extracting raw data for {N} mice:')
-    for i in tqdm(range(N)):
+    def extract(i, data):
         mouse_data = dict(data.iloc[i])
         mouse = Mouse(mouse_data)
         if os.path.isfile(f'{mouse.save_dir}/feats.sav'):
@@ -242,6 +242,8 @@ def data_for_mice_from_dataset(data_dir='/projects/kumar-lab/StrainSurveyPoses')
             else:
                 mouse.extract_features(data_dir=raw_data_dir)
 
+    Parallel(n_jobs=4)(delayed(extract)(i, data) for i in range(N))
+    
     # validate that all mice were included
     total_mice = 0
     strains = os.listdir(MICE_DIR)
