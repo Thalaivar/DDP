@@ -399,4 +399,25 @@ if __name__ == "__main__":
 
     # info = behaviour_usage_across_strains('./bsoid_strain_data.csv')
 
-    data_for_mice_from_dataset()
+    # data_for_mice_from_dataset()
+
+
+    behaviour_idx = BEHAVIOUR_LABELS['Groom']
+    groom_info = calculate_behaviour_info_for_all_strains(data_lookup_file='bsoid_strain_data.csv', min_bout_len=round(3000 * FPS / 1000), behaviour_idx=behaviour_idx)
+
+    behaviour_idx = BEHAVIOUR_LABELS['Rear (AW)']
+    behaviour_idx.extend(BEHAVIOUR_LABELS['Rear'])
+    rear_info = calculate_behaviour_info_for_all_strains(data_lookup_file='bsoid_strain_data.csv', min_bout_len=round(200 * FPS / 1000), behaviour_idx=behaviour_idx)
+    
+    behaviour_idx = BEHAVIOUR_LABELS['CW-Turn']
+    behaviour_idx.extend(BEHAVIOUR_LABELS['CCW-Turn'])
+    turn_info = calculate_behaviour_info_for_all_strains(data_lookup_file='bsoid_strain_data.csv', min_bout_len=round(1000 * FPS / 1000), behaviour_idx=behaviour_idx)
+    
+    behaviour_idx = BEHAVIOUR_LABELS['Run']
+    behaviour_idx.extend(BEHAVIOUR_LABELS['Walk'])
+    locomote_info = calculate_behaviour_info_for_all_strains(data_lookup_file='bsoid_strain_data.csv', min_bout_len=round(1000 * FPS / 1000), behaviour_idx=behaviour_idx)
+
+    groom_info.to_csv('/home/laadd/groom_info.csv')
+    rear_info.to_csv('/home/laadd/rear_info.csv')
+    turn_info.to_csv('/home/laadd/turn_info.csv')
+    locomote_info.to_csv('/home/laadd/locomote_info.csv')
