@@ -322,17 +322,20 @@ def calculate_behaviour_info_for_all_strains(data_lookup_file, min_bout_len, beh
     }
 
     for i in tqdm(range(N)):
-        metadata = dict(data.iloc[i])
-        mouse = Mouse(metadata)
+        try:
+            metadata = dict(data.iloc[i])
+            mouse = Mouse(metadata)
 
-        labels = mouse.get_behaviour_labels(clf)
-        total_duration, n_bouts, avg_bout_len = get_behaviour_info_from_assay(mouse, labels, behaviour_idx, min_bout_len)
+            labels = mouse.get_behaviour_labels(clf)
+            total_duration, n_bouts, avg_bout_len = get_behaviour_info_from_assay(mouse, labels, behaviour_idx, min_bout_len)
 
-        info['Strain'].append(mouse.strain)
-        info['Sex'].append(mouse.sex)
-        info['Total Duration'].append(total_duration)
-        info['Average Bout Length'].append(avg_bout_len)
-        info['No. of Bouts'].append(n_bouts)
+            info['Strain'].append(mouse.strain)
+            info['Sex'].append(mouse.sex)
+            info['Total Duration'].append(total_duration)
+            info['Average Bout Length'].append(avg_bout_len)
+            info['No. of Bouts'].append(n_bouts)
+        except:
+            pass
     
     return pd.DataFrame.from_dict(info)
 
