@@ -9,7 +9,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 # model_load_params = None
-MODEL_LOAD_PARAMS = {'run_id': 'dis', 'base_dir': 'D:/IIT/DDP/data'}
+MODEL_LOAD_PARAMS = {'run_id': 'dis', 'base_dir': '/home/laadd/data'}
 
 def main(model_load_params=None, get_data=False, preprocess=False, extract_features=False, embed=True, cluster=False):
     if model_load_params is None:
@@ -66,5 +66,6 @@ def results(run_id='dis', base_dir='D:/IIT/DDP/data'):
 
 if __name__ == "__main__":
     main(model_load_params=MODEL_LOAD_PARAMS, preprocess=False, extract_features=False, embed=False, cluster=True)
+    validate_and_train(**MODEL_LOAD_PARAMS)
     # results()
     # get_cluster_information()
