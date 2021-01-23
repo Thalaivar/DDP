@@ -121,3 +121,42 @@ def get_pose_data_dir(base_dir, network_filename):
         
     data_file = data_dir + movie_name[0:-4] + '_pose_est_v2.h5'
     return data_dir, data_file
+
+def push_folder_to_box(upload_dir, base_dir):
+    session = ftplib.FTP("ftp.box.com")
+    session.login("ae16b011@smail.iitm.ac.in", "rSNxWCBv1407")
+
+    upload_dir_name = upload_dir.split('/')[-1]
+
+    master_dir = 'JAX-IITM Shared Folder/B-SOiD'
+    session.cwd(f'{master_dir}/{base_dir}')
+
+    # check if folder exists
+    dir_exists, filelist = False, []
+    session.retrlines('LIST', filelist.append)
+    for f in filelist:
+        if f.split()[-1] == upload_dir_name and f.upper().startswith('D'):
+            dir_exists = True
+    
+    if not dir_exists:
+        session.mkd(upload_dir_name)
+    
+    session.cwd(upload_dir_name)
+    for f in os.listdir(upload_dir):
+        upload_file = open(f'{upload_dir}/{f}', 'rb')
+        session.storbinary(f'STOR {f}', upload_file)
+    session.quit()
+
+    print(f'Done uploading {upload_dir}')
+
+def push_file_to_box(upload_file, base_dir):
+    session = ftplib.FTP("ftp.box.com")
+    session.login("ae16b011@smail.iitm.ac.in", "rSNxWCBv1407")
+
+    master_dir = 'JAX-IITM Shared Folder/B-SOiD'
+    session.cwd(f'{master_dir}/{base_dir}')
+
+    filename = upload_file.split('/')[-1]
+    upload_file = open(upload_file, 'rb')
+    session.storbinary(f'STOR {filename}', upload_file)
+    session.quit()

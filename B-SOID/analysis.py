@@ -294,17 +294,21 @@ def calculate_behaviour_usage(data_lookup_file, parallel=True):
     N = data.shape[0]
 
     def behaviour_usage(i, data, clf):
-        metadata = dict(data.iloc[i])
-        mouse = Mouse(metadata)
+        try:
+            metadata = dict(data.iloc[i])
+            mouse = Mouse(metadata)
 
-        labels = mouse.get_behaviour_labels(clf)
-        return behaviour_proportion(labels)
+            labels = mouse.get_behaviour_labels(clf)
+            return behaviour_proportion(labels)
+        except:
+            return None
     
     if parallel:
         prop = Parallel(n_jobs=-1)(delayed(behaviour_usage)(i, data, clf) for i in range(N))
     else:
         prop = [behaviour_usage(i, data, clf) for i in range(N)]
     
+    prop = [p for p in prop if p is not None]
     prop = np.vstack(prop)
     prop = prop.sum(axis=0)/prop.shape[0]
     np.save('prop.npy', prop)
