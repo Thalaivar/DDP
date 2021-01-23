@@ -287,7 +287,10 @@ def calculate_behaviour_usage(data_lookup_file, parallel=True):
     with open(clf_file, 'rb') as f:
         clf = joblib.load(f)
     
-    data = pd.read_csv(data_lookup_file)
+    if data_lookup_file.endswith('.tsv'):
+        data = pd.read_csv(data_lookup_file, sep='\t')
+    elif data_lookup_file.endswith('.csv'):    
+        data = pd.read_csv(data_lookup_file)
     N = data.shape[0]
 
     def behaviour_usage(i, data, clf):
@@ -303,7 +306,8 @@ def calculate_behaviour_usage(data_lookup_file, parallel=True):
         prop = [behaviour_usage(i, data, clf) for i in range(N)]
     
     prop = np.vstack(prop)
-    return prop.sum(axis=0)/prop.shape[0]
+    prop = prop.sum(axis=0)/prop.shape[0]
+    np.save('prop.npy', prop)
 
 def calculate_behaviour_info_for_all_strains(data_lookup_file, min_bout_len, behaviour_idx):
     clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
@@ -347,7 +351,10 @@ def behaviour_usage_across_strains(data_lookup_file, min_thresh=None, min_bout_l
     with open(clf_file, 'rb') as f:
         clf = joblib.load(f)
 
-    data = pd.read_csv(data_lookup_file)
+    if data_lookup_file.endswith('.tsv'):
+        data = pd.read_csv(data_lookup_file, sep='\t')
+    elif data_lookup_file.endswith('.csv'):    
+        data = pd.read_csv(data_lookup_file)
     N = data.shape[0]
 
     n_behaviours = 0
