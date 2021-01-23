@@ -415,6 +415,7 @@ if __name__ == "__main__":
 
     # info = behaviour_usage_across_strains('./bsoid_strain_data.csv')
 
-    # data_for_mice_from_dataset()
-
+    # data_for_mice_from_dataset() 
     
+    lookup_file = '/projects/kumar-lab/StrainSurveyPoses/StrainSurveyMetaList_2019-04-09.tsv'
+    calculate_behaviour_usage(lookup_file)   
