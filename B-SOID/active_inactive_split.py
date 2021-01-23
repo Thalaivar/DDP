@@ -160,4 +160,8 @@ def validate_classifier():
         joblib.dump([sc_scores, sc_cf], f)
 
 if __name__ == "__main__":
-    embed_split_data(reduced_dim=3, sample_size=-1, dis_threshold=2.0)
+    # embed_split_data(reduced_dim=3, sample_size=-1, dis_threshold=2.0)
+
+    cluster_split_data()
+    validate_classifier()
+    train_classifier()
