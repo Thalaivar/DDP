@@ -10,6 +10,11 @@ from BSOID.utils import cluster_with_hdbscan
 RUN_ID = 'split'
 BASE_DIR = '/home/laadd/data'
 
+CLUSTER_PARAMS = {
+    'active': [0.1, 1.0],
+    'inactive': [0.1, 1.0]
+}
+
 def calc_dis_threshold(feats):
     head_dis = feats[:,7].reshape(-1,1)
     tail_dis = feats[:,12:15].mean(axis=1).reshape(-1,1)
@@ -83,10 +88,15 @@ def cluster_split_data():
         umap_results = joblib.load(f)
 
     comb_assignments, comb_soft_clusters, comb_soft_assignments, comb_clf = [], [], [], []
-    for results in umap_results:
+    for i, results in enumerate(umap_results):
         _, _, umap_embeddings = results
         
-        cluster_range = [float(x) for x in input('Enter cluster range: ').split()]
+        # cluster_range = [float(x) for x in input('Enter cluster range: ').split()]
+        if i == 0:
+            cluster_range = CLUSTER_PARAMS['active']
+        elif i == 1:
+            cluster_range = CLUSTER_PARAMS['inactive']
+            
         assignments, soft_clusters, soft_assignments, best_clf = cluster_with_hdbscan(umap_embeddings, cluster_range, HDBSCAN_PARAMS)
         comb_assignments.append(assignments)
         comb_soft_clusters.append(soft_clusters)
