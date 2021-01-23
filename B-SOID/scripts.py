@@ -4,6 +4,7 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 from BSOID.bsoid import BSOID
+from analysis import *
 
 logging.basicConfig(level=logging.INFO)
 
@@ -63,6 +64,28 @@ def results(run_id='dis', base_dir='D:/IIT/DDP/data'):
     video_dir = bsoid.test_dir + '/videos'
     csv_dir = bsoid.test_dir
     bsoid.create_examples(csv_dir, video_dir, bout_length=3, n_examples=10)
+
+def preliminary_stats():
+    lookup_file = '/projects/kumar-lab/StrainSurveyPoses/StrainSurveyMetaList_2019-04-09.tsv'
+    behaviour_idx = BEHAVIOUR_LABELS['Groom']
+    groom_info = calculate_behaviour_info_for_all_strains(data_lookup_file=lookup_file, min_bout_len=round(3000 * FPS / 1000), behaviour_idx=behaviour_idx)
+
+    behaviour_idx = BEHAVIOUR_LABELS['Rear (AW)']
+    behaviour_idx.extend(BEHAVIOUR_LABELS['Rear'])
+    rear_info = calculate_behaviour_info_for_all_strains(data_lookup_file=lookup_file, min_bout_len=round(200 * FPS / 1000), behaviour_idx=behaviour_idx)
+    
+    behaviour_idx = BEHAVIOUR_LABELS['CW-Turn']
+    behaviour_idx.extend(BEHAVIOUR_LABELS['CCW-Turn'])
+    turn_info = calculate_behaviour_info_for_all_strains(data_lookup_file=lookup_file, min_bout_len=round(1000 * FPS / 1000), behaviour_idx=behaviour_idx)
+    
+    behaviour_idx = BEHAVIOUR_LABELS['Run']
+    behaviour_idx.extend(BEHAVIOUR_LABELS['Walk'])
+    locomote_info = calculate_behaviour_info_for_all_strains(data_lookup_file=lookup_file, min_bout_len=round(1000 * FPS / 1000), behaviour_idx=behaviour_idx)
+
+    groom_info.to_csv('/home/laadd/groom_info.csv')
+    rear_info.to_csv('/home/laadd/rear_info.csv')
+    turn_info.to_csv('/home/laadd/turn_info.csv')
+    locomote_info.to_csv('/home/laadd/locomote_info.csv')
 
 if __name__ == "__main__":
     main(model_load_params=MODEL_LOAD_PARAMS, preprocess=False, extract_features=False, embed=False, cluster=True)

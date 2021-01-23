@@ -148,8 +148,8 @@ def transition_matrix_from_assay(mouse: Mouse, labels):
 
     return tmat
 
-def behaviour_proportion(labels):
-    n_lab = labels.max() + 1
+def behaviour_proportion(labels, n_lab=None):
+    n_lab = labels.max() + 1 if n_lab is None else n_lab + 1
     
     prop = [0 for _ in range(n_lab)]
     for i in range(labels.size):
@@ -299,7 +299,7 @@ def calculate_behaviour_usage(data_lookup_file, parallel=True):
             mouse = Mouse(metadata)
 
             labels = mouse.get_behaviour_labels(clf)
-            return behaviour_proportion(labels)
+            return behaviour_proportion(labels, clf.classes_)
         except:
             return None
     
@@ -409,7 +409,6 @@ def behaviour_usage_across_strains(data_lookup_file, min_thresh=None, min_bout_l
             usage_df['Usage'].append(val[i]) if val[i] > min_thresh else usage_df['Usage'].append(min_thresh)
     
     return pd.DataFrame.from_dict(usage_df)
-    
 
 if __name__ == "__main__":
     # extract_features_per_mouse('bsoid_strain_data.csv')
@@ -418,23 +417,4 @@ if __name__ == "__main__":
 
     # data_for_mice_from_dataset()
 
-    lookup_file = '/projects/kumar-lab/StrainSurveyPoses/StrainSurveyMetaList_2019-04-09.tsv'
-    behaviour_idx = BEHAVIOUR_LABELS['Groom']
-    groom_info = calculate_behaviour_info_for_all_strains(data_lookup_file=lookup_file, min_bout_len=round(3000 * FPS / 1000), behaviour_idx=behaviour_idx)
-
-    behaviour_idx = BEHAVIOUR_LABELS['Rear (AW)']
-    behaviour_idx.extend(BEHAVIOUR_LABELS['Rear'])
-    rear_info = calculate_behaviour_info_for_all_strains(data_lookup_file=lookup_file, min_bout_len=round(200 * FPS / 1000), behaviour_idx=behaviour_idx)
     
-    behaviour_idx = BEHAVIOUR_LABELS['CW-Turn']
-    behaviour_idx.extend(BEHAVIOUR_LABELS['CCW-Turn'])
-    turn_info = calculate_behaviour_info_for_all_strains(data_lookup_file=lookup_file, min_bout_len=round(1000 * FPS / 1000), behaviour_idx=behaviour_idx)
-    
-    behaviour_idx = BEHAVIOUR_LABELS['Run']
-    behaviour_idx.extend(BEHAVIOUR_LABELS['Walk'])
-    locomote_info = calculate_behaviour_info_for_all_strains(data_lookup_file=lookup_file, min_bout_len=round(1000 * FPS / 1000), behaviour_idx=behaviour_idx)
-
-    groom_info.to_csv('/home/laadd/groom_info.csv')
-    rear_info.to_csv('/home/laadd/rear_info.csv')
-    turn_info.to_csv('/home/laadd/turn_info.csv')
-    locomote_info.to_csv('/home/laadd/locomote_info.csv')
