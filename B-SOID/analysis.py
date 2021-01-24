@@ -162,7 +162,7 @@ def behaviour_proportion(labels, n_lab=None):
 """
     modules to run different analyses for all mice
 """
-def extract_labels_for_all_mice(data_lookup_file: str, clf_file: str, pose_dir=None):
+def extract_labels_for_all_mice(data_lookup_file: str, clf_file: str, data_dir: str):
     with open(clf_file, 'rb') as f:
         clf = joblib.load(f)
 
@@ -172,14 +172,15 @@ def extract_labels_for_all_mice(data_lookup_file: str, clf_file: str, pose_dir=N
         data = pd.read_csv(data_lookup_file)
     N = data.shape[0]
 
-    def extract_(metadata, clf, pose_dir):
+    def extract_(metadata, clf, data_dir):
         try:
+            pose_dir, _ = get_pose_data_dir(data_dir, metadata['NetworkFilename'])
             labels_ = get_behaviour_labels(metadata, clf, pose_dir)
             return [metadata, labels_]
         except:
             return None
 
-    labels = Parallel(n_jobs=4)(delayed(get_behaviour_labels)(data.iloc[i], clf, pose_dir) for i in range(N))
+    labels = Parallel(n_jobs=4)(delayed(extract_)(data.iloc[i], clf, data_dir) for i in range(N))
 
     all_strain_labels = {
         'Strain': [],
@@ -375,6 +376,6 @@ if __name__ == "__main__":
     lookup_file = '/projects/kumar-lab/StrainSurveyPoses/StrainSurveyMetaList_2019-04-09.tsv'
     clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
 
-    info = extract_labels_for_all_mice(lookup_file, clf_file, pose_dir='/projects/kumar-lab/StrainSurveyPoses')
+    info = extract_labels_for_all_mice(lookup_file, clf_file, data_dir='/projects/kumar-lab/StrainSurveyPoses')
     with open(f'{BASE_DIR}/analysis/label_info.pkl', 'wb') as f:
         joblib.dump(info, f)
