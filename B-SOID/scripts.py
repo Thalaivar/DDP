@@ -66,7 +66,7 @@ def results(run_id='dis', base_dir='D:/IIT/DDP/data'):
     bsoid.create_examples(csv_dir, video_dir, bout_length=3, n_examples=10)
 
 if __name__ == "__main__":
-    # main(model_load_params=MODEL_LOAD_PARAMS, preprocess=False, extract_features=False, embed=False, cluster=True)
-    # validate_and_train(**MODEL_LOAD_PARAMS)
-    results()
+    main(model_load_params=MODEL_LOAD_PARAMS, get_data=True, preprocess=True, extract_features=True, embed=True, cluster=True)
+    validate_and_train(**MODEL_LOAD_PARAMS)
+    # results()
     # get_cluster_information()
