@@ -257,7 +257,7 @@ def calculate_behaviour_usage(label_info_file: str, max_label=None):
     prop = prop.sum(axis=0)/prop.shape[0]
     return prop
 
-def behaviour_usage_across_strains(stats_file: str, min_threshold:)
+# def behaviour_usage_across_strains(stats_file: str, min_threshold:)
 
 
 if __name__ == "__main__":
