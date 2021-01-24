@@ -65,8 +65,8 @@ def likelihood_filter(data: pd.DataFrame, fps, conf_threshold=0.3, end_trim=2, c
         j += 1
     
     prev_best_idx = j
-    filt_x[0:j,:] = np.repeat(np.expand_dims(x[prev_best_idx], axis=0), prev_best_idx)
-    filt_y[0:j,:] = np.repeat(np.expand_dims(y[prev_best_idx], axis=0), prev_best_idx)
+    filt_x[0:j,:] = np.repeat(np.expand_dims(x[prev_best_idx], axis=0), prev_best_idx, axis=0)
+    filt_y[0:j,:] = np.repeat(np.expand_dims(y[prev_best_idx], axis=0), prev_best_idx, axis=0)
 
     for j in range(j, N):
         if np.any(conf[j] < conf_threshold):

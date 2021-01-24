@@ -21,7 +21,8 @@ DATASETS = ["strain-survey-batch-2019-05-29-e/", "strain-survey-batch-2019-05-29
             "strain-survey-batch-2019-05-29-c/", "strain-survey-batch-2019-05-29-b/",
             "strain-survey-batch-2019-05-29-a/"]
 
-BASE_DIR = '/home/laadd/data'
+# BASE_DIR = '/home/laadd/data'
+BASE_DIR = 'D:/IIT/DDP/data'
 RAW_DIR = BASE_DIR + '/raw'
 
 BEHAVIOUR_LABELS = {
@@ -172,8 +173,7 @@ def extract_labels_for_all_mice(data_lookup_file: str, clf_file: str, data_dir: 
             pose_dir, _ = get_pose_data_dir(data_dir, metadata['NetworkFilename'])
             labels_ = get_behaviour_labels(metadata, clf, pose_dir)
             return [metadata, labels_]
-        except Exception as e:
-            print(e)
+        except:
             return None
 
     labels = Parallel(n_jobs=4)(delayed(extract_)(data.iloc[i], clf, data_dir) for i in range(N))
@@ -251,23 +251,30 @@ def calculate_behaviour_usage(label_info_file: str, max_label=None):
     prop = prop.sum(axis=0)/prop.shape[0]
     return prop
 
-# def behaviour_usage_across_strains(stats_file: str):
-#     with open(stats_file, 'rb') as f:
-#         info = joblib.load(f)
+def behaviour_usage_across_strains(stats_file: str):
+    with open(stats_file, 'rb') as f:
+        info = joblib.load(f)
+    N = len(info['Groom']['Strain'])
 
-#     n_behaviours = len(info.keys())
-#     behaviours = [None for _ in range(n_behaviours)]
-#     for key, val in BEHAVIOUR_LABELS.items():
-#         if len(val) > 1:
-#             for i, idx in enumerate(val):
-#                 behaviours[idx] = f'{key} #{i}'
-#         else:
-#             behaviours[val[0]] = key
+    n_behaviours = len(info.keys())
+    behaviours = [None for _ in range(n_behaviours)]
+    for key, val in BEHAVIOUR_LABELS.items():
+        if len(val) > 1:
+            for i, idx in enumerate(val):
+                behaviours[idx] = f'{key} #{i}'
+        else:
+            behaviours[val[0]] = key
 
-#     strain_usage = {}
-#     for 
+    strain_usage = {}
+    for i in range(N):
+        duration = [info[behaviour]['Total Duration'][i]]
+
 if __name__ == "__main__":
-    lookup_file = '/projects/kumar-lab/StrainSurveyPoses/StrainSurveyMetaList_2019-04-09.tsv'
+    # lookup_file = '/projects/kumar-lab/StrainSurveyPoses/StrainSurveyMetaList_2019-04-09.tsv'
+    lookup_file = './bsoid_strain_data.csv'
+    data = pd.read_csv(lookup_file)
+
+    extract_features(data.iloc[23])
     clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
 
     info = extract_labels_for_all_mice(lookup_file, clf_file, data_dir='/projects/kumar-lab/StrainSurveyPoses')
