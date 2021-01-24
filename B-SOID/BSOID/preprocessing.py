@@ -56,35 +56,32 @@ def likelihood_filter(data: pd.DataFrame, fps, conf_threshold=0.3, end_trim=2, c
     filt_x, filt_y = np.zeros_like(x), np.zeros_like(y)
     perc_rect = []
 
-    for i in range(n_dpoints):
-        j = 0
-        perc_filt = 0
+    j = 0
+    perc_filt = 0
 
-        # find first best point
-        while conf[j,i] < conf_threshold and j < N:
-            perc_filt += 1
-            j += 1
-        
-        prev_best_point = [x[j,i], y[j,i]]
-        filt_x[0:j,i] = prev_best_point[0]*np.ones_like(x[0:j,i])
-        filt_y[0:j,i] = prev_best_point[1]*np.ones_like(y[0:j,i])
-
-        for j in range(j, N):
-            if conf[j,i] < conf_threshold:
-                filt_x[j,i] = prev_best_point[0]
-                filt_y[j,i] = prev_best_point[1]
-                perc_filt += 1
-            else:
-                filt_x[j,i], filt_y[j,i] = x[j,i], y[j,i]
-                prev_best_point = [x[j,i], y[j,i]]
-        
-        perc_rect.append(perc_filt / N)
+    # find first best point
+    while j < N and np.any(conf[j] < conf_threshold):
+        perc_filt += 1
+        j += 1
     
-    logging.debug(f'filtered {max(perc_rect) * 100}% of data (max)')
+    prev_best_idx = j
+    filt_x[0:j,:] = np.repeat(np.expand_dims(x[prev_best_idx], axis=0), prev_best_idx)
+    filt_y[0:j,:] = np.repeat(np.expand_dims(y[prev_best_idx], axis=0), prev_best_idx)
+
+    for j in range(j, N):
+        if np.any(conf[j] < conf_threshold):
+            filt_x[j] = x[prev_best_idx]
+            filt_y[j] = y[prev_best_idx]
+            perc_filt += 1
+        else:
+            filt_x[j], filt_y[j] = x[j], y[j]
+            prev_best_idx = j
+    
+    logging.debug(f'filtered {round(perc_filt * 100, 2)}% of data')
 
     x, y, conf = trim_data(filt_x, filt_y, conf, fps, end_trim, clip_window)
 
-    return {'conf': conf, 'x': x, 'y': y}, max(perc_rect) * 100
+    return {'conf': conf, 'x': x, 'y': y}, perc_filt * 100
 
 def trim_data(x, y, conf, fps, end_trim=2, clip_window=30):
     assert x.shape[1] == y.shape[1]
@@ -95,19 +92,6 @@ def trim_data(x, y, conf, fps, end_trim=2, clip_window=30):
         conf, x, y = conf[end_trim:-end_trim, :], x[end_trim:-end_trim, :], y[end_trim:-end_trim, :]
 
     if clip_window > 0:
-        try:
-            clip_window_ = clip_window // 3
-            mid_idx = [i*(conf.shape[0] // 4) for i in range(1, 4)]
-            clip_window_ = clip_window_ * 60 * fps // 2
-            x_trim, y_trim, conf_trim = [], [], []
-
-            assert mid_idx[0] + clip_window_ < mid_idx[1] - clip_window_
-            for idx in mid_idx:
-                x_trim.append(x[idx - clip_window_: idx + clip_window_, :])
-                y_trim.append(y[idx - clip_window_: idx + clip_window_, :])
-                conf_trim.append(conf[idx - clip_window_: idx + clip_window_, :])
-            x, y, conf = np.vstack(x_trim), np.vstack(y_trim), np.vstack(conf_trim)
-        except AssertionError:
             clip_window = clip_window * 60 * fps // 2
             mid_idx = conf.shape[0] // 2
             conf = conf[mid_idx - clip_window : mid_idx + clip_window, :]

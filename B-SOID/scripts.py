@@ -88,7 +88,7 @@ def preliminary_stats():
     locomote_info.to_csv('/home/laadd/locomote_info.csv')
 
 if __name__ == "__main__":
-    main(model_load_params=MODEL_LOAD_PARAMS, preprocess=False, extract_features=False, embed=False, cluster=True)
-    validate_and_train(**MODEL_LOAD_PARAMS)
-    # results()
+    # main(model_load_params=MODEL_LOAD_PARAMS, preprocess=False, extract_features=False, embed=False, cluster=True)
+    # validate_and_train(**MODEL_LOAD_PARAMS)
+    results()
     # get_cluster_information()

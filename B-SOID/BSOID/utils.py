@@ -124,7 +124,8 @@ def example_video_segments(labels, frame_dir, bout_length, n_examples, clip_len)
         images = images[clip_len:-clip_len]
 
     if len(labels) != len(images):
-        logger.warn(f'# of labels {len(labels)} and frames {len(images)} do not match')
+        logger.warn(f'# of labels {len(labels)} and frames {len(images)} do not match ; clipping images')
+        images = images[:len(labels)]
 
     class_vid_locs = get_all_bouts(labels)
 
