@@ -21,8 +21,8 @@ DATASETS = ["strain-survey-batch-2019-05-29-e/", "strain-survey-batch-2019-05-29
             "strain-survey-batch-2019-05-29-c/", "strain-survey-batch-2019-05-29-b/",
             "strain-survey-batch-2019-05-29-a/"]
 
-# BASE_DIR = '/home/laadd/data'
-BASE_DIR = 'D:/IIT/DDP/data'
+BASE_DIR = '/home/laadd/data'
+# BASE_DIR = 'D:/IIT/DDP/data'
 RAW_DIR = BASE_DIR + '/raw'
 
 BEHAVIOUR_LABELS = {
