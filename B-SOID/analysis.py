@@ -22,7 +22,6 @@ DATASETS = ["strain-survey-batch-2019-05-29-e/", "strain-survey-batch-2019-05-29
             "strain-survey-batch-2019-05-29-a/"]
 
 BASE_DIR = '/home/laadd/data'
-MICE_DIR = '/projects/kumar-lab/StrainSurveyPoses/analysis'
 RAW_DIR = BASE_DIR + '/raw'
 
 BEHAVIOUR_LABELS = {
@@ -310,43 +309,6 @@ def calculate_behaviour_usage(data_lookup_file, parallel=True):
     prop = prop.sum(axis=0)/prop.shape[0]
     np.save('prop.npy', prop)
 
-# def calculate_behaviour_info_for_all_strains(data_lookup_file, min_bout_len, behaviour_idx):
-#     clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
-#     with open(clf_file, 'rb') as f:
-#         clf = joblib.load(f)
-    
-#     if data_lookup_file.endswith('.tsv'):
-#         data = pd.read_csv(data_lookup_file, sep='\t')    
-#     else:
-#         data = pd.read_csv(data_lookup_file)
-#     N = data.shape[0]
-
-#     info = {
-#         'Strain': [], 
-#         'Sex': [], 
-#         'Total Duration':  [], 
-#         'Average Bout Length': [], 
-#         'No. of Bouts': []
-#     }
-
-#     for i in tqdm(range(N)):
-#         try:
-#             metadata = dict(data.iloc[i])
-#             mouse = Mouse(metadata)
-
-#             labels = mouse.get_behaviour_labels(clf)
-#             behaviour_stats = 
-
-#             info['Strain'].append(mouse.strain)
-#             info['Sex'].append(mouse.sex)
-#             info['Total Duration'].append(total_duration)
-#             info['Average Bout Length'].append(avg_bout_len)
-#             info['No. of Bouts'].append(n_bouts)
-#         except:
-#             pass
-    
-#     return pd.DataFrame.from_dict(info)
-
 def behaviour_usage_across_strains(data_lookup_file, min_thresh=None, min_bout_len=200):
     clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
     with open(clf_file, 'rb') as f:
@@ -408,13 +370,9 @@ def behaviour_usage_across_strains(data_lookup_file, min_thresh=None, min_bout_l
     return pd.DataFrame.from_dict(usage_df)
 
 if __name__ == "__main__":
-    # extract_features_per_mouse('bsoid_strain_data.csv')
-
-    # info = behaviour_usage_across_strains('./bsoid_strain_data.csv')
-
-    # data_for_mice_from_dataset() 
-    
     lookup_file = '/projects/kumar-lab/StrainSurveyPoses/StrainSurveyMetaList_2019-04-09.tsv'
     clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
 
-    info = all_behaviour_info_for_all_strains(lookup_file, )
+    info = extract_labels_for_all_mice(lookup_file, clf_file, pose_dir='/projects/kumar-lab/StrainSurveyPoses')
+    with open(f'{BASE_DIR}/analysis/label_info.pkl', 'wb') as f:
+        joblib.dump(info, f)
