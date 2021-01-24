@@ -31,7 +31,7 @@ BEHAVIOUR_LABELS = {
     'CW-Turn': [7],
     'CCW-Turn': [10, 11],
     'Point': [12, 19],
-    'Rear': [13, 15, 17]
+    'Rear': [13, 15, 17],
     'N/A': [4, 14, 16]
 }
 
@@ -74,11 +74,12 @@ def get_mouse_raw_data(metadata: dict, pose_dir=None):
     data = _bsoid_format(conf, pos)
     fdata, perc_filt = likelihood_filter(data, fps=FPS, end_trim=2, clip_window=0, conf_threshold=0.3)
 
+    strain, mouse_id = metadata['Strain'], metadata['MouseID']
     if perc_filt > 10:
-        logging.warning(f'mouse:{metadata['Strain']}/{metadata['MouseID']}: % data filtered from raw data is too high ({perc_filt} %)')
+        logging.warning(f'mouse:{strain}/{mouse_id}: % data filtered from raw data is too high ({perc_filt} %)')
     
     data_shape = fdata['x'].shape
-    logging.info(f'preprocessed raw data of shape: {data_shape} for mouse:{metadata['Strain']}/{metadata['MouseID']}')
+    logging.info(f'preprocessed raw data of shape: {data_shape} for mouse:{strain}/{mouse_id}')
 
     return fdata
 
@@ -197,7 +198,8 @@ def extract_labels_for_all_mice(data_lookup_file: str, clf_file: str, pose_dir=N
             all_strain_labels['NetworkFilename'].append(metadata['NetworkFilename'])
             all_strain_labels['Labels'].append(lab)
 
-    print(f'Extracted labels for {len(all_strain_labels['Strain'])}/{N} mice')
+    strains = all_strain_labels['Strain']
+    print(f'Extracted labels for {len(strains)}/{N} mice')
     return labels
 
 def all_behaviour_info_for_all_strains(data_lookup_file: str, clf_file: str):

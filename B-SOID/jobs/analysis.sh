@@ -13,5 +13,8 @@
 source /home/laadd/.bashrc
 conda activate bsoid 
 
-cd /home/laadd/DDP/B-SOID/
+cd /home/laadd/DDP/
+git checkout analysis_new
+
+cd B-SOID/
 python analysis.py
