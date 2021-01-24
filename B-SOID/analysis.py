@@ -35,11 +35,6 @@ BEHAVIOUR_LABELS = {
     'N/A': [4, 14, 16]
 }
 
-IDX_TO_LABELS = ('Groom #1', 'Groom #2', 'Groom #3', 'Groom #4', 
-        'N/A #1', 'Groom #5', 'Run', 'CW-Turn', 'Walk #1', 'Groom #6',
-        'CCW-Turn #1', 'CCW-Turn #2', 'Point #1', 'Rear #1', 'N/A #2', 
-        'Rear #2', 'N/A #3', 'Rear #3', 'Walk #2', 'Point #2')
-
 MIN_BOUT_LENS = {
     'Groom': 3000,
     'Run': 200,
@@ -174,12 +169,11 @@ def extract_labels_for_all_mice(data_lookup_file: str, clf_file: str, data_dir: 
 
     def extract_(metadata, clf, data_dir):
         try:
-            filename = metadata['NetworkFilename']
-            print(f'Extracting labels for: {filename}')
             pose_dir, _ = get_pose_data_dir(data_dir, metadata['NetworkFilename'])
             labels_ = get_behaviour_labels(metadata, clf, pose_dir)
             return [metadata, labels_]
-        except:
+        except Exception as e:
+            print(e)
             return None
 
     labels = Parallel(n_jobs=4)(delayed(extract_)(data.iloc[i], clf, data_dir) for i in range(N))
@@ -203,7 +197,7 @@ def extract_labels_for_all_mice(data_lookup_file: str, clf_file: str, data_dir: 
 
     strains = all_strain_labels['Strain']
     print(f'Extracted labels for {len(strains)}/{N} mice')
-    return labels
+    return all_strain_labels
 
 def all_behaviour_info_for_all_strains(label_info_file: str, max_label: int):
     with open(label_info_file, 'rb') as f:
@@ -257,9 +251,21 @@ def calculate_behaviour_usage(label_info_file: str, max_label=None):
     prop = prop.sum(axis=0)/prop.shape[0]
     return prop
 
-# def behaviour_usage_across_strains(stats_file: str, min_threshold:)
+# def behaviour_usage_across_strains(stats_file: str):
+#     with open(stats_file, 'rb') as f:
+#         info = joblib.load(f)
 
+#     n_behaviours = len(info.keys())
+#     behaviours = [None for _ in range(n_behaviours)]
+#     for key, val in BEHAVIOUR_LABELS.items():
+#         if len(val) > 1:
+#             for i, idx in enumerate(val):
+#                 behaviours[idx] = f'{key} #{i}'
+#         else:
+#             behaviours[val[0]] = key
 
+#     strain_usage = {}
+#     for 
 if __name__ == "__main__":
     lookup_file = '/projects/kumar-lab/StrainSurveyPoses/StrainSurveyMetaList_2019-04-09.tsv'
     clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
