@@ -174,6 +174,8 @@ def extract_labels_for_all_mice(data_lookup_file: str, clf_file: str, data_dir: 
 
     def extract_(metadata, clf, data_dir):
         try:
+            filename = metadata['NetworkFilename']
+            print(f'Extracting labels for: {filename}')
             pose_dir, _ = get_pose_data_dir(data_dir, metadata['NetworkFilename'])
             labels_ = get_behaviour_labels(metadata, clf, pose_dir)
             return [metadata, labels_]
@@ -203,12 +205,11 @@ def extract_labels_for_all_mice(data_lookup_file: str, clf_file: str, data_dir: 
     print(f'Extracted labels for {len(strains)}/{N} mice')
     return labels
 
-def all_behaviour_info_for_all_strains(data_lookup_file: str, clf_file: str):
-    with open(clf_file, 'rb') as f:
-        clf = joblib.load(f)
+def all_behaviour_info_for_all_strains(label_info_file: str, max_label: int):
+    with open(label_info_file, 'rb') as f:
+        label_info = joblib.load(f)
+    N = len(label_info['Strain'])
 
-    max_label = clf.classes_
-    
     min_bout_lens = [0 for i in range(max_label + 1)]
     for key in BEHAVIOUR_LABELS.keys():
         for lab in BEHAVIOUR_LABELS[key]:
@@ -224,153 +225,40 @@ def all_behaviour_info_for_all_strains(data_lookup_file: str, clf_file: str):
             'No. of Bouts': []
         }
 
-    if data_lookup_file.endswith('.tsv'):
-        data = pd.read_csv(data_lookup_file, sep='\t')    
-    else:
-        data = pd.read_csv(data_lookup_file)
-    N = data.shape[0]
-
     for i in tqdm(range(N)):
-        try:
-            metadata = dict(data.iloc[i])
-            mouse = Mouse(metadata)
+        labels = label_info['Labels'][i]
+        stats = get_stats_for_all_labels(labels, min_bout_lens, max_label)
 
-            labels = mouse.get_behaviour_labels(clf)            
-            stats = get_stats_for_all_labels(mouse, labels, min_bout_lens, max_label)
+        for lab, idxs in BEHAVIOUR_LABELS.items():
+            info[lab]['Strain'].append(label_info['Strain'][i])
+            info[lab]['Sex'].append(label_info['Sex'][i])
+            
+            total_duration, avg_bout_len, n_bouts = 0, 0, 0
+            for idx in idxs:
+                total_duration += stats[idx]['TD']
+                avg_bout_len += stats[idx]['ABL']
+                n_bouts += stats[idx]['NB']
+            
+            info[lab]['Total Duration'].append(total_duration)
+            info[lab]['Average Bout Length'].append(avg_bout_len)
+            info[lab]['No. of Bouts'].append(n_bouts)
 
-            for lab, idxs in BEHAVIOUR_LABELS.items():
-                info[lab]['Strain'].append(mouse.strain)
-                info[lab]['Sex'].append(mouse.sex)
-                
-                total_duration, avg_bout_len, n_bouts = 0, 0, 0
-                for idx in idxs:
-                    total_duration += stats[idx]['TD']
-                    avg_bout_len += stats[idx]['ABL']
-                    n_bouts += stats[idx]['NB']
-                
-                info[lab]['Total Duration'].append(total_duration)
-                info[lab]['Average Bout Length'].append(avg_bout_len)
-                info[lab]['No. of Bouts'].append(n_bouts)
-        
-        except:
-            pass
-    
     return info
 
-def calculate_transition_matrix_for_entire_assay(data_lookup_file, parallel=True):
-    clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
-    with open(clf_file, 'rb') as f:
-        clf = joblib.load(f)
-    
-    data = pd.read_csv(data_lookup_file)
-    N = data.shape[0]
+def calculate_behaviour_usage(label_info_file: str, max_label=None):
+    with open(label_info_file, 'rb') as f:
+        label_info = joblib.load(f)
+    N = len(label_info['Strain'])
 
-    print(f'calculating transition matrix for full assay of {N} mice')
-    def calculate_tmat(i, data, clf):
-        # load mouse from metadata 
-        metadata = dict(data.iloc[i])
-        mouse = Mouse.load(metadata)
-
-        # get behaviour labels for entire assay
-        labels = mouse.get_behaviour_labels(clf)
-        transition_matrix_from_assay(mouse, labels)
-
-    if parallel:
-        Parallel(n_jobs=-1)(delayed(calculate_tmat)(i, data, clf) for i in range(N))
-    else:
-        for i in tqdm(range(N)):
-            calculate_tmat(i, data, clf)
-
-def calculate_behaviour_usage(data_lookup_file, parallel=True):
-    clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
-    with open(clf_file, 'rb') as f:
-        clf = joblib.load(f)
-    
-    if data_lookup_file.endswith('.tsv'):
-        data = pd.read_csv(data_lookup_file, sep='\t')
-    elif data_lookup_file.endswith('.csv'):    
-        data = pd.read_csv(data_lookup_file)
-    N = data.shape[0]
-
-    def behaviour_usage(i, data, clf):
-        try:
-            metadata = dict(data.iloc[i])
-            mouse = Mouse(metadata)
-
-            labels = mouse.get_behaviour_labels(clf)
-            return behaviour_proportion(labels, clf.classes_)
-        except:
-            return None
-    
-    if parallel:
-        prop = Parallel(n_jobs=-1)(delayed(behaviour_usage)(i, data, clf) for i in range(N))
-    else:
-        prop = [behaviour_usage(i, data, clf) for i in range(N)]
-    
-    prop = [p for p in prop if p is not None]
+    prop = []
+    for i in tqdm(range(N)):
+        prop.append(behaviour_proportion(label_info['Labels'][i], max_label))
     prop = np.vstack(prop)
     prop = prop.sum(axis=0)/prop.shape[0]
-    np.save('prop.npy', prop)
+    return prop
 
-def behaviour_usage_across_strains(data_lookup_file, min_thresh=None, min_bout_len=200):
-    clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
-    with open(clf_file, 'rb') as f:
-        clf = joblib.load(f)
+def behaviour_usage_across_strains(stats_file: str, min_threshold:)
 
-    if data_lookup_file.endswith('.tsv'):
-        data = pd.read_csv(data_lookup_file, sep='\t')
-    elif data_lookup_file.endswith('.csv'):    
-        data = pd.read_csv(data_lookup_file)
-    N = data.shape[0]
-
-    n_behaviours = 0
-    for key in BEHAVIOUR_LABELS.keys():
-        n_behaviours += len(BEHAVIOUR_LABELS[key])
-
-    behaviours = [None for _ in range(n_behaviours)]
-    for key, val in BEHAVIOUR_LABELS.items():
-        if len(val) > 1:
-            for i, idx in enumerate(val):
-                behaviours[idx] = f'{key} #{i}'
-        else:
-            behaviours[val[0]] = key
-    
-    strain_usage = {}
-    for i in tqdm(range(N)):
-        metadata = dict(data.iloc[i])
-        mouse = Mouse(metadata)
-
-        labels = mouse.get_behaviour_labels(clf)
-        # prop = behaviour_proportion(labels)
-        duration = []
-        for behaviour_idx in range(len(IDX_TO_LABELS)):
-            total_duration, _, _ = get_behaviour_info_from_assay(mouse, labels, behaviour_idx, min_bout_len * FPS / 1000)
-            duration.append(total_duration)
-        duration = np.array(duration)
-        duration = duration/duration.sum()
-
-
-        if mouse.strain in strain_usage.keys():
-            strain_usage[mouse.strain] += duration
-        else:
-            strain_usage[mouse.strain] = duration
-        
-    for key, val in strain_usage.items():
-        strain_usage[key] = val/val.sum()
-    
-    usage_df = {
-        'Behaviour': [],
-        'Strain': [],
-        'Usage': []
-    }
-
-    for key, val in strain_usage.items():
-        for i in range(len(val)):
-            usage_df['Behaviour'].append(IDX_TO_LABELS[i])
-            usage_df['Strain'].append(key)
-            usage_df['Usage'].append(val[i]) if val[i] > min_thresh else usage_df['Usage'].append(min_thresh)
-    
-    return pd.DataFrame.from_dict(usage_df)
 
 if __name__ == "__main__":
     lookup_file = '/projects/kumar-lab/StrainSurveyPoses/StrainSurveyMetaList_2019-04-09.tsv'
