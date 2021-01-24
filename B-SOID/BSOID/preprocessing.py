@@ -77,11 +77,11 @@ def likelihood_filter(data: pd.DataFrame, fps, conf_threshold=0.3, end_trim=2, c
             filt_x[j], filt_y[j] = x[j], y[j]
             prev_best_idx = j
     
-    logging.debug(f'filtered {round(perc_filt * 100, 2)}% of data')
+    logging.debug(f'filtered {round(perc_filt * 100 / N, 2)}% of data')
 
     x, y, conf = trim_data(filt_x, filt_y, conf, fps, end_trim, clip_window)
 
-    return {'conf': conf, 'x': x, 'y': y}, perc_filt * 100
+    return {'conf': conf, 'x': x, 'y': y}, perc_filt * 100 / N
 
 def trim_data(x, y, conf, fps, end_trim=2, clip_window=30):
     assert x.shape[1] == y.shape[1]

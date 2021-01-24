@@ -267,7 +267,7 @@ def behaviour_usage_across_strains(stats_file: str):
 
     strain_usage = {}
     for i in range(N):
-        duration = [info[behaviour]['Total Duration'][i]]
+        duration = [info[behaviour]['Total Duration'][i] for behaviour in info.keys()]
 
 if __name__ == "__main__":
     # lookup_file = '/projects/kumar-lab/StrainSurveyPoses/StrainSurveyMetaList_2019-04-09.tsv'
