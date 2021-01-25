@@ -21,9 +21,10 @@ DATASETS = ["strain-survey-batch-2019-05-29-e/", "strain-survey-batch-2019-05-29
             "strain-survey-batch-2019-05-29-c/", "strain-survey-batch-2019-05-29-b/",
             "strain-survey-batch-2019-05-29-a/"]
 
-BASE_DIR = '/home/laadd/data'
-# BASE_DIR = 'D:/IIT/DDP/data'
+# BASE_DIR = '/home/laadd/data'
+BASE_DIR = 'D:/IIT/DDP/data'
 RAW_DIR = BASE_DIR + '/raw'
+FPS = 30
 
 BEHAVIOUR_LABELS = {
     'Groom': [0, 1, 2, 3, 5, 9],
@@ -46,6 +47,8 @@ MIN_BOUT_LENS = {
     'Rear': 200,
     'N/A': 200
 }
+for lab, bout_len in MIN_BOUT_LENS.items():
+    MIN_BOUT_LENS[lab] = bout_len * FPS / 1000
 
 try:
     os.makedirs(RAW_DIR)
@@ -92,32 +95,37 @@ def get_behaviour_labels(metadata: dict, clf: MLPClassifier, pose_dir=None):
     labels = frameshift_predict(feats, clf, STRIDE_WINDOW)
     return labels
 
+def idx_2_behaviour(idx):
+    for behaviour, idxs in BEHAVIOUR_LABELS.items():
+        if idx in idxs:
+            return behaviour
+    
+    return None
+
 """
     Helper functions for carrying out analysis per mouse:
         - transition_matrix_from_assay : calculates the transition matrix for a given assay
         - get_behaviour_info_from_assay : extracts statistics of all behaviours from given assay
 """
-def get_stats_for_all_labels(labels: np.ndarray, min_bout_lens: tuple, max_label=None):
-    max_label = labels.max() + 1 if max_label is None else max_label + 1
-
-    assert max_label == len(min_bout_lens), f'all labels (len = {max_label}) dont have specified `min_bout_len` (len = {len(min_bout_lens)})'
-
+def get_stats_for_all_labels(labels: np.ndarray):
     stats = {}
-    for i in range(max_label):
-        stats[i] = {'TD': 0, 'ABL': [], 'NB': 0}
+    for key in BEHAVIOUR_LABELS.keys():
+        stats[key] = {'TD': 0, 'ABL': [], 'NB': 0}
     
     i = 0
     while i < len(labels) - 1:
         curr_label = labels[i]
         curr_bout_len, j = 1, i + 1
-        while j < len(labels) - 1 and curr_label == labels[j]:
+        curr_behaviour = idx_2_behaviour(curr_label)
+
+        while j < len(labels) - 1 and curr_label in BEHAVIOUR_LABELS[curr_behaviour]:
             curr_label = labels[j]
             curr_bout_len += 1
             j += 1
         
-        if curr_bout_len >= min_bout_lens[curr_label]:
-            stats[curr_label]['ABL'].append(curr_bout_len)
-            stats[curr_label]['NB'] += 1
+        if curr_bout_len >= MIN_BOUT_LENS[curr_behaviour]:
+            stats[curr_behaviour]['ABL'].append(curr_bout_len)
+            stats[curr_behaviour]['NB'] += 1
         
         i = j
     
@@ -129,8 +137,8 @@ def get_stats_for_all_labels(labels: np.ndarray, min_bout_lens: tuple, max_label
 
     return stats    
 
-def transition_matrix_from_assay(labels):
-    n_lab = labels.max() + 1
+def transition_matrix_from_assay(labels, max_label=None):
+    n_lab = labels.max() + 1 if max_label is None else max_label + 1
     tmat = np.zeros((n_lab, n_lab))
     curr_lab = labels[0]
     for i in range(1, labels.size):
@@ -139,7 +147,9 @@ def transition_matrix_from_assay(labels):
         curr_lab = lab
     
     for i in range(n_lab):
-        tmat[i] /= tmat[i].sum()    
+        if tmat[i].sum() > 0:
+            tmat[i] = tmat[i] / tmat[i].sum()
+
 
     return tmat
 
@@ -179,7 +189,7 @@ def extract_labels_for_all_mice(data_lookup_file: str, clf_file: str, data_dir=N
         except:
             return None
 
-    labels = Parallel(n_jobs=1)(delayed(extract_)(data.iloc[i], clf, data_dir) for i in range(N))
+    labels = Parallel(n_jobs=-1)(delayed(extract_)(data.iloc[i], clf, data_dir) for i in range(N))
 
     all_strain_labels = {
         'Strain': [],
@@ -207,11 +217,11 @@ def all_behaviour_info_for_all_strains(label_info_file: str, max_label: int):
         label_info = joblib.load(f)
     N = len(label_info['Strain'])
 
-    min_bout_lens = [0 for i in range(max_label + 1)]
-    for key in BEHAVIOUR_LABELS.keys():
-        for lab in BEHAVIOUR_LABELS[key]:
-            min_bout_lens[lab] = MIN_BOUT_LENS[key]
-    
+    # min_bout_lens = [0 for i in range(max_label + 1)]
+    # for key in BEHAVIOUR_LABELS.keys():
+    #     for lab in BEHAVIOUR_LABELS[key]:
+    #         min_bout_lens[lab] = MIN_BOUT_LENS[key] * FPS / 1000
+
     info = {}
     for key in BEHAVIOUR_LABELS.keys():
         info[key] = {
@@ -224,21 +234,15 @@ def all_behaviour_info_for_all_strains(label_info_file: str, max_label: int):
 
     for i in tqdm(range(N)):
         labels = label_info['Labels'][i]
-        stats = get_stats_for_all_labels(labels, min_bout_lens, max_label)
+        stats = get_stats_for_all_labels(labels)
 
-        for lab, idxs in BEHAVIOUR_LABELS.items():
-            info[lab]['Strain'].append(label_info['Strain'][i])
-            info[lab]['Sex'].append(label_info['Sex'][i])
+        for behaviour in BEHAVIOUR_LABELS.keys():
+            info[behaviour]['Strain'].append(label_info['Strain'][i])
+            info[behaviour]['Sex'].append(label_info['Sex'][i])
             
-            total_duration, avg_bout_len, n_bouts = 0, 0, 0
-            for idx in idxs:
-                total_duration += stats[idx]['TD']
-                avg_bout_len += stats[idx]['ABL']
-                n_bouts += stats[idx]['NB']
-            
-            info[lab]['Total Duration'].append(total_duration)
-            info[lab]['Average Bout Length'].append(avg_bout_len)
-            info[lab]['No. of Bouts'].append(n_bouts)
+            info[behaviour]['Total Duration'].append(stats[behaviour]['TD'])
+            info[behaviour]['Average Bout Length'].append(stats[behaviour]['ABL'])
+            info[behaviour]['No. of Bouts'].append(stats[behaviour]['NB'])
 
     return info
 
@@ -277,14 +281,44 @@ def behaviour_usage_across_strains(stats_file: str, min_threshold: float):
             usage = usage if usage > min_threshold else min_threshold
             behaviour_usage['Usage'].append(usage)
     
-    return pd.DataFrame.from_dict(usage)
+    return pd.DataFrame.from_dict(behaviour_usage)
+
+def calculate_transition_matrices_for_all_strains(label_info_file: str, max_label=None):
+    with open(label_info_file, 'rb') as f:
+        label_info = joblib.load(f)
+    N = len(label_info['Strain'])
+
+    tmat_data = {
+        'Strain': [],
+        'Sex': [],
+        'MouseID': [],
+        'NetworkFilename': [],
+        'Transition Matrix': []
+    }
+
+    for key, val in label_info.items():
+        if key in tmat_data.keys():
+            tmat_data[key] = val
+
+    for i in tqdm(range(N)):
+        tmat_data['Transition Matrix'].append(transition_matrix_from_assay(label_info['Labels'][i], max_label))
+    
+    return tmat_data
 
 if __name__ == "__main__":
-    lookup_file = '/projects/kumar-lab/StrainSurveyPoses/StrainSurveyMetaList_2019-04-09.tsv'
-    # lookup_file = 'bsoid_strain_data.csv'
+    # lookup_file = '/projects/kumar-lab/StrainSurveyPoses/StrainSurveyMetaList_2019-04-09.tsv'
+    lookup_file = 'bsoid_strain_data.csv'
     clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
 
-    info = extract_labels_for_all_mice(lookup_file, clf_file, data_dir='/projects/kumar-lab/StrainSurveyPoses')
+    # info = extract_labels_for_all_mice(lookup_file, clf_file, data_dir='/projects/kumar-lab/StrainSurveyPoses')
     # info = extract_labels_for_all_mice(lookup_file, clf_file)
-    with open(f'{BASE_DIR}/analysis/label_info.pkl', 'wb') as f:
-        joblib.dump(info, f)
+    # with open(f'{BASE_DIR}/analysis/label_info.pkl', 'wb') as f:
+    #     joblib.dump(info, f)
+
+    label_info_file = f'{BASE_DIR}/analysis/label_info.pkl'
+    stats_file = f'{BASE_DIR}/analysis/stats.pkl'
+    stats = all_behaviour_info_for_all_strains(label_info_file, max_label=19)
+    with open(stats_file, 'wb') as f:
+        joblib.dump(stats, f)
+
+    # usage_data = behaviour_usage_across_strains(stats_file, min_threshold=0.01)
