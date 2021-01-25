@@ -39,12 +39,12 @@ BEHAVIOUR_LABELS = {
 
 MIN_BOUT_LENS = {
     'Groom': 3000,
-    'Run': 200,
-    'Walk': 200,
+    'Run': 750,
+    'Walk': 400,
     'CW-Turn': 500,
     'CCW-Turn': 500,
-    'Point': 200,
-    'Rear': 200,
+    'Point': 500,
+    'Rear': 500,
     'N/A': 200
 }
 for lab, bout_len in MIN_BOUT_LENS.items():
@@ -232,17 +232,27 @@ def all_behaviour_info_for_all_strains(label_info_file: str, max_label: int):
             'No. of Bouts': []
         }
 
-    for i in tqdm(range(N)):
-        labels = label_info['Labels'][i]
+    def parallel_extract(labels, strain, sex):
         stats = get_stats_for_all_labels(labels)
+        stats['Strain'] = strain
+        stats['Sex'] = sex
 
+        return stats
+    
+    import pathos.multiprocessing as mp
+    pool = mp.Pool(mp.cpu_count())
+    stats = [pool.apply_async(parallel_extract, args=(label_info['Labels'][i], label_info['Strain'][i], label_info['Strain'][i])) for i in range(N)]
+    pool.close()
+    pool.join()
+    
+    for stat in stats:
+        stat = stat.get()
         for behaviour in BEHAVIOUR_LABELS.keys():
-            info[behaviour]['Strain'].append(label_info['Strain'][i])
-            info[behaviour]['Sex'].append(label_info['Sex'][i])
-            
-            info[behaviour]['Total Duration'].append(stats[behaviour]['TD'])
-            info[behaviour]['Average Bout Length'].append(stats[behaviour]['ABL'])
-            info[behaviour]['No. of Bouts'].append(stats[behaviour]['NB'])
+            info[behaviour]['Strain'].append(stat['Strain'])
+            info[behaviour]['Sex'].append(stat['Sex'])
+            info[behaviour]['Total Duration'].append(stat[behaviour]['TD'])
+            info[behaviour]['Average Bout Length'].append(stat[behaviour]['ABL'])
+            info[behaviour]['No. of Bouts'].append(stat[behaviour]['NB'])
 
     return info
 
