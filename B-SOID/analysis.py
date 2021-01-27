@@ -39,14 +39,15 @@ BEHAVIOUR_LABELS = {
 
 MIN_BOUT_LENS = {
     'Groom': 3000,
-    'Run': 750,
-    'Walk': 400,
-    'CW-Turn': 500,
-    'CCW-Turn': 500,
-    'Point': 500,
-    'Rear': 500,
+    'Run': 250,
+    'Walk': 200,
+    'CW-Turn': 600,
+    'CCW-Turn': 600,
+    'Point': 200,
+    'Rear': 250,
     'N/A': 200
 }
+
 for lab, bout_len in MIN_BOUT_LENS.items():
     MIN_BOUT_LENS[lab] = bout_len * FPS / 1000
 
@@ -217,11 +218,6 @@ def all_behaviour_info_for_all_strains(label_info_file: str, max_label: int):
         label_info = joblib.load(f)
     N = len(label_info['Strain'])
 
-    # min_bout_lens = [0 for i in range(max_label + 1)]
-    # for key in BEHAVIOUR_LABELS.keys():
-    #     for lab in BEHAVIOUR_LABELS[key]:
-    #         min_bout_lens[lab] = MIN_BOUT_LENS[key] * FPS / 1000
-
     info = {}
     for key in BEHAVIOUR_LABELS.keys():
         info[key] = {
@@ -241,7 +237,7 @@ def all_behaviour_info_for_all_strains(label_info_file: str, max_label: int):
     
     import pathos.multiprocessing as mp
     pool = mp.Pool(mp.cpu_count())
-    stats = [pool.apply_async(parallel_extract, args=(label_info['Labels'][i], label_info['Strain'][i], label_info['Strain'][i])) for i in range(N)]
+    stats = [pool.apply_async(parallel_extract, args=(label_info['Labels'][i], label_info['Strain'][i], label_info['Sex'][i])) for i in range(N)]
     pool.close()
     pool.join()
     
