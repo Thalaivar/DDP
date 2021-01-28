@@ -49,6 +49,8 @@ TRIM_PARAMS = {
     'clip_window': 30
 }
 
+FPS=30
+
 class BSOID:
     def __init__(self, run_id: str, 
                 base_dir: str, 
@@ -135,7 +137,7 @@ class BSOID:
         else:
             feats = []
             for i in tqdm(range(len(filtered_data))):
-                feats.append(extract_feats(filtered_data[i], self.fps))
+                feats.append(extract_feats(filtered_data[i], self.fps, self.stride_window))
 
         logging.info(f'extracted {len(feats)} datasets of {feats[0].shape[1]}D features')
 
