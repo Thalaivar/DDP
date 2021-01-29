@@ -10,7 +10,7 @@ logging.basicConfig(level=logging.INFO)
 
 from tqdm import tqdm
 from joblib import Parallel, delayed
-from BSOID.data import _bsoid_format, get_pose_data_dir
+from BSOID.data import bsoid_format, get_pose_data_dir
 from BSOID.preprocessing import likelihood_filter
 from BSOID.prediction import *
 from sklearn.neural_network import MLPClassifier
