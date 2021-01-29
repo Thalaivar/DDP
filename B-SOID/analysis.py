@@ -360,8 +360,22 @@ def get_behaviour_trajectories(data_lookup_file, clf_file, n, n_trajs, data_dir,
     return trajs
 
 
-def calculate_autocorr()
+def calculate_autocorr(feats, t):
+    n = 1000
+    X = StandardScaler().fit_transform(feats)
     
+def estimate_autocorr(feats, t):
+    n = 1000
+    X = StandardScaler().fit_transform(feats[0])
+    X = PCA(n_components=10).fit_transform(X)
+    results = []
+    for k in range(len(t)):
+        auto_corr = 0
+        for i in range(n):
+            idx = np.random.randint(low=0, high=X.shape[0]-t[k])
+            auto_corr += np.correlate(X[idx,:], X[idx+t[k],:])/np.correlate(X[idx,:], X[idx,:])
+        results.append(auto_corr / n)
+    return results
 if __name__ == "__main__":
     # lookup_file = '/projects/kumar-lab/StrainSurveyPoses/StrainSurveyMetaList_2019-04-09.tsv'
     lookup_file = 'bsoid_strain_data.csv'

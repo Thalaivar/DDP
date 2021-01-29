@@ -13,16 +13,17 @@ def extract_feats(filtered_data, fps, stride_window=None):
     7-14 : magnitude of displacements for all 8 points
     14-21 : displacement angles for links 
     """
-    x, y = filtered_data['x'], filtered_data['y']
+    x_raw, y_raw = filtered_data['x'], filtered_data['y']
 
-    assert x.shape == y.shape
-    N, n_dpoints = x.shape
-    logging.debug('extracting features from {} samples of {} points'.format(*x.shape))
+    assert x_raw.shape == y_raw.shape
+    N, n_dpoints = x_raw.shape
+    logging.debug('extracting features from {} samples of {} points'.format(*x_raw.shape))
 
     win_len = np.int(np.round(0.05 / (1 / fps)) * 2 - 1) if stride_window is None else stride_window // 2
+    x, y = np.zeros_like(x_raw), np.zeros_like(y_raw)
     for i in range(x.shape[1]):
-        x[:,i] = smoothen_data(x[:,i].copy(), win_len)
-        y[:,i] = smoothen_data(y[:,i].copy(), win_len)
+        x[:,i] = smoothen_data(x_raw[:,i], win_len)
+        y[:,i] = smoothen_data(y_raw[:,i], win_len)
 
     # indices -> features
     HEAD, BASE_NECK, CENTER_SPINE, HINDPAW1, HINDPAW2, BASE_TAIL, MID_TAIL, TIP_TAIL = np.arange(8)
