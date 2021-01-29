@@ -91,10 +91,13 @@ def extract_features(metadata: dict, pose_dir=None, features_type='dis'):
     feats = frameshift_features(data, STRIDE_WINDOW, FPS, extract_feats, window_extracted_feats)
     return feats
 
-def get_behaviour_labels(metadata: dict, clf: MLPClassifier, pose_dir=None):
+def get_behaviour_labels(metadata: dict, clf: MLPClassifier, pose_dir=None, return_feats=False):
     feats = extract_features(metadata, pose_dir)
     labels = frameshift_predict(feats, clf, STRIDE_WINDOW)
-    return labels
+    if return_feats:
+        return labels, feats
+    else:
+        return labels
 
 def idx_2_behaviour(idx):
     for behaviour, idxs in BEHAVIOUR_LABELS.items():
@@ -311,20 +314,62 @@ def calculate_transition_matrices_for_all_strains(label_info_file: str, max_labe
     
     return tmat_data
 
+def get_behaviour_trajectories(data_lookup_file, clf_file, n, n_trajs, data_dir, min_bout_len):
+    with open(clf_file, 'rb') as f:
+        clf = joblib.load(f)
+    
+    if data_lookup_file.endswith('.tsv'):
+        data = pd.read_csv(data_lookup_file, sep='\t')
+    else:
+        data = pd.read_csv(data_lookup_file)
+    N = data.shape[0]
+
+    trajs = {}
+    for key in BEHAVIOUR_LABELS.keys():
+        trajs[key] = []
+
+    idx = np.random.randint(0, N, n)
+    for i in range(idx.shape[0]):
+        metadata = data.iloc[idx[i]]
+        pose_dir, _ = get_pose_data_dir(data_dir, metadata['NetworkFilename'])
+        labels, feats = get_behaviour_labels(metadata, clf, pose_dir, return_feats=True)
+        feats = feats[0]
+
+        j = 0
+        while j < len(labels):
+            curr_label = labels[j]
+            curr_bout_len, jj = 1, j + 1
+            curr_behaviour = idx_2_behaviour(curr_label)
+            while jj < len(labels) - 1 and curr_label in BEHAVIOUR_LABELS[curr_behaviour]:
+                curr_label = labels[jj]
+                curr_bout_len += 1
+                jj += 1
+            
+            if curr_bout_len >= MIN_BOUT_LENS[curr_behaviour]:
+                trajs[curr_behaviour].append(feats[j:jj])
+
+            j = jj
+    
+    for lab in trajs.keys():
+        trajs[lab].sort(reverse=True, key=lambda x: x.shape[0])
+        trajs[lab] = trajs[lab][:n_trajs]
+
+    return trajs
+
 if __name__ == "__main__":
-    # lookup_file = '/projects/kumar-lab/StrainSurveyPoses/StrainSurveyMetaList_2019-04-09.tsv'
-    lookup_file = 'bsoid_strain_data.csv'
-    clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
+    lookup_file = '/projects/kumar-lab/StrainSurveyPoses/StrainSurveyMetaList_2019-04-09.tsv'
+    # lookup_file = 'bsoid_strain_data.csv'
+    # clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
 
     # info = extract_labels_for_all_mice(lookup_file, clf_file, data_dir='/projects/kumar-lab/StrainSurveyPoses')
     # info = extract_labels_for_all_mice(lookup_file, clf_file)
     # with open(f'{BASE_DIR}/analysis/label_info.pkl', 'wb') as f:
     #     joblib.dump(info, f)
 
-    label_info_file = f'{BASE_DIR}/analysis/label_info.pkl'
-    stats_file = f'{BASE_DIR}/analysis/stats.pkl'
-    stats = all_behaviour_info_for_all_strains(label_info_file, max_label=19)
-    with open(stats_file, 'wb') as f:
-        joblib.dump(stats, f)
+    # label_info_file = f'{BASE_DIR}/analysis/label_info.pkl'
+    # stats_file = f'{BASE_DIR}/analysis/stats.pkl'
+    # stats = all_behaviour_info_for_all_strains(label_info_file, max_label=19)
+    # with open(stats_file, 'wb') as f:
+    #     joblib.dump(stats, f)
 
     # usage_data = behaviour_usage_across_strains(stats_file, min_threshold=0.01)
