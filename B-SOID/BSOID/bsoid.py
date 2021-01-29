@@ -22,6 +22,8 @@ from BSOID.prediction import *
 from BSOID.features.displacement_feats import *
 # from BSOID.features.bsoid_features import *
 
+from joblib import Parallel, delayed
+
 MLP_PARAMS = {
     'hidden_layer_sizes': (100, 10),  # 100 units, 10 layers
     'activation': 'logistic',  # logistics appears to outperform tanh and relu
@@ -78,6 +80,8 @@ class BSOID:
             os.mkdir(self.test_dir)
         except FileExistsError:
             pass
+        
+        self.describe()
 
     def get_data(self, n=None, download=False, parallel=False):
         try:
@@ -126,13 +130,55 @@ class BSOID:
 
         return filtered_data
     
+    def load_from_dataset(self, data_lookup_file, data_dir):
+        if data_lookup_file.endswith('.tsv'):
+            data = pd.read_csv(data_lookup_file, sep='\t')    
+        else:
+            data = pd.read_csv(data_lookup_file)
+        N = data.shape[0]
+
+        def extract(metadata, data_dir):
+            try:
+                pose_dir, _ = get_pose_data_dir(data_dir, metadata['NetworkFilename'])
+                _, _, movie_name = metadata['NetworkFilename'].split('/')
+                filename = f'{pose_dir}/{movie_name[0:-4]}_pose_est_v2.h5'
+
+                f = h5py.File(filename, "r")
+                filename = filename.split('/')[-1]
+                data = list(f.keys())[0]
+                keys = list(f[data].keys())
+                conf, pos = np.array(f[data][keys[0]]), np.array(f[data][keys[1]])
+                f.close()
+
+                bsoid_data = bsoid_format(conf, pos)
+                fdata, perc_filt = likelihood_filter(bsoid_data, self.fps, self.conf_threshold, **TRIM_PARAMS)
+                if perc_filt > 10:
+                    strain, mouse_id = metadata['Strain'], metadata['MouseID']
+                    logging.warning(f'mouse:{strain}/{mouse_id}: % data filtered from raw data is too high ({perc_filt} %)')
+
+                shape = fdata['x'].shape
+                logging.info(f'preprocessed {shape} data from animal #{i}, with {round(perc_filt, 2)}% data filtered')
+                return fdata
+            except:
+                pass
+        
+        fdata = Parallel(n_jobs=-1)(delayed(extract)(data.iloc[i], data_dir) for i in range(N))
+        N = len(fdata)
+        
+        fdata = [data for data in fdata if data is not None]
+        logging.info(f'skipped {len(fdata)}/{N} datasets')
+        
+        with open(self.output_dir + '/' + self.run_id + '_filtered_data.sav', 'wb') as f:
+            joblib.dump(fdata, f)
+
+        return fdata
+
     def features_from_points(self, parallel=False):
         filtered_data = self.load_filtered_data()
         logging.info(f'extracting features from {len(filtered_data)} animals')
 
         # extract geometric features
         if parallel:
-            from joblib import Parallel, delayed
             feats = Parallel(n_jobs=-1)(delayed(extract_feats)(data, self.fps) for data in filtered_data)
         else:
             feats = []
@@ -321,4 +367,13 @@ class BSOID:
         config.output_dir = base_dir + '/output'
         config.test_dir = base_dir + '/test'
         
+        config.describe()
+        
         return config
+
+    def describe(self):
+        s = (f'Save Location   : {self.base_dir}/output\n'
+             f'     FPS        : {self.fps}'
+             f'Min. Confidence : {self.conf_threshold}'
+             f'  Stride Window : {self.stride_window * 1000 // self.fps}ms')
+        print(s)

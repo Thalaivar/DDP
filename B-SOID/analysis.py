@@ -331,7 +331,10 @@ def get_behaviour_trajectories(data_lookup_file, clf_file, n, n_trajs, data_dir,
     idx = np.random.randint(0, N, n)
     for i in range(idx.shape[0]):
         metadata = data.iloc[idx[i]]
-        pose_dir, _ = get_pose_data_dir(data_dir, metadata['NetworkFilename'])
+        if data_dir is not None:
+            pose_dir, _ = get_pose_data_dir(data_dir, metadata['NetworkFilename'])
+        else:
+            pose_dir = None
         labels, feats = get_behaviour_labels(metadata, clf, pose_dir, return_feats=True)
         feats = feats[0]
 
@@ -357,9 +360,9 @@ def get_behaviour_trajectories(data_lookup_file, clf_file, n, n_trajs, data_dir,
     return trajs
 
 if __name__ == "__main__":
-    lookup_file = '/projects/kumar-lab/StrainSurveyPoses/StrainSurveyMetaList_2019-04-09.tsv'
-    # lookup_file = 'bsoid_strain_data.csv'
-    # clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
+    # lookup_file = '/projects/kumar-lab/StrainSurveyPoses/StrainSurveyMetaList_2019-04-09.tsv'
+    lookup_file = 'bsoid_strain_data.csv'
+    clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
 
     # info = extract_labels_for_all_mice(lookup_file, clf_file, data_dir='/projects/kumar-lab/StrainSurveyPoses')
     # info = extract_labels_for_all_mice(lookup_file, clf_file)
@@ -373,3 +376,4 @@ if __name__ == "__main__":
     #     joblib.dump(stats, f)
 
     # usage_data = behaviour_usage_across_strains(stats_file, min_threshold=0.01)
+    trajs = get_behaviour_trajectories(lookup_file, clf_file, 20, 20, data_dir=None, min_bout_len=500)

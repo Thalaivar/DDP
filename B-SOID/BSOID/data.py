@@ -31,10 +31,10 @@ def extract_to_csv(filename, save_dir):
     conf = np.array(f[data][keys[0]])
     pos = np.array(f[data][keys[1]])
 
-    bsoid_data = _bsoid_format(conf, pos)
+    bsoid_data = bsoid_format(conf, pos)
     bsoid_data.to_csv(save_dir + '/' + filename[:-3] +'.csv', index=False)
         
-def _bsoid_format(conf, pos):
+def bsoid_format(conf, pos):
     bsoid_data = np.zeros((conf.shape[0], 3*conf.shape[1]))
 
     j = 0

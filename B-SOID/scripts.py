@@ -12,31 +12,27 @@ logging.basicConfig(level=logging.INFO)
 # model_load_params = None
 MODEL_LOAD_PARAMS = {'run_id': 'dis', 'base_dir': '/home/laadd/data'}
 
-def main(model_load_params=None, get_data=False, preprocess=False, extract_features=False, embed=True, cluster=False):
-    if model_load_params is None:
-        bsoid_params = {'run_id': 'dis',
-                        'base_dir': '/home/dhruvlaad/data',
-                        'fps': 30,
-                        'stride_window': 3,
-                        'conf_threshold': 0.3
-            }
-        bsoid = BSOID(**bsoid_params)
-        bsoid.save()
-    else:   
-        bsoid = BSOID.load_config(**model_load_params)
+def main():
+    stride_window = round(350 * 30 / 1000)
+    bsoid_params = MODEL_LOAD_PARAMS
+    bsoid_params['fps'] = FPS
+    bsoid_params['stride_window'] = stride_window
+    bsoid_params['conf_threshold'] = 0.3
+    bsoid = BSOID(**bsoid_params)
+    bsoid.save()
 
-    if get_data:
-        bsoid.get_data(parallel=True)
-    if preprocess:
-        bsoid.process_csvs()
-    if extract_features:
-        bsoid.features_from_points(parallel=True)
-    if embed:
-        # bsoid.best_reduced_dim()
-        # reduced_dim = int(input('Enter reduced dimensions for embedding: '))
-        bsoid.umap_reduce(reduced_dim=3, sample_size=-1)
-    if cluster:
-        bsoid.identify_clusters_from_umap(cluster_range=[0.2, 0.4, 9])
+    # bsoid = BSOID.load_config(**MODEL_LOAD_PARAMS)
+
+    # bsoid.get_data(parallel=True)
+    # bsoid.process_csvs()
+
+    lookup_file = '/projects/kumar-lab/StrainSurveyPoses/StrainSurveyMetaList_2019-04-09.tsv'
+    bsoid.load_from_dataset(lookup_file, data_dir='/projects/kumar-lab/StrainSurveyPoses')
+
+    bsoid.features_from_points(parallel=True)
+
+    bsoid.umap_reduce(reduced_dim=3, sample_size=int(1e7))
+    bsoid.identify_clusters_from_umap(cluster_range=[0.1, 1.2, 12])
 
 def get_cluster_information(run_id='dis', base_dir='D:/IIT/DDP/data'):
     bsoid = BSOID.load_config(run_id=run_id, base_dir=base_dir)
@@ -66,7 +62,7 @@ def results(run_id='dis', base_dir='D:/IIT/DDP/data'):
     bsoid.create_examples(csv_dir, video_dir, bout_length=3, n_examples=10)
     
 if __name__ == "__main__":
-    main(model_load_params=MODEL_LOAD_PARAMS, get_data=True, preprocess=True, extract_features=True, embed=True, cluster=True)
-    validate_and_train(**MODEL_LOAD_PARAMS)
+    main()
+    # validate_and_train(**MODEL_LOAD_PARAMS)
     # results()
     # get_cluster_information()
