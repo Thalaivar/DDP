@@ -162,7 +162,8 @@ class BSOID:
                 shape = fdata['x'].shape
                 logging.info(f'preprocessed {shape} data from animal #{i}, with {round(perc_filt, 2)}% data filtered')
                 return fdata
-            except:
+            except Exception as e:
+                print(e)
                 return None
         
         fdata = Parallel(n_jobs=-1)(delayed(extract)(data.iloc[i], data_dir) for i in range(N))
