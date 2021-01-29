@@ -154,13 +154,13 @@ class BSOID:
 
                 bsoid_data = bsoid_format(conf, pos)
                 fdata, perc_filt = likelihood_filter(bsoid_data, self.fps, self.conf_threshold, **TRIM_PARAMS)
+                strain, mouse_id = metadata['Strain'], metadata['MouseID']
                 if perc_filt > 10:
-                    strain, mouse_id = metadata['Strain'], metadata['MouseID']
                     logging.warning(f'mouse:{strain}/{mouse_id}: % data filtered from raw data is too high ({perc_filt} %)')
                     return None
 
                 shape = fdata['x'].shape
-                logging.info(f'preprocessed {shape} data from animal #{i}, with {round(perc_filt, 2)}% data filtered')
+                logging.info(f'preprocessed {shape} data from {strain}/{mouse_id} with {round(perc_filt, 2)}% data filtered')
                 return fdata
             except Exception as e:
                 print(e)
