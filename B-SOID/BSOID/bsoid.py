@@ -157,12 +157,13 @@ class BSOID:
                 if perc_filt > 10:
                     strain, mouse_id = metadata['Strain'], metadata['MouseID']
                     logging.warning(f'mouse:{strain}/{mouse_id}: % data filtered from raw data is too high ({perc_filt} %)')
+                    return None
 
                 shape = fdata['x'].shape
                 logging.info(f'preprocessed {shape} data from animal #{i}, with {round(perc_filt, 2)}% data filtered')
                 return fdata
             except:
-                pass
+                return None
         
         fdata = Parallel(n_jobs=-1)(delayed(extract)(data.iloc[i], data_dir) for i in range(N))
         N = len(fdata)
@@ -375,7 +376,7 @@ class BSOID:
 
     def describe(self):
         s = (f'Save Location   : {self.base_dir}/output\n'
-             f'     FPS        : {self.fps}'
-             f'Min. Confidence : {self.conf_threshold}'
-             f'  Stride Window : {self.stride_window * 1000 // self.fps}ms')
+             f'     FPS        : {self.fps}\n'
+             f'Min. Confidence : {self.conf_threshold}\n'
+             f'  Stride Window : {self.stride_window * 1000 // self.fps}ms\n')
         print(s)
