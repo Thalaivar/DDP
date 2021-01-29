@@ -1,3 +1,4 @@
+from BSOID.bsoid import BSOID
 import os
 import joblib
 import ftplib
@@ -13,7 +14,11 @@ from joblib import Parallel, delayed
 from BSOID.data import bsoid_format, get_pose_data_dir
 from BSOID.preprocessing import likelihood_filter
 from BSOID.prediction import *
+from BSOID.features.displacement_feats import extract_feats
 from sklearn.neural_network import MLPClassifier
+
+from sklearn.preprocessing import StandardScaler
+from sklearn.decomposition import PCA
 
 FEATS_TYPE = 'dis'
 STRAINS = ["LL6-B2B", "LL5-B2B", "LL4-B2B", "LL3-B2B", "LL2-B2B", "LL1-B2B"]
@@ -359,23 +364,30 @@ def get_behaviour_trajectories(data_lookup_file, clf_file, n, n_trajs, data_dir,
 
     return trajs
 
+def autocorr():
+    bsoid = BSOID.load_config('/home/laadd/data', 'dis')
+    fdata = bsoid.load_filtered_data()
 
-def calculate_autocorr(feats, t):
-    n = 1000
-    X = StandardScaler().fit_transform(feats)
+    def calculate_autocorr(fdata, bsoid, t):
+        X = extract_feats(fdata, bsoid.fps, bsoid.stride_window)
+        n = 1000
+        X = StandardScaler().fit_transform(X)
+        X = PCA(n_components=10).fit_transform(X)
+        results = []
+        for k in range(len(t)):        
+            auto_corr = 0
+            for i in range(n):
+                idx = np.random.randint(low=0, high=X.shape[0]-t[k])
+                auto_corr += np.correlate(X[idx,:], X[idx+t[k],:])/np.correlate(X[idx,:], X[idx,:])
+            results.append(auto_corr / n)
+        return results
+
+    t_max = 3
+    t = np.arange(3 * bsoid.fps)
+    results = Parallel(n_jobs=-1)(delayed(calculate_autocorr)(data, bsoid, t) for data in fdata)
+    results = np.vstack(results)
+    np.save('/home/laadd/auto_corr.npy', results)
     
-def estimate_autocorr(feats, t):
-    n = 1000
-    X = StandardScaler().fit_transform(feats[0])
-    X = PCA(n_components=10).fit_transform(X)
-    results = []
-    for k in range(len(t)):
-        auto_corr = 0
-        for i in range(n):
-            idx = np.random.randint(low=0, high=X.shape[0]-t[k])
-            auto_corr += np.correlate(X[idx,:], X[idx+t[k],:])/np.correlate(X[idx,:], X[idx,:])
-        results.append(auto_corr / n)
-    return results
 if __name__ == "__main__":
     # lookup_file = '/projects/kumar-lab/StrainSurveyPoses/StrainSurveyMetaList_2019-04-09.tsv'
     lookup_file = 'bsoid_strain_data.csv'
@@ -393,4 +405,6 @@ if __name__ == "__main__":
     #     joblib.dump(stats, f)
 
     # usage_data = behaviour_usage_across_strains(stats_file, min_threshold=0.01)
-    trajs = get_behaviour_trajectories(lookup_file, clf_file, 20, 20, data_dir=None, min_bout_len=500)
+    # trajs = get_behaviour_trajectories(lookup_file, clf_file, 20, 20, data_dir=None, min_bout_len=500)
+
+    autocorr()
