@@ -137,6 +137,8 @@ class BSOID:
             data = pd.read_csv(data_lookup_file)
         N = data.shape[0]
 
+        print('Processing {} files from {}'.format(N, data_dir))
+
         def extract(metadata, data_dir):
             try:
                 pose_dir, _ = get_pose_data_dir(data_dir, metadata['NetworkFilename'])
@@ -166,7 +168,7 @@ class BSOID:
         N = len(fdata)
         
         fdata = [data for data in fdata if data is not None]
-        logging.info(f'skipped {len(fdata)}/{N} datasets')
+        print(f'Skipped {len(fdata)}/{N} datasets')
         
         with open(self.output_dir + '/' + self.run_id + '_filtered_data.sav', 'wb') as f:
             joblib.dump(fdata, f)
@@ -368,7 +370,7 @@ class BSOID:
         config.test_dir = base_dir + '/test'
         
         config.describe()
-        
+
         return config
 
     def describe(self):
