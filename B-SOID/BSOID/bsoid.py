@@ -376,8 +376,9 @@ class BSOID:
         return config
 
     def describe(self):
-        s = (f'Save Location   : {self.base_dir}/output\n'
-             f'     FPS        : {self.fps}\n'
-             f'Min. Confidence : {self.conf_threshold}\n'
-             f'  Stride Window : {self.stride_window * 1000 // self.fps}ms\n')
+        s = (f'    Run ID       : {self.run_id}\n'
+             f' Save Location   : {self.base_dir}/output\n'
+             f'      FPS        : {self.fps}\n'
+             f' Min. Confidence : {self.conf_threshold}\n'
+             f'  Stride Window  : {self.stride_window * 1000 // self.fps}ms\n')
         print(s)

@@ -21,8 +21,8 @@ def extract_feats(filtered_data, fps, stride_window=None):
 
     win_len = np.int(np.round(0.05 / (1 / fps)) * 2 - 1) if stride_window is None else stride_window // 2
     for i in range(x.shape[1]):
-        x[:,i] = smoothen_data(x[:,i], win_len)
-        y[:,i] = smoothen_data(y[:,i], win_len)
+        x[:,i] = smoothen_data(x[:,i].copy(), win_len)
+        y[:,i] = smoothen_data(y[:,i].copy(), win_len)
 
     # indices -> features
     HEAD, BASE_NECK, CENTER_SPINE, HINDPAW1, HINDPAW2, BASE_TAIL, MID_TAIL, TIP_TAIL = np.arange(8)

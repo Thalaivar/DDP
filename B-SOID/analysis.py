@@ -359,6 +359,8 @@ def get_behaviour_trajectories(data_lookup_file, clf_file, n, n_trajs, data_dir,
 
     return trajs
 
+
+def calculate_autocorr()
     
 if __name__ == "__main__":
     # lookup_file = '/projects/kumar-lab/StrainSurveyPoses/StrainSurveyMetaList_2019-04-09.tsv'
