@@ -390,8 +390,8 @@ def autocorr():
     
 if __name__ == "__main__":
     # lookup_file = '/projects/kumar-lab/StrainSurveyPoses/StrainSurveyMetaList_2019-04-09.tsv'
-    lookup_file = 'bsoid_strain_data.csv'
-    clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
+    # lookup_file = 'bsoid_strain_data.csv'
+    # clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
 
     # info = extract_labels_for_all_mice(lookup_file, clf_file, data_dir='/projects/kumar-lab/StrainSurveyPoses')
     # info = extract_labels_for_all_mice(lookup_file, clf_file)
