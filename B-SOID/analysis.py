@@ -1,3 +1,6 @@
+from typing import MutableMapping
+from numpy.core.fromnumeric import mean
+from numpy.lib.function_base import diff
 from BSOID.bsoid import BSOID
 import os
 import joblib
@@ -54,7 +57,7 @@ MIN_BOUT_LENS = {
 }
 
 for lab, bout_len in MIN_BOUT_LENS.items():
-    MIN_BOUT_LENS[lab] = bout_len * FPS / 1000
+    MIN_BOUT_LENS[lab] = bout_len * FPS // 1000
 
 try:
     os.makedirs(RAW_DIR)
@@ -104,10 +107,15 @@ def get_behaviour_labels(metadata: dict, clf: MLPClassifier, pose_dir=None, retu
     else:
         return labels
 
-def idx_2_behaviour(idx):
+def idx_2_behaviour(idx, diff=False):
     for behaviour, idxs in BEHAVIOUR_LABELS.items():
-        if idx in idxs:
-            return behaviour
+        if not diff:
+            if idx in idxs:
+                return behaviour
+        else:
+            for i, j in enumerate(idxs):
+                if idx == j:
+                    return f'{behaviour} #{i}'
     
     return None
 
@@ -118,8 +126,8 @@ def idx_2_behaviour(idx):
 """
 def get_stats_for_all_labels(labels: np.ndarray):
     stats = {}
-    for key in BEHAVIOUR_LABELS.keys():
-        stats[key] = {'TD': 0, 'ABL': [], 'NB': 0}
+    for behaviour in BEHAVIOUR_LABELS.keys():
+        stats[behaviour] = {'TD': 0, 'ABL': [], 'NB': 0}
     
     i = 0
     while i < len(labels) - 1:
@@ -127,15 +135,15 @@ def get_stats_for_all_labels(labels: np.ndarray):
         curr_bout_len, j = 1, i + 1
         curr_behaviour = idx_2_behaviour(curr_label)
 
-        while j < len(labels) - 1 and curr_label in BEHAVIOUR_LABELS[curr_behaviour]:
+        while (j < len(labels) - 1) and (curr_label in BEHAVIOUR_LABELS[curr_behaviour]):
             curr_label = labels[j]
             curr_bout_len += 1
             j += 1
-        
+            
         if curr_bout_len >= MIN_BOUT_LENS[curr_behaviour]:
             stats[curr_behaviour]['ABL'].append(curr_bout_len)
             stats[curr_behaviour]['NB'] += 1
-        
+
         i = j
     
     for lab, stat in stats.items():
@@ -221,42 +229,29 @@ def extract_labels_for_all_mice(data_lookup_file: str, clf_file: str, data_dir=N
     print(f'Extracted labels for {len(strains)}/{N} mice')
     return all_strain_labels
 
-def all_behaviour_info_for_all_strains(label_info_file: str, max_label: int):
+def all_behaviour_info_for_all_strains(label_info_file: str):
     with open(label_info_file, 'rb') as f:
         label_info = joblib.load(f)
     N = len(label_info['Strain'])
 
     info = {}
-    for key in BEHAVIOUR_LABELS.keys():
-        info[key] = {
+    for behaviour in BEHAVIOUR_LABELS.keys():
+        info[behaviour] = {
             'Strain': [], 
             'Sex': [], 
             'Total Duration':  [], 
             'Average Bout Length': [], 
             'No. of Bouts': []
         }
-
-    def parallel_extract(labels, strain, sex):
-        stats = get_stats_for_all_labels(labels)
-        stats['Strain'] = strain
-        stats['Sex'] = sex
-
-        return stats
     
-    import pathos.multiprocessing as mp
-    pool = mp.Pool(mp.cpu_count())
-    stats = [pool.apply_async(parallel_extract, args=(label_info['Labels'][i], label_info['Strain'][i], label_info['Sex'][i])) for i in range(N)]
-    pool.close()
-    pool.join()
-    
-    for stat in stats:
-        stat = stat.get()
+    for i in tqdm(range(N)):
+        stats = get_stats_for_all_labels(label_info['Labels'][i])
         for behaviour in BEHAVIOUR_LABELS.keys():
-            info[behaviour]['Strain'].append(stat['Strain'])
-            info[behaviour]['Sex'].append(stat['Sex'])
-            info[behaviour]['Total Duration'].append(stat[behaviour]['TD'])
-            info[behaviour]['Average Bout Length'].append(stat[behaviour]['ABL'])
-            info[behaviour]['No. of Bouts'].append(stat[behaviour]['NB'])
+            info[behaviour]['Strain'].append(label_info['Strain'][i])
+            info[behaviour]['Sex'].append(label_info['Sex'][i])
+            info[behaviour]['Total Duration'].append(stats[behaviour]['TD'])
+            info[behaviour]['Average Bout Length'].append(stats[behaviour]['ABL'])
+            info[behaviour]['No. of Bouts'].append(stats[behaviour]['NB'])
 
     return info
 
@@ -269,14 +264,19 @@ def calculate_behaviour_usage(label_info_file: str, max_label=None):
     for i in tqdm(range(N)):
         prop.append(behaviour_proportion(label_info['Labels'][i], max_label))
     prop = np.vstack(prop)
-    prop = prop.sum(axis=0)/prop.shape[0]
-    return prop
+    
+    usage = {'Behaviour': [], 'Usage': []}
+    for j in range(N):
+        for i in range(prop.shape[1]):
+            usage['Behaviour'].append(idx_2_behaviour(i))
+            usage['Usage'].append(prop[j,i])
 
-def behaviour_usage_across_strains(stats_file: str, min_threshold: float):
-    with open(stats_file, 'rb') as f:
-        info = joblib.load(f)
-    strains = info['Groom']['Strain']
-    N = len(strains)
+    return pd.DataFrame.from_dict(usage)
+
+def behaviour_usage_across_strains(label_info_file, max_label=None):
+    with open(label_info_file, 'rb') as f:
+        label_info = joblib.load(f)
+    N = len(label_info['Strain'])
 
     behaviour_usage = {
         'Behaviour': [],
@@ -285,15 +285,12 @@ def behaviour_usage_across_strains(stats_file: str, min_threshold: float):
     }
 
     for i in range(N):
-        total_duration = sum([info[behaviour]['Total Duration'][i] for behaviour in BEHAVIOUR_LABELS.keys()])
-        
-        for behaviour in BEHAVIOUR_LABELS.keys():
+        usage = behaviour_proportion(label_info['Labels'][i], max_label)
+
+        for behaviour, idxs in BEHAVIOUR_LABELS.items():
             behaviour_usage['Behaviour'].append(behaviour)
-            behaviour_usage['Strain'].append(strains[i])
-            
-            usage = info[behaviour]['Total Duration'][i]/total_duration
-            usage = usage if usage > min_threshold else min_threshold
-            behaviour_usage['Usage'].append(usage)
+            behaviour_usage['Strain'].append(label_info['Strain'][i])
+            behaviour_usage['Usage'].append(usage[idxs].sum ())
     
     return pd.DataFrame.from_dict(behaviour_usage)
 
