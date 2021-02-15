@@ -119,6 +119,13 @@ def idx_2_behaviour(idx, diff=False):
     
     return None
 
+def get_max_label():
+    max_label = -1
+    for _, idxs in BEHAVIOUR_LABELS.items():
+        max_label = max(max_label, max(idxs))
+    
+    return max_label
+
 """
     Helper functions for carrying out analysis per mouse:
         - transition_matrix_from_assay : calculates the transition matrix for a given assay
@@ -126,21 +133,21 @@ def idx_2_behaviour(idx, diff=False):
 """
 def get_stats_for_all_labels(labels: np.ndarray):
     stats = {}
-    for behaviour in BEHAVIOUR_LABELS.keys():
-        stats[behaviour] = {'TD': 0, 'ABL': [], 'NB': 0}
+    for i in range(get_max_label() + 1):
+        stats[idx_2_behaviour(i, diff=True)] = {'TD': None, 'ABL': [], 'NB': 0}
     
     i = 0
     while i < len(labels) - 1:
         curr_label = labels[i]
         curr_bout_len, j = 1, i + 1
-        curr_behaviour = idx_2_behaviour(curr_label)
+        curr_behaviour = idx_2_behaviour(curr_label, diff=True)
 
-        while (j < len(labels) - 1) and (curr_label in BEHAVIOUR_LABELS[curr_behaviour]):
+        while (j < len(labels) - 1) and (labels[j] == curr_label):
             curr_label = labels[j]
             curr_bout_len += 1
             j += 1
             
-        if curr_bout_len >= MIN_BOUT_LENS[curr_behaviour]:
+        if curr_bout_len >= MIN_BOUT_LENS[idx_2_behaviour(curr_label)]:
             stats[curr_behaviour]['ABL'].append(curr_bout_len)
             stats[curr_behaviour]['NB'] += 1
 
@@ -154,8 +161,8 @@ def get_stats_for_all_labels(labels: np.ndarray):
 
     return stats    
 
-def transition_matrix_from_assay(labels, max_label=None):
-    n_lab = labels.max() + 1 if max_label is None else max_label + 1
+def transition_matrix_from_assay(labels):
+    n_lab = get_max_label() + 1
     tmat = np.zeros((n_lab, n_lab))
     curr_lab = labels[0]
     for i in range(1, labels.size):
@@ -167,11 +174,10 @@ def transition_matrix_from_assay(labels, max_label=None):
         if tmat[i].sum() > 0:
             tmat[i] = tmat[i] / tmat[i].sum()
 
-
     return tmat
 
-def behaviour_proportion(labels, n_lab=None):
-    n_lab = labels.max() + 1 if n_lab is None else n_lab + 1
+def behaviour_proportion(labels):
+    n_lab = get_max_label() + 1
     
     prop = [0 for _ in range(n_lab)]
     for i in range(labels.size):
@@ -235,8 +241,8 @@ def all_behaviour_info_for_all_strains(label_info_file: str):
     N = len(label_info['Strain'])
 
     info = {}
-    for behaviour in BEHAVIOUR_LABELS.keys():
-        info[behaviour] = {
+    for idx in range(get_max_label() + 1):
+        info[idx_2_behaviour(idx, diff=True)] = {
             'Strain': [], 
             'Sex': [], 
             'Total Duration':  [], 
@@ -246,7 +252,8 @@ def all_behaviour_info_for_all_strains(label_info_file: str):
     
     for i in tqdm(range(N)):
         stats = get_stats_for_all_labels(label_info['Labels'][i])
-        for behaviour in BEHAVIOUR_LABELS.keys():
+        for idx in range(get_max_label() + 1):
+            behaviour = idx_2_behaviour(idx, diff=True)
             info[behaviour]['Strain'].append(label_info['Strain'][i])
             info[behaviour]['Sex'].append(label_info['Sex'][i])
             info[behaviour]['Total Duration'].append(stats[behaviour]['TD'])
@@ -255,25 +262,25 @@ def all_behaviour_info_for_all_strains(label_info_file: str):
 
     return info
 
-def calculate_behaviour_usage(label_info_file: str, max_label=None):
+def calculate_behaviour_usage(label_info_file: str):
     with open(label_info_file, 'rb') as f:
         label_info = joblib.load(f)
     N = len(label_info['Strain'])
 
     prop = []
     for i in tqdm(range(N)):
-        prop.append(behaviour_proportion(label_info['Labels'][i], max_label))
+        prop.append(behaviour_proportion(label_info['Labels'][i]))
     prop = np.vstack(prop)
     
     usage = {'Behaviour': [], 'Usage': []}
     for j in range(N):
         for i in range(prop.shape[1]):
-            usage['Behaviour'].append(idx_2_behaviour(i))
+            usage['Behaviour'].append(idx_2_behaviour(i, diff=True))
             usage['Usage'].append(prop[j,i])
 
     return pd.DataFrame.from_dict(usage)
 
-def behaviour_usage_across_strains(label_info_file, max_label=None):
+def behaviour_usage_across_strains(label_info_file):
     with open(label_info_file, 'rb') as f:
         label_info = joblib.load(f)
     N = len(label_info['Strain'])
@@ -285,7 +292,7 @@ def behaviour_usage_across_strains(label_info_file, max_label=None):
     }
 
     for i in range(N):
-        usage = behaviour_proportion(label_info['Labels'][i], max_label)
+        usage = behaviour_proportion(label_info['Labels'][i])
 
         for behaviour, idxs in BEHAVIOUR_LABELS.items():
             behaviour_usage['Behaviour'].append(behaviour)
@@ -384,24 +391,74 @@ def autocorr():
     results = Parallel(n_jobs=-1)(delayed(calculate_autocorr)(data, bsoid, t) for data in fdata)
     results = np.vstack(results)
     np.save('/home/laadd/auto_corr.npy', results)
+
+def group_stats(stats):
+    grp_stats = {}
+
+    for idx in range(get_max_label() + 1):
+        grp_label, diff_label = idx_2_behaviour(idx, diff=False), idx_2_behaviour(idx, diff=True)
+
+        if grp_label not in grp_stats:
+            grp_stats[grp_label] = {
+                'Strain': stats[diff_label]['Strain'],
+                'Sex': stats[diff_label]['Sex'],
+                'Total Duration': stats[diff_label]['Total Duration'],
+                'Average Bout Length': stats[diff_label]['Average Bout Length'],
+                'No. of Bouts': stats[diff_label]['No. of Bouts']
+            }
+        else:
+            assert stats[diff_label]['Strain'] == grp_stats[grp_label]['Strain'], '(FATAL) mismatch in order of strains when grouping'
+            assert stats[diff_label]['Sex'] == grp_stats[grp_label]['Sex'], '(FATAL) mismatch in order of strains when grouping'
+            
+            for metric in ['Total Duration', 'No. of Bouts']:
+                grp_stats[grp_label][metric] = [x + stats[diff_label][metric][i] for i, x in enumerate(grp_stats[grp_label][metric])]
+            
+            grp_stats[grp_label]['Average Bout Length'] = [x / y if y > 0 else 0 for x, y in zip(grp_stats[grp_label]['Total Duration'], grp_stats[grp_label]['No. of Bouts'])]
+    return grp_stats
+
+def calculate_PVE(stats, metric):
+    PVE = {}
+    for i in range(get_max_label() + 1):
+        behaviour = idx_2_behaviour(i, diff=True)
+        strainwise_data = {}
+
+        N, T, zbar = 0, 0, 0
+        for i, strain in enumerate(stats[behaviour]['Strain']):
+            if strain in strainwise_data:
+                strainwise_data[strain].append(stats[behaviour][metric][i])
+            else:
+                strainwise_data[strain] = [stats[behaviour][metric][i]]
+                N += 1
+            T += 1
+            zbar += stats[behaviour][metric][i]
+        zbar /= T
+
+        SS_s, SS_e, n0 = 0, 0, 0
+        for _, data in strainwise_data.items():
+            data = np.array(data)
+            SS_s += data.size * ((data.mean() - zbar) ** 2)
+            SS_e += data.size * data.var()
+            n0 += data.size ** 2
+
+        MS_s = SS_s / (N - 1)
+        MS_e = SS_e / (T - N)
+        n0 = (T - (n0 / T)) / (N - 1)
+
+        Var_s = (MS_s - MS_e) / n0
+        Var_z = Var_s + MS_e
+
+        pve = Var_s / Var_z
+        se_pve = (2 * ((1 - pve) ** 2) * ((1 + (n0 - 1) * pve) ** 2)) / (N * n0 * (n0 - 1))
+        PVE[behaviour] = (pve, 0.5 * (se_pve ** 0.5))
     
+    return PVE
+
 if __name__ == "__main__":
-    # lookup_file = '/projects/kumar-lab/StrainSurveyPoses/StrainSurveyMetaList_2019-04-09.tsv'
-    # lookup_file = 'bsoid_strain_data.csv'
-    # clf_file = f'{BASE_DIR}/output/dis_classifiers.sav'
-
-    # info = extract_labels_for_all_mice(lookup_file, clf_file, data_dir='/projects/kumar-lab/StrainSurveyPoses')
-    # info = extract_labels_for_all_mice(lookup_file, clf_file)
-    # with open(f'{BASE_DIR}/analysis/label_info.pkl', 'wb') as f:
-    #     joblib.dump(info, f)
-
-    # label_info_file = f'{BASE_DIR}/analysis/label_info.pkl'
-    # stats_file = f'{BASE_DIR}/analysis/stats.pkl'
-    # stats = all_behaviour_info_for_all_strains(label_info_file, max_label=19)
-    # with open(stats_file, 'wb') as f:
-    #     joblib.dump(stats, f)
-
-    # usage_data = behaviour_usage_across_strains(stats_file, min_threshold=0.01)
-    # trajs = get_behaviour_trajectories(lookup_file, clf_file, 20, 20, data_dir=None, min_bout_len=500)
-
-    autocorr()
+    base_dir = 'D:/IIT/DDP/data/'
+    label_info_file = base_dir + 'analysis/label_info.pkl'
+    stats_file = base_dir + 'analysis/stats.pkl'
+    plot_dir = 'C:/Users/dhruvlaad/Desktop/plots'
+    
+    behaviour_stats = all_behaviour_info_for_all_strains(label_info_file)
+    with open(stats_file, 'wb') as f:
+        joblib.dump(behaviour_stats, f)   
