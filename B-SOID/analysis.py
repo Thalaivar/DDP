@@ -79,7 +79,7 @@ def get_mouse_raw_data(metadata: dict, pose_dir=None):
     f.close()
 
     # trim start and end
-    data = _bsoid_format(conf, pos)
+    data = bsoid_format(conf, pos)
     fdata, perc_filt = likelihood_filter(data, fps=FPS, end_trim=2, clip_window=0, conf_threshold=0.3)
 
     strain, mouse_id = metadata['Strain'], metadata['MouseID']
@@ -176,6 +176,44 @@ def transition_matrix_from_assay(labels):
 
     return tmat
 
+def get_usage_for_strain(label_info_file, strain=None):
+    with open(label_info_file, 'rb') as f:
+        label_info = joblib.load(f)
+    N = len(label_info['Strain'])
+    
+    if strain is not None:
+        labels = [label_info['Labels'][i] for i in range(N) if label_info['Strain'][i] == strain]
+    else:
+        labels = label_info['Labels']
+    del label_info
+    
+    usage_data = Parallel(n_jobs=-1)(delayed(behaviour_proportion)(labs) for labs in labels)
+#     usage_data = np.vstack([behaviour_proportion(labs, max_label) for labs in labels])
+    usage_data = np.vstack(usage_data)
+    usage_data = usage_data.sum(axis=0)/usage_data.shape[0]
+    return usage_data
+    
+def get_tmat_for_strain(label_info_file, strain=None):
+    with open(label_info_file, 'rb') as f:
+        label_info = joblib.load(f)
+    N = len(label_info['Strain'])
+    
+    if strain is not None:
+        labels = [label_info['Labels'][i] for i in range(N) if label_info['Strain'][i] == strain]
+    else:
+        labels = label_info['Labels']
+    del label_info
+    
+#     tmat_data = [transition_matrix_from_assay(labs, max_label) for labs in labels]
+    tmat_data = Parallel(n_jobs=-1)(delayed(transition_matrix_from_assay)(labs) for labs in labels)
+            
+    tmat = tmat_data[0]
+    for i in range(1, len(tmat_data)):
+        tmat += tmat_data[i]
+    
+    tmat = tmat / len(tmat_data)
+    return tmat
+    
 def behaviour_proportion(labels):
     n_lab = get_max_label() + 1
     
@@ -452,6 +490,60 @@ def calculate_PVE(stats, metric):
         PVE[behaviour] = (pve, 0.5 * (se_pve ** 0.5))
     
     return PVE
+
+def GEMMA_csv_input(label_info_file, input_csv):
+    label_info = joblib.load(open(label_info_file, 'rb'))
+    fields = ('Strain', 'Sex', 'MouseID', 'NetworkFilename')
+    while len(label_info['Strain']) > 0:
+        key = [label_info[f][0] + ':' for f in fields]
+        key = ''.join(key)[:-1]
+        label_info[key] = label_info['Labels'][0]
+
+        for f in fields:
+            del label_info[f][0]
+        del label_info['Labels'][0]
+    
+    if input_csv.endswith('.tsv'):
+        data = pd.read_csv(input_csv, sep='\t')    
+    else:
+        data = pd.read_csv(input_csv)
+    N = data.shape[0]
+
+    phenotypes = []
+    for lab, idxs in BEHAVIOUR_LABELS.items():
+        for i in range(len(idxs)):
+            phenotypes.append(f'{lab}_{i}_TD')
+            phenotypes.append(f'{lab}_{i}_ABL')
+            phenotypes.append(f'{lab}_{i}_NB')
+    new_cols = list(data.columns)
+    new_cols.extend(phenotypes)
+    
+    print('Preparing input csv for GEMMA...')
+    data = data.reindex(columns=new_cols)
+    drop_idxs = []
+    for i in tqdm(range(N)):
+        metadata = dict(data.iloc[i])
+        key = [metadata[f] + ':' for f in fields]
+        key = ''.join(key)[:-1]
+
+        if key in label_info:
+            stats = get_stats_for_all_labels(label_info[key])
+            for p in phenotypes:
+                lab, idx, metric = p.split('_')
+                data.at[i, p] = stats[f'{lab} #{idx}'][metric]            
+        else:
+            drop_idxs.append(i)
+
+    data = data.drop(drop_idxs)
+    return data
+
+            
+        
+    
+
+
+    
+
 
 if __name__ == "__main__":
     base_dir = 'D:/IIT/DDP/data/'
