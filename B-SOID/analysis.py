@@ -518,7 +518,6 @@ def GEMMA_csv_input(label_info_file, input_csv):
     new_cols = list(data.columns)
     new_cols.extend(phenotypes)
     
-    print('Preparing input csv for GEMMA...')
     data = data.reindex(columns=new_cols)
     drop_idxs = []
     for i in tqdm(range(N)):
@@ -537,13 +536,29 @@ def GEMMA_csv_input(label_info_file, input_csv):
     data = data.drop(drop_idxs)
     return data
 
-            
-        
+def GEMMA_config_file():
+    import yaml
     
-
-
+    config = {}
     
+    config["strain"] = "Strain"
+    config["sex"] = "Sex"
+    
+    config["phenotypes"] = []
+    for lab, idxs in BEHAVIOUR_LABELS.items():
+        for i in range(len(idxs)):
+            key = f"{lab}n{i}"
+            config["phenotypes"].append({f"{lab}_{i}_TD": {"papername": f"{lab}n{i}_TD", "group": lab}})
+            config["phenotypes"].append({f"{lab}_{i}_ABL": {"papername": f"{lab}n{i}_ABL", "group": lab}})
+            config["phenotypes"].append({f"{lab}_{i}_NB": {"papername": f"{lab}n{i}_NB", "group": lab}})
+    
+    config["covar"] = "Sex"
 
+    with open('./default_GEMMA.yaml', 'r') as f:
+        config.update(yaml.load(f, Loader=yaml.FullLoader))
+
+    with open('./gemma_config.yaml', 'w') as f:
+        yaml.dump(config, f)
 
 if __name__ == "__main__":
     base_dir = 'D:/IIT/DDP/data/'
