@@ -560,6 +560,19 @@ def GEMMA_config_file():
     with open('./gemma_config.yaml', 'w') as f:
         yaml.dump(config, f)
 
+def get_random_keypoint_data(data_csv, pose_dir=None):
+    df = pd.read_csv(data_csv)
+    N = df.shape[0]
+
+    metadata = dict(df.iloc[np.random.randint(0, N)])
+    fdata = get_mouse_raw_data(metadata, pose_dir)
+
+    fname = "~/" + metadata["Strain"] + "-" + metadata["Sex"] + "-" + metadata["MouseID"] + ".pkl"
+    with open(fname, "rb") as f:
+        joblib.dump(fdata, fname)
+
+    print("File saved to: {fname}")
+
 if __name__ == "__main__":
     base_dir = 'D:/IIT/DDP/data/'
     label_info_file = base_dir + 'analysis/label_info.pkl'

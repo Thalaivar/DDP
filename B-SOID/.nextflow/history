@@ -1,0 +1,2 @@
+2021-03-06 01:39:43	-	angry_lamport	-	5d2caac2637da442f4b9648ac1eb1f35bd1136cf	b277992a-f845-441e-9473-e83a75e5bf25	nextflow run TheJacksonLaboratory/mousegwas --yaml gemma_config.yaml --input gemma_input.csv --outdir gemma_output/
+2021-03-06 01:46:51	-	exotic_einstein	-	5d2caac2637da442f4b9648ac1eb1f35bd1136cf	5b1d7706-e6d7-46df-b6b5-576c8a2eedf4	nextflow run TheJacksonLaboratory/mousegwas --yaml gemma_config.yaml --input gemma_input.csv --outdir gemma_output/ -profile slurm,singularity

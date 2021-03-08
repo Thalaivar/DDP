@@ -1,3 +1,5 @@
+from itertools import combinations, permutations
+import math
 import networkx as nx
 import numpy as np
 import seaborn as sns
@@ -9,15 +11,15 @@ from tqdm import tqdm
 from analysis import *
 from joblib import delayed, Parallel
 
-# base_dir = '/Users/dhruvlaad/IIT/DDP/data/'
-base_dir = 'D:/IIT/DDP/data/'
+base_dir = '/Users/dhruvlaad/IIT/DDP/data/'
+# base_dir = 'D:/IIT/DDP/data/'
 label_info_file = base_dir + 'analysis/label_info.pkl'
 stats_file = base_dir + 'analysis/stats.pkl'
 # plot_dir = 'C:/Users/dhruvlaad/Desktop/plots'
 plot_dir = './plots/'
 
-with open(stats_file, 'rb') as f:
-    behaviour_stats = joblib.load(f)
+# with open(stats_file, 'rb') as f:
+#     behaviour_stats = joblib.load(f)
 # behaviour_stats = all_behaviour_info_for_all_strains(label_info_file)
 # with open(stats_file, 'wb') as f:
 #     joblib.dump(behaviour_stats, f)   
@@ -191,7 +193,7 @@ def bin_wts(wt, bins):
 
 def tnet_from_tmat(tmat, behaviour_usage, diff_graph=False):        
     if diff_graph:
-        bins = [-0.1, -0.05, -0.025, 0, 0.025, 0.05, 0.1]
+        bins = [-0.05, -0.025, -0.01, 0, 0.01, 0.025, 0.05]
     else:
         bins = [0, 0.025, 0.075, 0.15]
 
@@ -215,22 +217,22 @@ def tnet_from_tmat(tmat, behaviour_usage, diff_graph=False):
     widths = [edge_wts[bin_wts(G[u][v][0]['weight'], bins)] for u, v in G.edges()]
     return G, widths, bins
 
-def behavioural_statemap_for_strain(label_info_file, strain=None):
+def behavioural_statemap_for_strain(label_info_file, strain=None, draw=True):
+    fig, ax = plt.subplots(figsize=(12, 12))
     tmat = get_tmat_for_strain(label_info_file, strain)
     usage = get_usage_for_strain(label_info_file, strain)
     G, widths, bins = tnet_from_tmat(tmat, usage, diff_graph=False)
-    nx.draw(G2, pos=pos, node_size=2000*usage2, connectionstyle='bar, fraction = 0.01', edge_color=pos_color, edgecolors='k', node_color='white', width=widths2, arrowsize=5)
-
-def diff_statemap_for_strains(label_info_file, strain1=None, strain2=None, pos=None):
-    assert not strain1 and not strain2, "At least one of the strains need to be specified"
-
     neg_color = tuple([x/255 for x in [189, 27, 15, 0.85 * 255]])
     pos_color = tuple([x / 255 for x in [18 ,63, 161 ,0.85 * 255]])
+    if draw:
+        nx.draw(G, ax=ax, pos=nx.spectral_layout(G), node_size=2000*usage, connectionstyle='bar, fraction = 0.01', edge_color=pos_color, edgecolors='k', node_color='white', width=widths, arrowsize=5)
+        plt.show()
+    return G
 
-    usage = get_usage_for_strain(label_info_file, strain1) - get_usage_for_strain(label_info_file, strain2)
-    tmat = get_tmat_for_strain(label_info_file, strain1) - get_tmat_for_strain(label_info_file, strain2)
+def diff_statemap_for_strains(usage, tmat, ax, pos=None):
+    neg_color = tuple([x/255 for x in [189, 27, 15, 0.85 * 255]])
+    pos_color = tuple([x / 255 for x in [18 ,63, 161 ,0.85 * 255]])
     G, widths, bins = tnet_from_tmat(tmat, usage, diff_graph=True)
-    
     node_colors = []
     for i in range(usage.shape[0]):
         if usage[i] < 0:
@@ -247,6 +249,7 @@ def diff_statemap_for_strains(label_info_file, strain1=None, strain2=None, pos=N
     pos = nx.spectral_layout(G) if pos is None else pos
     nx.draw(
             G, 
+            ax=ax,
             pos=pos, 
             node_size=2000*usage,
             connectionstyle='bar, fraction = 0.01', 
@@ -256,7 +259,31 @@ def diff_statemap_for_strains(label_info_file, strain1=None, strain2=None, pos=N
             width=widths,
             arrowsize=5
         )
+    return ax
 
+def statemap_scatter_plot(strain_list, pos=None):
+    data = {}
+    for i in tqdm(range(len(strain_list))):
+        data[strain_list[i]] = (
+                    get_usage_for_strain(label_info_file, strain_list[i]), 
+                    get_tmat_for_strain(label_info_file, strain_list[i])
+                )
+    
+    N = len(strain_list) * (len(strain_list) - 1) / 2
+    N = int(N ** 0.5)
+    fig, ax = plt.subplots(N, N, figsize=(12,12))
+    neg_color = tuple([x/255 for x in [189, 27, 15, 0.85 * 255]])
+    pos_color = tuple([x / 255 for x in [18 ,63, 161 ,0.85 * 255]])
+    
+    usage = [data[s1][0] - data[s2][0] for s1, s2 in combinations(strain_list, 2)]
+    tmat = [data[s1][1] - data[s2][1] for s1, s2 in combinations(strain_list, 2)]
+    k = 0
+    for i in range(N):
+        for j in range(N):
+            diff_statemap_for_strains(usage[k], tmat[k], ax[i][j], pos)
+            k += 1
+    
+    plt.show()
 
 def ethogram_plot(label_info_file, metadata=None):
     with open(label_info_file, 'rb') as f:
