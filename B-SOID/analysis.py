@@ -571,12 +571,12 @@ def get_random_keypoint_data(data_csv, data_dir):
     pose_dir, _ = get_pose_data_dir(data_dir, metadata["NetworkFilename"])
     fdata = get_mouse_raw_data(metadata, pose_dir)
 
-    metadata["Strain"] = metadata["Strain"].replace("/", "#")
-    fname = "/home/laadd/" + metadata["Strain"] + "-" + metadata["Sex"] + "-" + metadata["MouseID"] + ".pkl"
+    strain = metadata["Strain"].replace("/", "#")
+    fname = "/home/laadd/" + strain + "-" + metadata["Sex"] + "-" + metadata["MouseID"] + ".pkl"
     with open(fname, "wb") as f:
-        joblib.dump(fdata, fname)
+        joblib.dump([fdata, metadata], fname)
 
-    print("File saved to: {fname}")
+    print(f"File saved to: {fname}")
 
 if __name__ == "__main__":
     base_dir = 'D:/IIT/DDP/data/'

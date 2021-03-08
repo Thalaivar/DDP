@@ -1,3 +1,5 @@
+from BSOID.features.displacement_feats import window_extracted_feats
+from BSOID.preprocessing import windowed_feats
 from itertools import combinations, permutations
 import math
 import networkx as nx
@@ -285,6 +287,50 @@ def statemap_scatter_plot(strain_list, pos=None):
     
     plt.show()
 
+def plot_keypoints(keypoint_file, clf, behaviour):
+    with open(keypoint_file, "rb") as f:
+        fdata = joblib.load(keypoint_file)
+    
+    feats = frameshift_features(fdata, STRIDE_WINDOW, FPS, extract_feats, window_extracted_feats)
+    labels = frameshift_predict(feats, clf, STRIDE_WINDOW)
+    # x = windowed_feats(fdata["x"], STRIDE_WINDOW, mode="mean")
+    # y = windowed_feats(fdata["y"], STRIDE_WINDOW, mode="mean")
+    x, y = fdata['x'], fdata['y']
+    if abs(len(labels) - x.shape[0]) <= STRIDE_WINDOW:
+        x, y = x[:len(labels), :], y[:len(labels), :]
+    else:
+        raise ValueError(f"mismatch in no. of labels ({len(labels)}) and no. of datapoints ({x.shape[0]})")
+    HEAD, BASE_NECK, CENTER_SPINE, HINDPAW1, HINDPAW2, BASE_TAIL, MID_TAIL, TIP_TAIL = np.arange(8)
+    points = [HEAD, BASE_NECK, CENTER_SPINE, HINDPAW1, HINDPAW2, BASE_TAIL, MID_TAIL, TIP_TAIL]
+    points.remove(CENTER_SPINE)
+    for p in points:
+        x[:,p] = x[:,p] - x[:,CENTER_SPINE]
+        y[:,p] = y[:,p] - y[:,CENTER_SPINE]
+
+    # find longest bout for given behaviour
+    idx2group, i, maxlen = idx2group_map(), 0, [0, None, None]
+    while i < len(labels):
+        if idx2group[labels[i]] == idx2group[behaviour]:
+            j = i + 1
+            while j < len(labels) and labels[j] == labels[i]:
+                j += 1
+            
+            maxlen = [(j - i + 1), i, j] if (j - i + 1) > maxlen[0] else maxlen
+        
+            i = j
+        else:
+            i += 1
+    
+    i, j = maxlen[1:]
+    print(maxlen)
+    t = np.repeat(np.reshape(np.arange((j-i+1)), (1, j-i+1)), x.shape[1], 0)
+    fig, ax = plt.subplots(2, 1, figsize=(8, 12))
+    cmap = mpl.cm.get_cmap('tab20')
+    c = [cmap(x) for x in range(x.shape[1])]
+    ax[0].plot(t, x[i:j+1,:].T, c)
+    ax[1].plot(t, y[i:j+1,:].T, c)
+    plt.show()
+
 def ethogram_plot(label_info_file, metadata=None):
     with open(label_info_file, 'rb') as f:
         info = joblib.load(f)
@@ -331,12 +377,18 @@ if __name__ == '__main__':
     # preliminary_metrics(behaviour_stats)
     # samples_explained_by_behaviours(label_info_file)
 
-    label_info_file = 'D:/IIT/DDP/data/analysis/label_info.pkl'
-    metadata = {
-        'NetworkFilename': 'LL6-B2B/2017-11-25_SPD/B6J_Male_S6938572M-3-PSY.avi',
-        'Strain': 'C57BL/6J',
-        'MouseID': 'B6J_Male_S6938572M-3-PSY',
-        'Sex': 'M'
-    }
-    ethogram_plot(label_info_file, metadata)
+    # label_info_file = 'D:/IIT/DDP/data/analysis/label_info.pkl'
+    # metadata = {
+    #     'NetworkFilename': 'LL6-B2B/2017-11-25_SPD/B6J_Male_S6938572M-3-PSY.avi',
+    #     'Strain': 'C57BL/6J',
+    #     'MouseID': 'B6J_Male_S6938572M-3-PSY',
+    #     'Sex': 'M'
+    # }
+    # ethogram_plot(label_info_file, metadata)
 
+    clf_file = "/Users/dhruvlaad/IIT/DDP/data/output/dis_classifiers.sav"
+    with open(clf_file, "rb") as f:
+        clf = joblib.load(f)
+    
+    keypoint_file = "/Users/dhruvlaad/IIT/DDP/data/analysis/NZW#LacJ-M-LL4-1_001058-M-MP16-8-42444-5-S193.pkl"
+    plot_keypoints(keypoint_file, clf, BEHAVIOUR_LABELS["Run"][0])
