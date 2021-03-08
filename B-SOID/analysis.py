@@ -573,7 +573,7 @@ def get_random_keypoint_data(data_csv, data_dir):
 
     metadata["Strain"] = metadata["Strain"].replace("/", "#")
     fname = "~/" + metadata["Strain"] + "-" + metadata["Sex"] + "-" + metadata["MouseID"] + ".pkl"
-    with open(fname, "rb") as f:
+    with open(fname, "wb") as f:
         joblib.dump(fdata, fname)
 
     print("File saved to: {fname}")
