@@ -560,7 +560,7 @@ def GEMMA_config_file():
     with open('./gemma_config.yaml', 'w') as f:
         yaml.dump(config, f)
 
-def get_random_keypoint_data(data_csv, pose_dir=None):
+def get_random_keypoint_data(data_csv, data_dir):
     if data_csv.endswith(".tsv"):
         df = pd.read_csv(data_csv, sep="\t")
     else:
@@ -568,6 +568,7 @@ def get_random_keypoint_data(data_csv, pose_dir=None):
     N = df.shape[0]
 
     metadata = dict(df.iloc[np.random.randint(0, N)])
+    pose_dir, _ = get_pose_data_dir(data_dir, metadata['NetworkFilename'])
     fdata = get_mouse_raw_data(metadata, pose_dir)
 
     fname = "~/" + metadata["Strain"] + "-" + metadata["Sex"] + "-" + metadata["MouseID"] + ".pkl"
