@@ -561,7 +561,10 @@ def GEMMA_config_file():
         yaml.dump(config, f)
 
 def get_random_keypoint_data(data_csv, pose_dir=None):
-    df = pd.read_csv(data_csv)
+    if data_csv.endswith(".tsv"):
+        df = pd.read_csv(data_csv, sep="\t")
+    else:
+        df = pd.read_csv(data_csv)
     N = df.shape[0]
 
     metadata = dict(df.iloc[np.random.randint(0, N)])
