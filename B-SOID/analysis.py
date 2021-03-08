@@ -568,9 +568,10 @@ def get_random_keypoint_data(data_csv, data_dir):
     N = df.shape[0]
 
     metadata = dict(df.iloc[np.random.randint(0, N)])
-    pose_dir, _ = get_pose_data_dir(data_dir, metadata['NetworkFilename'])
+    pose_dir, _ = get_pose_data_dir(data_dir, metadata["NetworkFilename"])
     fdata = get_mouse_raw_data(metadata, pose_dir)
 
+    metadata["Strain"] = metadata["Strain"].replace("/", "#")
     fname = "~/" + metadata["Strain"] + "-" + metadata["Sex"] + "-" + metadata["MouseID"] + ".pkl"
     with open(fname, "rb") as f:
         joblib.dump(fdata, fname)
