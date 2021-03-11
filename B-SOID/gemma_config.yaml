@@ -35,6 +35,15 @@ F1:
 confSNPs:
 - rs32105080
 covar: Sex
+groups:
+- Groom
+- Run
+- Walk
+- CW-Turn
+- CCW-Turn
+- Point
+- Rear
+- N/A
 phenotypes:
 - Groom_0_TD:
     group: Groom

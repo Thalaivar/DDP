@@ -534,9 +534,9 @@ def GEMMA_csv_input(label_info_file, input_csv):
             drop_idxs.append(i)
 
     data = data.drop(drop_idxs)
-    return data
+    data.to_csv('./gemma_input.csv', index=False)
 
-def GEMMA_config_file():
+def GEMMA_config_files():
     import yaml
     
     config = {}
@@ -545,12 +545,14 @@ def GEMMA_config_file():
     config["sex"] = "Sex"
     
     config["phenotypes"] = []
+    config["groups"] = []
     for lab, idxs in BEHAVIOUR_LABELS.items():
         for i in range(len(idxs)):
             key = f"{lab}n{i}"
             config["phenotypes"].append({f"{lab}_{i}_TD": {"papername": f"{lab}n{i}_TD", "group": lab}})
             config["phenotypes"].append({f"{lab}_{i}_ABL": {"papername": f"{lab}n{i}_ABL", "group": lab}})
             config["phenotypes"].append({f"{lab}_{i}_NB": {"papername": f"{lab}n{i}_NB", "group": lab}})
+        config["groups"].append(lab)
     
     config["covar"] = "Sex"
 
@@ -559,6 +561,14 @@ def GEMMA_config_file():
 
     with open('./gemma_config.yaml', 'w') as f:
         yaml.dump(config, f)
+
+    import random
+    config["phenotypes"] = random.sample(config["phenotypes"], 1)[0]
+    config["groups"] = [config["phenotypes"][list(config["phenotypes"].keys())[0]]["group"]]
+
+    with open('./gemma_shuffle.yaml', 'w') as f:
+        yaml.dump(config, f)
+    
 
 def get_random_keypoint_data(data_csv, data_dir):
     if data_csv.endswith(".tsv"):
@@ -579,11 +589,12 @@ def get_random_keypoint_data(data_csv, data_dir):
     print(f"File saved to: {fname}")
 
 if __name__ == "__main__":
-    base_dir = 'D:/IIT/DDP/data/'
-    label_info_file = base_dir + 'analysis/label_info.pkl'
-    stats_file = base_dir + 'analysis/stats.pkl'
-    plot_dir = 'C:/Users/dhruvlaad/Desktop/plots'
+    label_info_file = '/Users/dhruvlaad/IIT/DDP/data/analysis/label_info.pkl'
+    # stats_file = base_dir + 'analysis/stats.pkl'
+    # plot_dir = 'C:/Users/dhruvlaad/Desktop/plots'
     
-    behaviour_stats = all_behaviour_info_for_all_strains(label_info_file)
-    with open(stats_file, 'wb') as f:
-        joblib.dump(behaviour_stats, f)   
+    # behaviour_stats = all_behaviour_info_for_all_strains(label_info_file)
+    # with open(stats_file, 'wb') as f:
+    #     joblib.dump(behaviour_stats, f)   
+
+    GEMMA_csv_input(label_info_file, input_csv)
