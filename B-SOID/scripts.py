@@ -6,8 +6,7 @@ import matplotlib.pyplot as plt
 from BSOID.bsoid import BSOID
 from analysis import *
 
-logging.basicConfig(level=logging.INFO)
-
+logging.basicConfig(level=logging.INFO, filename='training.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
 
 # model_load_params = None
 MODEL_LOAD_PARAMS = {'run_id': 'dis', 'base_dir': '/home/laadd/data'}
