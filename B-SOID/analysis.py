@@ -1,3 +1,4 @@
+from pickle import STRING
 from typing import MutableMapping
 from numpy.core.fromnumeric import mean
 from numpy.lib.function_base import diff
@@ -570,23 +571,56 @@ def GEMMA_config_files():
         yaml.dump(config, f)
     
 
-def get_random_keypoint_data(data_csv, data_dir):
+def get_random_keypoint_data(data_csv, data_dir, clf):
     if data_csv.endswith(".tsv"):
         df = pd.read_csv(data_csv, sep="\t")
     else:
         df = pd.read_csv(data_csv)
     N = df.shape[0]
 
-    metadata = dict(df.iloc[np.random.randint(0, N)])
-    pose_dir, _ = get_pose_data_dir(data_dir, metadata["NetworkFilename"])
-    fdata = get_mouse_raw_data(metadata, pose_dir)
+    import pysftp
+    while True:
+        metadata = dict(df.iloc[np.random.randint(0, N, 1)[0]])
+        try:
+            pose_dir, _ = get_pose_data_dir(data_dir, metadata['NetworkFilename'])
+            _, _, movie_name = metadata['NetworkFilename'].split('/')
+            filename = f'{pose_dir}/{movie_name[0:-4]}_pose_est_v2.h5'    
+            with pysftp.Connection('login.sumner.jax.org', username='laadd', password='CuppY1798CakE@') as sftp:
+                sftp.get(filename)
+            break
+        except:
+            pass
 
-    strain = metadata["Strain"].replace("/", "#")
-    fname = "/home/laadd/" + strain + "-" + metadata["Sex"] + "-" + metadata["MouseID"] + ".pkl"
-    with open(fname, "wb") as f:
-        joblib.dump([fdata, metadata], fname)
+    f = h5py.File(filename.split('/')[-1], 'r')
+    data = list(f.keys())[0]
+    keys = list(f[data].keys())
+    conf, pos = np.array(f[data][keys[0]]), np.array(f[data][keys[1]])
+    f.close()
 
-    print(f"File saved to: {fname}")
+    # trim start and end
+    data = bsoid_format(conf, pos)
+    fdata, perc_filt = likelihood_filter(data, fps=FPS, end_trim=2, clip_window=0, conf_threshold=0.3)
+
+    strain, mouse_id = metadata['Strain'], metadata['MouseID']
+    if perc_filt > 10:
+        print(f'mouse:{strain}/{mouse_id}: % data filtered from raw data is too high ({perc_filt} %)')
+    
+    data_shape = fdata['x'].shape
+    print(f'preprocessed raw data of shape: {data_shape} for mouse:{strain}/{mouse_id}')
+
+    from BSOID.features.displacement_feats import extract_feats, window_extracted_feats
+    feats = frameshift_features(data, STRIDE_WINDOW, FPS, extract_feats, window_extracted_feats)
+    labels = frameshift_predict(feats, clf, STRIDE_WINDOW)
+
+    metadata["keypoints"] = fdata
+    metadata["feats"] = feats
+    metadata["labels"] = labels
+
+    with open('keypoint_data.pkl', 'wb') as f:
+        joblib.dump(metadata, f)
+    
+    import os
+    os.remove(filename.split('/')[-1])
 
 if __name__ == "__main__":
     label_info_file = '/Users/dhruvlaad/IIT/DDP/data/analysis/label_info.pkl'

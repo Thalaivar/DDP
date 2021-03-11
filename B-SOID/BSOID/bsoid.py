@@ -130,11 +130,13 @@ class BSOID:
 
         return filtered_data
     
-    def load_from_dataset(self, data_lookup_file, data_dir):
-        if data_lookup_file.endswith('.tsv'):
-            data = pd.read_csv(data_lookup_file, sep='\t')    
+    def load_from_dataset(self, input_csv, data_dir, n=None):
+        if input_csv.endswith('.tsv'):
+            data = pd.read_csv(input_csv, sep='\t')    
         else:
-            data = pd.read_csv(data_lookup_file)
+            data = pd.read_csv(input_csv)
+        if n is not None:
+            data = pd.concat([group.sample(n) for _, group in data.groupby("Strain")], axis=1)
         N = data.shape[0]
 
         print('Processing {} files from {}'.format(N, data_dir))
@@ -183,7 +185,7 @@ class BSOID:
 
         # extract geometric features
         if parallel:
-            feats = Parallel(n_jobs=-1)(delayed(extract_feats)(data, self.fps) for data in filtered_data)
+            feats = Parallel(n_jobs=-1)(delayed(extract_feats)(data, self.fps, self.stride_window) for data in filtered_data)
         else:
             feats = []
             for i in tqdm(range(len(filtered_data))):

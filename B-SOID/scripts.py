@@ -13,21 +13,21 @@ logging.basicConfig(level=logging.INFO)
 MODEL_LOAD_PARAMS = {'run_id': 'dis', 'base_dir': '/home/laadd/data'}
 
 def main():
-    # stride_window = round(350 * 30 / 1000)
-    # bsoid_params = MODEL_LOAD_PARAMS
-    # bsoid_params['fps'] = FPS
-    # bsoid_params['stride_window'] = stride_window
-    # bsoid_params['conf_threshold'] = 0.3
-    # bsoid = BSOID(**bsoid_params)
-    # bsoid.save()
+    stride_window = round(350 * 30 / 1000)
+    bsoid_params = MODEL_LOAD_PARAMS
+    bsoid_params['fps'] = FPS
+    bsoid_params['stride_window'] = stride_window
+    bsoid_params['conf_threshold'] = 0.3
+    bsoid = BSOID(**bsoid_params)
+    bsoid.save()
 
-    bsoid = BSOID.load_config(**MODEL_LOAD_PARAMS)
+    # bsoid = BSOID.load_config(**MODEL_LOAD_PARAMS)
 
     # bsoid.get_data(parallel=True)
     # bsoid.process_csvs()
 
-    # lookup_file = '/projects/kumar-lab/StrainSurveyPoses/StrainSurveyMetaList_2019-04-09.tsv'
-    # bsoid.load_from_dataset(lookup_file, data_dir='/projects/kumar-lab/StrainSurveyPoses')
+    lookup_file = '/projects/kumar-lab/StrainSurveyPoses/StrainSurveyMetaList_2019-04-09.tsv'
+    bsoid.load_from_dataset(lookup_file, data_dir='/projects/kumar-lab/StrainSurveyPoses')
 
     bsoid.features_from_points(parallel=True)
 

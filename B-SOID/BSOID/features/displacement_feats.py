@@ -17,9 +17,10 @@ def extract_feats(filtered_data, fps, stride_window=None):
 
     assert x_raw.shape == y_raw.shape
     N, n_dpoints = x_raw.shape
-    logging.debug('extracting features from {} samples of {} points'.format(*x_raw.shape))
 
     win_len = np.int(np.round(0.05 / (1 / fps)) * 2 - 1) if stride_window is None else stride_window // 2
+    logging.debug('feature extraction from {} samples of {} points with {} ms smoothing window'.format(*x_raw.shape, round(win_len * 1000 / 30)))
+    
     x, y = np.zeros_like(x_raw), np.zeros_like(y_raw)
     for i in range(x.shape[1]):
         x[:,i] = smoothen_data(x_raw[:,i], win_len)
