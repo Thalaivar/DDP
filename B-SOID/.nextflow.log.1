@@ -1,0 +1,45 @@
+Mar-11 07:04:29.988 [main] DEBUG nextflow.cli.Launcher - $> nextflow run TheJacksonLaboratory/mousegwas --yaml gemma_config.yaml --input gemma_input.csv --outdir /home/laadd/gemma_output -profile slurm,singularity
+Mar-11 07:04:30.122 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 20.10.0
+Mar-11 07:04:30.951 [main] DEBUG nextflow.scm.AssetManager - Git config: /home/laadd/.nextflow/assets/TheJacksonLaboratory/mousegwas/.git/config; branch: master; remote: origin; url: https://github.com/TheJacksonLaboratory/mousegwas.git
+Mar-11 07:04:30.961 [main] DEBUG nextflow.scm.AssetManager - Git config: /home/laadd/.nextflow/assets/TheJacksonLaboratory/mousegwas/.git/config; branch: master; remote: origin; url: https://github.com/TheJacksonLaboratory/mousegwas.git
+Mar-11 07:04:31.050 [main] INFO  nextflow.cli.CmdRun - Launching `TheJacksonLaboratory/mousegwas` [soggy_mendel] - revision: 5d2caac263 [master]
+Mar-11 07:04:31.361 [main] DEBUG nextflow.config.ConfigBuilder - Found config base: /home/laadd/.nextflow/assets/TheJacksonLaboratory/mousegwas/nextflow.config
+Mar-11 07:04:31.362 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /home/laadd/.nextflow/assets/TheJacksonLaboratory/mousegwas/nextflow.config
+Mar-11 07:04:31.368 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `slurm,singularity`
+Mar-11 07:04:31.445 [main] DEBUG nextflow.config.ConfigBuilder - Available config profiles: [standard, slurm, pbs, singularity]
+Mar-11 07:04:31.494 [main] DEBUG nextflow.Session - Session uuid: 0fd76f5c-65ea-45d7-b12c-9b170e22d2a0
+Mar-11 07:04:31.494 [main] DEBUG nextflow.Session - Run name: soggy_mendel
+Mar-11 07:04:31.495 [main] DEBUG nextflow.Session - Executor pool size: 8
+Mar-11 07:04:31.506 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 20.10.0 build 5430
+  Created: 01-11-2020 15:14 UTC (10:14 EDT)
+  System: Linux 3.10.0-1062.1.2.el7.x86_64
+  Runtime: Groovy 3.0.5 on OpenJDK 64-Bit Server VM 1.8.0_222-b10
+  Encoding: UTF-8 (ANSI_X3.4-1968)
+  Process: 148446@sumner015 [10.5.36.15]
+  CPUs: 8 - Mem: 754.6 GB (177.9 GB) - Swap: 16 GB (14.4 GB)
+Mar-11 07:04:31.533 [main] DEBUG nextflow.Session - Work-dir: /home/laadd/DDP/B-SOID/work [nfs]
+Mar-11 07:04:31.534 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /home/laadd/.nextflow/assets/TheJacksonLaboratory/mousegwas/bin
+Mar-11 07:04:31.589 [main] DEBUG nextflow.Session - Observer factory: TowerFactory
+Mar-11 07:04:31.591 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Mar-11 07:04:31.764 [main] DEBUG nextflow.Session - Session start invoked
+Mar-11 07:04:32.657 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Mar-11 07:04:32.666 [main] DEBUG nextflow.Session - Workflow process names [dsl1]: collectShf, GWAS, shuffle, postp, runINRICH
+Mar-11 07:04:32.742 [main] DEBUG nextflow.Session - Session aborted -- Cause: Missing `fromPath` parameter
+Mar-11 07:04:32.759 [main] DEBUG nextflow.cli.Launcher - Operation aborted
+nextflow.exception.AbortOperationException: Missing `fromPath` parameter
+	at nextflow.Channel.fromPath(Channel.groovy:253)
+	at nextflow.Channel.fromPath(Channel.groovy)
+	at nextflow.Channel$fromPath.call(Unknown Source)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:47)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:125)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:139)
+	at Script_2432d2d9.runScript(Script_2432d2d9:34)
+	at nextflow.script.BaseScript.runDsl1(BaseScript.groovy:164)
+	at nextflow.script.BaseScript.run(BaseScript.groovy:200)
+	at nextflow.script.ScriptParser.runScript(ScriptParser.groovy:219)
+	at nextflow.script.ScriptRunner.run(ScriptRunner.groovy:219)
+	at nextflow.script.ScriptRunner.execute(ScriptRunner.groovy:127)
+	at nextflow.cli.CmdRun.run(CmdRun.groovy:277)
+	at nextflow.cli.Launcher.run(Launcher.groovy:466)
+	at nextflow.cli.Launcher.main(Launcher.groovy:648)

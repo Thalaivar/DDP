@@ -1,0 +1,839 @@
+Mar-11 02:27:31.093 [main] DEBUG nextflow.cli.Launcher - $> nextflow run TheJacksonLaboratory/mousegwas --yaml gemma_config.yaml --shufyaml gemma_config.yaml --input gemma_input.csv --outdir /home/laadd/gemma_output -profile slurm
+Mar-11 02:27:31.252 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 20.10.0
+Mar-11 02:27:32.285 [main] DEBUG nextflow.scm.AssetManager - Git config: /home/laadd/.nextflow/assets/TheJacksonLaboratory/mousegwas/.git/config; branch: master; remote: origin; url: https://github.com/TheJacksonLaboratory/mousegwas.git
+Mar-11 02:27:32.298 [main] DEBUG nextflow.scm.AssetManager - Git config: /home/laadd/.nextflow/assets/TheJacksonLaboratory/mousegwas/.git/config; branch: master; remote: origin; url: https://github.com/TheJacksonLaboratory/mousegwas.git
+Mar-11 02:27:32.414 [main] INFO  nextflow.cli.CmdRun - Launching `TheJacksonLaboratory/mousegwas` [gloomy_newton] - revision: 5d2caac263 [master]
+Mar-11 02:27:32.768 [main] DEBUG nextflow.config.ConfigBuilder - Found config base: /home/laadd/.nextflow/assets/TheJacksonLaboratory/mousegwas/nextflow.config
+Mar-11 02:27:32.769 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /home/laadd/.nextflow/assets/TheJacksonLaboratory/mousegwas/nextflow.config
+Mar-11 02:27:32.777 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `slurm`
+Mar-11 02:27:32.864 [main] DEBUG nextflow.config.ConfigBuilder - Available config profiles: [standard, slurm, pbs, singularity]
+Mar-11 02:27:32.921 [main] DEBUG nextflow.Session - Session uuid: 83ff2ced-e3cc-4370-bbd0-8603c6c50598
+Mar-11 02:27:32.921 [main] DEBUG nextflow.Session - Run name: gloomy_newton
+Mar-11 02:27:32.922 [main] DEBUG nextflow.Session - Executor pool size: 8
+Mar-11 02:27:32.933 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 20.10.0 build 5430
+  Created: 01-11-2020 15:14 UTC (10:14 EDT)
+  System: Linux 3.10.0-1062.1.2.el7.x86_64
+  Runtime: Groovy 3.0.5 on OpenJDK 64-Bit Server VM 1.8.0_222-b10
+  Encoding: UTF-8 (ANSI_X3.4-1968)
+  Process: 245139@sumner064 [10.5.32.64]
+  CPUs: 8 - Mem: 754.6 GB (100.3 GB) - Swap: 63.9 GB (61.5 GB)
+Mar-11 02:27:32.964 [main] DEBUG nextflow.Session - Work-dir: /home/laadd/DDP/B-SOID/work [nfs]
+Mar-11 02:27:32.964 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /home/laadd/.nextflow/assets/TheJacksonLaboratory/mousegwas/bin
+Mar-11 02:27:33.034 [main] DEBUG nextflow.Session - Observer factory: TowerFactory
+Mar-11 02:27:33.036 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Mar-11 02:27:33.245 [main] DEBUG nextflow.Session - Session start invoked
+Mar-11 02:27:34.262 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Mar-11 02:27:34.270 [main] DEBUG nextflow.Session - Workflow process names [dsl1]: collectShf, GWAS, shuffle, postp, runINRICH
+Mar-11 02:27:34.430 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:mousegwas` matches label `mousegwas` for process with name GWAS
+Mar-11 02:27:34.431 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:long_run` matches label `long_run` for process with name GWAS
+Mar-11 02:27:34.435 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: slurm
+Mar-11 02:27:34.435 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'slurm'
+Mar-11 02:27:34.443 [main] DEBUG nextflow.executor.Executor - [warm up] executor > slurm
+Mar-11 02:27:34.450 [main] DEBUG n.processor.TaskPollingMonitor - Creating task monitor for executor 'slurm' > capacity: 250; pollInterval: 10s; dumpInterval: 5m 
+Mar-11 02:27:34.453 [main] DEBUG n.processor.TaskPollingMonitor - Creating submit rate limit of 2 reqs by 1 seconds
+Mar-11 02:27:34.457 [main] DEBUG n.executor.AbstractGridExecutor - Creating executor 'slurm' > queue-stat-interval: 1m
+Mar-11 02:27:34.558 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:mousegwas` matches label `mousegwas` for process with name shuffle
+Mar-11 02:27:34.564 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:single_cpu` matches label `single_cpu` for process with name shuffle
+Mar-11 02:27:34.566 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: slurm
+Mar-11 02:27:34.566 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'slurm'
+Mar-11 02:27:34.615 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: slurm
+Mar-11 02:27:34.615 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'slurm'
+Mar-11 02:27:34.623 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:mousegwas` matches label `mousegwas` for process with name postp
+Mar-11 02:27:34.624 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:high_mem` matches label `high_mem` for process with name postp
+Mar-11 02:27:34.625 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: slurm
+Mar-11 02:27:34.625 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'slurm'
+Mar-11 02:27:34.686 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:mousegwas` matches label `mousegwas` for process with name runINRICH
+Mar-11 02:27:34.686 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:single_cpu` matches label `single_cpu` for process with name runINRICH
+Mar-11 02:27:34.687 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: slurm
+Mar-11 02:27:34.687 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'slurm'
+Mar-11 02:27:34.713 [main] DEBUG nextflow.processor.TaskProcessor - Creating *combiner* operator for each param(s) at index(es): [1, 2, 3]
+Mar-11 02:27:34.753 [main] DEBUG nextflow.script.ScriptRunner - > Await termination 
+Mar-11 02:27:34.753 [main] DEBUG nextflow.Session - Session await
+Mar-11 02:27:34.965 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (8) > jobId: 6629493; workDir: /home/laadd/DDP/B-SOID/work/f3/fc9a5ada94d468d8c7c2c3e9be8043
+Mar-11 02:27:34.970 [Task submitter] INFO  nextflow.Session - [f3/fc9a5a] Submitted process > shuffle (8)
+Mar-11 02:27:35.037 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (2) > jobId: 6629494; workDir: /home/laadd/DDP/B-SOID/work/67/7b6c47280f1c3419633110a157467d
+Mar-11 02:27:35.038 [Task submitter] INFO  nextflow.Session - [67/7b6c47] Submitted process > shuffle (2)
+Mar-11 02:27:36.054 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (6) > jobId: 6629495; workDir: /home/laadd/DDP/B-SOID/work/5e/5031bb098adc61dfdbc2ff29d55367
+Mar-11 02:27:36.054 [Task submitter] INFO  nextflow.Session - [5e/5031bb] Submitted process > shuffle (6)
+Mar-11 02:27:36.103 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (5) > jobId: 6629496; workDir: /home/laadd/DDP/B-SOID/work/43/4f8dc0b4360a7bd6ccc3642115f62d
+Mar-11 02:27:36.103 [Task submitter] INFO  nextflow.Session - [43/4f8dc0] Submitted process > shuffle (5)
+Mar-11 02:27:36.506 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (4) > jobId: 6629497; workDir: /home/laadd/DDP/B-SOID/work/65/a4e1895297067903f8dbefeac5d6bf
+Mar-11 02:27:36.507 [Task submitter] INFO  nextflow.Session - [65/a4e189] Submitted process > shuffle (4)
+Mar-11 02:27:37.004 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process GWAS (1) > jobId: 6629498; workDir: /home/laadd/DDP/B-SOID/work/5c/252f23e45f197694d4021b9dcb0534
+Mar-11 02:27:37.004 [Task submitter] INFO  nextflow.Session - [5c/252f23] Submitted process > GWAS (1)
+Mar-11 02:27:38.709 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (3) > jobId: 6629499; workDir: /home/laadd/DDP/B-SOID/work/b1/720ccab00fe7defc88d441df8ef524
+Mar-11 02:27:38.710 [Task submitter] INFO  nextflow.Session - [b1/720cca] Submitted process > shuffle (3)
+Mar-11 02:27:38.758 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (1) > jobId: 6629500; workDir: /home/laadd/DDP/B-SOID/work/00/6a43a567888dc1ccdd48022840ff7b
+Mar-11 02:27:38.758 [Task submitter] INFO  nextflow.Session - [00/6a43a5] Submitted process > shuffle (1)
+Mar-11 02:27:38.803 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (7) > jobId: 6629501; workDir: /home/laadd/DDP/B-SOID/work/85/077ef120cc3ba1e314aac1861fe854
+Mar-11 02:27:38.803 [Task submitter] INFO  nextflow.Session - [85/077ef1] Submitted process > shuffle (7)
+Mar-11 02:27:39.957 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (9) > jobId: 6629502; workDir: /home/laadd/DDP/B-SOID/work/37/294b516bf5a5cc4733b51999bd0203
+Mar-11 02:27:39.958 [Task submitter] INFO  nextflow.Session - [37/294b51] Submitted process > shuffle (9)
+Mar-11 02:27:40.006 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (12) > jobId: 6629503; workDir: /home/laadd/DDP/B-SOID/work/c4/c83cbb2b3b630dbff1775243d8a944
+Mar-11 02:27:40.006 [Task submitter] INFO  nextflow.Session - [c4/c83cbb] Submitted process > shuffle (12)
+Mar-11 02:27:40.050 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (11) > jobId: 6629504; workDir: /home/laadd/DDP/B-SOID/work/34/47f7d8f910b9d00d90b0b259d85d2e
+Mar-11 02:27:40.050 [Task submitter] INFO  nextflow.Session - [34/47f7d8] Submitted process > shuffle (11)
+Mar-11 02:27:41.429 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (15) > jobId: 6629505; workDir: /home/laadd/DDP/B-SOID/work/13/af89e71dfd610ef11640319261f516
+Mar-11 02:27:41.430 [Task submitter] INFO  nextflow.Session - [13/af89e7] Submitted process > shuffle (15)
+Mar-11 02:27:41.476 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (13) > jobId: 6629506; workDir: /home/laadd/DDP/B-SOID/work/ef/8b112352f9e0f1164efdfa1be7d515
+Mar-11 02:27:41.476 [Task submitter] INFO  nextflow.Session - [ef/8b1123] Submitted process > shuffle (13)
+Mar-11 02:27:41.517 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (10) > jobId: 6629507; workDir: /home/laadd/DDP/B-SOID/work/17/20ace9837becf8fa24ea653acc664a
+Mar-11 02:27:41.518 [Task submitter] INFO  nextflow.Session - [17/20ace9] Submitted process > shuffle (10)
+Mar-11 02:27:42.805 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (19) > jobId: 6629508; workDir: /home/laadd/DDP/B-SOID/work/34/caa4e838461089a4e9f69521cfcde1
+Mar-11 02:27:42.806 [Task submitter] INFO  nextflow.Session - [34/caa4e8] Submitted process > shuffle (19)
+Mar-11 02:27:42.852 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (16) > jobId: 6629509; workDir: /home/laadd/DDP/B-SOID/work/2a/3f811ed867314ffa04e182a4c41cec
+Mar-11 02:27:42.853 [Task submitter] INFO  nextflow.Session - [2a/3f811e] Submitted process > shuffle (16)
+Mar-11 02:27:42.999 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (17) > jobId: 6629510; workDir: /home/laadd/DDP/B-SOID/work/6d/26b50fbd6f91becd502488b5100e94
+Mar-11 02:27:42.999 [Task submitter] INFO  nextflow.Session - [6d/26b50f] Submitted process > shuffle (17)
+Mar-11 02:27:44.481 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[jobId: 6629493; id: 9; name: shuffle (8); status: COMPLETED; exit: 127; error: -; workDir: /home/laadd/DDP/B-SOID/work/f3/fc9a5ada94d468d8c7c2c3e9be8043 started: 1615447664472; exited: 2021-03-11T07:27:36.715151Z; ]
+Mar-11 02:27:44.505 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (20) > jobId: 6629511; workDir: /home/laadd/DDP/B-SOID/work/0f/26eed7e6b9f21f40bdd78f8e9e29ed
+Mar-11 02:27:44.506 [Task submitter] INFO  nextflow.Session - [0f/26eed7] Submitted process > shuffle (20)
+Mar-11 02:27:44.531 [Task monitor] ERROR nextflow.processor.TaskProcessor - Error executing process > 'shuffle (8)'
+
+Caused by:
+  Process `shuffle (8)` terminated with an error exit status (127)
+
+Command executed:
+
+  Rscript -e 'source(file=system.file("exec/run_GWAS.R", package="mousegwas"))' -i gemma_input.csv -y gemma_config.yaml --basedir outdir -d 10 --nomv --MDA --shuffle  --seed 8
+  cut -f 13 outdir/output/lmm_pheno_*_all_LOCO.assoc.txt |grep -v p_wald |sort -k1g |head -1 > best_8.txt
+
+Command exit status:
+  127
+
+Command output:
+  (empty)
+
+Command error:
+  .command.sh: line 2: Rscript: command not found
+
+Work dir:
+  /home/laadd/DDP/B-SOID/work/f3/fc9a5ada94d468d8c7c2c3e9be8043
+
+Tip: you can try to figure out what's wrong by changing to the process work dir and showing the script file named `.command.sh`
+Mar-11 02:27:44.542 [Task monitor] INFO  nextflow.Session - Execution cancelled -- Finishing pending tasks before exit
+Mar-11 02:27:44.551 [main] DEBUG nextflow.Session - Session await > all process finished
+Mar-11 02:27:44.565 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (18) > jobId: 6629512; workDir: /home/laadd/DDP/B-SOID/work/ea/64544712d57603033302b941da05db
+Mar-11 02:27:44.565 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[jobId: 6629494; id: 3; name: shuffle (2); status: COMPLETED; exit: 127; error: -; workDir: /home/laadd/DDP/B-SOID/work/67/7b6c47280f1c3419633110a157467d started: 1615447664555; exited: 2021-03-11T07:27:37.096099Z; ]
+Mar-11 02:27:44.565 [Task submitter] INFO  nextflow.Session - [ea/645447] Submitted process > shuffle (18)
+Mar-11 02:27:44.571 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[jobId: 6629495; id: 7; name: shuffle (6); status: COMPLETED; exit: 127; error: -; workDir: /home/laadd/DDP/B-SOID/work/5e/5031bb098adc61dfdbc2ff29d55367 started: 1615447664567; exited: 2021-03-11T07:27:38.998417Z; ]
+Mar-11 02:27:44.580 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[jobId: 6629496; id: 6; name: shuffle (5); status: COMPLETED; exit: 127; error: -; workDir: /home/laadd/DDP/B-SOID/work/43/4f8dc0b4360a7bd6ccc3642115f62d started: 1615447664573; exited: 2021-03-11T07:27:39.102356Z; ]
+Mar-11 02:27:44.588 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[jobId: 6629497; id: 5; name: shuffle (4); status: COMPLETED; exit: 127; error: -; workDir: /home/laadd/DDP/B-SOID/work/65/a4e1895297067903f8dbefeac5d6bf started: 1615447664582; exited: 2021-03-11T07:27:40.296455Z; ]
+Mar-11 02:27:44.593 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[jobId: 6629498; id: 1; name: GWAS (1); status: COMPLETED; exit: 127; error: -; workDir: /home/laadd/DDP/B-SOID/work/5c/252f23e45f197694d4021b9dcb0534 started: 1615447664590; exited: 2021-03-11T07:27:40.286224Z; ]
+Mar-11 02:27:44.600 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[jobId: 6629499; id: 4; name: shuffle (3); status: COMPLETED; exit: 127; error: -; workDir: /home/laadd/DDP/B-SOID/work/b1/720ccab00fe7defc88d441df8ef524 started: 1615447664595; exited: 2021-03-11T07:27:40.333302Z; ]
+Mar-11 02:27:44.608 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[jobId: 6629500; id: 2; name: shuffle (1); status: COMPLETED; exit: 127; error: -; workDir: /home/laadd/DDP/B-SOID/work/00/6a43a567888dc1ccdd48022840ff7b started: 1615447664602; exited: 2021-03-11T07:27:40.64012Z; ]
+Mar-11 02:27:44.618 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[jobId: 6629501; id: 8; name: shuffle (7); status: COMPLETED; exit: 127; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/077ef120cc3ba1e314aac1861fe854 started: 1615447664611; exited: 2021-03-11T07:27:41.723786Z; ]
+Mar-11 02:27:44.626 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[jobId: 6629502; id: 10; name: shuffle (9); status: COMPLETED; exit: 127; error: -; workDir: /home/laadd/DDP/B-SOID/work/37/294b516bf5a5cc4733b51999bd0203 started: 1615447664620; exited: 2021-03-11T07:27:41.805107Z; ]
+Mar-11 02:27:44.633 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[jobId: 6629503; id: 13; name: shuffle (12); status: COMPLETED; exit: 127; error: -; workDir: /home/laadd/DDP/B-SOID/work/c4/c83cbb2b3b630dbff1775243d8a944 started: 1615447664628; exited: 2021-03-11T07:27:42.071501Z; ]
+Mar-11 02:27:44.640 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[jobId: 6629504; id: 12; name: shuffle (11); status: COMPLETED; exit: 127; error: -; workDir: /home/laadd/DDP/B-SOID/work/34/47f7d8f910b9d00d90b0b259d85d2e started: 1615447664635; exited: 2021-03-11T07:27:43.127911Z; ]
+Mar-11 02:27:44.645 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[jobId: 6629505; id: 16; name: shuffle (15); status: COMPLETED; exit: 127; error: -; workDir: /home/laadd/DDP/B-SOID/work/13/af89e71dfd610ef11640319261f516 started: 1615447664642; exited: 2021-03-11T07:27:43.077456Z; ]
+Mar-11 02:27:44.652 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[jobId: 6629506; id: 14; name: shuffle (13); status: COMPLETED; exit: 127; error: -; workDir: /home/laadd/DDP/B-SOID/work/ef/8b112352f9e0f1164efdfa1be7d515 started: 1615447664647; exited: 2021-03-11T07:27:43.495313Z; ]
+Mar-11 02:27:54.476 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[jobId: 6629511; id: 21; name: shuffle (20); status: COMPLETED; exit: 127; error: -; workDir: /home/laadd/DDP/B-SOID/work/0f/26eed7e6b9f21f40bdd78f8e9e29ed started: 1615447674468; exited: 2021-03-11T07:27:46.312893Z; ]
+Mar-11 02:27:54.490 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[jobId: 6629512; id: 19; name: shuffle (18); status: COMPLETED; exit: 127; error: -; workDir: /home/laadd/DDP/B-SOID/work/ea/64544712d57603033302b941da05db started: 1615447674480; exited: 2021-03-11T07:27:46.654003Z; ]
+Mar-11 02:28:14.472 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[jobId: 6629507; id: 11; name: shuffle (10); status: COMPLETED; exit: 127; error: -; workDir: /home/laadd/DDP/B-SOID/work/17/20ace9837becf8fa24ea653acc664a started: 1615447664675; exited: 2021-03-11T07:27:44.803827Z; ]
+Mar-11 02:28:14.480 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[jobId: 6629508; id: 20; name: shuffle (19); status: COMPLETED; exit: 127; error: -; workDir: /home/laadd/DDP/B-SOID/work/34/caa4e838461089a4e9f69521cfcde1 started: 1615447664680; exited: 2021-03-11T07:27:44.866436Z; ]
+Mar-11 02:28:14.487 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[jobId: 6629509; id: 17; name: shuffle (16); status: COMPLETED; exit: 127; error: -; workDir: /home/laadd/DDP/B-SOID/work/2a/3f811ed867314ffa04e182a4c41cec started: 1615447664681; exited: 2021-03-11T07:27:44.820029Z; ]
+Mar-11 02:28:14.495 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[jobId: 6629510; id: 18; name: shuffle (17); status: COMPLETED; exit: 127; error: -; workDir: /home/laadd/DDP/B-SOID/work/6d/26b50fbd6f91becd502488b5100e94 started: 1615447694491; exited: 2021-03-11T07:27:45.185617Z; ]
+Mar-11 02:32:44.506 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 02:32:45.091 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 02:37:44.519 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 02:37:45.183 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 02:42:44.531 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 02:42:45.267 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 02:47:44.542 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 02:47:45.350 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 02:52:44.552 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 02:52:45.433 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 02:57:44.563 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 02:57:45.515 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 03:02:44.573 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 03:02:45.600 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 03:07:44.584 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 03:07:45.686 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 03:12:44.593 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 03:12:45.772 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 03:17:44.603 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 03:17:45.851 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 03:22:44.611 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 03:22:45.931 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 03:27:44.625 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 03:27:46.011 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 03:32:44.635 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 03:32:46.091 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 03:37:44.645 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 03:37:46.174 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 03:42:44.657 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 03:42:46.255 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 03:47:44.670 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 03:47:46.334 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 03:52:44.680 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 03:52:46.413 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 03:57:44.689 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 03:57:46.490 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 04:02:44.698 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 04:02:46.559 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 04:07:44.708 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 04:07:46.628 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 04:12:44.715 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 04:12:46.696 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 04:17:44.725 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 04:17:46.763 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 04:22:44.735 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 04:22:46.830 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 04:27:44.743 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 04:27:46.898 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 04:32:44.752 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 04:32:46.966 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 04:37:44.763 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 04:37:47.035 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 04:42:44.772 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 04:42:47.102 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 04:47:44.786 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 04:47:47.172 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 04:52:44.795 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 04:52:47.238 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 04:57:44.804 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 04:57:47.304 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 05:02:44.811 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 05:02:47.367 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 05:07:44.818 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 05:07:47.435 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 05:12:44.826 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 05:12:47.505 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 05:17:44.836 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 05:17:47.572 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 05:22:44.844 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 05:22:47.639 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 05:27:44.853 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 05:27:47.706 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 05:32:44.862 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 05:32:47.773 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 05:37:44.871 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 05:37:47.839 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 05:42:44.880 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 05:42:47.906 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 05:47:44.888 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 05:47:47.972 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 05:52:44.897 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 05:52:48.039 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 05:57:44.906 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 05:57:48.104 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 06:02:44.915 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 06:02:48.168 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 06:07:44.923 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 06:07:48.235 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 06:12:44.931 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 06:12:48.300 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 06:17:44.940 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 06:17:48.366 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 06:22:44.951 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 06:22:48.434 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 06:27:44.959 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 06:27:48.499 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 06:32:44.972 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 06:32:48.564 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 06:37:44.981 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 06:37:48.628 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 06:42:44.989 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 06:42:48.691 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 06:47:44.998 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 06:47:48.764 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 06:52:45.004 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 06:52:48.828 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.
+Mar-11 06:57:45.011 [Task monitor] DEBUG n.processor.TaskPollingMonitor - No more task to compute -- Execution may be stalled
+Mar-11 06:57:48.892 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 981 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 22; name: shuffle (21); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/c37732a1f676a433fe509a0a9cc7f0 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 15; name: shuffle (14); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/94/f496cad957070cf73de0c33dbb0c39 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 30; name: shuffle (29); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/57a9b23c4eb6894fefdafffb51dcf4 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 23; name: shuffle (22); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9d/dfd33c3dcbd135cada32dd72ad43c3 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 26; name: shuffle (25); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/9f/5128a6bf675f7c70654496e02f1da9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 25; name: shuffle (24); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/7bae34e3593738be0775b02d966a1f started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 28; name: shuffle (27); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/aa/d80f8cbdeeb038976a929f0d448ae1 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 29; name: shuffle (28); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/60/c2d96f5c69c623c98dfc6b443cff82 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 27; name: shuffle (26); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/26/cb0948670aa64ad8b399a96ea2203b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 32; name: shuffle (31); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ad/9a6b42e267e5856d9dac306037bd21 started: -; exited: -; ]
+.. remaining tasks omitted.

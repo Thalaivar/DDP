@@ -1,0 +1,48 @@
+INFO:root:extracting features from 1934 animals
+    Run ID       : dis
+ Save Location   : /home/laadd/data/output
+      FPS        : 30
+ Min. Confidence : 0.3
+  Stride Window  : 333ms
+
+INFO:root:extracted 1934 datasets of 22D features
+INFO:root:collected features into bins of 333 ms
+INFO:root:running UMAP on 10000000 samples from 22D to 3D
+ValueError: Buffer dtype mismatch, expected 'ITYPE_t' but got 'long'
+Exception ignored in: 'scipy.sparse.csgraph._traversal._connected_components_undirected'
+ValueError: Buffer dtype mismatch, expected 'ITYPE_t' but got 'long'
+INFO:root:clustering 10000000 in 3D with cluster range=[0.1, 1.2, 12]
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.1 and entropy_ratio=0.016
+INFO:root:identified 5 clusters (max is 5) with min_sample_prop=0.2 and entropy_ratio=0.608
+INFO:root:identified 5 clusters (max is 5) with min_sample_prop=0.3 and entropy_ratio=0.608
+INFO:root:identified 5 clusters (max is 5) with min_sample_prop=0.4 and entropy_ratio=0.608
+INFO:root:identified 5 clusters (max is 5) with min_sample_prop=0.5 and entropy_ratio=0.608
+INFO:root:identified 5 clusters (max is 5) with min_sample_prop=0.6 and entropy_ratio=0.608
+INFO:root:identified 3 clusters (max is 5) with min_sample_prop=0.7 and entropy_ratio=0.833
+INFO:root:identified 3 clusters (max is 5) with min_sample_prop=0.8 and entropy_ratio=0.833
+INFO:root:identified 3 clusters (max is 5) with min_sample_prop=0.9 and entropy_ratio=0.833
+INFO:root:identified 3 clusters (max is 5) with min_sample_prop=1.0 and entropy_ratio=0.833
+INFO:root:identified 3 clusters (max is 5) with min_sample_prop=1.1 and entropy_ratio=0.833
+INFO:root:identified 4 clusters (max is 5) with min_sample_prop=1.2 and entropy_ratio=0.702
+INFO:root:identified 5 clusters from 10000000 samples in 3D
+-------------------------------------------------------------
+SUMNER/WINTER EPILOGUE
+-------------------------------------------------------------
+Job ID: 6615813
+Cluster: slurm_cluster
+User/Group: root/jaxuser
+State: COMPLETED (exit code 0)
+Nodes: 1
+Cores per node: 8
+CPU Utilized: 4-02:32:41
+CPU Efficiency: 30.39% of 13-12:17:52 core-walltime
+Job Wall-clock time: 1-16:32:14
+Memory Utilized: 342.07 GB
+Memory Efficiency: 87.57% of 390.62 GB
+-------------------------------------------------------------
+       JobID  User   State    CPUTime Exit     MaxRSS        NodeList  Partition                   ReqTRES              Submit               Start                 End    Elapsed 
+------------ ----- ------- ---------- ---- ---------- --------------- ---------- ------------------------- ------------------- ------------------- ------------------- ---------- 
+6615813      laadd COMPLE+ 13-12:17:52  0:0                  sumner058    compute billing=8,cpu=8,mem=4000+ 2021-03-08T07:12:52 2021-03-08T07:12:52 2021-03-09T23:45:06 1-16:32:14 
+6615813.bat+       COMPLE+ 13-12:17:52  0:0 350275.54M       sumner058                                      2021-03-08T07:12:52 2021-03-08T07:12:52 2021-03-09T23:45:06 1-16:32:14 
+6615813.ext+       COMPLE+ 13-12:17:52  0:0          0       sumner058                                      2021-03-08T07:12:52 2021-03-08T07:12:52 2021-03-09T23:45:06 1-16:32:14 
+-------------------------------------------------------------
