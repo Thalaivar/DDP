@@ -68,6 +68,14 @@ except FileExistsError:
 FPS = 30
 STRIDE_WINDOW = 3
 
+def idx2group_map():
+    i, idx2grp = 0, {}
+    for lab, idxs in BEHAVIOUR_LABELS.items():
+        for idx in idxs:
+            idx2grp[idx] = i
+        i += 1
+    return idx2grp
+
 def get_mouse_raw_data(metadata: dict, pose_dir=None):
     pose_dir = RAW_DIR if pose_dir is None else pose_dir
 
@@ -609,8 +617,10 @@ def get_random_keypoint_data(data_csv, data_dir, clf):
     print(f'preprocessed raw data of shape: {data_shape} for mouse:{strain}/{mouse_id}')
 
     from BSOID.features.displacement_feats import extract_feats, window_extracted_feats
-    feats = frameshift_features(data, STRIDE_WINDOW, FPS, extract_feats, window_extracted_feats)
-    labels = frameshift_predict(feats, clf, STRIDE_WINDOW)
+    feats = frameshift_features(fdata, STRIDE_WINDOW, FPS, extract_feats, window_extracted_feats)
+    # labels = frameshift_predict(feats, clf, STRIDE_WINDOW)
+    with open('../../data/analysis/label_info.pkl', 'rb') as f:
+        labels = joblib.load(f)["Labels"][np.random.randint(0, 1900, 1)[0]]
 
     metadata["keypoints"] = fdata
     metadata["feats"] = feats

@@ -227,15 +227,15 @@ phenotypes:
     papername: N/An2_NB
 sex: Sex
 strain: Strain
-translate:
-- BTBRT...tf.J: BTBR T<+> Itpr3<tf>/J
-- 129S1.SvImJ: 129S1/SvImJ
-- C3H/HeOuJ: C3H/HeJ
-- NON/LtJ: NON/ShiLtJ
-- NOD/LtJ: NOD/ShiLtJ
-- CAST/EiJ: none
-- PWD/PhJ: none
-- CZECHII/EiJ: none
-- PWK/PhJ: none
-- MSM/MsJ: none
-- MOLF/EiJ: none
+# translate:
+# - BTBRT...tf.J: BTBR T<+> Itpr3<tf>/J
+# - 129S1.SvImJ: 129S1/SvImJ
+# - C3H/HeOuJ: C3H/HeJ
+# - NON/LtJ: NON/ShiLtJ
+# - NOD/LtJ: NOD/ShiLtJ
+# - CAST/EiJ: none
+# - PWD/PhJ: none
+# - CZECHII/EiJ: none
+# - PWK/PhJ: none
+# - MSM/MsJ: none
+# - MOLF/EiJ: none
