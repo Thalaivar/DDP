@@ -289,7 +289,7 @@ def plot_keypoint_data(data, behaviours):
         curr_label = labels[i]
         if curr_label in behaviours:
             j = i + 1
-            while j < len(labels) and curr_label == labels[j]:
+            while j < len(labels) and labels[j] in behaviours:
                 j += 1
             
             maxlen = [(j - i + 1), i, j] if (j - i + 1) > maxlen[0] else maxlen
@@ -297,9 +297,14 @@ def plot_keypoint_data(data, behaviours):
         else:
             i += 1
     
+    i, j = maxlen[1:]
+
+    # START DELETE
+    x, y = data["keypoints"]['x'], data["keypoints"]['y']
+    i, j = i - x.shape[0], j - x.shape[0]
+    # END DELETE
+    
     x, y = data["keypoints"]['x'][i:j+1,:], data["keypoints"]['y'][i:j+1,:]
-    t = np.repeat(np.reshape(np.arange(x.shape[0]), (1, x.shape[0])), x.shape[1], 0).T
-    print(x.shape, y.shape, t)
 
     HEAD, BASE_NECK, CENTER_SPINE, HINDPAW1, HINDPAW2, BASE_TAIL, MID_TAIL, TIP_TAIL = np.arange(8)
     points = [HEAD, BASE_NECK, CENTER_SPINE, HINDPAW1, HINDPAW2, BASE_TAIL, MID_TAIL, TIP_TAIL]
@@ -307,6 +312,8 @@ def plot_keypoint_data(data, behaviours):
     for p in points:
         x[:,p] = x[:,p] - x[:,CENTER_SPINE]
         y[:,p] = y[:,p] - y[:,CENTER_SPINE]
+    x, y = x[:,points], y[:,points]
+    t = np.repeat(np.reshape(np.arange(x.shape[0]), (1, x.shape[0])), x.shape[1], 0).T
 
     fig, ax = plt.subplots(2, 1, figsize=(8, 12))
     cmap = mpl.cm.get_cmap('tab20')
@@ -372,6 +379,12 @@ if __name__ == '__main__':
 
     with open("./keypoint_data.pkl", "rb") as f:
         data = joblib.load(f)
-    behaviours = BEHAVIOUR_LABELS["Groom"]
 
+    # behaviours = BEHAVIOUR_LABELS["Groom"]
+    # plot_keypoint_data(data, behaviours)
+
+    behaviours = BEHAVIOUR_LABELS["Run"]
+    behaviours.extend(BEHAVIOUR_LABELS["Walk"])
+    behaviours.extend(BEHAVIOUR_LABELS["CW-Turn"])
+    behaviours.extend(BEHAVIOUR_LABELS["CCW-Turn"])
     plot_keypoint_data(data, behaviours)

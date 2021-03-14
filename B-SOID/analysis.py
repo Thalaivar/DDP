@@ -545,6 +545,13 @@ def GEMMA_csv_input(label_info_file, input_csv):
     data = data.drop(drop_idxs)
     data.to_csv('./gemma_input.csv', index=False)
 
+def filter_strains(input_csv, strain_list):
+    strain_list = {strain: True for strain in list(pd.read_csv(strain_list)["Strain"])}
+    df = pd.read_csv(input_csv)
+
+    filt_df = df[df["Strain"].isin(strain_list)]
+    filt_df.to_csv("./filt_gemma_input.csv", index=False)
+    
 def GEMMA_config_files():
     import yaml
     
