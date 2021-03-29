@@ -14,4 +14,4 @@ cd /home/laadd/DDP/B-SOID/
 
 module load singularity
 
-nextflow run TheJacksonLaboratory/mousegwas --yaml gemma_config.yaml --shufyaml gemma_shuffle.yaml --input gemma_input.csv --outdir /home/laadd/gemma_output -profile slurm,singularity
+nextflow run TheJacksonLaboratory/mousegwas --yaml gemma_config.yaml --shufyaml gemma_shuffle.yaml --input gemma_input.csv --outdir /home/laadd/gemma_output -profile slurm,singularity --addgwas " -d 10 "
