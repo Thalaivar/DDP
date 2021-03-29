@@ -11,7 +11,7 @@
 #SBATCH --mail-type=ALL
 
 
-HOME_DIR=/home/laad
+HOME_DIR=/home/laadd
 BASE_DIR=DDP/B-SOID
 
 source $HOME_DIR/.bashrc
