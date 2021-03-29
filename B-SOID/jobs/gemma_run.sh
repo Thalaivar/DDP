@@ -15,6 +15,7 @@ HOME_DIR=/home/laad
 BASE_DIR=DDP/B-SOID
 
 source $HOME_DIR/.bashrc
+cd /fastscratch
 
 CONFIG_FILE=$HOME_DIR/$BASE_DIR/gemma_config.yaml
 SHUFFL_FILE=$HOME_DIR/$BASE_DIR/gemma_shuffle.yaml
