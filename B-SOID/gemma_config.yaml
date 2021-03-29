@@ -33,17 +33,18 @@ F1:
   - NZB/BlNJ
   - NZW/LacJ
 confSNPs:
-- rs32105080
-covar: Sex
+  - rs32105080
+covar: 
+  - Sex
 groups:
-- Groom
-- Run
-- Walk
-- CW-Turn
-- CCW-Turn
-- Point
-- Rear
-- N/A
+  - Groom
+  - Run
+  - Walk
+  - CW-Turn
+  - CCW-Turn
+  - Point
+  - Rear
+  - N/A
 phenotypes:
   CCW-Turn_0_ABL:
     group: CCW-Turn
