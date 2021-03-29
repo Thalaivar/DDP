@@ -26,9 +26,9 @@ def main():
     # bsoid.process_csvs()
 
     lookup_file = '/projects/kumar-lab/StrainSurveyPoses/StrainSurveyMetaList_2019-04-09.tsv'
-    bsoid.load_from_dataset(lookup_file, data_dir='/projects/kumar-lab/StrainSurveyPoses')
+    # bsoid.load_from_dataset(lookup_file, data_dir='/projects/kumar-lab/StrainSurveyPoses')
 
-    bsoid.features_from_points(parallel=True)
+    # bsoid.features_from_points(parallel=True)
 
     bsoid.umap_reduce(reduced_dim=3, sample_size=int(1e7))
     bsoid.identify_clusters_from_umap(cluster_range=[0.1, 1.2, 12])

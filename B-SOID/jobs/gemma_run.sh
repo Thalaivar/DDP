@@ -10,8 +10,15 @@
 #SBATCH --mail-user=dhruv.laad@jax.org
 #SBATCH --mail-type=ALL
 
-cd /home/laadd/DDP/B-SOID/
+
+HOME_DIR=/home/laad
+BASE_DIR=DDP/B-SOID
+
+source $HOME_DIR/.bashrc
+
+CONFIG_FILE=$HOME_DIR/$BASE_DIR/gemma_config.yaml
+SHUFFL_FILE=$HOME_DIR/$BASE_DIR/gemma_shuffle.yaml
+INPUT_FILE=$HOME_DIR/$BASE_DIR/gemma_input.csv
 
 module load singularity
-
-nextflow run TheJacksonLaboratory/mousegwas --yaml gemma_config.yaml --shufyaml gemma_shuffle.yaml --input gemma_input.csv --outdir /home/laadd/gemma_output -profile slurm,singularity --addgwas " -d 10 "
+nextflow run TheJacksonLaboratory/mousegwas --yaml $CONFIG_FILE --shufyaml $SHUFFL_FILE --input $INPUT_FILE --outdir $HOME_DIR/gemma_output -profile slurm,singularity --addgwas " -d 10 "
