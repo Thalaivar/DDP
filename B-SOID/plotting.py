@@ -1,3 +1,4 @@
+from seaborn.external.husl import lch_to_husl
 from BSOID.features.displacement_feats import window_extracted_feats
 from BSOID.preprocessing import windowed_feats
 from itertools import combinations, permutations
@@ -18,7 +19,7 @@ base_dir = '/Users/dhruvlaad/IIT/DDP/data/'
 label_info_file = base_dir + 'analysis/label_info.pkl'
 stats_file = base_dir + 'analysis/stats.pkl'
 # plot_dir = 'C:/Users/dhruvlaad/Desktop/plots'
-plot_dir = './plots/'
+plot_dir = './plots'
 
 # with open(stats_file, 'rb') as f:
 #     behaviour_stats = joblib.load(f)
@@ -279,32 +280,31 @@ def statemap_scatter_plot(strain_list, pos=None):
     
     plt.show()
 
-def plot_keypoint_data(data, behaviours):
+def plot_keypoint_data(data, behaviours=None, limits=None):
     idx2grp = idx2group_map()
-    behaviours = [idx2grp[x] for x in behaviours]
     labels = [idx2grp[l] for l in data["labels"]]
+    x, y = data["keypoints"]['x'][:len(labels),:], data["keypoints"]['y'][:len(labels),:]
+    
+    behaviours = [idx2grp[x] for x in behaviours]
 
-    i, maxlen = 0, [-1, None, None]
-    while i < len(labels):
+    if limits is None:
+        limits = [0, len(labels)]
+
+    i, maxlen = limits[0], [-1, None, None]
+    while i < limits[1]:
         curr_label = labels[i]
         if curr_label in behaviours:
             j = i + 1
-            while j < len(labels) and labels[j] in behaviours:
+            while j < limits[1] and labels[j] in behaviours:
                 j += 1
             
             maxlen = [(j - i + 1), i, j] if (j - i + 1) > maxlen[0] else maxlen
             i = j
         else:
             i += 1
-    
-    i, j = maxlen[1:]
 
-    # START DELETE
-    x, y = data["keypoints"]['x'], data["keypoints"]['y']
-    i, j = i - x.shape[0], j - x.shape[0]
-    # END DELETE
-    
-    x, y = data["keypoints"]['x'][i:j+1,:], data["keypoints"]['y'][i:j+1,:]
+    i, j = maxlen[1:]    
+    x, y = x[i:j+1,:], y[i:j+1,:]
 
     HEAD, BASE_NECK, CENTER_SPINE, HINDPAW1, HINDPAW2, BASE_TAIL, MID_TAIL, TIP_TAIL = np.arange(8)
     points = [HEAD, BASE_NECK, CENTER_SPINE, HINDPAW1, HINDPAW2, BASE_TAIL, MID_TAIL, TIP_TAIL]
@@ -314,49 +314,51 @@ def plot_keypoint_data(data, behaviours):
         y[:,p] = y[:,p] - y[:,CENTER_SPINE]
     x, y = x[:,points], y[:,points]
     t = np.repeat(np.reshape(np.arange(x.shape[0]), (1, x.shape[0])), x.shape[1], 0).T
-
-    fig, ax = plt.subplots(2, 1, figsize=(8, 12))
-    cmap = mpl.cm.get_cmap('tab20')
-    c = [cmap(x) for x in range(x.shape[1])]
-    ax[0].plot(t, x, c)
-    ax[1].plot(t, y, c)
-    plt.show()
-
-def ethogram_plot(label_info_file, metadata=None):
-    with open(label_info_file, 'rb') as f:
-        info = joblib.load(f)
+    plot_len = round(j - i + 1 * 1000 / FPS, 1)
     
-    N = len(info['Strain'])
-    if metadata is not None:
-        for i in range(N):
-            if (
-                info['Strain'][i] == metadata['Strain'] and
-                info['MouseID'][i] == metadata['MouseID'] and
-                info['Sex'][i] == metadata['Sex'] and
-                info['NetworkFilename'][i] == metadata['NetworkFilename']
-            ):
-                labels = info['Labels'][i]
-                break
-    else:
-        labels = info['Labels'][2494]
+    for data in [x, y]:
+        fig = plt.figure(figsize=(6,3))
+        ax = fig.add_subplot(111)
+        cmap = mpl.cm.get_cmap('tab20')
+        c = [cmap(n) for n in range(data.shape[1])]
 
-    cmap = mpl.cm.get_cmap('tab20')
-    height, dt, N = 1, 1 / FPS, len(labels)
-    x = [i * dt / 60 for i in range(len(labels))]
+        ax.plot(t, data, c)
+        ax.axis('off')
+        ax.text(0.8, 0.1, f"{plot_len} seconds", fontsize=6, transform=plt.gcf().transFigure, zorder=1000)
+        plt.show()
+    
+    return maxlen
+
+def ethogram_plot(labels, boxes, trim=None):
+    cmap = mpl.cm.get_cmap('Set3')
     idx2grp = idx2group_map()
+    height, N = 1, len(labels)
     labels = [idx2grp[l] for l in labels]
 
     fig = plt.figure(figsize=(12, 0.5))
     ax = fig.add_subplot(111)
-    pat = [patches.Rectangle((x[i], 0), dt, height, color=cmap(labels[i])) for i in range(len(labels))]
-    [ax.add_patch(pat[i]) for i in tqdm(range(len(labels)))]
-    plt.xlim([0, x[-1] + dt])
-    plt.ylim([0, 1])
-    plt.xticks([i * 10 for i in range(round(x[-1] / 10))])
-    plt.yticks([])
-    plt.xlabel('Mins')
-    sns.despine()
+    i, pat = 0, []
+    while i < len(labels):
+        j = i + 1
+        while j < len(labels) and labels[i] == labels[j]:
+            j += 1
+        pat.append(patches.Rectangle((i, 0), (j - i + 1), height, color=cmap(labels[i])))
+        i = j
+    
+    [ax.add_patch(pat[i]) for i in tqdm(range(len(pat)))]
+
+    dh = 0.25
+    for xstart, xend in boxes:
+        ax.add_patch(patches.Rectangle((xstart, -dh), (xend - xstart + 1), height+2*dh, edgecolor='k', facecolor="none"))
+
+    if trim is None:
+        plt.xlim([0, N+1])
+    else:
+        plt.xlim(trim)
+    plt.ylim([-1, 2])
+    plt.axis('off')
     plt.savefig(f'{plot_dir}/ethogram.png', dpi=600, bbox_inches='tight')
+    plt.show()
 
 if __name__ == '__main__':
     # with open(stats_file, 'rb') as f:
@@ -368,23 +370,19 @@ if __name__ == '__main__':
     # preliminary_metrics(behaviour_stats)
     # samples_explained_by_behaviours(label_info_file)
 
-    # label_info_file = 'D:/IIT/DDP/data/analysis/label_info.pkl'
-    # metadata = {
-    #     'NetworkFilename': 'LL6-B2B/2017-11-25_SPD/B6J_Male_S6938572M-3-PSY.avi',
-    #     'Strain': 'C57BL/6J',
-    #     'MouseID': 'B6J_Male_S6938572M-3-PSY',
-    #     'Sex': 'M'
-    # }
-    # ethogram_plot(label_info_file, metadata)
-
     with open("./keypoint_data.pkl", "rb") as f:
         data = joblib.load(f)
 
-    # behaviours = BEHAVIOUR_LABELS["Groom"]
-    # plot_keypoint_data(data, behaviours)
+    trim = [194000, 206000]
+
+    groom = plot_keypoint_data(data, behaviours=BEHAVIOUR_LABELS["Groom"])
 
     behaviours = BEHAVIOUR_LABELS["Run"]
     behaviours.extend(BEHAVIOUR_LABELS["Walk"])
     behaviours.extend(BEHAVIOUR_LABELS["CW-Turn"])
     behaviours.extend(BEHAVIOUR_LABELS["CCW-Turn"])
-    plot_keypoint_data(data, behaviours)
+    behaviours.extend(BEHAVIOUR_LABELS["Rear"])
+    locomote = plot_keypoint_data(data, behaviours, limits=trim)
+
+    ethogram_plot(data["labels"], [groom[1:], locomote[1:]], trim)
+

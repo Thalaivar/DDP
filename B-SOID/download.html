@@ -1,0 +1,1587 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
+    <head>
+        <meta name="theme-color" content="#323754">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"><script type="text/javascript">(window.NREUM||(NREUM={})).loader_config={licenseKey:"9b2cefefd1",applicationID:"672553648"};window.NREUM||(NREUM={}),__nr_require=function(e,t,n){function r(n){if(!t[n]){var i=t[n]={exports:{}};e[n][0].call(i.exports,function(t){var i=e[n][1][t];return r(i||t)},i,i.exports)}return t[n].exports}if("function"==typeof __nr_require)return __nr_require;for(var i=0;i<n.length;i++)r(n[i]);return r}({1:[function(e,t,n){function r(){}function i(e,t,n){return function(){return o(e,[u.now()].concat(c(arguments)),t?null:this,n),t?void 0:this}}var o=e("handle"),a=e(6),c=e(7),f=e("ee").get("tracer"),u=e("loader"),s=NREUM;"undefined"==typeof window.newrelic&&(newrelic=s);var d=["setPageViewName","setCustomAttribute","setErrorHandler","finished","addToTrace","inlineHit","addRelease"],p="api-",l=p+"ixn-";a(d,function(e,t){s[t]=i(p+t,!0,"api")}),s.addPageAction=i(p+"addPageAction",!0),s.setCurrentRouteName=i(p+"routeName",!0),t.exports=newrelic,s.interaction=function(){return(new r).get()};var m=r.prototype={createTracer:function(e,t){var n={},r=this,i="function"==typeof t;return o(l+"tracer",[u.now(),e,n],r),function(){if(f.emit((i?"":"no-")+"fn-start",[u.now(),r,i],n),i)try{return t.apply(this,arguments)}catch(e){throw f.emit("fn-err",[arguments,this,e],n),e}finally{f.emit("fn-end",[u.now()],n)}}}};a("actionText,setName,setAttribute,save,ignore,onEnd,getContext,end,get".split(","),function(e,t){m[t]=i(l+t)}),newrelic.noticeError=function(e,t){"string"==typeof e&&(e=new Error(e)),o("err",[e,u.now(),!1,t])}},{}],2:[function(e,t,n){function r(){return c.exists&&performance.now?Math.round(performance.now()):(o=Math.max((new Date).getTime(),o))-a}function i(){return o}var o=(new Date).getTime(),a=o,c=e(8);t.exports=r,t.exports.offset=a,t.exports.getLastTimestamp=i},{}],3:[function(e,t,n){function r(e,t){var n=e.getEntries();n.forEach(function(e){"first-paint"===e.name?d("timing",["fp",Math.floor(e.startTime)]):"first-contentful-paint"===e.name&&d("timing",["fcp",Math.floor(e.startTime)])})}function i(e,t){var n=e.getEntries();n.length>0&&d("lcp",[n[n.length-1]])}function o(e){e.getEntries().forEach(function(e){e.hadRecentInput||d("cls",[e])})}function a(e){if(e instanceof m&&!g){var t=Math.round(e.timeStamp),n={type:e.type};t<=p.now()?n.fid=p.now()-t:t>p.offset&&t<=Date.now()?(t-=p.offset,n.fid=p.now()-t):t=p.now(),g=!0,d("timing",["fi",t,n])}}function c(e){d("pageHide",[p.now(),e])}if(!("init"in NREUM&&"page_view_timing"in NREUM.init&&"enabled"in NREUM.init.page_view_timing&&NREUM.init.page_view_timing.enabled===!1)){var f,u,s,d=e("handle"),p=e("loader"),l=e(5),m=NREUM.o.EV;if("PerformanceObserver"in window&&"function"==typeof window.PerformanceObserver){f=new PerformanceObserver(r);try{f.observe({entryTypes:["paint"]})}catch(v){}u=new PerformanceObserver(i);try{u.observe({entryTypes:["largest-contentful-paint"]})}catch(v){}s=new PerformanceObserver(o);try{s.observe({type:"layout-shift",buffered:!0})}catch(v){}}if("addEventListener"in document){var g=!1,w=["click","keydown","mousedown","pointerdown","touchstart"];w.forEach(function(e){document.addEventListener(e,a,!1)})}l(c)}},{}],4:[function(e,t,n){function r(e,t){if(!i)return!1;if(e!==i)return!1;if(!t)return!0;if(!o)return!1;for(var n=o.split("."),r=t.split("."),a=0;a<r.length;a++)if(r[a]!==n[a])return!1;return!0}var i=null,o=null,a=/Version\/(\S+)\s+Safari/;if(navigator.userAgent){var c=navigator.userAgent,f=c.match(a);f&&c.indexOf("Chrome")===-1&&c.indexOf("Chromium")===-1&&(i="Safari",o=f[1])}t.exports={agent:i,version:o,match:r}},{}],5:[function(e,t,n){function r(e){function t(){e(a&&document[a]?document[a]:document[i]?"hidden":"visible")}"addEventListener"in document&&o&&document.addEventListener(o,t,!1)}t.exports=r;var i,o,a;"undefined"!=typeof document.hidden?(i="hidden",o="visibilitychange",a="visibilityState"):"undefined"!=typeof document.msHidden?(i="msHidden",o="msvisibilitychange"):"undefined"!=typeof document.webkitHidden&&(i="webkitHidden",o="webkitvisibilitychange",a="webkitVisibilityState")},{}],6:[function(e,t,n){function r(e,t){var n=[],r="",o=0;for(r in e)i.call(e,r)&&(n[o]=t(r,e[r]),o+=1);return n}var i=Object.prototype.hasOwnProperty;t.exports=r},{}],7:[function(e,t,n){function r(e,t,n){t||(t=0),"undefined"==typeof n&&(n=e?e.length:0);for(var r=-1,i=n-t||0,o=Array(i<0?0:i);++r<i;)o[r]=e[t+r];return o}t.exports=r},{}],8:[function(e,t,n){t.exports={exists:"undefined"!=typeof window.performance&&window.performance.timing&&"undefined"!=typeof window.performance.timing.navigationStart}},{}],ee:[function(e,t,n){function r(){}function i(e){function t(e){return e&&e instanceof r?e:e?u(e,f,a):a()}function n(n,r,i,o,a){if(a!==!1&&(a=!0),!l.aborted||o){e&&a&&e(n,r,i);for(var c=t(i),f=v(n),u=f.length,s=0;s<u;s++)f[s].apply(c,r);var p=d[h[n]];return p&&p.push([b,n,r,c]),c}}function o(e,t){y[e]=v(e).concat(t)}function m(e,t){var n=y[e];if(n)for(var r=0;r<n.length;r++)n[r]===t&&n.splice(r,1)}function v(e){return y[e]||[]}function g(e){return p[e]=p[e]||i(n)}function w(e,t){s(e,function(e,n){t=t||"feature",h[n]=t,t in d||(d[t]=[])})}var y={},h={},b={on:o,addEventListener:o,removeEventListener:m,emit:n,get:g,listeners:v,context:t,buffer:w,abort:c,aborted:!1};return b}function o(e){return u(e,f,a)}function a(){return new r}function c(){(d.api||d.feature)&&(l.aborted=!0,d=l.backlog={})}var f="nr@context",u=e("gos"),s=e(6),d={},p={},l=t.exports=i();t.exports.getOrSetContext=o,l.backlog=d},{}],gos:[function(e,t,n){function r(e,t,n){if(i.call(e,t))return e[t];var r=n();if(Object.defineProperty&&Object.keys)try{return Object.defineProperty(e,t,{value:r,writable:!0,enumerable:!1}),r}catch(o){}return e[t]=r,r}var i=Object.prototype.hasOwnProperty;t.exports=r},{}],handle:[function(e,t,n){function r(e,t,n,r){i.buffer([e],r),i.emit(e,t,n)}var i=e("ee").get("handle");t.exports=r,r.ee=i},{}],id:[function(e,t,n){function r(e){var t=typeof e;return!e||"object"!==t&&"function"!==t?-1:e===window?0:a(e,o,function(){return i++})}var i=1,o="nr@id",a=e("gos");t.exports=r},{}],loader:[function(e,t,n){function r(){if(!x++){var e=b.info=NREUM.info,t=p.getElementsByTagName("script")[0];if(setTimeout(u.abort,3e4),!(e&&e.licenseKey&&e.applicationID&&t))return u.abort();f(y,function(t,n){e[t]||(e[t]=n)});var n=a();c("mark",["onload",n+b.offset],null,"api"),c("timing",["load",n]);var r=p.createElement("script");r.src="https://"+e.agent,t.parentNode.insertBefore(r,t)}}function i(){"complete"===p.readyState&&o()}function o(){c("mark",["domContent",a()+b.offset],null,"api")}var a=e(2),c=e("handle"),f=e(6),u=e("ee"),s=e(4),d=window,p=d.document,l="addEventListener",m="attachEvent",v=d.XMLHttpRequest,g=v&&v.prototype;NREUM.o={ST:setTimeout,SI:d.setImmediate,CT:clearTimeout,XHR:v,REQ:d.Request,EV:d.Event,PR:d.Promise,MO:d.MutationObserver};var w=""+location,y={beacon:"bam.nr-data.net",errorBeacon:"bam.nr-data.net",agent:"js-agent.newrelic.com/nr-1198.min.js"},h=v&&g&&g[l]&&!/CriOS/.test(navigator.userAgent),b=t.exports={offset:a.getLastTimestamp(),now:a,origin:w,features:{},xhrWrappable:h,userAgent:s};e(1),e(3),p[l]?(p[l]("DOMContentLoaded",o,!1),d[l]("load",r,!1)):(p[m]("onreadystatechange",i),d[m]("onload",r)),c("mark",["firstbyte",a.getLastTimestamp()],null,"api");var x=0},{}],"wrap-function":[function(e,t,n){function r(e,t){function n(t,n,r,f,u){function nrWrapper(){var o,a,s,p;try{a=this,o=d(arguments),s="function"==typeof r?r(o,a):r||{}}catch(l){i([l,"",[o,a,f],s],e)}c(n+"start",[o,a,f],s,u);try{return p=t.apply(a,o)}catch(m){throw c(n+"err",[o,a,m],s,u),m}finally{c(n+"end",[o,a,p],s,u)}}return a(t)?t:(n||(n=""),nrWrapper[p]=t,o(t,nrWrapper,e),nrWrapper)}function r(e,t,r,i,o){r||(r="");var c,f,u,s="-"===r.charAt(0);for(u=0;u<t.length;u++)f=t[u],c=e[f],a(c)||(e[f]=n(c,s?f+r:r,i,f,o))}function c(n,r,o,a){if(!m||t){var c=m;m=!0;try{e.emit(n,r,o,t,a)}catch(f){i([f,n,r,o],e)}m=c}}return e||(e=s),n.inPlace=r,n.flag=p,n}function i(e,t){t||(t=s);try{t.emit("internal-error",e)}catch(n){}}function o(e,t,n){if(Object.defineProperty&&Object.keys)try{var r=Object.keys(e);return r.forEach(function(n){Object.defineProperty(t,n,{get:function(){return e[n]},set:function(t){return e[n]=t,t}})}),t}catch(o){i([o],n)}for(var a in e)l.call(e,a)&&(t[a]=e[a]);return t}function a(e){return!(e&&e instanceof Function&&e.apply&&!e[p])}function c(e,t){var n=t(e);return n[p]=e,o(e,n,s),n}function f(e,t,n){var r=e[t];e[t]=c(r,n)}function u(){for(var e=arguments.length,t=new Array(e),n=0;n<e;++n)t[n]=arguments[n];return t}var s=e("ee"),d=e(7),p="nr@original",l=Object.prototype.hasOwnProperty,m=!1;t.exports=r,t.exports.wrapFunction=c,t.exports.wrapInPlace=f,t.exports.argsToArray=u},{}]},{},["loader"]);</script><script type="text/javascript">window.NREUM||(NREUM={});NREUM.info={"beacon":"bam-cell.nr-data.net","queueTime":0,"licenseKey":"9b2cefefd1","agent":"","transactionName":"MlwDZxBYVxUHWkNcVwsWJ0YMWk0PCVcYRUoKWw1WD0oXFhRYVEFRBlxPRQtcThVcSUVUWxFQAlY9SUsJBFVSWGcXXBJDDVdKAw==","applicationID":"672553648,561796461","errorBeacon":"bam-cell.nr-data.net","applicationTime":118}</script>
+        <meta name="description" content=" 
+Prepare for your technical interviews by solving questions that are asked in interviews of various companies.
+ HackerEarth is a global hub of 5M+ developers. We help companies accurately assess, interview, and hire top developers for a myriad of roles." >
+        <link rel="canonical" href="https://www.hackerearth.com/practice/algorithms/dynamic-programming/introduction-to-dynamic-programming-1/practice-problems/algorithm/inverse-graph-4c5729e8/" />
+        <meta name="msvalidate.01" content="1BF418E510B5A17A2D71685C571BF4EB" />
+
+        
+        <meta name="referrer" content="strict-origin-when-cross-origin">
+        
+
+        
+        <script>
+          (function() {
+              if (window.BOOMR && window.BOOMR.version) {
+                  return;
+              }
+              var dom, doc, where, iframe = document.createElement("iframe"),
+                  win = window;
+
+              function boomerangSaveLoadTime(e) {
+                  win.BOOMR_onload = (e && e.timeStamp) || new Date().getTime();
+              }
+              if (win.addEventListener) {
+                  win.addEventListener("load", boomerangSaveLoadTime, false);
+              } else if (win.attachEvent) {
+                  win.attachEvent("onload", boomerangSaveLoadTime);
+              }
+
+              iframe.src = "javascript:false";
+              iframe.title = "";
+              iframe.role = "presentation";
+              (iframe.frameElement || iframe).style.cssText = "width:0;height:0;border:0;display: none;";
+              where = document.getElementsByTagName("script")[0];
+              where.parentNode.insertBefore(iframe, where);
+
+              try {
+                  doc = iframe.contentWindow.document;
+              } catch (e) {
+                  dom = document.domain;
+                  iframe.src = "javascript:var d=document.open();d.domain='" + dom + "';void(0);";
+                  doc = iframe.contentWindow.document;
+              }
+              doc.open()._l = function() {
+                  var js = this.createElement("script");
+                  if (dom) this.domain = dom;
+                  js.id = "boomr-if-as";
+                  js.src = "https://s.go-mpulse.net/boomerang/" +
+                      "QKZWA-3BVYP-7W6XK-6HKWZ-EFFZ4";
+                  BOOMR_lstart = new Date().getTime();
+                  this.body.appendChild(js);
+              };
+              doc.write('<body onload="document._l();">');
+              doc.close();
+          })();
+        </script>
+        
+
+
+        
+<meta name="google-site-verification" content="ozqyeStBcz4eehbY9Ohb_IUQcA4y8BKzzDCT-H1QPPc" />
+
+
+        
+        
+        <!-- google analytics start -->
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+            ga('create', 'UA-34729975-1', 'auto');
+            ga('require', 'displayfeatures');
+            
+            ga('set', '&uid', 2543827);
+            
+            ga('send', 'pageview');
+        </script>
+        <!-- google analytics end -->
+        
+        
+
+        
+        
+        <!-- Google Tag Manager -->
+        <script>
+            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+            })(window,document,'script','dataLayer','GTM-PBHB3B9');
+        </script>
+        <!-- End Google Tag Manager -->
+        
+        
+
+        <title>  Practice Problem  </title>
+
+        
+<meta property="og:title" content="The maximum set | Practice Problems"/>
+<meta property="og:image" content="https://static-fastly.hackerearth.com/static/hackerearth/images/logo/HE_cover.jpg" />
+<meta property="og:description" content=""/>
+<meta property="og:url" content="https://www.hackerearth.com/practice/algorithms/dynamic-programming/introduction-to-dynamic-programming-1/practice-problems/algorithm/inverse-graph-4c5729e8/"/>
+<meta property="og:site_name" content="HackerEarth"/>
+<meta property="og:type" content="hackerearth:problem"/>
+
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:site" content="@HackerEarth"/>
+<meta name="twitter:url" content="https://www.hackerearth.com/practice/algorithms/dynamic-programming/introduction-to-dynamic-programming-1/practice-problems/algorithm/inverse-graph-4c5729e8/"/>
+<meta name="twitter:title" content="The maximum set | Practice Problems"/>
+
+        
+        <link rel="shortcut icon" href="https://static-fastly.hackerearth.com/static/hackerearth/images/logo/HE_identity.png" type="image/x-icon">
+        
+
+        
+
+        
+            <link rel="stylesheet" href="https://static-fastly.hackerearth.com/static/base/base_common_combined.d3472c656cf4.css"/>
+            <link rel="stylesheet" href="https://static-fastly.hackerearth.com/static/base/marketing_footer.20caf7067b08.css"/>
+            <link rel="stylesheet" href="https://static-fastly.hackerearth.com/static/js/tooltip/tipTip.4cc4f68d44b4.css"/>
+            <link rel="stylesheet" href="https://static-fastly.hackerearth.com/static/offline/offline-theme-slide.12bc3d4c96b4.css"/>
+            <link rel="stylesheet" href="https://static-fastly.hackerearth.com/static/css/font-awesome-4.7.0/css/font-awesome.min.269550530cc1.css"/>
+            <link rel="stylesheet" href="https://static-fastly.hackerearth.com/static/css/opensans/opensans.06e0aa7529dc.css"/>
+            <link rel="stylesheet" href="https://static-fastly.hackerearth.com/static/css/proxima-nova/proxima-nova.61f8e8377456.css"/>
+            <link rel="stylesheet" href="https://static-fastly.hackerearth.com/static/css/hack/hack.8b30169f8a8b.css"/>
+            <link rel="stylesheet" href="https://static-fastly.hackerearth.com/static/css/unicons.9eda5fc182c1.css"/>
+        
+
+        
+
+
+        
+
+        <!-- Make the static variable available for all js files -->
+        <script>
+            var STATIC_URL = "https://static-fastly.hackerearth.com/static/";
+            var RECAPTCHA_V3_SITE_KEY = "6LeyqcIZAAAAAOcy_5WJORJsuu9zmbZZxIRp4-em";
+        </script>
+
+        <!-- Store CSRF_COOKIE -->
+        <script>
+            var CSRF_COOKIE_USED = "True";
+            var CSRF_COOKIE = "fq5m1IiH0pxYlHOa0Qcyn4OyFLUDni6Qbrm3fUPrvnvwR2zeoWHf72vxuNDRwy2i";
+        </script>
+
+        
+        
+        <script src="https://www.google.com/recaptcha/api.js?render=6LeyqcIZAAAAAOcy_5WJORJsuu9zmbZZxIRp4-em"></script>
+        
+
+        
+
+    </head>
+
+    <body >
+        
+            
+            
+        
+        
+        
+        <!-- Google Tag Manager (noscript) -->
+        <noscript>
+            <iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PBHB3B9"
+            height="0" width="0" style="display:none;visibility:hidden"></iframe>
+        </noscript>
+        <!-- End Google Tag Manager (noscript) -->
+        
+        
+
+        <!-- Placeholder for any alert message on the site -->
+        
+        <div id="alert-message-holder">
+            
+
+            <!-- put a dummy message box so that it can be used when cloning
+                 and adding more -->
+            <div class="alert-message hidden">
+                <div class="message float-left"></div>
+                <div class="cross-holder float-left"><span class="small-cross sprites"></span></div>
+                <div class="clear"></div>
+            </div>
+        </div> <!-- end alert-message-holder -->
+
+        <!-- Placeholder for any error message on the site -->
+        
+        <div id="error-message-holder">
+            
+
+            <!-- put a dummy message box so that it can be used when cloning
+                 and adding more -->
+            <div class="error-message hidden">
+                <div class="message float-left"></div>
+                <div class="cross-holder float-left"><span class="small-cross sprites"></span></div>
+                <div class="clear"></div>
+            </div>
+        </div> <!-- end error-message-holder -->
+        
+        
+
+        
+    
+    
+        
+        <header class="header">
+            <i class="fa fa-bars mobile-menu-btn"></i>
+            <nav class="navigation">
+                
+                <a href="https://www.hackerearth.com" class="logo logo-h-terminal  no-underline float-left track-header-logo"></a>
+                
+
+                
+                <ul class="nav-bar no-padding float-left tablet-hide">
+                    <!-- practice page -->
+                    <li id="problems" class="nav-bar-menu selected"><a class="track-header-problems" href="https://www.hackerearth.com/practice/">PRACTICE</a></li>
+                    <!-- challenges page -->
+                    <li id="challenges" class="nav-bar-menu "><a class="track-header-challenges" href="https://www.hackerearth.com/challenges/">COMPETE</a></li>
+                    <!-- companies page -->
+                    <li id="companies" class="nav-bar-menu "><a class="track-header-companies" href="https://www.hackerearth.com/companies/">COMPANIES</a></li>
+                    <!--Leaderboard page-->
+                    <li id="leaderboard" class="nav-bar-menu "><a class="track-header-leaderboard" href="https://www.hackerearth.com/leaderboard/contests/rated/">LEADERBOARD
+                    </a></li>
+                </ul>
+                <ul class="nav-bar right-nav-bar no-padding float-right tablet-hide">
+                    
+                    
+                    <li id="searchbar">
+                        <div id="search-icon-container" class="float-left">
+                            <i class="fa fa-search"></i>
+                        </div>
+                        <input id="searchbar-input" class="float-left" type="text" value="" name="q" autocomplete="off" spellcheck="false" placeholder="Search developers, problems, etc" ajax1="/search/AJAX/search/" ajax2="/search/search-results/" ></input>
+                        <div id="search-dropdown"></div>
+                    </li>
+                    
+                    
+
+                    
+                    <li id="header-notif-icon" class="">
+                        <a class="track-header-notifs tool-tip notification-icon" title="Notifications">
+                            <span id="notif-icon" expand="notifications-box" class="nav-bar-menu nav-menu pagelet-hover tablet-hide" ajax="/notifications/pagelets/new-notifications/" target="notifications-container">
+                                <i class="fa fa-bell"></i>
+                                
+                            </span>
+                        </a>
+                        <a class="track-header-notifs tool-tip notification-icon tablet-show" title="Notifications" href="https://www.hackerearth.com/notifications/">
+                            <span id="notif-icon-mob" class="nav-bar-menu">Notifications</span>
+                        </a>
+                    </li>
+                    
+
+                    
+                        
+                        <li id="user-name" class="nav-bar-menu tablet-hide"><a class="track-header-profile-box" href="https://www.hackerearth.com/@dhruv551"><img src="https://he-s3.s3.amazonaws.com/media/avatars/dhruv551/resized/30/photo.jpg" alt="dhruv551" width="30" height="30" onerror="if(typeof handle_avatar_error=='function'){handle_avatar_error(this);}" /></a></li>
+                        
+                    
+
+                    
+                    <li id="hacker-dd-icon" expand="hacker-box" class="nav-bar-menu nav-menu"><a><div class="caret-icon"><i class="fa fa-caret-down"></i></div></a></li>
+                    
+
+                    
+
+                    <div class="clear"></div>
+                </ul> <!-- nav-bar -->
+                <div class="clear"></div>
+                
+            </nav> <!-- navigation -->
+
+            <i class="fa fa-filter challenge-filter-btn hidden"></i>
+
+        </header> <!-- header -->
+        
+    
+     <style>
+  #gdpr-modal {
+    position: absolute;
+    bottom: 0;
+  }
+</style>
+<div id="gdpr-modal" class="modal-window smaller-modal hidden">
+  
+
+<style>
+  #gdpr-modal-content {
+    font-family: 'Open Sans', sans-serif;
+  }
+
+  #gdpr-modal-content .modal-header {
+    padding: 50px 55px 35px 55px;
+    font-size: 24px;
+    font-weight: 400;
+  }
+
+  #gdpr-modal-content .modal-footer {
+    padding: 25px 55px 90px;
+  }
+
+  #gdpr-modal-content .modal-content {
+    padding: 0 55px 5px;
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  #gdpr-modal-content .modal-footer .checkbox-row {
+    font-size: 16px;
+    display: inline-flex;
+  }
+
+  #gdpr-modal-content a {
+    color: #0099ff;
+  }
+  
+  #gdpr-modal-content .button.disabled {
+    background: #f5f6f6 !important;
+  }
+</style>
+
+<div id="gdpr-modal-content">
+  
+<div class="modal-header">HackerEarth’s Privacy Policy and Terms of Service</div>
+  <div class="modal-content">
+      We care about your data privacy. HackerEarth uses the information that you provide to contact you about relevant content, products, and services. <br /> <br />
+
+      Our <a href="/privacy/" target="_blank">Privacy Policy</a> and <a href="/terms-of-service/" target="_blank">Terms of Service</a> will help you understand that you are in control of your data at HackerEarth.
+  </div>
+  <div class="modal-footer">
+    <div class="margin-bottom-15 regular checkbox-row">
+      <input type="checkbox" name="gdpr-tnc" />
+      I have read and I agree.
+    </div>
+    <div class="">
+      <input type="submit" name="submit" value="Proceed" class="button btn-blue fontawesome btn-largest disabled large" id="gdpr-submit" />
+    </div>
+  </div>
+</div>
+
+</div>
+
+
+    
+
+    
+    
+    
+
+    
+
+    <div id="comment-share-modal" class="modal-window small-modal">
+        <div class="modal-header">
+            Comment permalink
+        </div>
+        <div class="modal-content">
+            <div class="comment-share-wrapper align-center">
+                <textarea class="comment-share-text" type="textbox" rows="4" readonly="readonly" onclick="this.select();"></textarea>
+            </div>
+        </div>
+    </div>
+
+    
+    
+
+    <!-- This is the center page which has a fixed width of 1100px -->
+    
+<script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_SVG"></script>
+
+
+<script type="text/x-mathjax-config">
+    var options = {
+      messageStyle: "none",
+      jax: ["input/TeX", "output/SVG", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [['$$','$$'], ['\\(', '\\)']],
+        displayMath: [['$$$', '$$$'], ['\\[', '\\]']],
+        preview: "none"
+      },
+      SVG: {
+        useGlobalCache: false
+      }
+    };
+
+    // modify the options only in case of assessments, since for proxima-nova mathjax renders very small
+    // text in chrome
+    if (window.headerObj && Object.keys(window.headerObj).length) {
+      options = {
+        messageStyle: "none",
+        jax: ["input/TeX", "output/SVG", "output/HTML-CSS"],
+        tex2jax: {
+          inlineMath: [['$$','$$'], ['\\(', '\\)']],
+          displayMath: [['$$$', '$$$'], ['\\[', '\\]']],
+          preview: "none"
+        },
+        SVG: {
+          useGlobalCache: false,
+          scale: MathJax.Hub.Browser.isChrome ? 200 : 100,
+          minScaleAdjust: 100
+        },
+        "HTML-CSS": {
+          minScaleAdjust: 100
+        },
+        "CommonHTML": {
+          minScaleAdjust: 100
+        }
+      }
+    }
+
+    MathJax.Hub.Config(options);
+</script>
+<script type="text/javascript" src="https://static-fastly.hackerearth.com/static/js/mathjax.3489d4a1e549.js" crossorigin="anonymous" ></script>
+<script type="text/javascript">
+    window.addEventListener("load", function() {
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+    });
+</script>
+<div class="layout-container">
+    <div class="gray-wide-container">
+        <div id="practice-problem-app-root" class="padding-bottom-20"></div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+    var CodeEditorText = {
+        submit : "SUBMIT",
+        compileSubmit : "Compile & Test",
+        compileSubmitForSQL : "Execute & Test",
+        provideCustomInput : "Provide custom input",
+        keybindingNormal : "Normal",
+        keybindingVim : "Vim",
+        keybindingEmacs : "Emacs",
+        intellisense: "Intellisense",
+        writeOrUploadCode : "Enter your code or <a> <i className='fa fa-upload'></i> Upload your code</a> as file.",
+        overWriteExistingTemplate : "Your existing template will be over-written. Are you sure you want to update?",
+        updateDefaultTemplate : "Update default template",
+        takeMeBack: "Nope take me back",
+        yes: "Yes",
+        selectLanguage: "Language",
+        save : "Save",
+        loading: "Loading",
+        autoCompleteInfo: "Press Ctrl-space for autocomplete suggestions.",
+        autoCompleteServerInfo: "Press Ctrl-space for autocomplete suggestions (accuracy dependent on connection stability).",
+        goFullScreen: "Go full screen",
+        exitFullScreen: "Exit full screen",
+        lightTheme: "Light",
+        darkTheme: "Dark",
+        unsavedCodeWarning: "You may loose all the unsaved changes!",
+        savedText: "Saved",
+        errorInSavingText: "Error in saving",
+        saveText: "Save",
+        setFavoriteLangText: "Set {0} as favorite",
+        setDefaultTemplateText: "Set as default template",
+        selectLanguageText: "Select Language",
+        themeHeader: "Theme",
+        helpText: "Just one more thing to do",
+        editorModeHeader: "Editor Mode",
+        editorFontHeader: "Font",
+        editorTabSpaceHeader: "Tab Space",
+        editText: "Edit",
+        submitText: "Submit",
+        playText: "Play",
+        defaultBot: "Default Bot",
+        fetchFailure: "A server error has occurred. You can continue writing code or attempt any other question and try again after a while.",
+        fetchTimedout: "We have received your submission and it is being evaluated.",
+        multiEditModeIndicator: "Multiline editing is enabled. Press esc to turn it off.",
+        favLangMsg: "has been set as your preferred language.",
+        defaultCodeMsg: "code template has been updated.",
+        visibility: "Visibility",
+        notAvailableText: "-",
+        visibleTestCase: "Visible test case",
+        hiddenTestCase: "Hidden test case",
+        submitResponseText: {
+            header: {
+                RESULT: "RESULT",
+                EVALUATING_SOLUTION: "Evaluating solution...",
+                SUBMISSION_ID : "Submission ID",
+                REFER_JUDGE_ENVIRONMENT : "Refer judge environment",
+                VIEW_MORE_TEXT : "View more"
+            },
+            table: {
+                inputCol: {
+                    DISPLAY_NAME: "Input",
+                },
+                outputCol: {
+                    DISPLAY_NAME: "Output",
+                },
+                yourOutput: {
+                    HEADING_TOOLTIP: "Your output for given input",
+                },
+                correctOutput: {
+                    HEADING_TOOLTIP: "Correct output for given input",
+                },
+                log: {
+                    HEADING_TOOLTIP: "Standard error stream for given input",
+                    ERROR_TOOLTIP: "Error log for given testcase",
+                },
+                diff: {
+                    HEADING_TOOLTIP: "Diff between your output and correct output",
+                }
+            },
+            footer: {
+                COMPILATION_LOG: "Compilation log",
+            },
+            common: {
+                SCORE: "Score",
+                TIME: "Time (sec)",
+                MEMORY: "Memory (KiB)",
+                LANGUAGE: "Language",
+                INPUT: "Input",
+                RESULT: "Result",
+                YOUR_OUTPUT: "Your output",
+                CORRECT_OUTPUT: "Correct output",
+                LOG: "Log",
+                DIFF: "Diff",
+                AC_TITLE: "Solution accepted",
+                PAC_TITLE: "Partially solved",
+                SECONDS: "seconds",
+                SEC_S: "sec(s)",
+                KIB: "KiB",
+            },
+            resultMapping: {
+                RE: "Runtime error",
+                CE: "Compilation error",
+                TLE: "Time limit exceeded",
+                MLE: "Memory limit exceeded",
+                WA: "Wrong answer",
+                AC: "Accepted",
+                PAC: "Partially accepted",
+            },
+            typeDescriptionMapping: {
+                SIGSEGV: 
+                    '<span class="bold">Segmentation fault:</span> This error has occurred because your program is trying to read or write outside the allocated memory or your program is trying to write a read-only memory. For example, this error is thrown when you are accessing a[-1] in a programming language that does not support negative indices for an array.<div>The SIGSEGV error can also occur when an out-of-scope array index causes a buffer overflow or an incorrectly-initialized pointer.</div>'
+                ,
+                SIGXFSZ: 
+                    '<span class="bold">Output limit exceeded:</span> This error has occurred because your program is printing an excessive amount of data.'
+                ,
+                SIGFPE: 
+                    '<span class="bold">Floating point error:</span> This error has occurred because you are dividing a number by 0 or trying to take the square root of a negative number.'
+                ,
+                SIGABRT: 
+                    '<span class="bold">Signal abort error:</span> This error has occurred because the compiler aborted your program in while executing the same. It can also occur because of allocation of insufficient memory.'
+                ,
+                NZEC: 
+                    '<span class="bold">Non-zero exit code:</span> This error has occurred because the program has exited after returning a different value from 0 to the shell.<div>In C or C++, the error represents (but not limited to) that you forgot to add <span class="bold">return 0</span> at the end of your program, your program throws an exception that has not been caught, or the program has allocated a large amount of memory in vector.</div><div>For languages such as Python, this error represents that your program has crashed or raised an uncaught exception.</div>'
+                ,
+                MLE: 
+                    '<span class="bold">Memory limit exceeded:</span> This error has occurred because your program is trying to allocate some memory beyond the allowed limit. It can also occur if the program has a very large array or if a data structure in your program is too large.'
+                ,
+            }
+        },
+        backend: {
+            CAN_SHOW_VISIBLE_TEST_CASES: false,
+        },
+    };
+
+    var CodeEditorConstants= {
+        CAN_SHOW_SCORE_FOR_SUBMISSION: false,
+    }
+
+</script>
+
+
+
+<script type="text/javascript">
+    // Following global variables are used to carry translated strings from HTML pages to 'bluebook' React templates
+    var QUESTION_TEXT = "Question";
+    var LOAD_QUESTION_TEXT = "Load Question";
+    var FLOW_HELP_TEXT = "See how to attempt this question.";
+    var MAX_MARKS_TEXT = "Max. score";
+    var LOADING_ERR_MSG_TEXT = "Oops! There seems to be some issue. Please refresh the page.";
+    var LOAD_CODE_EDITOR_TEXT = "Load Code Editor";
+    var LOADING_TEXT = "Loading Code Editor...";
+    var CODE_SUBMIT_HELP_TEXT = "You can submit code after loading editor";
+    var NEW_SUBMISSION_TEXT = "New Submission";
+    var ALL_SUBMISSIONS_TEXT = "All Submissions";
+    var REFRESHING_TEXT = "Refreshing...";
+    var REFRESH_ALL_SUBMISSIONS_TEXT = "Refresh All Submissions List";
+    var EXPLAINATION_TEXT = "Explanation";
+    var SAMPLE_INPUT_TEXT = "Sample Input";
+    var SAMPLE_OUTPUT_TEXT = "Sample Output";
+    var PLAINTEXT_LINK_TEXT = "Plaintext Link";
+    var TIME_LIMIT_TEXT = "Time Limit";
+    var MEMORY_LIMIT_TEXT = "Memory Limit";
+    var SOURCE_LIMIT_TEXT = "Source Limit";
+    var FILE_SIZE_LIMIT_TEXT = "File size limit is {fileSizeLimit} MB";
+    var MARKING_SCHEME_TEXT = "Marking Scheme";
+    var ALLOWED_LANGUAGES_TEXT = "Allowed Languages";
+    var SUBMITTING_TEXT = "Submitting..";
+    var ATTEMPTED_TEXT = "Attempted";
+    var SUBMIT_TEXT = "Submit";
+    var ALERT_TEXT_1 = "Please attach a file to your answer";
+    var UPLOAD_FILE_TEXT = "Upload File";
+    var UPLOAD_PREDICTION_FILE_TEXT = "Upload File";
+    var UPLOAD_SOURCE_CODE_TEXT = "Upload Source Code";
+    var UPLOAD_APK_TEXT = "Upload Android Application (.apk)";
+    var ALERT_TEXT_2 = "Your time for this question is over. You cannot change your answer now.";
+    var NOT_ATTEMPTED_TEXT = "Not Attempted";
+    var ALERT_TEXT_3 = "Answer was reset successfully!";
+    var ALERT_TEXT_4 = "You cannot reset the answer now!";
+    var ALERT_TEXT_5 = "Your time for this question is over. You cannot reset your answer now.";
+    var ALERT_TEXT_6 = "Your time for this question is over. You cannot change your answer now.";
+    var RESET_ANSWER_TEXT = "Reset Answer";
+    var ANSWER_SAVED_TEXT = "Answer Saved";
+    var ANSWER_UNSAVED_TEXT = "Do not forget to submit your answer.";
+    var NEXT_QUESTION_TEXT = "Next Question";
+    var WRITE_ANSWER_TEXT = "Write your answer here";
+    var WARNING_TEXT = "Select at least one option.";
+    var CHANGE_FILE_TEXT = "Change File";
+    var DISABLE_ERROR_MESSAGE = "Please upload APK file first!";
+    var YOUR_ANSWER_TEXT = "Your Answer";
+    var ADDITIONAL_COMMENTS = "Additional Comments";
+    var YOUR_SOLUTION = "Your Solution";
+    var PREVIEW_TEXT = "Preview";
+    var WEBCAM_NOT_ACCESSIBLE_MESSAGE = "Could not access webcam. Enable webcam or use latest version of chrome/firefox browser.";
+    var TIME_COMPLETED_MESSAGE = "The time has completed!";
+    var LEAVE_CONFIRM_MESSAGE_1 = "Are you sure you want to leave?";
+    var WEBCAM_ACCESS_INFO_1 = "This test requires webcam access. Give webcam permission.";
+    var WEBCAM_ACCESS_INFO_2 = "You can not take test without giving access to webcam.";
+    var TIME_UP_MESSAGE = "Time Up!";
+    var TIME_OVER_MESSAGE_1 = "Your time for this question is over. You cannot change your answer now.";
+    var PLEASE_WAIT_MESSAGE_1 = "Please wait, your answer is being submitted.";
+    var ATTEMPTED_MESSAGE = "Attempted";
+    var NOTE_TEXT = "Note";
+    var NOT_ATTEMPTED_MESSAGE = "Not Attempted";
+    var PROCTOR_ALERT_1 = "You are a superuser. I will let you cheat.";
+    var PROCTOR_ALERT_2 = "You will be logged out if you leave this page!";
+    var SAMPLE_IO_NOTE = "Your code should be able to convert the sample input into the sample output. However, this is not enough to pass the challenge, because the code will be run on multiple test cases. Therefore, your code must solve this problem statement.";
+    var PREDICTION_ERROR_TEXT = "Please upload your prediction file";
+    var FILE_SIZE_ERROR_TEXT = "Please upload a file with size less than {fileSizeLimit} MB";
+    var SOURCE_CODE_ERROR_TEXT = "Please upload your source code file";
+    var CodeEditorConstants= {
+        CAN_SHOW_SCORE_FOR_SUBMISSION: false,
+    }
+</script>
+
+<script type="text/javascript" charset="utf-8">
+    var DOWNLOAD_DATASET_TEXT = "Download dataset";
+    window.PRACTICE_PAGE = {
+        CONSTANT: {
+            USER_ID: '2543827',
+            isAuthenticated: true,
+            STATIC_URL: 'https://static-fastly.hackerearth.com/static/',
+            RENDER_ISSUE_ALERT: "An error has occurred. Please refresh the page or try after sometime.", 
+            DETAILS: "Details",
+            SUBMISSIONS: "Submissions",
+            DISCUSSIONS: "Discussion",
+            SIMILAR_PROBLEMS: "Similar Problems",
+            EDITORIAL: "Editorial",
+            AUTHOR_SOLUTION: "Author's Solution",
+            TESTER_SOLUTION: "Tester's Solution",
+            ALL_TRACKS: "All Tracks",
+            PROBLEM: "Problem",
+            SHARE: "Share",
+            PREDICTION_FILE_TITLE: "Upload prediction file",
+            PREDICTION_FILE_DESC: "Please upload the prediction file in the format as stated in the problem.",
+            ADD_FILES:  '<span class="highlight">Add files</span> or drop files here' ,
+            UPLOADED_AND_SUBMIT: "Your file has been uploaded successfully and submit now.",
+            SUBMIT_AND_EVALUATE: "Submit & Evaluate",
+            SUCCESS_MESSAGE: "Your submission has been received. Check your submissions tab for more",
+            ERROR_MESSAGE: "Something went wrong, try again.",
+            SRC_FILE_TITLE: "Upload Source Files",
+            SRC_FILE_DESC: "You need to submit a zip or tar archive consisting of a text file explaining your approach, details about feature engineering, tools you used and the relevant source files.",
+            UPLOAD: "Upload",
+            EXPLANATION: "Explanation",
+            CONTRIBUTORS: "Contributers",
+            VOTES: "votes",
+            AVG_RATING: "Average Rating",
+            YOU_RATED: "You Rated",
+            RATE_HERE: "Rate Here",
+            ATTEMPTED_BY: "Attempted by",
+            SUCCESS_RATE: "Success Rate",
+            POINTS: "Points",
+            TAGS: "Tags",
+            MY_SUBMISSION: "My Submissions",
+            BEST_SUBMISSION: "Best Submissions",
+            TD_RESULT: "Result",
+            TD_RESULT_DETAILS: "Result Details",
+            TD_TIME: "Time (Sec)",
+            TD_MEMORY: "Memory (kb)",
+            TD_LANG: "Language",
+            TD_DETAIL: "Detail",
+            TD_DATE: "Date",
+            NO_SUBMISSION: "No code submissions done yet",
+            SUBMISSION: "Submission",
+            NO_BEST_SOLUTION: "There is no solution for this language",   
+        }
+    }
+</script>
+
+
+
+
+<script type="text/javascript" charset="utf-8">
+    window.DISCUSSION_FORUM = {
+        CONFIG: JSON.parse("{\"parentUrl\": \"/practice/algorithms/dynamic-programming/introduction-to-dynamic-programming-1/practice-problems/algorithm/inverse-graph-4c5729e8/\", \"displayName\": \"Dhruv Laad\", \"avatarUrl\": \"https://he-s3.s3.amazonaws.com/media/avatars/dhruv551/resized/120/photo.jpg\", \"parentTitle\": \"The maximum set\", \"showBreadcrumb\": false, \"profileUrl\": \"/@dhruv551\", \"canPin\": false, \"profileId\": 2543827, \"identifier\": \"MTgzOjE4MDgzOTk=\", \"showBackbutton\": true, \"isAuthenticated\": true}"),
+        CONSTANT: {
+           BACK_STR : "Back",
+           EDIT_STR: "Edit",
+           DELETE_STR: "Delete",
+           EDIT_TITLE: "Edit this topic",
+           DELETE_TITLE: "Delete this topic",
+           CANCEL_STR: "Cancel",
+           UPDATE_TOPIC: "Update topic",
+           PUBLISH_TOPIC: "Publish topic",
+           ADD_REPLY_STR: "Reply",
+           LOGIN_TO_LIKE: "Login to like",
+           LIKE_TOPIC: "Like this topic",
+           UNLIKE_TOPIC: "Unlike this topic",
+           LIKE_COMMENT: "Like this comment",
+           UNLIKE_COMMENT: "Unlike this comment",
+           DELETE_COMMENT: "Delete",
+           DELETE_COMMENT_TITLE: "Delete this comment?",
+           DELETE_COMMENT_MESSAGE: "All the replies within this comment will also get deleted",
+           PIN: "Pin",
+           UNPIN: "Unpin",
+           PIN_STR: "Pin this topic to the discussion board",
+           UNPIN_STR: "Unpin this topic from the discussion board",
+           PINNED: "Pinned",
+           TOPIC_UPDATE_ALERT: "The topic has been updated",
+           TOPIC_DUPLICATE_ALERT: "The topic has been posted to the discussion forum",
+           PINNED_ALERT: "Topic has been pinned",
+           UNPINNED_ALERT: "Topic has been unpinned",
+           PIN_ERROR: "There was some error while trying to pin topic",
+           TOPIC_DELETE_ALERT: "Some error occured while trying to delete this topic. Please contact support if problem persists.",
+           TOPIC_DELETE_SUCCESS: "The topic has been deleted",
+           TOPIC_404: "Topic not found. The URL might be incorrect or the topic has been deleted",
+           PAGE_REFRESH: "Some error occured while loading this page. Please try refreshing this page once",
+           CREATE_NEW_TOPIC: "Create new Topic",
+           THATS_ALL_FOLKS: "That's all folks!",
+           UNACCEPTABLE_CONTENT: "This content is not acceptable.",
+        }
+    }
+</script>
+
+
+<link rel="stylesheet" href="https://static-fastly.hackerearth.com/static/practice/practice.274812be4058.css"/>
+<link rel="stylesheet" href="https://static-fastly.hackerearth.com/static/monaco/vendors.f1a8a791db04.css"/>
+
+<script type="text/javascript" src="https://static-fastly.hackerearth.com/static/practice/vendors.499a0bdd8467.js" crossorigin="anonymous" ></script>
+<script type="text/javascript" src="https://static-fastly.hackerearth.com/static/mock-interview/nuskha-vendors.2bd178422c32.js" crossorigin="anonymous" ></script>
+<script type="text/javascript" src="https://static-fastly.hackerearth.com/static/practice/practice.cd0ec41d20a0.js" crossorigin="anonymous" ></script>
+
+<script type="text/javascript" src="https://static-fastly.hackerearth.com/static/timeline/util.350eec762462.js" crossorigin="anonymous" ></script>
+<script type="text/javascript" src="https://static-fastly.hackerearth.com/static/timeline/controller.b244860907a5.js" crossorigin="anonymous" ></script>
+<script type="text/javascript" src="https://static-fastly.hackerearth.com/static/timeline/plugins/codevideo/code_player.1487cb2419f4.js" crossorigin="anonymous" ></script>
+<script type="text/javascript" src="https://static-fastly.hackerearth.com/static/codemonk/loginmodal.57b6963e19ee.js" crossorigin="anonymous" ></script>
+
+
+<script>
+    // firestore credentials
+    var firebaseConfig = {
+        apiKey:'AIzaSyD7oH2r4iyvysFx47-IVwrzdwIuw7Ici90',
+        authDomain:'he-production.firebaseapp.com',
+        databaseURL:'https://he-production.firebaseio.com',
+        projectId:'he-production',
+        storageBucket:'he-production.appspot.com',
+        messagingSenderId:'100736274227',
+        appId:'1:100736274227:web:fdd60d6929555af4d3b846'
+    };
+    window.firebaseConfig = firebaseConfig;
+</script>
+
+    <script type="text/javascript" src="https://static-fastly.hackerearth.com/static/js/firebase/firebase-app.a75f50850a09.js" crossorigin="anonymous" ></script>
+    <script type="text/javascript" src="https://static-fastly.hackerearth.com/static/js/firebase/firebase-firestore.ac7f12977426.js" crossorigin="anonymous" ></script>
+    <script type="text/javascript" src="https://static-fastly.hackerearth.com/static/realtime/firestore_realtime.551dabc1780c.js" crossorigin="anonymous" ></script>
+
+
+
+
+
+
+<script type="text/javascript">
+    var worker_url = "https://static-fastly.hackerearth.com/static/monaco-worker/monaco-worker.64ccee05b193.js"
+    window.MonacoEnvironment = {
+      getWorkerUrl: () => "data:text/javascript;charset=utf-8,"+encodeURIComponent(`
+                  importScripts('${worker_url}')`)
+    }
+</script>
+
+<script type="text/javascript">
+    var initial_state = {
+        pType: "algorithm",
+        slug: "inverse-graph-4c5729e8",
+        title: "The maximum set",
+        topicTree: {"track": {"url": "/practice/algorithms/", "title": "Algorithms"}, "topic": {"url": "/practice/algorithms/dynamic-programming/", "title": "Dynamic Programming"}, "sub_topic": {"url": "/practice/algorithms/dynamic-programming/introduction-to-dynamic-programming-1/", "title": "Introduction to Dynamic Programming 1"}},
+        activeTab: "description",
+        baseURL: "/practice/algorithms/dynamic-programming/introduction-to-dynamic-programming-1/practice-problems/algorithm/inverse-graph-4c5729e8/",
+        isSourceList: false,
+        shareURL: "https://www.hackerearth.com/practice/algorithms/dynamic-programming/introduction-to-dynamic-programming-1/practice-problems/algorithm/inverse-graph-4c5729e8/"
+    }
+    
+    function loadPracticePage() {
+        if (window.renderPracticePage) {
+            window.renderPracticePage("practice-problem-app-root", initial_state);
+        } else {
+            typeof addAlert !== "undefined" && addAlert(PRACTICE_PAGE.CONSTANT.RENDER_ISSUE_ALERT);
+        }
+    }
+
+    try {
+        window.loadPracticePage();
+    } catch (e) {
+        window.addEventListener("load", loadPracticePage);
+    }
+</script>
+
+<script>
+    // firestore credentials
+    var firebaseConfig = {
+        apiKey:'AIzaSyD7oH2r4iyvysFx47-IVwrzdwIuw7Ici90',
+        authDomain:'he-production.firebaseapp.com',
+        databaseURL:'https://he-production.firebaseio.com',
+        projectId:'he-production',
+        storageBucket:'he-production.appspot.com',
+        messagingSenderId:'100736274227',
+        appId:'1:100736274227:web:fdd60d6929555af4d3b846'
+    };
+    window.firebaseConfig = firebaseConfig;
+</script>
+
+    <script type="text/javascript" src="https://static-fastly.hackerearth.com/static/js/firebase/firebase-app.a75f50850a09.js" crossorigin="anonymous" ></script>
+    <script type="text/javascript" src="https://static-fastly.hackerearth.com/static/js/firebase/firebase-firestore.ac7f12977426.js" crossorigin="anonymous" ></script>
+    <script type="text/javascript" src="https://static-fastly.hackerearth.com/static/realtime/firestore_realtime.551dabc1780c.js" crossorigin="anonymous" ></script>
+
+
+
+
+    <!-- include modal window for login/signup -->
+    
+
+    <!-- override this block where we do not want the footer -->
+    
+    
+        
+                
+
+
+
+
+
+<footer class="marketing-footer footer-large">
+    <div class="primary-footer">
+        <div class="standard-margin-bottom contact-wrapper">
+            <div class="standard-margin-bottom">
+                <img src="https://static-fastly.hackerearth.com/static/hackerearth/images/assessment_marketing/he-footer-logo.svg" />
+            </div>
+            <ul class="no-style">
+                <li>+1-650-461-4192</li>
+                <li>
+                    <a href="mailto:contact@hackerearth.com" target="_blank">
+                        contact@hackerearth.com
+                    </a>
+                </li>
+            </ul>
+            <ul class="social-links-container no-style">
+                <li>
+                    <a href="https://www.facebook.com/HackerEarth/" target="_blank">
+                        <img src="https://static-fastly.hackerearth.com/static/hackerearth/images/assessment_marketing/facebook-logo.svg" />
+                    </a>
+                </li>
+                <li>
+                    <a href="https://twitter.com/HackerEarth?ref_src=twsrc%5Egoogle%7Ctwcamp%5Eserp%7Ctwgr%5Eauthor" target="_blank">
+                        <img src="https://static-fastly.hackerearth.com/static/hackerearth/images/assessment_marketing/twitter-logo.svg" />
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.linkedin.com/company/hackerearth/?originalSubdomain=in" target="_blank">
+                        <img src="https://static-fastly.hackerearth.com/static/hackerearth/images/assessment_marketing/linkedin-logo.svg" />
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.youtube.com/channel/UCYU6nvKyRYnE5kiG9JXkXpA" target="_blank">
+                        <img src="https://static-fastly.hackerearth.com/static/hackerearth/images/assessment_marketing/youtube-logo.svg" />
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="standard-margin-bottom">
+            <h3 class="footer-heading">Resources</h3>
+            <ul class="no-style">
+                <li>
+                    <a href="https://www.hackerearth.com/blog/talent-assessment/" target="_blank">
+                        Tech Recruitment Blog
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.hackerearth.com/recruit/resources/guides/" target="_blank">
+                        Product Guides
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.hackerearth.com/recruit/how-to-hire/" target="_blank">
+                        Developer hiring guide
+                    </a>
+                </li>
+                <li>
+                    <a href="http://engineering.hackerearth.com/" target="_blank">
+                        Engineering Blog
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.hackerearth.com/blog/developers/" target="_blank">
+                        Developers Blog
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.hackerearth.com/docs/wiki/developers/solution-guide/" target="_blank">
+                        Developers Wiki
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.hackerearth.com/getstarted-competitive-programming/" target="_blank">
+                        Competitive Programming
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.hackerearth.com/university/" target="_blank">
+                        Start a Programming Club
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.hackerearth.com/practice/machine-learning/prerequisites-of-machine-learning/basic-probability-models-and-rules/tutorial/" target="_blank">
+                        Practice Machine Learning
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="standard-margin-bottom">
+            <h3 class="footer-heading">Solutions</h3>
+            <ul class="no-style">
+                <li>
+                    <a href="https://www.hackerearth.com/recruit/" target="_blank">
+                        Assess Developers
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.hackerearth.com/recruit/facecode/" target="_blank">
+                        Conduct Remote Interviews
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.hackerearth.com/recruit/hiring/university-hiring/" target="_blank">
+                        Assess University Talent
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.hackerearth.com/community-hackathons/" target="_blank">
+                        Organize Hackathons
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="standard-margin-bottom">
+            <h3 class="footer-heading">Company</h3>
+            <ul class="no-style">
+                <li>
+                    <a href="https://www.hackerearth.com/team/" target="_blank">
+                        About Us
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.hackerearth.com/press/" target="_blank">
+                        Press
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.hackerearth.com/companies/hackerearth/jobs/" target="_blank">
+                        Careers
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="standard-margin-bottom">
+            <h3 class="footer-heading">Service & Support</h3>
+            <ul class="no-style">
+                <li>
+                    <a href="https://support.hackerearth.com/hc/en-us" target="_blank">
+                        Technical Support
+                    </a>
+                </li>
+                <li>
+                    <a href="https://www.hackerearth.com/reach-us/" target="_blank">
+                        Contact Us
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <ul class="secondary-footer no-style">
+        <li>
+            
+            
+                &copy; 2021 HackerEarth All rights reserved
+            
+        </li>
+        <li>
+            <a href="https://www.hackerearth.com/terms-of-service/" target="_blank">
+                Terms of Service
+            </a>
+        </li>
+        <li>
+            <a href="https://www.hackerearth.com/privacy/" target="_blank">
+                Privacy Policy
+            </a>
+        </li>
+    </ul>
+</footer>
+        
+    
+    
+
+    <div class="expand-box" id="recruiter-box">
+        <div class="down-arrow"></div>
+        <ul class="no-margin">
+            
+            
+            
+            <a href="/logout/?next=/practice/algorithms/dynamic-programming/introduction-to-dynamic-programming-1/practice-problems/algorithm/inverse-graph-4c5729e8/"><li>Logout</li></a>
+        </ul>
+    </div>
+
+    
+    <div class="expand-box" id="hacker-box">
+        <div class="down-arrow"></div>
+        <ul class="no-margin">
+            
+            <a class="track-header-profile-box-profile" href="https://www.hackerearth.com/@dhruv551">
+                <li>
+                    Profile (60%)
+                    <div class="profile-complete-bar-head">
+                        <span class="profile-complete-bar"></span>
+                        <span class="profile-complete-bar-done"></span>
+                    </div>
+                </li>
+            </a>
+
+            
+
+            <a class="track-header-profile-box-activity" href="https://www.hackerearth.com/@dhruv551/activity/hackerearth/"><li>Activity</li></a>
+            <a class="track-header-profile-box-bookmark" href="https://www.hackerearth.com/bookmark/problems/"><li>Bookmarks</li></a>
+            <a class="track-header-profile-box-settings" href="https://www.hackerearth.com/users/profile-settings/"><li>Settings</li></a>
+            <a class="track-header-profile-box-invite tablet-hide" href="https://www.hackerearth.com/invite/"><li>Invite Friends</li></a>
+            <hr class="hr"/>
+
+            
+            <a class="track-header-profile-box-user-ratings tablet-hide" href="https://www.hackerearth.com/leaderboard/contests/rated/"><li>Ratings</li></a>
+            
+            <a class="track-header-profile-box-docs" href="https://www.hackerearth.com/docs/wiki/developers/"><li>Documentation</li></a>
+
+            <hr class="hr"/>
+
+            
+
+            
+
+            
+            
+
+            
+            <a class="track-header-profile-box-logout" href="/logout/?next=/practice/algorithms/dynamic-programming/introduction-to-dynamic-programming-1/practice-problems/algorithm/inverse-graph-4c5729e8/"><li>Logout</li></a>
+        </ul>
+    </div> <!-- hacker-box -->
+    
+
+    <!-- Include notifications box -->
+    
+
+
+
+<div class="expand-box" id="notifications-box">
+    <div class="down-arrow"></div>
+    <div class="notifications-title-container">
+        <div class="float-left weight-600">Notifications</div>
+        <div class="float-right">
+            <a href="#" ajax="https://www.hackerearth.com/notifications/AJAX/mark-all-read/" class="notif-mark-all-read link smaller clicky-ajax">Mark All as Read</a>
+        </div>
+        <div class="clear"></div>
+    </div> <!-- notifications-title-container -->
+
+    <div class="notifications-container nice-scrollbar" id="notifications-container">
+    </div> <!-- notifications-container -->
+
+    <div class="smaller caps weight-600 align-center less-margin-2 less-margin-2-bottom">
+        <a class="link" href="https://www.hackerearth.com/notifications/">View All Notifications</a>
+    </div>
+</div> <!-- notifications-box -->
+
+
+    <!-- Load notification icon with unread count -->
+    <div id="header-notif-icon-trigger" class="load-pagelet hidden" target="header-notif-icon" ajax="/notifications/pagelets/header-notif-icon-count/" show-loader="false"></div>
+
+    
+
+    
+
+    
+    
+
+        
+        
+
+        <!-- Store any json returned for bigpipe -->
+        <div id="bigpipe-json" class="hidden">
+            
+        </div>
+
+        <!-- Store any html returned for feedback popup -->
+        <div id="user-feedback-popup" class="hidden"></div>
+
+        
+            <div id="common-notification">
+            </div>
+        
+
+        <!-- ping url for user presence -->
+        <div id="ghost-ping-url" class="hidden" ajax="/ghost/ping/"></div>
+
+        
+        
+
+        
+        <div id="external-link-modal" class="modal-window very-large-modal">
+            <div class="modal-content large dark align-left">
+                <div id="external-link-content-wrapper">
+                    <pre></pre>
+                </div>
+            </div>
+        </div>
+        
+
+        <!-- All the scripts go here -->
+        <script>
+            
+            var CURRENT_PATH = "https://www.hackerearth.com/practice/algorithms/dynamic-programming/introduction-to-dynamic-programming-1/practice-problems/algorithm/inverse-graph-4c5729e8/";
+            var HISTORY = '';
+            var DEFAULT_REAL_NUMBER_PRECISION = 2;
+            var DECIMAL_PRECISION_ERROR_TEXT = "Only {decimal_limit} decimal places allowed";
+            var SOMETHING_WENT_WRONG_ERROR_TEXT = "Something went wrong. Please try again later.";
+
+            // Make code constants available globally in JS
+            var MAP_LANG_TO_NAME = {"SCALA_2118": "Scala 2.11.8", "LUA": "Lua", "PASCAL": "Pascal", "CSHARP": "C#", "CPP": "C++", "PYTHON3": "Python 3", "POSTGRESQL": "PostgreSQL", "KOTLIN": "Kotlin", "SCALA": "Scala", "PERL": "Perl", "HASKELL": "Haskell", "D": "D", "PYTHON3_8": "Python 3.8", "CPP14": "C++14", "CPP17": "C++17", "R": "R(RScript)", "CPP11": "C++11", "GO": "Go", "RUBY": "Ruby", "BASH": "Bash", "GROOVY": "Groovy", "LOLCODE": "LOLCODE", "LISP": "Lisp", "Text": "Text", "WHENEVER": "Whenever", "MYSQL": "MySQL", "OBJECTIVEC": "Objective-C", "PHP": "PHP", "JAVASCRIPT_UI": "JavaScript", "PYTHON": "Python", "JAVASCRIPT": "JavaScript(Rhino)", "SWIFT_4_1": "Swift-4.1", "vp": "N/A", "TEXTFILE": "Text", "JAVA8": "Java 8", "JAVASCRIPT_NODE": "JavaScript(Node.js)", "RACKET": "Racket", "HTML": "HTML", "SWIFT": "Swift", "RUST": "Rust", "FSHARP": "F#", "JAVA14": "Java 14", "C": "C", "TYPESCRIPT": "TypeScript", "ORACLE_DB": "Oracle_Db", "OCAML": "OCaml", "OCTAVE": "Octave", "CLOJURE": "Clojure", "BEFUNGE": "Befunge", "CSS": "CSS", "ERLANG": "Erlang", "JAVA": "Java", "LISP_SBCL": "Lisp (SBCL)", "JULIA": "Julia", "VB": "Visual Basic", "MSSQL": "MSSQL"};
+            var MAP_NAME_TO_LANG = {"Java 14": "JAVA14", "Lisp (SBCL)": "LISP_SBCL", "TypeScript": "TYPESCRIPT", "Java": "JAVA", "Scala": "SCALA", "JavaScript": "JAVASCRIPT_UI", "Perl": "PERL", "Lua": "LUA", "JavaScript(Rhino)": "JAVASCRIPT", "MySQL": "MYSQL", "Erlang": "ERLANG", "LOLCODE": "LOLCODE", "HTML": "HTML", "JavaScript(Node.js)": "JAVASCRIPT_NODE", "C#": "CSHARP", "Lisp": "LISP", "C++14": "CPP14", "Rust": "RUST", "Octave": "OCTAVE", "Ruby": "RUBY", "Bash": "BASH", "Groovy": "GROOVY", "C": "C", "Python 3": "PYTHON3", "R(RScript)": "R", "Kotlin": "KOTLIN", "Oracle_Db": "ORACLE_DB", "F#": "FSHARP", "N/A": "vp", "C++": "CPP", "Racket": "RACKET", "Objective-C": "OBJECTIVEC", "Swift": "SWIFT", "CSS": "CSS", "D": "D", "Clojure": "CLOJURE", "Befunge": "BEFUNGE", "Java 8": "JAVA8", "Whenever": "WHENEVER", "PostgreSQL": "POSTGRESQL", "Python 3.8": "PYTHON3_8", "Swift-4.1": "SWIFT_4_1", "OCaml": "OCAML", "Julia": "JULIA", "C++17": "CPP17", "Python": "PYTHON", "Pascal": "PASCAL", "Haskell": "HASKELL", "Scala 2.11.8": "SCALA_2118", "C++11": "CPP11", "Text": "TEXTFILE", "Go": "GO", "Visual Basic": "VB", "PHP": "PHP", "MSSQL": "MSSQL"};
+        </script>
+
+        
+
+        <!-- alljs: static_media/js/jquery-1.7.min.patched.js static_media/js/jquery.color.js static_media/js/jquery.elastic.js static_media/js/ajaxSend.js  static_media/js/jquery.inview.js  static_media/js/tooltip/jquery.tipTip.modified.js  static_media/offline/offline.min.js  static_media/js/watermark.min.js  static_media/history.js?v=0.1/scripts/bundled/html4html5/jquery.history.js  static_media/js/jquery.nicescroll.js  static_media/simplemodal/simplemodal.js static_media/js/jquery.sticky.js static_media/js/pusher.min.js static_media/js/ifvisible.min.js static_media/ghost/ghost.js static_media/feeds/feeds.js static_media/base/progress_bar.js -->
+        
+
+
+<script>
+    UPLOADING_TEXT = "Uploading";
+    UPLOADED_TEXT = "Uploaded";
+    SAVING_TEXT = "Saving..";
+    UPLOAD_SUCCESS_MESSAGE = "File saved successfully.";
+    UPLOAD_ERROR_MESSAGE = "An error occured while saving, please try again in sometime.";
+</script>
+<script type="text/javascript" src="https://static-fastly.hackerearth.com/static/js/alljs.86329a9e20af.js" crossorigin="anonymous" ></script>
+        <script type="text/javascript" src="https://static-fastly.hackerearth.com/static/base/base1.0.1.834054836726.js" crossorigin="anonymous" ></script>
+        <script type="text/javascript" src="https://static-fastly.hackerearth.com/static/bigpipe/bigpipe.1df36f9848f5.js" crossorigin="anonymous" ></script>
+        
+
+
+<script type="text/javascript">
+var CONFIRM_COMMENT_DELETE = "Are you sure, you want to delete comment?";
+var COMMENT_NOT_DELETED = "Comment could not be deleted!";
+var CONFORM_COMMENT_MARK_SPAM = "Are you sure, you want to mark this comment as spam?";
+var COMMENT_NOT_MARKED_SPAM = "Comment could not be marked as spam!";
+var ENTER_15_CHARS = "Enter at least 15 characters";
+var JUST_X_MORE = "Just {count} more to go";
+</script>
+        <script>
+            var MAP_MARKER_SIGNUP_IMAGE = 'https://static-fastly.hackerearth.com/static/metrics/map-marker.png';
+            var MAP_MARKER_LOGIN_IMAGE = 'https://static-fastly.hackerearth.com/static/metrics/map-marker-login.png';
+            var AJAX_URL = '';
+        </script>
+        
+<script>
+    // firestore credentials
+    var firebaseConfig = {
+        apiKey:'AIzaSyD7oH2r4iyvysFx47-IVwrzdwIuw7Ici90',
+        authDomain:'he-production.firebaseapp.com',
+        databaseURL:'https://he-production.firebaseio.com',
+        projectId:'he-production',
+        storageBucket:'he-production.appspot.com',
+        messagingSenderId:'100736274227',
+        appId:'1:100736274227:web:fdd60d6929555af4d3b846'
+    };
+    window.firebaseConfig = firebaseConfig;
+</script>
+
+    <script type="text/javascript" src="https://static-fastly.hackerearth.com/static/js/firebase/firebase-app.a75f50850a09.js" crossorigin="anonymous" ></script>
+    <script type="text/javascript" src="https://static-fastly.hackerearth.com/static/js/firebase/firebase-firestore.ac7f12977426.js" crossorigin="anonymous" ></script>
+    <script type="text/javascript" src="https://static-fastly.hackerearth.com/static/realtime/firestore_realtime.551dabc1780c.js" crossorigin="anonymous" ></script>
+
+
+        <script type="text/javascript" src="https://static-fastly.hackerearth.com/static/base/history.639daea78701.js" crossorigin="anonymous" ></script>
+        <script type="text/javascript" src="https://static-fastly.hackerearth.com/static/js/commentUtils.dadb11872038.js" crossorigin="anonymous" ></script>
+
+
+        
+        <script type="text/javascript" src="https://static-fastly.hackerearth.com/static/offline/offline.min.7ce195ae7071.js" crossorigin="anonymous" ></script>
+
+        <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS_SVG"></script>
+
+
+<script type="text/x-mathjax-config">
+    var options = {
+      messageStyle: "none",
+      jax: ["input/TeX", "output/SVG", "output/HTML-CSS"],
+      tex2jax: {
+        inlineMath: [['$$','$$'], ['\\(', '\\)']],
+        displayMath: [['$$$', '$$$'], ['\\[', '\\]']],
+        preview: "none"
+      },
+      SVG: {
+        useGlobalCache: false
+      }
+    };
+
+    // modify the options only in case of assessments, since for proxima-nova mathjax renders very small
+    // text in chrome
+    if (window.headerObj && Object.keys(window.headerObj).length) {
+      options = {
+        messageStyle: "none",
+        jax: ["input/TeX", "output/SVG", "output/HTML-CSS"],
+        tex2jax: {
+          inlineMath: [['$$','$$'], ['\\(', '\\)']],
+          displayMath: [['$$$', '$$$'], ['\\[', '\\]']],
+          preview: "none"
+        },
+        SVG: {
+          useGlobalCache: false,
+          scale: MathJax.Hub.Browser.isChrome ? 200 : 100,
+          minScaleAdjust: 100
+        },
+        "HTML-CSS": {
+          minScaleAdjust: 100
+        },
+        "CommonHTML": {
+          minScaleAdjust: 100
+        }
+      }
+    }
+
+    MathJax.Hub.Config(options);
+</script>
+<script type="text/javascript" src="https://static-fastly.hackerearth.com/static/js/mathjax.3489d4a1e549.js" crossorigin="anonymous" ></script>
+<script type="text/javascript">
+    window.addEventListener("load", function() {
+        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+    });
+</script>
+
+        <script>
+            Offline.options = {
+                interceptRequests: false,
+                requests: false,
+            };
+        </script>
+
+        
+
+        
+
+<script>
+    var profile_completeness_percentage = 60;
+</script>
+
+
+<script>
+
+$(document).ready(function (){
+    $('#header-notif-icon-trigger').click();
+
+    
+
+    
+    
+
+    
+
+    // show kone ge widget if not visited
+    
+
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    
+    var m_links = {};
+    var m_elements = {
+        '#modal-login-form input[type=submit]': 'Modal Email Login',
+        '#modal-signup-form input[type=submit]': 'Modal Email Signup',
+        '.modal-social-login .btn-facebook': 'Modal Facebook Login',
+        '.modal-social-login .btn-google': 'Modal Google Login',
+        '.modal-social-signup .btn-facebook': 'Modal Facebook Signup',
+        '.modal-social-signup .btn-google': 'Modal Google Signup',
+        '.top-banner .login-banner a': 'Signup after banner click',
+    };
+    
+    for (var key in m_elements) {
+        $(key).live('click', {'key': key }, function(e) {
+            var key = e.data.key;
+            mixpanel.track('Click', {'name': m_elements[key]});
+        });
+    }
+    for (var key in m_links) {
+        mixpanel.track_links(key, 'Click', {'name': m_links[key]});
+    }
+});
+</script>
+
+
+
+
+<script type="text/javascript" src="https://static-fastly.hackerearth.com/static/search/search.1.0.7d336476c653.js" crossorigin="anonymous" defer></script>
+
+<script type="text/javascript" src="https://static-fastly.hackerearth.com/static/base/gdpr-modal.e3306212a68a.js" crossorigin="anonymous" ></script>
+
+
+
+        <script>
+            // Used in search
+            var is_user_logged_in = true;
+        </script>
+
+        
+        <script type="text/javascript" src="https://static-fastly.hackerearth.com/static/js/detect_timezone.12f6ba68823f.js" crossorigin="anonymous" ></script>
+        <script>
+
+            function setTimezoneCookie(detected_user_tz) {
+                /* Sets the detected user timezone as a cookie in the browser.
+                   If someone changes it or removes it, a sanity check is
+                   performed and the cookie is reset.
+
+                   This cookie is set for ready availability of user timezone
+                   in the backend.
+                */
+
+                const USER_TIMEZONE_COOKIE = 'user_tz';
+                // Try to get the existing user timezone cookie stored
+                // in the browser.
+                user_tz = readCookie(USER_TIMEZONE_COOKIE);
+
+                // Flag to determine whether a new cookie has to be created.
+                create_cookie = false;
+
+                if(user_tz) {
+                    if(user_tz !== detected_user_tz) {
+                        // If someone has changed the cookie in some way, we
+                        // set a new cookie.
+                        eraseCookie(USER_TIMEZONE_COOKIE);
+                        create_cookie = true;
+                    }
+                } else {
+                    create_cookie = true;
+                }
+
+                // Create a new cookie if create_cookie flag is set.
+                createCookie(USER_TIMEZONE_COOKIE, detected_user_tz, 1);
+
+            }
+            $(document).ready(function(){
+                var timezone = jstz.determine_timezone(); // Now you have an instance of the TimeZone object.
+                // Set as a cookie in browser for easy access in backend.
+                setTimezoneCookie(timezone.name());
+
+                // Set as a js variable for easy access across frontend.
+                USER_TIMEZONE = timezone.name()
+
+                
+
+                
+
+                
+                
+                
+                
+                
+
+                
+                    var profile_timezone = "Asia/Kolkata";
+                    if (timezone.name() !== profile_timezone) {
+                        $.ajax({
+                            type: "POST",
+                            url:"/users/AJAX/set-timezone/",
+                            data: {
+                            'timezone': timezone.name(),
+                            },
+                        });
+                    }
+                
+
+                
+            });
+        </script>
+        
+        
+            
+
+            
+            
+        
+
+        <script type="text/javascript">
+            
+            $(document).ready(function(){
+                //mixpanel delegate links custom method
+                mixpanel.delegate_links = function (parent, selector, event_name, properties) {
+                    properties = properties || {};
+                    parent = parent || document.body;
+                    parent = $(parent);
+                    parent.on('click', selector, function (event) {
+                        var new_tab = event.which === 2 || event.metaKey || event.target.target === '_blank' || this.target === '_blank';
+                        properties.url = event.target.href || this.href;
+                        function callback() {
+                            if (new_tab) {
+                                return;
+                            }
+                            window.location = properties.url;
+                        }
+                        if (!new_tab) {
+                            event.preventDefault();
+                            setTimeout(callback, 300);
+                        }
+                        mixpanel.track(event_name, properties, callback);
+                    });
+                };
+            });
+            
+        </script>
+
+         
+
+        
+        <!-- mixpanel analytics start -->
+        <script type="text/javascript">(function(e,a){if(!a.__SV){var b=window;try{var c,l,i,j=b.location,g=j.hash;c=function(a,b){return(l=a.match(RegExp(b+"=([^&]*)")))?l[1]:null};g&&c(g,"state")&&(i=JSON.parse(decodeURIComponent(c(g,"state"))),"mpeditor"===i.action&&(b.sessionStorage.setItem("_mpcehash",g),history.replaceState(i.desiredHash||"",e.title,j.pathname+j.search)))}catch(m){}var k,h;window.mixpanel=a;a._i=[];a.init=function(b,c,f){function e(b,a){var c=a.split(".");2==c.length&&(b=b[c[0]],a=c[1]);b[a]=function(){b.push([a].concat(Array.prototype.slice.call(arguments,0)))}}var d=a;"undefined"!==typeof f?d=a[f]=[]:f="mixpanel";d.people=d.people||[];d.toString=function(b){var a="mixpanel";"mixpanel"!==f&&(a+="."+f);b||(a+=" (stub)");return a};d.people.toString=function(){return d.toString(1)+".people (stub)"};k="disable time_event track track_pageview track_links track_forms register register_once alias unregister identify name_tag set_config reset people.set people.set_once people.unset people.increment people.append people.union people.track_charge people.clear_charges people.delete_user".split(" ");for(h=0;h<k.length;h++)e(d,k[h]);a._i.push([b,c,f])};a.__SV=1.2;b=e.createElement("script");b.type="text/javascript";b.async=!0;b.src="undefined"!==typeof MIXPANEL_CUSTOM_LIB_URL?MIXPANEL_CUSTOM_LIB_URL:"file:"===e.location.protocol&&"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js".match(/^\/\//)?"https://cdn.mxpnl.com/libs/mixpanel-2-latest.min.js":"//cdn.mxpnl.com/libs/mixpanel-2-latest.min.js";c=e.getElementsByTagName("script")[0];c.parentNode.insertBefore(b,c)}})(document,window.mixpanel||[]);mixpanel.init("4c30b8635363027dfb780d5a61785112");
+        </script>
+        <!-- mixpanel analytics end -->
+        <script type="text/javascript">
+            
+                
+                    mixpanel.register({
+                        "url_path": "/practice/algorithms/dynamic-programming/introduction-to-dynamic-programming-1/practice-problems/algorithm/inverse-graph-4c5729e8/",
+                        "username": "dhruv551",
+                        "email": "dhruvlaad@gmail.com",
+                        "date_of_joining": "Feb 17, 2019 08:19 AM",
+                        "user_bucket": "29"
+                    });
+                    
+                
+            
+        </script>
+        
+
+        
+        
+        <div id="fb-root"></div>
+        <script>
+            <!-- facebook button -->
+            (function(d, s, id) {
+                var js, fjs = d.getElementsByTagName(s)[0];
+                if (d.getElementById(id)) return;
+                js = d.createElement(s); js.id = id;
+                js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+                fjs.parentNode.insertBefore(js, fjs);
+            }(document, 'script', 'facebook-jssdk'));
+
+            <!-- twitter button -->
+            !function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");
+
+            <!-- google+ button -->
+            (function() {
+                var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+                po.src = 'https://apis.google.com/js/plusone.js';
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+            })();
+        </script>
+        
+        
+
+        
+            
+
+<link rel="stylesheet" href="https://static-fastly.hackerearth.com/static/cookie_consent/cookiebar.ffe531fab344.css"/>
+
+<script type="text/javascript" src="https://static-fastly.hackerearth.com/static/cookie_consent/cookiebar.70181766db90.js" crossorigin="anonymous" ></script>
+
+
+        
+
+        
+            
+        
+
+        
+            <!-- Hackerearth Zendesk Widget -->
+
+
+
+
+<link rel="stylesheet" href="https://static-fastly.hackerearth.com/static/base/customer-support-widget.c878b5e2cd83.css"/>
+
+<script>
+    var COUNTRY_CODE = "IN";
+    var TRIAL_DAYS_LEFT =  0 ;
+    var INTERCOM_APP_ID = 'nofrzq7u';
+    var IS_INTERCOM_FEATUTRE_ENABLE = "True";
+
+    var isRecruiterDashboard = false;
+    var horizontalOffset = "-500px";
+    var zESettingsRecruiterDashboard = {
+        webWidget: {
+            launcher: {
+                label: {
+                    "en-US": "",
+                    "*": "",
+                }
+            },
+            offset: {
+                horizontal: horizontalOffset, /* To hide actual launcher widget */
+                vertical: "50px",
+                mobile: {
+                  horizontal: horizontalOffset,
+                },
+            },
+            position: {
+                horizontal: 'right',
+                vertical: 'top'
+            }
+        }
+    };
+
+    var zESettingsDefault = {
+        webWidget: {
+            launcher: {
+                label: {
+                    "en-US": "",
+                    "*": "",
+                }
+            },
+            offset: {
+                horizontal: horizontalOffset, /* To hide actual launcher widget */
+            }
+        }
+    };
+    if (isRecruiterDashboard) {
+        window.zESettings = zESettingsRecruiterDashboard;
+    } else {
+        window.zESettings = zESettingsDefault;
+    }
+    /*<![CDATA[*/window.zEmbed||function(e,t){var n,o,d,i,s,a=[],r=document.createElement("iframe");window.zEmbed=function(){a.push(arguments)},window.zE=window.zE||window.zEmbed,r.src="javascript:false",r.title="",r.role="presentation",(r.frameElement||r).style.cssText="display: none",d=document.getElementsByTagName("script"),d=d[d.length-1],d.parentNode.insertBefore(r,d),i=r.contentWindow,s=i.document;try{o=s}catch(e){n=document.domain,r.src='javascript:var d=document.open();d.domain="'+n+'";void(0);',o=s}o.open()._l=function(){var e=this.createElement("script");n&&(this.domain=n),e.id="js-iframe-async",e.src="https://assets.zendesk.com/embeddable_framework/main.js",this.t=+new Date,this.zendeskHost="hackerearth.zendesk.com",this.zEQueue=a,this.body.appendChild(e)},o.write('<body onload="document._l();">'),o.close()}();
+    /*]]>*/
+
+    var ZENDESK_LOCALE = "en-US";
+    var USER_EMAIL = "dhruvlaad@gmail.com";
+    var USER_NAME = "Dhruv";
+    var ATTACHMENT_LABEL = "Attachments (Optional)";
+    var DESCRIPTION_LABEL = "How can we help you, {name}?";
+
+    
+</script>
+<script type="text/javascript" src="https://static-fastly.hackerearth.com/static/base/customer-support-widget.df6b5efa9ec6.js" crossorigin="anonymous" defer></script>
+
+
+    <div class="customer-support-icon">
+        <p>?</p>
+    </div>
+
+
+        
+    </body>
+</html>

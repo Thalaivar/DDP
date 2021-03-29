@@ -560,14 +560,14 @@ def GEMMA_config_files():
     config["strain"] = "Strain"
     config["sex"] = "Sex"
     
-    config["phenotypes"] = []
+    config["phenotypes"] = {}
     config["groups"] = []
     for lab, idxs in BEHAVIOUR_LABELS.items():
         for i in range(len(idxs)):
             key = f"{lab}n{i}"
-            config["phenotypes"].append({f"{lab}_{i}_TD": {"papername": f"{lab}n{i}_TD", "group": lab}})
-            config["phenotypes"].append({f"{lab}_{i}_ABL": {"papername": f"{lab}n{i}_ABL", "group": lab}})
-            config["phenotypes"].append({f"{lab}_{i}_NB": {"papername": f"{lab}n{i}_NB", "group": lab}})
+            config["phenotypes"][f"{lab}_{i}_TD"] = {"papername": f"{lab}n{i}_TD", "group": lab}
+            config["phenotypes"][f"{lab}_{i}_ABL"] = {"papername": f"{lab}n{i}_ABL", "group": lab}
+            config["phenotypes"][f"{lab}_{i}_NB"] = {"papername": f"{lab}n{i}_NB", "group": lab}
         config["groups"].append(lab)
     
     config["covar"] = "Sex"
@@ -579,66 +579,66 @@ def GEMMA_config_files():
         yaml.dump(config, f)
 
     import random
-    config["phenotypes"] = random.sample(config["phenotypes"], 1)[0]
-    config["groups"] = [config["phenotypes"][list(config["phenotypes"].keys())[0]]["group"]]
+    config["phenotypes"] = {"Groom_4_TD": config["phenotypes"]["Groom_4_TD"]}
+    config["groups"] = list(config["phenotypes"].items())[0][1]["group"]
 
     with open('./gemma_shuffle.yaml', 'w') as f:
         yaml.dump(config, f)
     
-
-def get_random_keypoint_data(data_csv, data_dir, clf):
-    if data_csv.endswith(".tsv"):
-        df = pd.read_csv(data_csv, sep="\t")
-    else:
-        df = pd.read_csv(data_csv)
-    N = df.shape[0]
-
+def get_keypoint_data(metadata, label_info_file, data_dir):
     import pysftp
-    while True:
-        metadata = dict(df.iloc[np.random.randint(0, N, 1)[0]])
-        try:
-            pose_dir, _ = get_pose_data_dir(data_dir, metadata['NetworkFilename'])
-            _, _, movie_name = metadata['NetworkFilename'].split('/')
-            filename = f'{pose_dir}/{movie_name[0:-4]}_pose_est_v2.h5'    
-            with pysftp.Connection('login.sumner.jax.org', username='laadd', password='CuppY1798CakE@') as sftp:
-                sftp.get(filename)
-            break
-        except:
-            pass
+    try:
+        pose_dir, _ = get_pose_data_dir(data_dir, metadata['NetworkFilename'])
+        _, _, movie_name = metadata['NetworkFilename'].split('/')
+        filename = f'{pose_dir}/{movie_name[0:-4]}_pose_est_v2.h5'    
+        with pysftp.Connection('login.sumner.jax.org', username='laadd', password='CuppY1798CakE@') as sftp:
+            sftp.get(filename)
+        
+        f = h5py.File(filename.split('/')[-1], 'r')
+        data = list(f.keys())[0]
+        keys = list(f[data].keys())
+        conf, pos = np.array(f[data][keys[0]]), np.array(f[data][keys[1]])
+        f.close()
 
-    f = h5py.File(filename.split('/')[-1], 'r')
-    data = list(f.keys())[0]
-    keys = list(f[data].keys())
-    conf, pos = np.array(f[data][keys[0]]), np.array(f[data][keys[1]])
-    f.close()
+        data = bsoid_format(conf, pos)
+        fdata, perc_filt = likelihood_filter(data, fps=FPS, end_trim=2, clip_window=0, conf_threshold=0.3)
 
-    # trim start and end
-    data = bsoid_format(conf, pos)
-    fdata, perc_filt = likelihood_filter(data, fps=FPS, end_trim=2, clip_window=0, conf_threshold=0.3)
+        strain, mouse_id = metadata['Strain'], metadata['MouseID']
+        if perc_filt > 10:
+            print(f'mouse:{strain}/{mouse_id}: % data filtered from raw data is too high ({perc_filt} %)')
+        
+        data_shape = fdata['x'].shape
+        print(f'preprocessed raw data of shape: {data_shape} for mouse:{strain}/{mouse_id}')
 
-    strain, mouse_id = metadata['Strain'], metadata['MouseID']
-    if perc_filt > 10:
-        print(f'mouse:{strain}/{mouse_id}: % data filtered from raw data is too high ({perc_filt} %)')
+        with open(label_info_file, "rb") as f:
+            info = joblib.load(f)
+        N = len(info["Strain"])
+        identifiers = ("Strain", "Sex", "NetworkFilename", "MouseID")
+        for i in range(N):
+            match = True
+            for idx in identifiers:
+                if info[idx][i] != metadata[idx]:
+                    match = False
+            
+            if match:
+                break
+        
+        labels = info["Labels"][i]
+
+        metadata["keypoints"] = fdata
+        metadata["labels"] = labels
+
+        with open('keypoint_data.pkl', 'wb') as f:
+            joblib.dump(metadata, f)
+        
+        import os
+        os.remove(filename.split('/')[-1])
+        return metadata
+
+    except Exception as e:
+        print(e)
+        return None
     
-    data_shape = fdata['x'].shape
-    print(f'preprocessed raw data of shape: {data_shape} for mouse:{strain}/{mouse_id}')
-
-    from BSOID.features.displacement_feats import extract_feats, window_extracted_feats
-    feats = frameshift_features(fdata, STRIDE_WINDOW, FPS, extract_feats, window_extracted_feats)
-    # labels = frameshift_predict(feats, clf, STRIDE_WINDOW)
-    with open('../../data/analysis/label_info.pkl', 'rb') as f:
-        labels = joblib.load(f)["Labels"][np.random.randint(0, 1900, 1)[0]]
-
-    metadata["keypoints"] = fdata
-    metadata["feats"] = feats
-    metadata["labels"] = labels
-
-    with open('keypoint_data.pkl', 'wb') as f:
-        joblib.dump(metadata, f)
-    
-    import os
-    os.remove(filename.split('/')[-1])
-
 if __name__ == "__main__":
     label_info_file = '/Users/dhruvlaad/IIT/DDP/data/analysis/label_info.pkl'
     # stats_file = base_dir + 'analysis/stats.pkl'
@@ -648,4 +648,5 @@ if __name__ == "__main__":
     # with open(stats_file, 'wb') as f:
     #     joblib.dump(behaviour_stats, f)   
 
-    GEMMA_csv_input(label_info_file, input_csv)
+    # GEMMA_csv_input(label_info_file, input_csv)
+    GEMMA_config_files()

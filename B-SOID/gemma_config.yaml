@@ -45,197 +45,197 @@ groups:
 - Rear
 - N/A
 phenotypes:
-- Groom_0_TD:
-    group: Groom
-    papername: Groomn0_TD
-- Groom_0_ABL:
-    group: Groom
-    papername: Groomn0_ABL
-- Groom_0_NB:
-    group: Groom
-    papername: Groomn0_NB
-- Groom_1_TD:
-    group: Groom
-    papername: Groomn1_TD
-- Groom_1_ABL:
-    group: Groom
-    papername: Groomn1_ABL
-- Groom_1_NB:
-    group: Groom
-    papername: Groomn1_NB
-- Groom_2_TD:
-    group: Groom
-    papername: Groomn2_TD
-- Groom_2_ABL:
-    group: Groom
-    papername: Groomn2_ABL
-- Groom_2_NB:
-    group: Groom
-    papername: Groomn2_NB
-- Groom_3_TD:
-    group: Groom
-    papername: Groomn3_TD
-- Groom_3_ABL:
-    group: Groom
-    papername: Groomn3_ABL
-- Groom_3_NB:
-    group: Groom
-    papername: Groomn3_NB
-- Groom_4_TD:
-    group: Groom
-    papername: Groomn4_TD
-- Groom_4_ABL:
-    group: Groom
-    papername: Groomn4_ABL
-- Groom_4_NB:
-    group: Groom
-    papername: Groomn4_NB
-- Groom_5_TD:
-    group: Groom
-    papername: Groomn5_TD
-- Groom_5_ABL:
-    group: Groom
-    papername: Groomn5_ABL
-- Groom_5_NB:
-    group: Groom
-    papername: Groomn5_NB
-- Run_0_TD:
-    group: Run
-    papername: Runn0_TD
-- Run_0_ABL:
-    group: Run
-    papername: Runn0_ABL
-- Run_0_NB:
-    group: Run
-    papername: Runn0_NB
-- Walk_0_TD:
-    group: Walk
-    papername: Walkn0_TD
-- Walk_0_ABL:
-    group: Walk
-    papername: Walkn0_ABL
-- Walk_0_NB:
-    group: Walk
-    papername: Walkn0_NB
-- Walk_1_TD:
-    group: Walk
-    papername: Walkn1_TD
-- Walk_1_ABL:
-    group: Walk
-    papername: Walkn1_ABL
-- Walk_1_NB:
-    group: Walk
-    papername: Walkn1_NB
-- CW-Turn_0_TD:
-    group: CW-Turn
-    papername: CW-Turnn0_TD
-- CW-Turn_0_ABL:
-    group: CW-Turn
-    papername: CW-Turnn0_ABL
-- CW-Turn_0_NB:
-    group: CW-Turn
-    papername: CW-Turnn0_NB
-- CCW-Turn_0_TD:
-    group: CCW-Turn
-    papername: CCW-Turnn0_TD
-- CCW-Turn_0_ABL:
+  CCW-Turn_0_ABL:
     group: CCW-Turn
     papername: CCW-Turnn0_ABL
-- CCW-Turn_0_NB:
+  CCW-Turn_0_NB:
     group: CCW-Turn
     papername: CCW-Turnn0_NB
-- CCW-Turn_1_TD:
+  CCW-Turn_0_TD:
     group: CCW-Turn
-    papername: CCW-Turnn1_TD
-- CCW-Turn_1_ABL:
+    papername: CCW-Turnn0_TD
+  CCW-Turn_1_ABL:
     group: CCW-Turn
     papername: CCW-Turnn1_ABL
-- CCW-Turn_1_NB:
+  CCW-Turn_1_NB:
     group: CCW-Turn
     papername: CCW-Turnn1_NB
-- Point_0_TD:
-    group: Point
-    papername: Pointn0_TD
-- Point_0_ABL:
-    group: Point
-    papername: Pointn0_ABL
-- Point_0_NB:
-    group: Point
-    papername: Pointn0_NB
-- Point_1_TD:
-    group: Point
-    papername: Pointn1_TD
-- Point_1_ABL:
-    group: Point
-    papername: Pointn1_ABL
-- Point_1_NB:
-    group: Point
-    papername: Pointn1_NB
-- Rear_0_TD:
-    group: Rear
-    papername: Rearn0_TD
-- Rear_0_ABL:
-    group: Rear
-    papername: Rearn0_ABL
-- Rear_0_NB:
-    group: Rear
-    papername: Rearn0_NB
-- Rear_1_TD:
-    group: Rear
-    papername: Rearn1_TD
-- Rear_1_ABL:
-    group: Rear
-    papername: Rearn1_ABL
-- Rear_1_NB:
-    group: Rear
-    papername: Rearn1_NB
-- Rear_2_TD:
-    group: Rear
-    papername: Rearn2_TD
-- Rear_2_ABL:
-    group: Rear
-    papername: Rearn2_ABL
-- Rear_2_NB:
-    group: Rear
-    papername: Rearn2_NB
-- N/A_0_TD:
-    group: N/A
-    papername: N/An0_TD
-- N/A_0_ABL:
+  CCW-Turn_1_TD:
+    group: CCW-Turn
+    papername: CCW-Turnn1_TD
+  CW-Turn_0_ABL:
+    group: CW-Turn
+    papername: CW-Turnn0_ABL
+  CW-Turn_0_NB:
+    group: CW-Turn
+    papername: CW-Turnn0_NB
+  CW-Turn_0_TD:
+    group: CW-Turn
+    papername: CW-Turnn0_TD
+  Groom_0_ABL:
+    group: Groom
+    papername: Groomn0_ABL
+  Groom_0_NB:
+    group: Groom
+    papername: Groomn0_NB
+  Groom_0_TD:
+    group: Groom
+    papername: Groomn0_TD
+  Groom_1_ABL:
+    group: Groom
+    papername: Groomn1_ABL
+  Groom_1_NB:
+    group: Groom
+    papername: Groomn1_NB
+  Groom_1_TD:
+    group: Groom
+    papername: Groomn1_TD
+  Groom_2_ABL:
+    group: Groom
+    papername: Groomn2_ABL
+  Groom_2_NB:
+    group: Groom
+    papername: Groomn2_NB
+  Groom_2_TD:
+    group: Groom
+    papername: Groomn2_TD
+  Groom_3_ABL:
+    group: Groom
+    papername: Groomn3_ABL
+  Groom_3_NB:
+    group: Groom
+    papername: Groomn3_NB
+  Groom_3_TD:
+    group: Groom
+    papername: Groomn3_TD
+  Groom_4_ABL:
+    group: Groom
+    papername: Groomn4_ABL
+  Groom_4_NB:
+    group: Groom
+    papername: Groomn4_NB
+  Groom_4_TD:
+    group: Groom
+    papername: Groomn4_TD
+  Groom_5_ABL:
+    group: Groom
+    papername: Groomn5_ABL
+  Groom_5_NB:
+    group: Groom
+    papername: Groomn5_NB
+  Groom_5_TD:
+    group: Groom
+    papername: Groomn5_TD
+  N/A_0_ABL:
     group: N/A
     papername: N/An0_ABL
-- N/A_0_NB:
+  N/A_0_NB:
     group: N/A
     papername: N/An0_NB
-- N/A_1_TD:
+  N/A_0_TD:
     group: N/A
-    papername: N/An1_TD
-- N/A_1_ABL:
+    papername: N/An0_TD
+  N/A_1_ABL:
     group: N/A
     papername: N/An1_ABL
-- N/A_1_NB:
+  N/A_1_NB:
     group: N/A
     papername: N/An1_NB
-- N/A_2_TD:
+  N/A_1_TD:
     group: N/A
-    papername: N/An2_TD
-- N/A_2_ABL:
+    papername: N/An1_TD
+  N/A_2_ABL:
     group: N/A
     papername: N/An2_ABL
-- N/A_2_NB:
+  N/A_2_NB:
     group: N/A
     papername: N/An2_NB
+  N/A_2_TD:
+    group: N/A
+    papername: N/An2_TD
+  Point_0_ABL:
+    group: Point
+    papername: Pointn0_ABL
+  Point_0_NB:
+    group: Point
+    papername: Pointn0_NB
+  Point_0_TD:
+    group: Point
+    papername: Pointn0_TD
+  Point_1_ABL:
+    group: Point
+    papername: Pointn1_ABL
+  Point_1_NB:
+    group: Point
+    papername: Pointn1_NB
+  Point_1_TD:
+    group: Point
+    papername: Pointn1_TD
+  Rear_0_ABL:
+    group: Rear
+    papername: Rearn0_ABL
+  Rear_0_NB:
+    group: Rear
+    papername: Rearn0_NB
+  Rear_0_TD:
+    group: Rear
+    papername: Rearn0_TD
+  Rear_1_ABL:
+    group: Rear
+    papername: Rearn1_ABL
+  Rear_1_NB:
+    group: Rear
+    papername: Rearn1_NB
+  Rear_1_TD:
+    group: Rear
+    papername: Rearn1_TD
+  Rear_2_ABL:
+    group: Rear
+    papername: Rearn2_ABL
+  Rear_2_NB:
+    group: Rear
+    papername: Rearn2_NB
+  Rear_2_TD:
+    group: Rear
+    papername: Rearn2_TD
+  Run_0_ABL:
+    group: Run
+    papername: Runn0_ABL
+  Run_0_NB:
+    group: Run
+    papername: Runn0_NB
+  Run_0_TD:
+    group: Run
+    papername: Runn0_TD
+  Walk_0_ABL:
+    group: Walk
+    papername: Walkn0_ABL
+  Walk_0_NB:
+    group: Walk
+    papername: Walkn0_NB
+  Walk_0_TD:
+    group: Walk
+    papername: Walkn0_TD
+  Walk_1_ABL:
+    group: Walk
+    papername: Walkn1_ABL
+  Walk_1_NB:
+    group: Walk
+    papername: Walkn1_NB
+  Walk_1_TD:
+    group: Walk
+    papername: Walkn1_TD
 sex: Sex
 strain: Strain
 translate:
-# - BTBRT...tf.J: BTBR T<+> Itpr3<tf>/J
-# - 129S1.SvImJ: 129S1/SvImJ
-# - C3H/HeOuJ: C3H/HeJ
-# - NON/LtJ: NON/ShiLtJ
-# - NOD/LtJ: NOD/ShiLtJ
-# - CAST/EiJ: none
-# - PWD/PhJ: none
-# - CZECHII/EiJ: none
-# - PWK/PhJ: none
-# - MSM/MsJ: none
-# - MOLF/EiJ: none
+- BTBRT...tf.J: BTBR T<+> Itpr3<tf>/J
+- 129S1.SvImJ: 129S1/SvImJ
+- C3H/HeOuJ: C3H/HeJ
+- NON/LtJ: NON/ShiLtJ
+- NOD/LtJ: NOD/ShiLtJ
+- CAST/EiJ: none
+- PWD/PhJ: none
+- CZECHII/EiJ: none
+- PWK/PhJ: none
+- MSM/MsJ: none
+- MOLF/EiJ: none

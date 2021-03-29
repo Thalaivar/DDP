@@ -35,12 +35,11 @@ F1:
 confSNPs:
 - rs32105080
 covar: Sex
-groups:
-- Rear
+groups: Groom
 phenotypes:
-  Rear_1_NB:
-    group: Rear
-    papername: Rearn1_NB
+  Groom_4_TD:
+    group: Groom
+    papername: Groomn4_TD
 sex: Sex
 strain: Strain
 translate:
