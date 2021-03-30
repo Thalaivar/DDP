@@ -6,7 +6,7 @@
 #SBATCH --time=48:00:00
 #SBATCH --partition=compute
 #SBATCH --qos=batch
-#SBATCH --mem=600c00
+#SBATCH --mem=8000
 #SBATCH --mail-user=dhruv.laad@jax.org
 #SBATCH --mail-type=ALL
 
@@ -19,7 +19,7 @@ cd /fastscratch
 
 CONFIG_FILE=$HOME_DIR/$BASE_DIR/gemma_config.yaml
 SHUFFL_FILE=$HOME_DIR/$BASE_DIR/gemma_shuffle.yaml
-INPUT_FILE=$HOME_DIR/$BASE_DIR/gemma_input.csv
+INPUT_FILE=$HOME_DIR/$BASE_DIR/filt_gemma_input.csv
 
 module load singularity
 nextflow run TheJacksonLaboratory/mousegwas --yaml $CONFIG_FILE --shufyaml $SHUFFL_FILE --input $INPUT_FILE --outdir $HOME_DIR/gemma_output -profile slurm,singularity --addgwas " -d 10 "

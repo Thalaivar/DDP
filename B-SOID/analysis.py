@@ -568,20 +568,19 @@ def GEMMA_config_files():
             config["phenotypes"][f"{lab}_{i}_NB"] = {"papername": f"{lab}n{i}_NB", "group": lab}
         config["groups"].append(lab)
     
-    config["covar"] = "Sex"
+    config["covar"] = ["Sex"]
 
     with open('./default_GEMMA.yaml', 'r') as f:
         config.update(yaml.load(f, Loader=yaml.FullLoader))
 
     with open('./gemma_config.yaml', 'w') as f:
-        yaml.dump(config, f)
+        yaml.dump(config, f, default_flow_style=False)
 
     import random
     config["phenotypes"] = {"Groom_4_TD": config["phenotypes"]["Groom_4_TD"]}
-    config["groups"] = list(config["phenotypes"].items())[0][1]["group"]
 
     with open('./gemma_shuffle.yaml', 'w') as f:
-        yaml.dump(config, f)
+        yaml.dump(config, f, default_flow_style=False)
     
 def get_keypoint_data(metadata, label_info_file, data_dir):
     import pysftp
