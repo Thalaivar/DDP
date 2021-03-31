@@ -415,29 +415,25 @@ def get_behaviour_trajectories(data_lookup_file, clf_file, n, n_trajs, data_dir,
 
     return trajs
 
-def autocorr():
+def autocorrelation(tmax, n=1000):
     bsoid = BSOID.load_config('/home/laadd/data', 'dis')
-    fdata = bsoid.load_filtered_data()
 
-    def calculate_autocorr(fdata, bsoid, t):
-        X = extract_feats(fdata, bsoid.fps, bsoid.stride_window)
-        n = 1000
-        X = StandardScaler().fit_transform(X)
-        X = PCA(n_components=10).fit_transform(X)
-        results = []
-        for k in range(len(t)):        
-            auto_corr = 0
-            for i in range(n):
-                idx = np.random.randint(low=0, high=X.shape[0]-t[k])
-                auto_corr += np.correlate(X[idx,:], X[idx+t[k],:])/np.correlate(X[idx,:], X[idx,:])
-            results.append(auto_corr / n)
-        return results
+    tmax = tmax * bsoid.fps // 1000
+    feats = bsoid.load_features(collect=False)
 
-    t_max = 3
-    t = np.arange(3 * bsoid.fps)
-    results = Parallel(n_jobs=-1)(delayed(calculate_autocorr)(data, bsoid, t) for data in fdata)
-    results = np.vstack(results)
-    np.save('/home/laadd/auto_corr.npy', results)
+    autocorr = []
+    for n in tqdm(range(len(feats))):
+        X = PCA(n_components=10).fit_transform(StandardScaler().fit_transform(feats[n]))
+        res = []
+        for k in np.arange(tmax):
+            val = 0
+            for _ in range(n):
+                idx = np.random.randint(low=0, high=X.shape[0] - k)
+                val += np.correlate(X[idx,:], X[idx+k,:]) / np.correlate(X[idx,:], X[idx,:])
+            res.append(val / n)
+        autocorr.append(res)
+    
+    return np.vstack(autocorr)
 
 def group_stats(stats):
     grp_stats = {}
