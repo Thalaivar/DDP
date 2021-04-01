@@ -139,7 +139,7 @@ class BSOID:
             data = [group.sample(n) for _, group in data.groupby("Strain")]
             if n_strains is not None:
                 data = random.sample(data, n_strains)
-            data = pd.concat(data, axis=1)
+            data = pd.concat(data, axis=0)
 
         N = data.shape[0]
 
