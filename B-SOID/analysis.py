@@ -9,6 +9,7 @@ import ftplib
 import h5py
 import numpy as np
 import pandas as pd
+import random
 
 import logging
 logging.basicConfig(level=logging.INFO)
@@ -415,25 +416,49 @@ def get_behaviour_trajectories(data_lookup_file, clf_file, n, n_trajs, data_dir,
 
     return trajs
 
-def autocorrelation(tmax, n=1000):
-    bsoid = BSOID.load_config('/home/laadd/data', 'dis')
+def autocorrelation(tmax, n=1000, pca=True, pca_dim=10, shuffle=False, shuffle_block_len=None):
+    bsoid = BSOID.load_config('D:/IIT/DDP/data', 'dis')
 
     tmax = tmax * bsoid.fps // 1000
     feats = bsoid.load_features(collect=False)
 
-    autocorr = []
-    for n in tqdm(range(len(feats))):
-        X = PCA(n_components=10).fit_transform(StandardScaler().fit_transform(feats[n]))
+    def parallel_autocorr(feats, *args):
+        tmax, n, pca, pca_dim, shuffle, shuffle_block_len = args
+        X = StandardScaler().fit_transform(feats)
+        
+        if pca:
+            X = PCA(n_components=pca_dim).fit_transform(X)
+
+        if shuffle:
+            shuffle_block_len = shuffle_block_len * bsoid.fps // 1000
+            # shuffle in blocks
+            blocks = [X[i:i+shuffle_block_len,:] for i in range(0, X.shape[0], shuffle_block_len)]
+            random.shuffle(blocks)
+            X = np.vstack(blocks)
+        
         res = []
         for k in np.arange(tmax):
-            val = 0
-            for _ in range(n):
-                idx = np.random.randint(low=0, high=X.shape[0] - k)
-                val += np.correlate(X[idx,:], X[idx+k,:]) / np.correlate(X[idx,:], X[idx,:])
+            idxs = np.random.randint(0, X.shape[0] - k, n)
+            val = sum([np.correlate(X[idx,:], X[idx+k,:]) / np.correlate(X[idx,:], X[idx,:]) for idx in idxs])
             res.append(val / n)
-        autocorr.append(res)
     
-    return np.vstack(autocorr)
+        return np.array(res)
+    
+    args = [tmax, n, pca, pca_dim, shuffle, shuffle_block_len]
+    autocorr = Parallel(n_jobs=-1)(delayed(parallel_autocorr)(fts, *args) for fts in feats)
+    return np.hstack(autocorr).T
+
+                
+def block_shuffle_autocorrelation(block_lens, tmax, n=1000):
+    autocorr = [autocorrelation(
+                    tmax, 
+                    n, 
+                    pca=False, 
+                    pca_dim=None, 
+                    shuffle=True, 
+                    shuffle_block_len=block_lens[i]
+                ).mean(axis=0) for i in tqdm(range(len(block_lens)))]
+    return np.array(autocorr)
 
 def group_stats(stats):
     grp_stats = {}
@@ -617,15 +642,12 @@ def get_keypoint_data(metadata, label_info_file, data_dir):
                 break
         
         labels = info["Labels"][i]
-
         metadata["keypoints"] = fdata
         metadata["labels"] = labels
-
-        with open('keypoint_data.pkl', 'wb') as f:
-            joblib.dump(metadata, f)
         
         import os
         os.remove(filename.split('/')[-1])
+        
         return metadata
 
     except Exception as e:
@@ -642,4 +664,6 @@ if __name__ == "__main__":
     #     joblib.dump(behaviour_stats, f)   
 
     # GEMMA_csv_input(label_info_file, input_csv)
-    GEMMA_config_files()
+    # GEMMA_config_files()
+
+    autocorrelation(tmax=3000, n=1000)

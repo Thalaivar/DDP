@@ -1,3 +1,5 @@
 {
-    "python.pythonPath": "D:\\Applications\\anaconda3\\envs\\ddp\\python.exe"
+    "python.pythonPath": "D:\\Applications\\anaconda3\\envs\\ddp\\python.exe",
+    "debug.node.showUseWslIsDeprecatedWarning": false,
+    "terminal.integrated.useWslProfiles": false
 }

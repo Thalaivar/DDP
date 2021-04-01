@@ -38,7 +38,7 @@ MLP_PARAMS = {
 
 UMAP_PARAMS = {
     'min_dist': 0.0,  # small value
-    'n_neighbors': 400
+    'n_neighbors': 300
 }
 
 HDBSCAN_PARAMS = {
@@ -130,13 +130,17 @@ class BSOID:
 
         return filtered_data
     
-    def load_from_dataset(self, input_csv, data_dir, n=None):
+    def load_from_dataset(self, input_csv, data_dir, n=None, n_strains=None):
         if input_csv.endswith('.tsv'):
             data = pd.read_csv(input_csv, sep='\t')    
         else:
             data = pd.read_csv(input_csv)
         if n is not None:
-            data = pd.concat([group.sample(n) for _, group in data.groupby("Strain")], axis=1)
+            data = [group.sample(n) for _, group in data.groupby("Strain")]
+            if n_strains is not None:
+                data = random.sample(data, n_strains)
+            data = pd.concat(data, axis=1)
+
         N = data.shape[0]
 
         print('Processing {} files from {}'.format(N, data_dir))

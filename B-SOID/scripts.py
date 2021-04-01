@@ -12,15 +12,15 @@ logging.basicConfig(level=logging.INFO, filename='training.log', filemode='w', f
 MODEL_LOAD_PARAMS = {'run_id': 'dis', 'base_dir': '/home/laadd/data'}
 
 def main():
-    stride_window = round(350 * 30 / 1000)
-    bsoid_params = MODEL_LOAD_PARAMS
-    bsoid_params['fps'] = FPS
-    bsoid_params['stride_window'] = stride_window
-    bsoid_params['conf_threshold'] = 0.3
-    bsoid = BSOID(**bsoid_params)
-    bsoid.save()
+    # stride_window = round(350 * 30 / 1000)
+    # bsoid_params = MODEL_LOAD_PARAMS
+    # bsoid_params['fps'] = FPS
+    # bsoid_params['stride_window'] = stride_window
+    # bsoid_params['conf_threshold'] = 0.3
+    # bsoid = BSOID(**bsoid_params)
+    # bsoid.save()
 
-    # bsoid = BSOID.load_config(**MODEL_LOAD_PARAMS)
+    bsoid = BSOID.load_config(**MODEL_LOAD_PARAMS)
 
     # bsoid.get_data(parallel=True)
     # bsoid.process_csvs()
@@ -59,7 +59,25 @@ def results(run_id='dis', base_dir='D:/IIT/DDP/data'):
     video_dir = bsoid.test_dir + '/videos'
     csv_dir = bsoid.test_dir
     bsoid.create_examples(csv_dir, video_dir, bout_length=3, n_examples=10)
+
+def smaller_umap():
+    bsoid_params = {}
+    bsoid_params['run_id'] = 'small_umap'
+    bsoid_params['base_dir'] = '/home/laadd/data'
+    bsoid_params['fps'] = FPS
+    bsoid_params['stride_window'] = round(350 * FPS / 1000)
+    bsoid_params['conf_threshold'] = 0.3
+    bsoid = BSOID(**bsoid_params)
+    bsoid.save()
+
+    lookup_file = '/projects/kumar-lab/StrainSurveyPoses/StrainSurveyMetaList_2019-04-09.tsv'
+    bsoid.load_from_dataset(lookup_file, data_dir='/projects/kumar-lab/StrainSurveyPoses', n=5, n_strains=24)
     
+    bsoid.features_from_points(parallel=True)
+    
+    bsoid.umap_reduce(reduced_dim=2, sample_size=0)
+    bsoid.identify_clusters_from_umap()
+
 if __name__ == "__main__":
     main()
     # validate_and_train(**MODEL_LOAD_PARAMS)
