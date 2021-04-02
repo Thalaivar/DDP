@@ -4,6 +4,7 @@ try:
 except ModuleNotFoundError:
     pass
 import random
+import yaml
 import joblib
 import logging
 import pandas as pd
@@ -20,66 +21,38 @@ from BSOID.preprocessing import *
 from BSOID.prediction import *
 
 from BSOID.features.displacement_feats import *
-# from BSOID.features.bsoid_features import *
 
 from joblib import Parallel, delayed
 
-MLP_PARAMS = {
-    'hidden_layer_sizes': (100, 10),  # 100 units, 10 layers
-    'activation': 'logistic',  # logistics appears to outperform tanh and relu
-    'solver': 'adam',
-    'learning_rate': 'constant',
-    'learning_rate_init': 0.001,  # learning rate not too high
-    'alpha': 0.0001,  # regularization default is better than higher values.
-    'max_iter': 1000,
-    'early_stopping': False,
-    'verbose': 1  # set to 1 for tuning your feedforward neural network
-}
-
-UMAP_PARAMS = {
-    'min_dist': 0.0,  # small value
-    'n_neighbors': 300
-}
-
-HDBSCAN_PARAMS = {
-    'min_samples': 10,
-    'prediction_data': True,
-}
-
-TRIM_PARAMS = {
-    'end_trim': 2,
-    'clip_window': 30
-}
-
-FPS=30
-
 class BSOID:
-    def __init__(self, run_id: str, 
-                base_dir: str, 
-                fps: int=30, 
-                stride_window: int=3,
-                conf_threshold: float=0.3):
-        self.run_id = run_id
+    def __init__(self, config_file):
+        with open(config_file, 'r') as f:
+            config = yaml.load(f, Loader=yaml.FullLoader)
+
+        self.run_id = config["run_id"]
+        base_dir = os.path.join(config["base_dir"], self.run_id)
         self.base_dir = base_dir
-        self.raw_dir = base_dir + '/raw'
-        self.csv_dir = base_dir + '/csvs'
-        self.output_dir = base_dir + '/output'
-        self.test_dir = base_dir + '/test'
+        self.raw_dir = os.path.join(base_dir, "raw")
+        self.csv_dir = os.path.join(base_dir, "csvs")
+        self.output_dir = os.path.join(base_dir, "output")
+        self.test_dir = os.path.join(base_dir, "test")
 
-        # frame rate for video
-        self.fps = fps
-        # feature extraction parameters
-        self.stride_window = stride_window
-        self.conf_threshold = conf_threshold
-
-        try:
-            os.mkdir(self.output_dir)    
-        except FileExistsError:
-            pass
-        try:
-            os.mkdir(self.test_dir)
-        except FileExistsError:
-            pass
+        self.fps = config["fps"]
+        self.stride_window = round(config["stride_window"] * self.fps / 1000)
+        self.conf_threshold = config["conf_threshold"]
+        self.filter_thresh = config["filter_thresh"]
+        self.trim_params = config["trim_params"]
+        self.hdbscan_params = config["hdbscan_params"]
+        self.umap_params = config["umap_params"]
+        self.mlp_params = config["mlp_params"]
+        self.jax_dataset = config["JAX_DATASET"]
+        self.reduced_dim = config["reduced_dim"]
+        self.sample_size = config["sample_size"]
+        self.cluster_range = config["cluster_range"]
+        
+        for d in [self.base_dir, self.output_dir, self.test_dir, self.csv_dir, self.raw_dir]:
+            try: os.mkdir(d)
+            except FileExistsError: pass
         
         self.describe()
 
@@ -104,7 +77,7 @@ class BSOID:
                 if files[i][-3:] == ".h5":
                     extract_to_csv(self.raw_dir+'/'+files[i], self.csv_dir)
 
-    def process_csvs(self, filter_thresh=5):
+    def process_csvs(self):
         csv_data_files = os.listdir(self.csv_dir)
         csv_data_files = [self.csv_dir + '/' + f for f in csv_data_files if f.endswith('.csv')]
 
@@ -114,8 +87,8 @@ class BSOID:
         skipped = 0
         for i in range(len(csv_data_files)):
             data = pd.read_csv(csv_data_files[i])
-            fdata, perc_filt = likelihood_filter(data, fps=self.fps, conf_threshold=self.conf_threshold,**TRIM_PARAMS)
-            if fdata is not None and perc_filt < filter_thresh:
+            fdata, perc_filt = likelihood_filter(data, fps=self.fps, conf_threshold=self.conf_threshold,**self.trim_params)
+            if fdata is not None and perc_filt < self.filter_thresh:
                 assert fdata['x'].shape == fdata['y'].shape == fdata['conf'].shape, 'filtered data shape does not match across x, y, and conf values'
                 filtered_data.append(fdata)
                 shape = fdata['x'].shape
@@ -130,7 +103,11 @@ class BSOID:
 
         return filtered_data
     
-    def load_from_dataset(self, input_csv, data_dir, n=None, n_strains=None):
+    def load_from_dataset(self, n=None, n_strains=None):
+        input_csv = self.jax_dataset["input_csv"]
+        data_dir = self.jax_dataset["data_dir"]
+        filter_thresh = self.filter_thresh
+
         if input_csv.endswith('.tsv'):
             data = pd.read_csv(input_csv, sep='\t')    
         else:
@@ -145,7 +122,7 @@ class BSOID:
 
         print('Processing {} files from {}'.format(N, data_dir))
 
-        def extract(metadata, data_dir):
+        def extract(metadata, data_dir, filter_thresh):
             try:
                 pose_dir, _ = get_pose_data_dir(data_dir, metadata['NetworkFilename'])
                 _, _, movie_name = metadata['NetworkFilename'].split('/')
@@ -159,9 +136,9 @@ class BSOID:
                 f.close()
 
                 bsoid_data = bsoid_format(conf, pos)
-                fdata, perc_filt = likelihood_filter(bsoid_data, self.fps, self.conf_threshold, **TRIM_PARAMS)
+                fdata, perc_filt = likelihood_filter(bsoid_data, self.fps, self.conf_threshold, **self.trim_params)
                 strain, mouse_id = metadata['Strain'], metadata['MouseID']
-                if perc_filt > 10:
+                if perc_filt > filter_thresh:
                     logging.warning(f'mouse:{strain}/{mouse_id}: % data filtered from raw data is too high ({perc_filt} %)')
                     return None
 
@@ -172,7 +149,7 @@ class BSOID:
                 print(e)
                 return None
         
-        fdata = Parallel(n_jobs=-1)(delayed(extract)(data.iloc[i], data_dir) for i in range(N))
+        fdata = Parallel(n_jobs=-1)(delayed(extract)(data.iloc[i], data_dir, filter_thresh) for i in range(N))
         N = len(fdata)
         
         fdata = [data for data in fdata if data is not None]
@@ -205,13 +182,14 @@ class BSOID:
             joblib.dump(feats, f)
 
     def best_reduced_dim(self, var_prop=0.7):
-        _, feats_sc = self.load_features()
+        _, feats_sc = self.load_features(collect=True)
         pca = PCA().fit(feats_sc)
         num_dimensions = np.argwhere(np.cumsum(pca.explained_variance_ratio_) >= var_prop)[0][0] + 1
         print(f'At least {num_dimensions} dimensions are needed to retain {var_prop} of the total variance')
 
-    def umap_reduce(self, reduced_dim, sample_size=int(5e5)):        
-        feats, feats_sc = self.load_features()
+    def umap_reduce(self):
+        reduced_dim, sample_size = self.reduced_dim, self.sample_size        
+        feats, feats_sc = self.load_features(collect=True)
 
         if sample_size > 1:
             idx = np.random.permutation(np.arange(feats.shape[0]))[0:sample_size]
@@ -222,19 +200,20 @@ class BSOID:
             feats_usc = feats
 
         logging.info('running UMAP on {} samples from {}D to {}D'.format(*feats_train.shape, reduced_dim))
-        mapper = umap.UMAP(n_components=reduced_dim,  **UMAP_PARAMS).fit(feats_train)
+        mapper = umap.UMAP(n_components=reduced_dim,  **self.umap_params).fit(feats_train)
 
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'wb') as f:
             joblib.dump([feats_usc, feats_train, mapper.embedding_], f)
         
         return [feats_usc, feats_train, mapper.embedding_]
 
-    def identify_clusters_from_umap(self, cluster_range=[0.4,1.2]):
+    def identify_clusters_from_umap(self):
+        cluster_range = self.cluster_range
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
             _, _, umap_embeddings = joblib.load(f)
 
         logging.info(f'clustering {umap_embeddings.shape[0]} in {umap_embeddings.shape[1]}D with cluster range={cluster_range}')
-        assignments, soft_clusters, soft_assignments, best_clf = cluster_with_hdbscan(umap_embeddings, cluster_range, HDBSCAN_PARAMS)
+        assignments, soft_clusters, soft_assignments, best_clf = cluster_with_hdbscan(umap_embeddings, cluster_range, self.hdbscan_params)
         logging.info('identified {} clusters from {} samples in {}D'.format(len(np.unique(soft_assignments)), *umap_embeddings.shape))
 
         with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'wb') as f:
@@ -247,7 +226,7 @@ class BSOID:
         _, feats_sc, _ = self.load_umap_results(collect=True)
 
         logging.info('training neural network on {} scaled samples in {}D'.format(*feats_sc.shape))
-        clf = MLPClassifier(**MLP_PARAMS).fit(feats_sc, soft_assignments)
+        clf = MLPClassifier(**self.mlp_params).fit(feats_sc, soft_assignments)
 
         with open(self.output_dir + '/' + self.run_id + '_classifiers.sav', 'wb') as f:
             joblib.dump(clf, f)
@@ -258,7 +237,7 @@ class BSOID:
 
         logging.info('validating classifier on {} features'.format(*feats_sc.shape))
         feats_train, feats_test, labels_train, labels_test = train_test_split(feats_sc, soft_assignments)
-        clf = MLPClassifier(**MLP_PARAMS).fit(feats_train, labels_train)
+        clf = MLPClassifier(**self.mlp_params).fit(feats_train, labels_train)
         sc_scores = cross_val_score(clf, feats_test, labels_test, cv=5, n_jobs=-1)
         sc_cf = create_confusion_matrix(feats_test, labels_test, clf)
         logging.info('classifier accuracy: {} +- {}'.format(sc_scores.mean(), sc_scores.std())) 
@@ -290,7 +269,7 @@ class BSOID:
             logging.info(f'results directory: {output_path} already exists, deleting')
             [os.remove(output_path+'/'+f) for f in os.listdir(output_path)]
 
-        clip_window = TRIM_PARAMS['end_trim']*60*self.fps
+        clip_window = self.trim_params['end_trim']*60*self.fps
         collect_all_examples(labels, frame_dirs, output_path, bout_length, n_examples, self.fps, clip_window)
 
     def label_frames(self, csv_file, video_file):
@@ -317,7 +296,7 @@ class BSOID:
         
         # filter data from test file
         data = pd.read_csv(csv_file, low_memory=False)
-        data, _ = likelihood_filter(data, self.fps, self.conf_threshold, end_trim=TRIM_PARAMS['end_trim'], clip_window=0)
+        data, _ = likelihood_filter(data, self.fps, self.conf_threshold, end_trim=self.trim_params['end_trim'], clip_window=0)
 
         feats = frameshift_features(data, self.stride_window, self.fps, extract_feats, window_extracted_feats)
 
@@ -335,7 +314,7 @@ class BSOID:
         
         return filtered_data
 
-    def load_features(self, collect=True):        
+    def load_features(self, collect):        
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
             feats = joblib.load(f)
         if collect:
@@ -365,21 +344,6 @@ class BSOID:
     def save(self):
         with open(self.output_dir + '/' + self.run_id + '_bsoid.model', 'wb') as f:
             joblib.dump(self, f)
-
-    @staticmethod
-    def load_config(base_dir, run_id):
-        with open(base_dir + '/output/' + run_id + '_bsoid.model', 'rb') as f:
-            config = joblib.load(f)
-        
-        config.base_dir = base_dir
-        config.raw_dir = base_dir + '/raw'
-        config.csv_dir = base_dir + '/csvs'
-        config.output_dir = base_dir + '/output'
-        config.test_dir = base_dir + '/test'
-        
-        config.describe()
-
-        return config
 
     def describe(self):
         s = (f'    Run ID       : {self.run_id}\n'

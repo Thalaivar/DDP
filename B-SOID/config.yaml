@@ -1,0 +1,45 @@
+run_id: 'test'
+base_dir: 'D:/IIT/DDP/data/'
+
+# basic config
+fps: 30
+stride_window: 350
+conf_threshold: 0.3
+
+# loading from JAX dataset
+JAX_DATASET:
+  input_csv: '/projects/kumar-lab/StrainSurveyPoses/StrainSurveyMetaList_2019-04-09.tsv'
+  data_dir: '/projects/kumar-lab/StrainSurveyPoses'
+
+# preprocessing
+filter_thresh: 5
+
+# dimensionality reduction
+reduced_dim: 3
+sample_size: 5000000
+
+# clustering
+cluster_range: [0.4, 1.2]
+
+mlp_params:
+  hidden_layer_sizes: !!python/tuple [100, 10]
+  activation: 'logistic'
+  solver: 'adam'
+  learning_rate: 'constant'
+  learning_rate_init: 0.001
+  alpha: 0.0001
+  max_iter: 1000
+  early_stopping: False
+  verbose: 1
+
+umap_params:
+  min_dist: 0.0
+  n_neighbors: 300
+  
+hdbscan_params:
+  min_samples: 10
+  prediction_data: True
+
+trim_params:
+  end_trim: 2
+  clip_window: 30
