@@ -10,8 +10,8 @@ logging.basicConfig(level=logging.INFO, filename='training.log', filemode='w', f
 
 GET_DATA          = False
 PROCESS_CSVS      = False
-LOAD_FROM_DATASET = False
-GET_FEATURES      = False
+LOAD_FROM_DATASET = True
+GET_FEATURES      = True
 UMAP_REDUCE       = True
 CLUSTER_DATA      = True
 
@@ -59,4 +59,4 @@ def results(config_file):
     bsoid.create_examples(csv_dir, video_dir, bout_length=3, n_examples=10)
 
 if __name__ == "__main__":
-    main()
+    main(config_file="./config.yaml", n=10)

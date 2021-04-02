@@ -1,5 +1,5 @@
-run_id: 'test'
-base_dir: 'D:/IIT/DDP/data/'
+run_id: 'dis'
+base_dir: '/home/laadd/data/bsoid_data'
 
 # basic config
 fps: 30
@@ -12,11 +12,11 @@ JAX_DATASET:
   data_dir: '/projects/kumar-lab/StrainSurveyPoses'
 
 # preprocessing
-filter_thresh: 5
+filter_thresh: 10
 
 # dimensionality reduction
-reduced_dim: 3
-sample_size: 5000000
+reduced_dim: 2
+sample_size: 0
 
 # clustering
 cluster_range: [0.4, 1.2]
@@ -34,7 +34,7 @@ mlp_params:
 
 umap_params:
   min_dist: 0.0
-  n_neighbors: 300
+  n_neighbors: 60
   
 hdbscan_params:
   min_samples: 10
