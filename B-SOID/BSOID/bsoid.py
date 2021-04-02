@@ -54,6 +54,9 @@ class BSOID:
             try: os.mkdir(d)
             except FileExistsError: pass
         
+        with open(os.path.join(self.base_dir, "config.yaml"), 'w') as f:
+            yaml.dump(config, default_flow_style=False)
+            
         self.describe()
 
     def get_data(self, n=None, download=False, parallel=False):
@@ -146,7 +149,6 @@ class BSOID:
                 logging.info(f'preprocessed {shape} data from {strain}/{mouse_id} with {round(perc_filt, 2)}% data filtered')
                 return fdata
             except Exception as e:
-                print(e)
                 return None
         
         fdata = Parallel(n_jobs=-1)(delayed(extract)(data.iloc[i], data_dir, filter_thresh) for i in range(N))
