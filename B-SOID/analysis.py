@@ -308,27 +308,24 @@ def all_behaviour_info_for_all_strains(label_info_file: str):
             info[behaviour]['Average Bout Length'].append(stats[behaviour]['ABL'])
             info[behaviour]['No. of Bouts'].append(stats[behaviour]['NB'])
 
+    for behaviour, stats in info.items():
+        info[behaviour] = pd.DataFrame.from_dict(stats)
+    
     return info
 
-def calculate_behaviour_usage(label_info_file: str):
+def behaviour_usage_across_strains(label_info_file):
     with open(label_info_file, 'rb') as f:
         label_info = joblib.load(f)
-    N = len(label_info['Strain'])
 
-    prop = []
-    for i in tqdm(range(N)):
-        prop.append(behaviour_proportion(label_info['Labels'][i]))
-    prop = np.vstack(prop)
+    strainwise_data = {"Strain": label_info["Strain"]}
+    prop = np.vstack([behaviour_proportion(l) for l in label_info["Labels"]])
+
+    for i in range(prop.shape[1]):
+        strainwise_data[idx_2_behaviour(i, diff=True)] = prop[:,i]
     
-    usage = {'Behaviour': [], 'Usage': []}
-    for j in range(N):
-        for i in range(prop.shape[1]):
-            usage['Behaviour'].append(idx_2_behaviour(i, diff=True))
-            usage['Usage'].append(prop[j,i])
+    return pd.DataFrame.from_dict(strainwise_data)
 
-    return pd.DataFrame.from_dict(usage)
-
-def behaviour_usage_across_strains(label_info_file):
+def behaviour_usage_across_strains_old(label_info_file):
     with open(label_info_file, 'rb') as f:
         label_info = joblib.load(f)
     N = len(label_info['Strain'])
@@ -460,29 +457,28 @@ def block_shuffle_autocorrelation(block_lens, tmax, n=1000):
                 ).mean(axis=0) for i in tqdm(range(len(block_lens)))]
     return np.array(autocorr)
 
-def group_stats(stats):
-    grp_stats = {}
+def group_stats(stats_file):
+    with open(stats_file, "rb") as f:
+        stats = joblib.load(f)
+    
+    check_along = ["Sex", "Strain"]
+    grouped_stats = {}
 
     for idx in range(get_max_label() + 1):
         grp_label, diff_label = idx_2_behaviour(idx, diff=False), idx_2_behaviour(idx, diff=True)
 
-        if grp_label not in grp_stats:
-            grp_stats[grp_label] = {
-                'Strain': stats[diff_label]['Strain'],
-                'Sex': stats[diff_label]['Sex'],
-                'Total Duration': stats[diff_label]['Total Duration'],
-                'Average Bout Length': stats[diff_label]['Average Bout Length'],
-                'No. of Bouts': stats[diff_label]['No. of Bouts']
-            }
+        if grp_label not in grouped_stats:
+            grouped_stats[grp_label] = stats[diff_label]
         else:
-            assert stats[diff_label]['Strain'] == grp_stats[grp_label]['Strain'], '(FATAL) mismatch in order of strains when grouping'
-            assert stats[diff_label]['Sex'] == grp_stats[grp_label]['Sex'], '(FATAL) mismatch in order of strains when grouping'
+            df = grouped_stats[grp_label]
+            assert not (df[check_along] != stats[diff_label][check_along]).any().any(), "(FATAL) mismatch in order when grouping"
+
+            for metric in ["Total Duration", "No. of Bouts"]:
+                df[metric] += stats[diff_label][metric]
             
-            for metric in ['Total Duration', 'No. of Bouts']:
-                grp_stats[grp_label][metric] = [x + stats[diff_label][metric][i] for i, x in enumerate(grp_stats[grp_label][metric])]
+            df["Average Bout Length"] = [x / y if y > 0 else 0 for x, y in zip(df["Total Duration"], df["No. of Bouts"])]
             
-            grp_stats[grp_label]['Average Bout Length'] = [x / y if y > 0 else 0 for x, y in zip(grp_stats[grp_label]['Total Duration'], grp_stats[grp_label]['No. of Bouts'])]
-    return grp_stats
+    return grouped_stats
 
 def calculate_PVE(stats, metric):
     PVE = {}

@@ -254,13 +254,20 @@ def get_random_video_and_keypoints(data_file, save_dir):
     session = ftplib.FTP("ftp.box.com")
     session.login("ae16b011@smail.iitm.ac.in", "rSNxWCBv1407")
 
+    data = dict(data.iloc[np.random.randint(0, data.shape[0], 1)[0]])
+    data_filename, vid_filename = get_video_and_keypoint_data(session, data, save_dir)
+    session.quit()
+
+    return data_filename, vid_filename
+
+
+def get_video_and_keypoint_data(session, data, save_dir):
     strains = ["LL6-B2B", "LL5-B2B", "LL4-B2B", "LL3-B2B", "LL2-B2B", "LL1-B2B"]
     datasets = ["strain-survey-batch-2019-05-29-e/", "strain-survey-batch-2019-05-29-d/", "strain-survey-batch-2019-05-29-c/",
                 "strain-survey-batch-2019-05-29-b/", "strain-survey-batch-2019-05-29-a/"]
 
     # master directory where datasets are saved
     master_dir = 'JAX-IITM Shared Folder/Datasets/'
-    data = dict(data.iloc[np.random.randint(0, data.shape[0], 1)[0]])
     strain, data, movie_name = data['NetworkFilename'].split('/')
 
     idx = strains.index(strain)
@@ -285,6 +292,5 @@ def get_random_video_and_keypoints(data_file, save_dir):
     vid_filename = movie_name[0:-4] + ".avi"
     print(f"Downloading: {vid_filename}")
     session.retrbinary("RETR "+ vid_filename, open(save_dir + '/' + vid_filename, 'wb').write)
-    session.quit()
 
     return data_filename, vid_filename
