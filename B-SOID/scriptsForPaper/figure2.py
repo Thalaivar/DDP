@@ -5,7 +5,9 @@ import ftplib
 import numpy as np
 import pandas as pd
 
-SAVE_DIR = "D:/IIT/DDP/data/paper/figure2"
+# base_dir = "D:/IIT/DDP"
+base_dir = "/Users/dhruvlaad/IIT/DDP"
+SAVE_DIR = os.path.join(base_dir, "data/paper/figure2")
 try: os.mkdir(SAVE_DIR)
 except FileExistsError: pass
 
@@ -16,7 +18,7 @@ import matplotlib.patches as patches
 from scipy import ndimage
 
 import sys
-sys.path.insert(0, "D:/IIT/DDP/DDP/B-SOID")
+sys.path.insert(0, os.path.join(base_dir, "DDP/B-SOID"))
 from analysis import *
 from BSOID.utils import get_video_and_keypoint_data
 from tqdm import tqdm
@@ -159,20 +161,33 @@ def download_video_file(label_info_file: str):
 
     session = ftplib.FTP("ftp.box.com")
     session.login("ae16b011@smail.iitm.ac.in", "rSNxWCBv1407")
-    data_filename, vid_filename = get_video_and_keypoint_data(session, metadata, save_dir)
+    data_fname, vid_fname = get_video_and_keypoint_data(session, metadata, save_dir)
 
+    from BSOID.data import extract_to_csv
+    data_fname = extract_to_csv(os.path.join(save_dir, data_fname), save_dir)
+
+    import pandas as pd
+    from BSOID.preprocessing import likelihood_filter
+    from BSOID.bsoid import FPS
+    data = pd.read_csv(data_fname)
+    fdata, perc_filt = likelihood_filter(data, fps=FPS, end_trim=0, clip_window=0)
+    
+    shape = fdata['x'].shape
+    print(f'Preprocessed {shape} data, with {round(perc_filt, 2)}% data filtered')
+    
     metadata["data_filename"] = data_filename
     metadata["vid_filename"] = vid_filename
 
     with open(os.path.join(save_dir, "metadata.pkl"), "wb") as f:
         joblib.dump(metadata, f)
-    
-def save_frames(behaviour, n=10):
-    save_dir = os.path.join(SAVE_DIR, "vignette_figure")
+
+def save_frames_and_loc_data(behaviour, n=10):
+    save_dir = os.path.join(SAVE_DIR, "vignette_figure", f"{behaviour}_clips")
     with open(os.path.join(save_dir, "metadata.pkl"), "rb") as f:
         metadata = joblib.load(f)
     
     video_file = os.path.join(save_dir, metadata["vid_filename"])
+    keypoint_file = os.path.join(save_dir, metadata["data_filename"])
     labels = metadata["Labels"]
 
     i, locs = 0, []
@@ -191,32 +206,35 @@ def save_frames(behaviour, n=10):
             i += 1
     
     locs = sorted(locs, key=lambda x: x[-1])[-n:]
-    count, frames, i = 0, [], 0
+    
+    count, i = 0, 0
     video = cv2.VideoCapture(video_file)
     success, image = video.read()
     while success and locs:
-        if count == locs[0][0]:
-            while success and count <= locs[0][1]:
-                cv2.imwrite(os.path.join(save_dir, f"{behaviour}_frame_{i}.jpg"), image)
+        if i == locs[0][0]:
+            clip_dir = os.path.join(save_dir, f"clips_{count}")
+            while success and i <= locs[0][1]:
+                cv2.imwrite(os.path.join(clip_dir, f"{behaviour}_frame_{i}.jpg"), image)
                 success, image = video.read()
-                count += 1
                 i += 1
+
+            x, y = 
             del locs[0]
         else:
-            count += 1
+            i += 1
             success, image = video.read()
 
 def make_vignettes(lab, idxs, weights):
     assert len(idxs) == len(weights)
     assert sum(weights) == 1
-    
+
     save_dir = os.path.join(SAVE_DIR, "vignette_figure")
 
     frames = [os.path.join(save_dir, f) for f in os.listdir(save_dir) if f.split('_')[0] == lab]
     frames.sort(key=lambda x: int(x.split('.')[0].split('_')[-1]))
     if idxs is not None:
         frames = [cv2.imread(frames[i]) for i in idxs]
-    
+
     img = sum(f * w for f, w in zip(frames, weights))
 
     save_dir = os.path.join(save_dir, "vignettes")

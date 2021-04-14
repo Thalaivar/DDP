@@ -33,6 +33,7 @@ def extract_to_csv(filename, save_dir):
 
     bsoid_data = bsoid_format(conf, pos)
     bsoid_data.to_csv(save_dir + '/' + filename[:-3] +'.csv', index=False)
+    return save_dir + '/' + filename[:-3] +'.csv'
         
 def bsoid_format(conf, pos):
     bsoid_data = np.zeros((conf.shape[0], 3*conf.shape[1]))

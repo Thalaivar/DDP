@@ -650,6 +650,8 @@ def get_keypoint_data(metadata, label_info_file, data_dir):
         print(e)
         return None
     
+# def get_transition_data(label_info_file):
+    
 if __name__ == "__main__":
     label_info_file = '/Users/dhruvlaad/IIT/DDP/data/analysis/label_info.pkl'
     # stats_file = base_dir + 'analysis/stats.pkl'
