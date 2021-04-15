@@ -33,6 +33,8 @@ def main(config_file, n=None, n_strains=None):
 
 def hyperparamter_tuning(config_file):
     bsoid = BSOID(config_file)
+    bsoid.load_from_dataset(n=10)
+    bsoid.features_from_points(parallel=True)
 
     n_nbrs = [50, 60, 70, 100, 150, 200, 250, 300, 400, 500, 600]
     n_clusters = []
