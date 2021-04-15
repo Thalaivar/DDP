@@ -23,7 +23,7 @@ FPS = 30
 def extract_to_csv(filename, save_dir):
     f = h5py.File(filename, "r")
     # retain only filename
-    filename = filename.split('/')[-1]
+    filename = os.path.split(filename)[-1]
 
     data = list(f.keys())[0]
     keys = list(f[data].keys())
@@ -33,7 +33,6 @@ def extract_to_csv(filename, save_dir):
 
     bsoid_data = bsoid_format(conf, pos)
     bsoid_data.to_csv(save_dir + '/' + filename[:-3] +'.csv', index=False)
-    return save_dir + '/' + filename[:-3] +'.csv'
         
 def bsoid_format(conf, pos):
     bsoid_data = np.zeros((conf.shape[0], 3*conf.shape[1]))
