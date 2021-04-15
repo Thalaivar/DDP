@@ -201,7 +201,7 @@ class BSOID:
             feats_train = feats_sc
             feats_usc = feats
 
-        logging.info('running UMAP on {} samples from {}D to {}D'.format(*feats_train.shape, reduced_dim))
+        logging.info('running UMAP on {} samples from {}D to {}D with params: {}'.format(*feats_train.shape, reduced_dim, self.umap_params))
         mapper = umap.UMAP(n_components=reduced_dim,  **self.umap_params).fit(feats_train)
 
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'wb') as f:

@@ -31,20 +31,15 @@ def main(config_file, n=None, n_strains=None):
     if CLUSTER_DATA:
         bsoid.identify_clusters_from_umap()
 
-# def get_cluster_information(run_id='dis', base_dir='D:/IIT/DDP/data'):
-#     bsoid = BSOID.load_config(run_id=run_id, base_dir=base_dir)
+def hyperparamter_tuning(config_file):
+    bsoid = BSOID(config_file)
 
-#     assignments, soft_clusters, soft_assignments, clusterer = bsoid.load_identified_clusters()
-#     assignments = assignments.astype(np.int8)
-    
-#     prop = [0 for _ in range(assignments.max() + 1)]  
-#     for idx in assignments:
-#         if idx >= 0:
-#             prop[idx] += 1
-#     prop = np.array(prop)
-#     prop = prop/prop.sum()
-#     sns.barplot(x=np.arange(assignments.max() + 1), y=prop)
-#     plt.show()
+    n_nbrs = [50, 60, 70, 100, 150, 200, 250, 300]
+    for n in n_nbrs:
+        bsoid.umap_params["n_neighbors"] = n
+        bsoid.umap_reduce()
+        bsoid.identify_clusters_from_umap()
+
 
 def validate_and_train(config_file):
     bsoid = BSOID(config_file)
@@ -59,4 +54,5 @@ def results(config_file):
     bsoid.create_examples(csv_dir, video_dir, bout_length=3, n_examples=10)
 
 if __name__ == "__main__":
-    main(config_file="./config.yaml", n=10)
+    # main(config_file="./config.yaml", n=10)
+    hyperparamter_tuning(config_file="./config.yaml")

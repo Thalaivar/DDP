@@ -5,8 +5,8 @@ import ftplib
 import numpy as np
 import pandas as pd
 
-base_dir = "D:/IIT/DDP"
-# base_dir = "/Users/dhruvlaad/IIT/DDP"
+# base_dir = "D:/IIT/DDP"
+base_dir = "/Users/dhruvlaad/IIT/DDP"
 SAVE_DIR = os.path.join(base_dir, "data/paper/figure2")
 try: os.mkdir(SAVE_DIR)
 except FileExistsError: pass
@@ -148,7 +148,7 @@ def behaviour_usage_plot(label_info_file: str):
     plt.savefig(os.path.join(save_dir, "strainwise_usage_plot.jpg"), dpi=400, bbox_inches='tight', pad_inches=0)
     plt.show() 
 
-def download_video_file(label_info_file: str):
+def download_video_file(label_info_file: str, strain=None):
     save_dir = os.path.join(SAVE_DIR, "vignette_figure")
     try: os.mkdir(save_dir)
     except FileExistsError: pass
@@ -156,7 +156,15 @@ def download_video_file(label_info_file: str):
     with open(label_info_file, "rb") as f:
         info = joblib.load(f)
     N = len(info["Labels"])
-    idx = np.random.randint(0, N, 1)[0]
+
+    if strain:
+        idxs = []
+        for i in range(N):
+            if info["Strain"][i] == strain:
+                idxs.append(i)
+        idx = random.sample(idxs, 1)[0]
+    else:
+        idx = np.random.randint(0, N, 1)[0]
 
     metadata = {key: val[idx] for key, val in info.items()}
 
@@ -326,7 +334,7 @@ if __name__ == "__main__":
     # plot_behavioral_metrics(stats_file="../../data/analysis/stats.pkl")
     # behaviour_usage_plot(label_info_file="../../data/analysis/label_info.pkl")
     
-    # download_video_file("../../data/analysis/label_info.pkl")
+    download_video_file("../../data/analysis/label_info.pkl", strain="WSB/EiJ")
     save_frames_and_loc_data("Rear", n=10)
 
     # frame_dir = "../../data/paper/figure2/vignette_figure/CW-Turn_clips/clips_1/"

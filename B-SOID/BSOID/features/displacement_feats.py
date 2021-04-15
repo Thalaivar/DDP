@@ -35,7 +35,7 @@ def extract_feats(filtered_data, fps, stride_window):
                         [BASE_NECK, HEAD],
                         [BASE_TAIL, HINDPAW1], [BASE_TAIL, HINDPAW2],
                         [BASE_TAIL, MID_TAIL],
-                        [BASE_TAIL, TIP_TAIL])
+                        [MID_TAIL, TIP_TAIL])
 
     # displacement of points
     dis = np.array([x[1:,:] - x[0:N-1,:], y[1:,:] - y[0:N-1,:]])
