@@ -34,11 +34,16 @@ def main(config_file, n=None, n_strains=None):
 def hyperparamter_tuning(config_file):
     bsoid = BSOID(config_file)
 
-    n_nbrs = [50, 60, 70, 100, 150, 200, 250, 300]
+    n_nbrs = [50, 60, 70, 100, 150, 200, 250, 300, 400, 500, 600]
+    n_clusters = []
     for n in n_nbrs:
+        print(f"n_nbrs: {n}")
         bsoid.umap_params["n_neighbors"] = n
         bsoid.umap_reduce()
-        bsoid.identify_clusters_from_umap()
+        res = bsoid.identify_clusters_from_umap()
+        n_clusters.append(np.unique(res[2]))
+
+    print(n_clusters)
 
 
 def validate_and_train(config_file):

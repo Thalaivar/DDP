@@ -1,12 +1,12 @@
 #!/bin/bash
-#SBATCH --job-name=BSOID-small-2
-#SBATCH --output=small-training-2.txt
+#SBATCH --job-name=umap-tune
+#SBATCH --output=umap-tune.txt
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
-#SBATCH --time=48:00:00
+#SBATCH --time=72:00:00
 #SBATCH --partition=high_mem
 #SBATCH --qos=batch
-#SBATCH --mem=50000
+#SBATCH --mem=750000
 #SBATCH --mail-user=dhruv.laad@jax.org
 #SBATCH --mail-type=ALL
 
