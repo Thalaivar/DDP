@@ -163,10 +163,10 @@ class BSOID:
                     pass
             
             if count > 0:
-                logging.info(f"extracted {count} animal data for strain {data[i][0]}")
+                logging.info(f"extracted {count - 1} animal data for strain {all_data[i][0]}")
                 strain_count += 1
             
-        logging.info(f"extracted data from {n_strains} strains with a total of {len(filtered_data)} animals")
+        logging.info(f"extracted data from {strain_count - 1} strains with a total of {len(filtered_data)} animals")
         with open(self.output_dir + '/' + self.run_id + '_filtered_data.sav', 'wb') as f:
             joblib.dump(filtered_data, f)
 
