@@ -112,23 +112,23 @@ class BSOID:
         filter_thresh = self.filter_thresh
 
         if input_csv.endswith('.tsv'):
-            data = pd.read_csv(input_csv, sep='\t')    
+            all_data = pd.read_csv(input_csv, sep='\t')    
         else:
-            data = pd.read_csv(input_csv)
+            all_data = pd.read_csv(input_csv)
         
-        data = list(data.groupby("Strain"))
-        random.shuffle(data)
+        all_data = list(all_data.groupby("Strain"))
+        random.shuffle(all_data)
         
         if n_strains is None:
-            n_strains = len(data)
+            n_strains = len(all_data)
         
         strain_count, filtered_data = 0, []
-        for i in range(len(data)):
+        for i in range(len(all_data)):
             if strain_count > n_strains:
                 break
 
-            n = data[i][1].shape[0] if n is None else n
-            shuffled_strain_data = data[i][1].sample(frac=1)
+            n = all_data[i][1].shape[0] if n is None else n
+            shuffled_strain_data = all_data[i][1].sample(frac=1)
             count = 0
             for j in range(shuffled_strain_data.shape[0]):
                 if count > n:
