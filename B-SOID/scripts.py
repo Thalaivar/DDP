@@ -36,14 +36,14 @@ def hyperparamter_tuning(config_file):
     bsoid.load_from_dataset(n=10)
     bsoid.features_from_points(parallel=True)
 
-    n_nbrs = [50, 60, 70, 100, 150, 200, 250, 300, 400, 500, 600]
+    n_nbrs = range(50, 700, 50)
     n_clusters = []
     for n in n_nbrs:
         print(f"n_nbrs: {n}")
         bsoid.umap_params["n_neighbors"] = n
         bsoid.umap_reduce()
         res = bsoid.identify_clusters_from_umap()
-        n_clusters.append(np.unique(res[2]))
+        n_clusters.append(np.unique(res[2]).max() + 1)
 
     print(n_clusters)
 

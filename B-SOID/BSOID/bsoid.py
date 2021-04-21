@@ -115,52 +115,62 @@ class BSOID:
             data = pd.read_csv(input_csv, sep='\t')    
         else:
             data = pd.read_csv(input_csv)
-        if n is not None:
-            data = [group.sample(n) for _, group in data.groupby("Strain")]
-            if n_strains is not None:
-                data = random.sample(data, n_strains)
-            data = pd.concat(data, axis=0)
-
-        N = data.shape[0]
-
-        print('Processing {} files from {}'.format(N, data_dir))
-
-        def extract(metadata, data_dir, filter_thresh):
-            try:
-                pose_dir, _ = get_pose_data_dir(data_dir, metadata['NetworkFilename'])
-                _, _, movie_name = metadata['NetworkFilename'].split('/')
-                filename = f'{pose_dir}/{movie_name[0:-4]}_pose_est_v2.h5'
-
-                f = h5py.File(filename, "r")
-                filename = filename.split('/')[-1]
-                data = list(f.keys())[0]
-                keys = list(f[data].keys())
-                conf, pos = np.array(f[data][keys[0]]), np.array(f[data][keys[1]])
-                f.close()
-
-                bsoid_data = bsoid_format(conf, pos)
-                fdata, perc_filt = likelihood_filter(bsoid_data, self.fps, self.conf_threshold, **self.trim_params)
-                strain, mouse_id = metadata['Strain'], metadata['MouseID']
-                if perc_filt > filter_thresh:
-                    logging.warning(f'mouse:{strain}/{mouse_id}: % data filtered from raw data is too high ({perc_filt} %)')
-                    return None
-
-                shape = fdata['x'].shape
-                logging.info(f'preprocessed {shape} data from {strain}/{mouse_id} with {round(perc_filt, 2)}% data filtered')
-                return fdata
-            except Exception as e:
-                return None
         
-        fdata = Parallel(n_jobs=-1)(delayed(extract)(data.iloc[i], data_dir, filter_thresh) for i in range(N))
-        N = len(fdata)
+        data = list(data.groupby("Strain"))
+        random.shuffle(data)
         
-        fdata = [data for data in fdata if data is not None]
-        print(f'Skipped {len(fdata)}/{N} datasets')
+        if n_strains is None:
+            n_strains = len(data)
         
+        strain_count, filtered_data = 0, []
+        for i in range(len(data)):
+            if strain_count > n_strains:
+                break
+
+            n = data[i][1].shape[0] if n is None else n
+            shuffled_strain_data = data[i][1].sample(frac=1)
+            count = 0
+            for j in range(shuffled_strain_data.shape[0]):
+                if count > n:
+                    break
+
+                metadata = dict(shuffled_strain_data.iloc[j])
+                try:
+                    pose_dir, _ = get_pose_data_dir(data_dir, metadata['NetworkFilename'])
+                    _, _, movie_name = metadata['NetworkFilename'].split('/')
+                    filename = f'{pose_dir}/{movie_name[0:-4]}_pose_est_v2.h5'
+
+                    f = h5py.File(filename, "r")
+                    filename = filename.split('/')[-1]
+                    data = list(f.keys())[0]
+                    keys = list(f[data].keys())
+                    conf, pos = np.array(f[data][keys[0]]), np.array(f[data][keys[1]])
+                    f.close()
+
+                    bsoid_data = bsoid_format(conf, pos)
+                    fdata, perc_filt = likelihood_filter(bsoid_data, self.fps, self.conf_threshold, **self.trim_params)
+                    strain, mouse_id = metadata['Strain'], metadata['MouseID']
+                    
+                    if perc_filt > filter_thresh:
+                        logging.warning(f'mouse:{strain}/{mouse_id}: % data filtered from raw data is too high ({perc_filt} %)')
+                    else:
+                        shape = fdata['x'].shape
+                        logging.debug(f'preprocessed {shape} data from {strain}/{mouse_id} with {round(perc_filt, 2)}% data filtered')
+                        filtered_data.append(fdata)
+                        count += 1
+
+                except:
+                    pass
+            
+            if count > 0:
+                logging.info(f"extracted {count} animal data for strain {data[i][0]}")
+                strain_count += 1
+            
+        logging.info(f"extracted data from {n_strains} strains with a total of {len(filtered_data)} animals")
         with open(self.output_dir + '/' + self.run_id + '_filtered_data.sav', 'wb') as f:
-            joblib.dump(fdata, f)
+            joblib.dump(filtered_data, f)
 
-        return fdata
+        return filtered_data
 
     def features_from_points(self, parallel=False):
         filtered_data = self.load_filtered_data()
