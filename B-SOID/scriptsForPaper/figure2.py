@@ -5,8 +5,8 @@ import ftplib
 import numpy as np
 import pandas as pd
 
-# base_dir = "D:/IIT/DDP"
-base_dir = "/Users/dhruvlaad/IIT/DDP"
+base_dir = "D:/IIT/DDP"
+# base_dir = "/Users/dhruvlaad/IIT/DDP"
 SAVE_DIR = os.path.join(base_dir, "data/paper/figure2")
 try: os.mkdir(SAVE_DIR)
 except FileExistsError: pass
@@ -286,7 +286,7 @@ def make_vignettes(frame_dir, idxs, ske_idxs, weights, img_crop=None, skeletal_c
     frames = [os.path.join(frame_dir, f) for f in os.listdir(frame_dir) if f.endswith(".jpg")]
     frames.sort(key=lambda x: int(x.split('_')[-1][:-4]))
 
-    behaviour = frames[0].split('_')[0]
+    behaviour = frame_dir.split('/')[-3].split("_")[0]
 
     if idxs is not None:
         frames = [cv2.imread(frames[i]) for i in idxs]
@@ -294,7 +294,8 @@ def make_vignettes(frame_dir, idxs, ske_idxs, weights, img_crop=None, skeletal_c
     img = sum(f * w for f, w in zip(frames, weights)) / 255.0
     img = ndimage.rotate(img, deg)
 
-    fig, ax = plt.subplots(ncols=2)
+    fig, ax = plt.subplots(ncols=2, gridspec_kw={"width_ratios": [1, 1]})
+
     ax[0].imshow(img, extent=[0, img.shape[0], 0, img.shape[1]])
     ax[1].imshow(img, extent=[0, img.shape[0], 0, img.shape[1]])
 
@@ -302,12 +303,13 @@ def make_vignettes(frame_dir, idxs, ske_idxs, weights, img_crop=None, skeletal_c
         x, y = joblib.load(f)
 
     for i, idx in enumerate(ske_idxs):
-        ax[1], cmap = skeletal_plot(ax[1], x[idx], y[idx], idx/max(ske_idxs))
+        wt = (idx - min(ske_idxs))/(max(ske_idxs) - min(ske_idxs))
+        ax[1], cmap = skeletal_plot(ax[1], x[idx], y[idx], wt)
 
     ax[1].set_xlim(ax[0].get_xlim())
     ax[1].set_ylim(ax[0].get_ylim())
     
-    cax = fig.add_axes([0.80, 0.175, 0.15, 0.05])
+    cax = fig.add_axes([0.57, 0.90, 0.15, 0.05])
     cb1 = mpl.colorbar.ColorbarBase(cax, cmap=cmap, orientation="horizontal", ticks=[0.0, 1.0])
     cax.set_xticks([0.0, 1.0])
     cax.set_xticklabels(["start", "end"])
@@ -325,7 +327,7 @@ def make_vignettes(frame_dir, idxs, ske_idxs, weights, img_crop=None, skeletal_c
         ax_.set_yticklabels([])
         ax_.set_axis_off()
         ax_. set_aspect('equal')
-
+        ax_.set_anchor('N')
     plt.tight_layout()
     plt.savefig(os.path.join(save_dir, f"{behaviour}_fig.jpg"), dpi=400, bbox_inches="tight", pad_inches=0)
     plt.show()
@@ -334,11 +336,11 @@ if __name__ == "__main__":
     # plot_behavioral_metrics(stats_file="../../data/analysis/stats.pkl")
     # behaviour_usage_plot(label_info_file="../../data/analysis/label_info.pkl")
     
-    download_video_file("../../data/analysis/label_info.pkl", strain="WSB/EiJ")
-    save_frames_and_loc_data("Rear", n=10)
+    # download_video_file("../../data/analysis/label_info.pkl")
+    # save_frames_and_loc_data("Rear", n=10)
 
-    # frame_dir = "../../data/paper/figure2/vignette_figure/CW-Turn_clips/clips_1/"
-    # weights = [0.5, 0.25, 0.25]
-    # idxs = [0, 17, 31]
-    # ske_idxs = range(0, 31, 6)
-    # make_vignettes(frame_dir, idxs, ske_idxs, weights, deg=90, img_crop=[[300, None], [None, 300]], skeletal_crop=[[300, None], [None, 150]])
+    frame_dir = "../../data/paper/figure2/vignette_figure/Rear_clips/clips_3/"
+    weights = [0.4, 0.15, 0.45]
+    idxs = [7, 18, 30]
+    ske_idxs = [7, 14, 15, 25, 30]
+    make_vignettes(frame_dir, idxs, ske_idxs, weights, deg=90, img_crop=[[150, None], [None, 350]], skeletal_crop=[[250, None], [None, 244]])
