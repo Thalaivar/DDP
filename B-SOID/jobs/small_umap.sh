@@ -14,4 +14,4 @@ source /home/laadd/.bashrc
 conda activate bsoid 
 
 cd /home/laadd/DDP/B-SOID/
-python scripts.py --config config/2d_umap_config.yaml --script small_umap --outdir /home/laadd/data/
+python scripts.py --config config/2d_umap_config.yaml --script small_umap --outdir /home/laadd/data/ --n 10

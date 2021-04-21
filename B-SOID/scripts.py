@@ -60,8 +60,11 @@ def results(config_file):
     csv_dir = bsoid.test_dir
     bsoid.create_examples(csv_dir, video_dir, bout_length=3, n_examples=10)
 
-def small_umap(config_file, outdir):
+def small_umap(config_file, outdir, n):
     bsoid = BSOID(config_file)
+    bsoid.load_from_dataset(n)
+    bsoid.features_from_points(parallel=True)
+    
     umap_results = bsoid.umap_reduce()
     clustering_results = bsoid.identify_clusters_from_umap()
     
@@ -75,7 +78,7 @@ if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser("scripts.py")
     parser.add_argument("--config", type=str, help="configuration file for B-SOID")
-    parser.add_argument("--script", type=str, help="script to run", choices=["results", "validate_and_train", "hyperparamter_tuning", "main"])
+    parser.add_argument("--script", type=str, help="script to run", choices=["results", "validate_and_train", "hyperparamter_tuning", "main", "small_umap"])
     parser.add_argument("--n", type=int)
     parser.add_argument("--n_strains", type=int)
     parser.add_argument("--outdir", type=str)
@@ -84,6 +87,6 @@ if __name__ == "__main__":
     if args.script == "main":
         main(config_file=args.config, n=args.n, n_strains=args.n_strains)
     elif args.script == "small_umap":
-        small_umap(config_file=args.config, outdir=args.outdir)
+        small_umap(config_file=args.config, outdir=args.outdir, n=args.n)
     else:
         eval(args.script)(args.config)
