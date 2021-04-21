@@ -129,7 +129,7 @@ class BSOID:
 
             n = all_data[i][1].shape[0] if n is None else n
             shuffled_strain_data = all_data[i][1].sample(frac=1)
-            count = 0
+            count, strain_fdata = 0, []
             for j in range(shuffled_strain_data.shape[0]):
                 if count > n:
                     break
@@ -156,13 +156,14 @@ class BSOID:
                     else:
                         shape = fdata['x'].shape
                         logging.debug(f'preprocessed {shape} data from {strain}/{mouse_id} with {round(perc_filt, 2)}% data filtered')
-                        filtered_data.append(fdata)
+                        strain_fdata.append(fdata)
                         count += 1
 
                 except:
                     pass
             
-            if count > 0:
+            if count - 1 == n:
+                filtered_data.extend(strain_fdata)
                 logging.info(f"extracted {count - 1} animal data for strain {all_data[i][0]}")
                 strain_count += 1
             
