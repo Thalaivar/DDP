@@ -216,14 +216,14 @@ class BSOID:
         mapper = umap.UMAP(n_components=reduced_dim,  **self.umap_params).fit(feats_train)
 
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'wb') as f:
-            joblib.dump([feats_usc, feats_train, mapper.embedding_], f)
+            joblib.dump([feats_usc, feats_train, mapper.embedding, mapper_], f)
         
-        return [feats_usc, feats_train, mapper.embedding_]
+        return [feats_usc, feats_train, mapper.embedding_, mapper]
 
     def identify_clusters_from_umap(self):
         cluster_range = self.cluster_range
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
-            _, _, umap_embeddings = joblib.load(f)
+            _, _, umap_embeddings, _ = joblib.load(f)
 
         logging.info(f'clustering {umap_embeddings.shape[0]} in {umap_embeddings.shape[1]}D with cluster range={cluster_range}')
         assignments, soft_clusters, soft_assignments, best_clf = cluster_with_hdbscan(umap_embeddings, cluster_range, self.hdbscan_params)
