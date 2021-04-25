@@ -1,6 +1,7 @@
 run_id: '2d-umap'
-# base_dir: '/home/laadd/data/bsoid_data'
-base_dir: '/Users/dhruvlaad/IIT/DDP/data'
+base_dir: '/home/laadd/data/bsoid_data'
+# base_dir: '/Users/dhruvlaad/IIT/DDP/data'
+# base_dir: 'D:/IIT/DDP/data'
 
 # basic config
 fps: 30
@@ -35,7 +36,7 @@ mlp_params:
 
 umap_params:
   min_dist: 0.0
-  n_neighbors: 250
+  n_neighbors: 60
   
 hdbscan_params:
   min_samples: 1

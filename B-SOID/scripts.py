@@ -73,12 +73,50 @@ def small_umap(config_file, outdir, n):
         joblib.dump(umap_results, f)
     with open(os.path.join(outdir, "2d_cluster_results"), "wb") as f:
         joblib.dump(clustering_results, f)
+
+def ensemble_pipeline(config_file, outdir, subsample_size=int(2e5)):
+    import hdbscan
+    import umap
+    from tqdm import tqdm
+    from BSOID.bsoid import BSOID
+    from BSOID.utils import cluster_with_hdbscan
+
+    bsoid = BSOID(config_file)
+    _, feats_sc = bsoid.load_features(collect=True)
+
+    embed_maps, clusterers = [], []
+    feats_sc = np.random.permutation(feats_sc)
+
+    for i in tqdm(range(0, feats_sc.shape[0], subsample_size)):
+        if i + subsample_size < feats_sc.shape[0]:
+            subset = feats_sc[i:i+subsample_size,:]
+        else:
+            subset = feats_sc[i:]
+        
+        mapper = umap.UMAP(n_components=bsoid.reduced_dim, **bsoid.umap_params).fit(subset)
+        _, _, _, clusterer = cluster_with_hdbscan(mapper.embedding_, bsoid.cluster_range, bsoid.hdbscan_params)
+
+        embed_maps.append(mapper)
+        clusterers.append(clusterer)
     
+    with open(os.path.join(bsoid.base_dir + "ensemble_test_ckpt1.sav"), "wb") as f:
+        joblib.dump([embed_maps, clusterers], f)
+    
+    from joblib import Parallel, delayed
+    def transform_fn(clusterer, embed_map, X):
+        embedding = embed_map.transform(X)
+        labels = hdbscan.approximate_predict(clusterer, embedding)[0]
+        return labels
+    
+    labels = Parallel(n_jobs=-1)(delayed(transform_fn)(clusterer, embed_mapper, feats_sc) for clusterer, embed_mapper in zip(clusterers, embed_maps))
+    with open(os.path.join(outdir, "ensemble_clustering.sav"), "rb") as f:
+        joblib.dump(labels, f)
+
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser("scripts.py")
     parser.add_argument("--config", type=str, help="configuration file for B-SOID")
-    parser.add_argument("--script", type=str, help="script to run", choices=["results", "validate_and_train", "hyperparamter_tuning", "main", "small_umap"])
+    parser.add_argument("--script", type=str, help="script to run", choices=["results", "validate_and_train", "hyperparamter_tuning", "main", "small_umap", "ensemble_pipeline"])
     parser.add_argument("--n", type=int)
     parser.add_argument("--n_strains", type=int)
     parser.add_argument("--outdir", type=str)
@@ -88,5 +126,7 @@ if __name__ == "__main__":
         main(config_file=args.config, n=args.n, n_strains=args.n_strains)
     elif args.script == "small_umap":
         small_umap(config_file=args.config, outdir=args.outdir, n=args.n)
+    elif args.script == "ensemble_pipeline":
+        ensemble_pipeline(config_file=args.config, outdir=args.outdir)
     else:
         eval(args.script)(args.config)
