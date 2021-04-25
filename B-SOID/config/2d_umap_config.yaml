@@ -36,7 +36,7 @@ mlp_params:
 
 umap_params:
   min_dist: 0.0
-  n_neighbors: 60
+  n_neighbors: 250
   
 hdbscan_params:
   min_samples: 1
