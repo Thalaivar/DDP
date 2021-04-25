@@ -32,8 +32,8 @@ F1:
   - NZBWF1/J:
     - NZB/BlNJ
     - NZW/LacJ
-confSNPs:
-  - rs32105080
+# confSNPs:
+#   - rs32105080
 covar:
   - Sex
 groups:

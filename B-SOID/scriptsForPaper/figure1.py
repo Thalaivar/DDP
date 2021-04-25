@@ -4,7 +4,10 @@ import joblib
 import numpy as np
 import pandas as pd
 
-SAVE_DIR = "D:/IIT/DDP/data/paper/figure1"
+base_dir = "/Users/dhruvlaad/IIT/DDP/data"
+# base_dir = "D:/IIT/DDP/data"
+SAVE_DIR = os.path.join(base_dir, "paper/figure1")
+
 try: os.mkdir(SAVE_DIR)
 except FileExistsError: pass
 
@@ -15,7 +18,7 @@ import matplotlib.patches as patches
 from scipy import ndimage
 
 import sys
-sys.path.insert(0, "D:/IIT/DDP/DDP/B-SOID")
+sys.path.insert(0, os.path.join(os.path.split(base_dir)[0], "DDP/B-SOID"))
 from analysis import *
 from BSOID.utils import get_random_video_and_keypoints
 from tqdm import tqdm
@@ -262,9 +265,20 @@ def ethogram_plot(tspan, fps):
     plt.savefig(os.path.join(SAVE_DIR, "ethogram_fig", "ethogram_plot.jpg"), bbox_inches="tight", pad_inches=0, dpi=600)
     plt.show()
 
-def pc_space_plot():
-    bsoid = BSOID.load_config("D:/IIT/DDP/data", "dis")
-    feats = bsoid.load_features()
+def reduced_dim_plot():
+    with open(os.path.join(base_dir, "2d-umap/2d-umap_umap.sav"), "rb") as f:
+        _, _, umap_feats = joblib.load(f)
+    with open(os.path.join(base_dir, "2d-umap/2d-umap_clusters.sav"), "rb") as f:
+        assignments, _, soft_assignments, _ = joblib.load(f)
+
+    cmap = plt.cm.get_cmap("Set2")
+    plt.scatter(
+        umap_feats[assignments >= 0,0], 
+        umap_feats[assignments >= 0,1], 
+        color=[cmap(l) for l in assignments[assignments >= 0]], 
+        s=0.1, 
+    )
+    plt.show()
 
 
 if __name__ == "__main__":
@@ -278,8 +292,8 @@ if __name__ == "__main__":
     # keypoint_data = "../../data/paper/figure1/frame_keypoint_fig/keypointdata.pkl"
     # keypoint_plot(image_file, keypoint_data, idx, deg=90)
 
-    from BSOID.bsoid import BSOID
-    bsoid = BSOID.load_config("D:/IIT/DDP/data", "dis")
+    # from BSOID.bsoid import BSOID
+    # bsoid = BSOID.load_config("D:/IIT/DDP/data", "dis")
 
     # autocorr = np.load(os.path.join(SAVE_DIR, "autocorrelation_fig", "autocorr.npy"))
     # with open(os.path.join(SAVE_DIR, "autocorrelation_fig", "block_autocorr.pkl"), "rb") as f:
@@ -295,5 +309,7 @@ if __name__ == "__main__":
     # with open(os.path.join(SAVE_DIR, "centroid_velocity_fig", "metadata.pkl"), "wb") as f:
     #     joblib.dump(metadata, f)
     
-    plot_centroid_velocity(200, bsoid.fps)
+    # plot_centroid_velocity(200, bsoid.fps)
     # ethogram_plot(200, bsoid.fps)
+
+    reduced_dim_plot()
