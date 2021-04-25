@@ -216,7 +216,7 @@ class BSOID:
         mapper = umap.UMAP(n_components=reduced_dim,  **self.umap_params).fit(feats_train)
 
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'wb') as f:
-            joblib.dump([feats_usc, feats_train, mapper.embedding, mapper_], f)
+            joblib.dump([feats_usc, feats_train, mapper.embedding_, mapper], f)
         
         return [feats_usc, feats_train, mapper.embedding_, mapper]
 
