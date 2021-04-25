@@ -1,5 +1,6 @@
 run_id: '2d-umap'
-base_dir: '/home/laadd/data/bsoid_data'
+# base_dir: '/home/laadd/data/bsoid_data'
+base_dir: '/Users/dhruvlaad/IIT/DDP/data'
 
 # basic config
 fps: 30
@@ -19,7 +20,7 @@ reduced_dim: 2
 sample_size: 0
 
 # clustering
-cluster_range: [0.4, 1.2]
+cluster_range: [0.5, 1.0, 11]
 
 mlp_params:
   hidden_layer_sizes: !!python/tuple [100, 10]
@@ -37,7 +38,7 @@ umap_params:
   n_neighbors: 250
   
 hdbscan_params:
-  min_samples: 10
+  min_samples: 1
   prediction_data: True
 
 trim_params:

@@ -208,21 +208,29 @@ def plot_2d_embedding_w_labels(embedding_file, label_file):
 
     fig.show()
 
-if __name__ == "__main__":
-    import logging
-    logging.basicConfig(level=logging.INFO)
+def ensemble_clustering(config_file, subsample_size=int(1e5)):
+    import hdbscan
+    from tqdm import tqdm
+    from BSOID.bsoid import BSOID
 
-    import os
-    base_dir = 'D:/IIT/DDP/data/nbrs_test/'
-    # umap_files = [base_dir + f for f in os.listdir(base_dir) if f.endswith('.sav')]
-    # umap_files.sort()
+    bsoid = BSOID(config_file)
 
-    umap_files = ['umap_test_all_nbrs_150.sav', 'umap_test_all_nbrs_200.sav', 'umap_test_all_nbrs_250.sav', 'umap_test_all_nbrs_300.sav']
-    umap_files = [base_dir + f for f in umap_files]
+    _, _, embedding = bsoid.load_umap_results()
     
-    print(f'Running clustering test on {umap_files}')
+    subsets, labels = [], []
+    embedding = np.random.permutation(embedding)
+    for i in tqdm(range(0, embedding.shape[0], subsample_size)):
+        if i + subsample_size < embedding.shape[0]:
+            subset_embedding = embedding[i:i+subsample_size,:]
+        else:
+            subset_embedding = embedding[i:]
+        
+        _, _, _, clusterer = cluster_with_hdbscan(subset_embedding, bsoid.cluster_range, bsoid.hdbscan_params)
 
-    [cluster_test_embeddings(f, [0.1, 1.0, 10]) for f in umap_files]
+        labels.append(hdbscan.prediction.approximate_predict(clusterer, embedding)[0])
 
-    # umap_file = base_dir + 'umap_test_nbrs_300.sav'
-    # cluster_test_embeddings(umap_file, cluster_range=[5, 10, 5])
+    return np.vstack(labels)
+
+if __name__ == "__main__":
+    config_file = "./config/2d_umap_config.yaml"
+    labels = ensemble_clustering(config_file, subsample_size=int(25e4))
