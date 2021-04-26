@@ -14,4 +14,4 @@ source /home/laadd/.bashrc
 conda activate bsoid 
 
 cd /home/laadd/DDP/B-SOID/
-python scripts.py --script strainwise_test --config ./config/config.yaml --outdir "./home/laadd/data"
+python scripts.py --script strainwise_test --config ./config/config.yaml --outdir "/home/laadd/data"

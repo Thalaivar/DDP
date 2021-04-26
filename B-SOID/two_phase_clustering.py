@@ -20,6 +20,8 @@ def collect_strainwise_data(feats):
     return feats
 
 def strainwise_clustering(config_file, outdir):
+    import logging
+
     bsoid = BSOID(config_file)
     feats = bsoid.load_features(collect=False)
     feats = collect_strainwise_data(feats)
@@ -28,6 +30,7 @@ def strainwise_clustering(config_file, outdir):
     embedding, labels = {}, {}
     pbar = tqdm(total=len(feats))
     for strain, data in feats.items():
+        logging.info(f"running for strain: {strain}")
         embedding[strain] = reduce_data(data, n_components=12, n_neighbors=90)
         labels[strain] = cluster_with_hdbscan(embedding[strain], [0.4, 1.2, 25], bsoid.hdbscan_params)
         pbar.update(1)
