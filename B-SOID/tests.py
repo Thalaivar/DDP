@@ -208,6 +208,41 @@ def plot_2d_embedding_w_labels(embedding_file, label_file):
 
     fig.show()
 
+def ensemble_pipeline(config_file, subsample_size=int(1e5)):
+    import hdbscan
+    from tqdm import tqdm
+    from BSOID.bsoid import BSOID
+
+    bsoid = BSOID(config_file)
+    _, feats_sc = bsoid.load_features(collect=True)
+
+    embed_maps, clusterers = [], []
+    feats_sc = np.random.permutation(feats_sc)
+
+    for i in tqdm(range(0, feats_sc.shape[0], subsample_size)):
+        if i + subsample_size < feats_sc.shape[0]:
+            subset = feats_sc[i:i+subsample_size,:]
+        else:
+            subset = feats_sc[i:]
+        
+        mapper = umap.UMAP(n_components=bsoid.reduced_dim, **bsoid.umap_params).fit(subset)
+        _, _, _, clusterer = cluster_with_hdbscan(mapper.embedding_, bsoid.cluster_range, bsoid.hdbscan_params)
+
+        embed_maps.append(mapper)
+        clusterers.append(clusterer)
+    
+    with open("./ensemble_test_ckpt1.sav", "wb") as f:
+        joblib.dump([embed_maps, clusterers], f)
+    
+    from joblib import Parallel, delayed
+    def transform_fn(clusterer, embed_map, X):
+        embedding = embed_map.transform(X)
+        labels = hdbscan.approximate_predict(clusterer, embedding)[0]
+        return labels
+    
+    labels = Parallel(n_jobs=-1)(delayed(transform_fn)(clusterer, embed_mapper, feats_sc) for clusterer, embed_mapper in zip(clusterers, embed_maps))
+    return labels, feats_sc
+
 def ensemble_clustering(config_file, subsample_size=int(1e5)):
     import hdbscan
     from tqdm import tqdm
@@ -217,7 +252,7 @@ def ensemble_clustering(config_file, subsample_size=int(1e5)):
 
     _, _, embedding = bsoid.load_umap_results()
     
-    subsets, labels = [], []
+    clfs = []
     embedding = np.random.permutation(embedding)
     for i in tqdm(range(0, embedding.shape[0], subsample_size)):
         if i + subsample_size < embedding.shape[0]:
@@ -226,9 +261,13 @@ def ensemble_clustering(config_file, subsample_size=int(1e5)):
             subset_embedding = embedding[i:]
         
         _, _, _, clusterer = cluster_with_hdbscan(subset_embedding, bsoid.cluster_range, bsoid.hdbscan_params)
+        clfs.append(clusterer)
 
-        labels.append(hdbscan.prediction.approximate_predict(clusterer, embedding)[0])
+    from joblib import Parallel, delayed
+    def approximate_predict(clusterer, points_to_predict):
+        return hdbscan.approximate_predict(clusterer, points_to_predict)[0]
 
+    labels = Parallel(n_jobs=-1)(delayed(approximate_predict)(clf, embedding) for clf in clfs)
     return np.vstack(labels)
 
 if __name__ == "__main__":
