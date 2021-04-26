@@ -162,7 +162,7 @@ class BSOID:
                 except:
                     pass
             
-            if count - 1 == n:
+            if count - 1 > 0:
                 filtered_data[all_data[i][0]] = strain_fdata
                 logging.info(f"extracted {count - 1} animal data for strain {all_data[i][0]}")
                 strain_count += 1
@@ -183,13 +183,10 @@ class BSOID:
         feats = {}
         for strain, fdata in filtered_data.items():
             feats[strain] = Parallel(n_jobs=-1)(delayed(extract_feats)(data, self.fps, self.stride_window) for data in fdata)
+            feats[strain] = window_extracted_feats(feats[strain], self.stride_window)
             pbar.update(1)
 
-        logging.info(f'extracted {len(feats)} datasets of {feats[list(feats.keys())[0]].shape[1]}D features')
-
-        for strain, fdata in feats.items():
-            feats[strain] = [window_extracted_feats(data, self.stride_window) for data in fdata]
-
+        logging.info(f'extracted {len(feats)} datasets of {feats[list(feats.keys())[0]][0].shape[1]}D features')
         logging.info(f'collected features into bins of {1000 * self.stride_window // self.fps} ms')
 
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:

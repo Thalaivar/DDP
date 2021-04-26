@@ -1,7 +1,7 @@
 run_id: '2d-umap'
 base_dir: '/home/laadd/data/bsoid_data'
 # base_dir: '/Users/dhruvlaad/IIT/DDP/data'
-# base_dir: 'D:/IIT/DDP/data'
+base_dir: 'D:/IIT/DDP/data'
 
 # basic config
 fps: 30

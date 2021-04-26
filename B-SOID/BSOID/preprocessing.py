@@ -54,8 +54,7 @@ def likelihood_filter(data: pd.DataFrame, fps, conf_threshold=0.3, end_trim=2, c
     logging.debug('extracted {} samples of {} features'.format(N, n_dpoints))
 
     filt_x, filt_y = np.zeros_like(x), np.zeros_like(y)
-    perc_rect = []
-
+    
     j = 0
     perc_filt = 0
 
