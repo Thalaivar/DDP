@@ -11,9 +11,9 @@ logging.basicConfig(level=logging.INFO, filename='training.log', filemode='w', f
 GET_DATA          = False
 PROCESS_CSVS      = False
 LOAD_FROM_DATASET = True
-GET_FEATURES      = True
-UMAP_REDUCE       = True
-CLUSTER_DATA      = True
+GET_FEATURES      = False
+UMAP_REDUCE       = False
+CLUSTER_DATA      = False
 
 def main(config_file, n=None, n_strains=None):
     bsoid = BSOID(config_file)
@@ -80,7 +80,7 @@ if __name__ == "__main__":
     parser.add_argument("--config", type=str, help="configuration file for B-SOID")
     parser.add_argument("--script", type=str, help="script to run", choices=["results", "validate_and_train", "hyperparamter_tuning", "main", "small_umap"])
     parser.add_argument("--n", type=int)
-    parser.add_argument("--n_strains", type=int)
+    parser.add_argument("--n_strains", type=int, default=None)
     parser.add_argument("--outdir", type=str)
     args = parser.parse_args()
 

@@ -122,7 +122,7 @@ class BSOID:
         if n_strains is None:
             n_strains = len(all_data)
         
-        strain_count, filtered_data = 0, []
+        strain_count, filtered_data = 0, {}
         for i in range(len(all_data)):
             if strain_count > n_strains:
                 break
@@ -163,7 +163,7 @@ class BSOID:
                     pass
             
             if count - 1 == n:
-                filtered_data.extend(strain_fdata)
+                filtered_data[all_data[i][0]] = strain_fdata
                 logging.info(f"extracted {count - 1} animal data for strain {all_data[i][0]}")
                 strain_count += 1
             
