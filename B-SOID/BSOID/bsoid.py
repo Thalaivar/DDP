@@ -173,22 +173,20 @@ class BSOID:
 
         return filtered_data
 
-    def features_from_points(self, parallel=False):
+    def features_from_points(self):
         filtered_data = self.load_filtered_data()
         logging.info(f'extracting features from {len(filtered_data)} animals')
-
+        
         # extract geometric features
-        if parallel:
-            feats = Parallel(n_jobs=-1)(delayed(extract_feats)(data, self.fps, self.stride_window) for data in filtered_data)
-        else:
-            feats = []
-            for i in tqdm(range(len(filtered_data))):
-                feats.append(extract_feats(filtered_data[i], self.fps, self.stride_window))
+        feats = {}
+        for strain, fdata in filtered_data.items():
+            feats[strain] = Parallel(n_jobs=-1)(delayed(extract_feats)(data, self.fps, self.stride_window) for data in fdata)
 
-        logging.info(f'extracted {len(feats)} datasets of {feats[0].shape[1]}D features')
+        logging.info(f'extracted {len(feats)} datasets of {feats[list(feats.keys())[0]].shape[1]}D features')
 
-        # feats = window_extracted_feats(feats, self.stride_window, self.temporal_window, self.temporal_dims)
-        feats = window_extracted_feats(feats, self.stride_window)
+        for strain, fdata in feats.items():
+            feats[strain] = [window_extracted_feats(data, self.stride_window) for data in fdata]
+
         logging.info(f'collected features into bins of {1000 * self.stride_window // self.fps} ms')
 
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
@@ -331,7 +329,13 @@ class BSOID:
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'rb') as f:
             feats = joblib.load(f)
         if collect:
-            feats_sc = [StandardScaler().fit_transform(data) for data in feats]
+            feats_ = []
+            for _, data in feats.items():
+                feats_.extend(data)
+            feats = feats_
+            del feats_
+
+            feats_sc = [StandardScaler().fit_transform(data) for  data in feats]
             feats, feats_sc = np.vstack(feats), np.vstack(feats_sc)
             return feats, feats_sc
         else:

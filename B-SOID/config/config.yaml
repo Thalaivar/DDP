@@ -1,5 +1,6 @@
 run_id: 'dis'
-base_dir: '/home/laadd/data/bsoid_data'
+# base_dir: '/home/laadd/data/bsoid_data'
+base_dir: "/Users/dhruvlaad/IIT/DDP/data"
 
 # basic config
 fps: 30

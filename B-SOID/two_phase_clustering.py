@@ -1,93 +1,46 @@
-import yaml
-import pandas as pd
+import os
+import umap
+import joblib
+import numpy as np
 
-from BSOID.preprocessing import likelihood_filter
-from BSOID.data import get_pose_data_dir
+from BSOID.bsoid import BSOID
+from BSOID.utils import cluster_with_hdbscan
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier
 
-def load_from_dataset(config, n=None, n_strains=None):
-    input_csv = config["JAX_DATASET"]["input_csv"]
-    data_dir = config["JAX_DATASET"]["data_dir"]
-    filter_thresh = config["filter_thresh"]
+strainwise_reduced_dim = 13
+strainwise_n_neighbors = 60
+strainwise_cluster_rng = [0.5, 1.0, 11]
 
-    if input_csv.endswith('.tsv'):
-        all_data = pd.read_csv(input_csv, sep='\t')    
-    else:
-        all_data = pd.read_csv(input_csv)
+def strainwise_clustering(config_file, outdir):
+    bsoid = BSOID(config_file)
+
+    feats = bsoid.load_features(collect=False)
+    embedding = {name: reduce_data(data) for name, data in feats.items()}
+
+    clustering = {name: cluster_with_hdbscan(data, strainwise_cluster_rng, bsoid.hdbscan_params)[0]}
     
-    all_data = list(all_data.groupby("Strain"))
-    random.shuffle(all_data)
+    coll_feats, coll_embedding, coll_data = {}, {}, {}
     
-    if n_strains is None:
-        n_strains = len(all_data)
+    k, strain2idx = 0, {"strain": [], "class_id": []}
+    for strain in feats.keys():
+        for idx in np.unique()
+
+    with open(os.path.join(outdir, "./strainwise_clustering"), "wb") as f:
+        joblib.dump([embedding, clustering], f)
     
-    strain_count, filtered_data = 0, {}
-    for i in range(len(all_data)):
-        if strain_count > n_strains:
-            break
 
-        n = all_data[i][1].shape[0] if n is None else n
-        shuffled_strain_data = all_data[i][1].sample(frac=1)
-        count, strain_fdata = 0, []
-        for j in range(shuffled_strain_data.shape[0]):
-            if count > n:
-                break
+    return embedding, clustering
 
-            metadata = dict(shuffled_strain_data.iloc[j])
-            try:
-                pose_dir, _ = get_pose_data_dir(data_dir, metadata['NetworkFilename'])
-                _, _, movie_name = metadata['NetworkFilename'].split('/')
-                filename = f'{pose_dir}/{movie_name[0:-4]}_pose_est_v2.h5'
+def reduce_data(feats: list, max_sample_size=int(2e5)):
+    feats = StandardScaler().fit_transform(np.vstack(feats))
+    
+    if feats.shape[0] > max_sample_size:
+        feats = np.random.permutation(feats)[:max_sample_size]
 
-                f = h5py.File(filename, "r")
-                filename = filename.split('/')[-1]
-                data = list(f.keys())[0]
-                keys = list(f[data].keys())
-                conf, pos = np.array(f[data][keys[0]]), np.array(f[data][keys[1]])
-                f.close()
-
-                bsoid_data = bsoid_format(conf, pos)
-                fdata, perc_filt = likelihood_filter(bsoid_data, self.fps, self.conf_threshold, **self.trim_params)
-                strain, mouse_id = metadata['Strain'], metadata['MouseID']
-                
-                if perc_filt > filter_thresh:
-                    logging.warning(f'mouse:{strain}/{mouse_id}: % data filtered from raw data is too high ({perc_filt} %)')
-                else:
-                    shape = fdata['x'].shape
-                    logging.debug(f'preprocessed {shape} data from {strain}/{mouse_id} with {round(perc_filt, 2)}% data filtered')
-                    strain_fdata.append(fdata)
-                    count += 1
-
-            except:
-                pass
-        
-        if count - 1 == n:
-            filtered_data[all_data[i][0]] = strain_fdata
-            logging.info(f"extracted {count - 1} animal data for strain {all_data[i][0]}")
-            strain_count += 1
-        
-    logging.info(f"extracted data from {strain_count - 1} strains with a total of {len(filtered_data)} animals")
-    with open(self.output_dir + '/' + self.run_id + '_filtered_data.sav', 'wb') as f:
-        joblib.dump(filtered_data, f)
-
-    return filtered_data
-
-def features_from_points(filtered_data, parallel=False):
-    filtered_data = self.load_filtered_data()
-    logging.info(f'extracting features from {len(filtered_data)} animals')
-
-    # extract geometric features
-    if parallel:
-        feats = Parallel(n_jobs=-1)(delayed(extract_feats)(data, self.fps, self.stride_window) for data in filtered_data)
-    else:
-        feats = []
-        for i in tqdm(range(len(filtered_data))):
-            feats.append(extract_feats(filtered_data[i], self.fps, self.stride_window))
-
-    logging.info(f'extracted {len(feats)} datasets of {feats[0].shape[1]}D features')
-
-    # feats = window_extracted_feats(feats, self.stride_window, self.temporal_window, self.temporal_dims)
-    feats = window_extracted_feats(feats, self.stride_window)
-    logging.info(f'collected features into bins of {1000 * self.stride_window // self.fps} ms')
-
-    with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
-        joblib.dump(feats, f)
+    mapper = umap.UMAP(
+            n_components=strainwise_reduced_dim, 
+            min_dist=0.0, 
+            n_neighbors=strainwise_n_neighbors
+        ).fit(feats)
+    return mapper.embedding_
