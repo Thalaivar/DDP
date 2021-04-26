@@ -115,9 +115,9 @@ def ensemble_pipeline(config_file, outdir, subsample_size=int(2e5)):
 def strainwise_test(config_file, outdir):
     from two_phase_clustering import strainwise_clustering
 
-    bsoid = BSOID(config_file)
-    bsoid.load_from_dataset(n=10)
-    bsoid.features_from_points()
+    # bsoid = BSOID(config_file)
+    # bsoid.load_from_dataset(n=10)
+    # bsoid.features_from_points()
 
     import logging
     logging.basicConfig(
@@ -145,6 +145,6 @@ if __name__ == "__main__":
     elif args.script == "small_umap":
         small_umap(config_file=args.config, outdir=args.outdir, n=args.n)
     elif args.script in ["ensemble_pipeline", "strainwise_test"]:
-        ensemble_pipeline(config_file=args.config, outdir=args.outdir)
+        eval(args.script)(config_file=args.config, outdir=args.outdir)
     else:
         eval(args.script)(args.config)

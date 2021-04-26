@@ -24,6 +24,7 @@ def strainwise_clustering(config_file, outdir):
     feats = bsoid.load_features(collect=False)
     feats = collect_strainwise_data(feats)
     
+    print(f"Processing {len(feats)} strains...")
     embedding, labels = {}, {}
     pbar = tqdm(total=len(feats))
     for strain, data in feats.items():
