@@ -35,7 +35,7 @@ def strainwise_clustering(config_file, outdir):
         labels[strain] = cluster_with_hdbscan(embedding[strain], [0.4, 1.2, 25], bsoid.hdbscan_params)
         pbar.update(1)
 
-    with open(os.path.join(outdir, "strainwise_labels.sav"), "rb") as f:
+    with open(os.path.join(outdir, "strainwise_labels.sav"), "wb") as f:
         joblib.dump([embedding, labels], f)
 
 def reduce_data(feats: np.ndarray, n_neighbors: int, n_components: int):
