@@ -19,21 +19,28 @@ def collect_strainwise_data(feats):
         feats[strain] = np.vstack(data)
     return feats
 
-def strainwise_clustering(config_file, outdir):
+def strainwise_clustering(config_file, outdir, strain_file=None):
     import logging
 
     bsoid = BSOID(config_file)
     feats = bsoid.load_features(collect=False)
     feats = collect_strainwise_data(feats)
     
+    if strain_file is None:
+        strain_list = list(feats.keys())
+    else:
+        with open(strain_file, "r") as f:
+            strain_list = [s[:-1] for s in f.readlines()]
+            
     print(f"Processing {len(feats)} strains...")
     embedding, labels = {}, {}
-    pbar = tqdm(total=len(feats))
+    pbar = tqdm(total=len(strain_list))
     for strain, data in feats.items():
-        logging.info(f"running for strain: {strain}")
-        embedding[strain] = reduce_data(data, n_components=12, n_neighbors=90)
-        labels[strain] = cluster_with_hdbscan(embedding[strain], [0.4, 1.2, 25], bsoid.hdbscan_params)
-        pbar.update(1)
+        if strain in strain_list:
+            logging.info(f"running for strain: {strain}")
+            embedding[strain] = reduce_data(data, n_components=12, n_neighbors=90)
+            labels[strain] = cluster_with_hdbscan(embedding[strain], [0.4, 1.2, 25], bsoid.hdbscan_params)
+            pbar.update(1)
 
     with open(os.path.join(outdir, "strainwise_labels.sav"), "wb") as f:
         joblib.dump([embedding, labels], f)

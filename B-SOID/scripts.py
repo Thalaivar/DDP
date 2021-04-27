@@ -112,7 +112,7 @@ def ensemble_pipeline(config_file, outdir, subsample_size=int(2e5)):
     with open(os.path.join(outdir, "ensemble_clustering.sav"), "rb") as f:
         joblib.dump(labels, f)
 
-def strainwise_test(config_file, outdir):
+def strainwise_test(config_file, outdir, strain_file):
     from two_phase_clustering import strainwise_clustering
 
     # bsoid = BSOID(config_file)
@@ -128,7 +128,7 @@ def strainwise_test(config_file, outdir):
             datefmt='%H:%M:%S'
         )
 
-    strainwise_clustering(config_file, outdir)
+    strainwise_clustering(config_file, outdir, strain_file)
 
 if __name__ == "__main__":
     import argparse
@@ -138,13 +138,16 @@ if __name__ == "__main__":
     parser.add_argument("--n", type=int)
     parser.add_argument("--n_strains", type=int, default=None)
     parser.add_argument("--outdir", type=str)
+    parser.add_argument("--strain-file", type=str)
     args = parser.parse_args()
 
     if args.script == "main":
         main(config_file=args.config, n=args.n, n_strains=args.n_strains)
     elif args.script == "small_umap":
         small_umap(config_file=args.config, outdir=args.outdir, n=args.n)
-    elif args.script in ["ensemble_pipeline", "strainwise_test"]:
+    elif args.script == "ensemble_pipeline":
         eval(args.script)(config_file=args.config, outdir=args.outdir)
+    elif args.script == "strainwise_test":
+        strainwise_test(args.config, args.outdir, args.strain_file)
     else:
         eval(args.script)(args.config)
