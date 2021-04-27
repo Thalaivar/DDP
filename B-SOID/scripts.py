@@ -112,23 +112,6 @@ def ensemble_pipeline(config_file, outdir, subsample_size=int(2e5)):
     with open(os.path.join(outdir, "ensemble_clustering.sav"), "rb") as f:
         joblib.dump(labels, f)
 
-def strainwise_test(config_file, outdir, strain_file):
-    from two_phase_clustering import strainwise_clustering
-
-    # bsoid = BSOID(config_file)
-    # bsoid.load_from_dataset(n=10)
-    # bsoid.features_from_points()
-
-    import logging
-    logging.basicConfig(
-            level=logging.INFO, 
-            filemode='a', 
-            filename=os.path.join(outdir, "clustering-strainwise.log"), 
-            format='%(asctime)s,%(msecs)d %(name)s %(levelname)s %(message)s',
-            datefmt='%H:%M:%S'
-        )
-
-    strainwise_clustering(config_file, outdir, strain_file)
 
 if __name__ == "__main__":
     import argparse
