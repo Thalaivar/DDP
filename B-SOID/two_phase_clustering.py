@@ -87,7 +87,8 @@ def par_sim_calc(clusters, save_dir, thresh):
     
     pbar, sim_data = tqdm(total=len(futures)), []
     while len(futures) > 0:
-        finished, rest = ray.wait(futures, num_returns=num_cpus)
+        num_returns = len(features) if len(features) < num_cpus else num_cpus
+        finished, rest = ray.wait(futures, num_returns=num_returns)
         sim_data.extend(ray.get(finished))
         futures = rest
         pbar.update(num_cpus)
