@@ -14,4 +14,4 @@ source /home/laadd/.bashrc
 conda activate bsoid 
 
 cd /home/laadd/DDP/B-SOID/
-python two_phase_clustering.py
+python new_clustering.py

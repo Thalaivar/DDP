@@ -138,6 +138,26 @@ def generate_sim_matrix(clusters, save_dir, thresh):
     with open(os.path.join(save_dir, "clusters_sim.sav"), "wb") as f:
         joblib.dump([clusters, sim_mat, val_mat], f)
 
+def group_strainwise_clusters(clusters, sim_mat, group_umap_params, cluster_range):
+    mapper = umap.UMAP(min_dist=0.0, **group_umap_params).fit(sim_mat)
+    assignments, _, soft_assignments, clusterer = cluster_with_hdbscan(mapper.embedding_, cluster_range, {"prediction_data": True, "min_samples": 1})
+    
+    grouped_clusters = {}
+    for class_id in range(soft_assignments.shape[0]):
+        if soft_assignments[class_id] in grouped_clusters:
+            grouped_clusters[soft_assignments[class_id]]["feats"] = np.vstack([
+                                        grouped_clusters[soft_assignments[class_id]]["feats"],
+                                        clusters[class_id]["feats"]
+                                    ])
+            grouped_clusters[soft_assignments[class_id]]["embedding"] = np.vstack([
+                                        grouped_clusters[soft_assignments[class_id]]["embedding"],
+                                        clusters[class_id]["embedding"]
+                                    ])
+        else:
+            grouped_clusters[soft_assignments[class_id]] = clusters[class_id]
+
+    return [grouped_clusters, mapper, clusterer]
+
 def strainwise_clustering(config_file, outdir, strain_file=None):
     import logging
 
