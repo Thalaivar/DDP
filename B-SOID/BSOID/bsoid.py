@@ -273,7 +273,7 @@ class BSOID:
             labels.append(label)
             frame_dirs.append(frame_dir)
         
-        output_path = self.base_dir + '/' + self.run_id + '_results'
+        output_path = os.path.join(self.base_dir, "results")
         try:
             os.mkdir(output_path)
         except FileExistsError:

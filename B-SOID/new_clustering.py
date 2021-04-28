@@ -168,6 +168,8 @@ def get_counts(clusters):
 
 if __name__ == "__main__":
     import os
+    import logging
+    logging.basicConfig(level=logging.INFO)
     
     save_dir = "/home/laadd/data"
     config_file = "./config/config.yaml"
