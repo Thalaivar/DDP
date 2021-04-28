@@ -1,6 +1,5 @@
-import ray
 import umap
-import psutil
+import joblib
 import logging
 import numpy as np
 
@@ -11,20 +10,29 @@ from itertools import combinations
 from sklearn.metrics import roc_auc_score
 from BSOID.utils import cluster_with_hdbscan
 from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import cross_val_score, StratifiedKFold
+from sklearn.ensemble import RandomForestClassifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
+from sklearn.model_selection import cross_val_score, StratifiedKFold, cross_validate
 
 STRAINWISE_UMAP_PARAMS = {
     "n_neighbors": 90,
     "n_components": 12
 }
-
 STRAINWISE_CLUSTER_RNG = [0.4, 1.2, 25]
+
 HDBSCAN_PARAMS = {"prediction_data": True, "min_samples": 1}
 THRESH = 1000
 
 DISC_MODEL = LinearDiscriminantAnalysis(solver="svd")
 CV = StratifiedKFold(n_splits=5, shuffle=True)
+
+GROUPWISE_UMAP_PARAMS = {
+    "n_neighbors": 60,
+    "n_components": 3
+}
+GROUPWISE_CLUSTER_RNG = [0.5, 4, 25]
+
+CLF = RandomForestClassifier(class_weight="balanced", n_jobs=-1)
 
 def reduce_data(feats: np.ndarray):
     feats = StandardScaler().fit_transform(feats)
@@ -80,6 +88,9 @@ def cluster_similarity(cluster1, cluster2):
     return score, val_score.mean()
 
 def pairwise_similarity(feats, embedding, labels):
+    import ray
+    import psutil
+
     feats = collect_strainwise_feats(feats)
     clusters = collect_strainwise_clusters(feats, labels, embedding)
     del feats, embedding, labels
@@ -117,8 +128,37 @@ def pairwise_similarity(feats, embedding, labels):
     return sim_mat, val_mat
 
 
-def group_clusters_together():
-    pass
+def group_clusters_together(feats, labels, embedding, sim):
+    feats = collect_strainwise_feats(feats)
+    clusters = collect_strainwise_clusters(feats, labels, embedding)
+    del feats, embedding, labels
+
+    mapper = umap.UMAP(min_dist=0.0, **GROUPWISE_UMAP_PARAMS).fit(sim)
+    group_labels = cluster_with_hdbscan(mapper.embedding_, GROUPWISE_CLUSTER_RNG, HDBSCAN_PARAMS)[2]
+
+    grouped_clusters = {}
+    for cluster_id, group_id in enumerate(group_labels):
+        if group_id in grouped_clusters:
+            grouped_clusters[group_id] = np.vstack([
+                    grouped_clusters[group_id]["feats"],
+                    clusters[cluster_id]["feats"]
+                ])
+        else:
+            grouped_clusters[group_id] = clusters[cluster_id]["feats"]
+
+    return grouped_clusters
+
+def learn_classifier(grouped_clusters):
+    X, y = [], []
+
+    for class_id, data in grouped_clusters.items():
+        X.append(data)
+        y.append(class_id * np.ones(data.shape[0]))
+    
+    X, y = np.vstack(X), np.hstack(y)
+
+    model = clone(CLF)
+    # scores = cross_val
 
 if __name__ == "__main__":
     save_dir = "/home/laadd/data"
