@@ -158,18 +158,29 @@ def learn_classifier(grouped_clusters):
     X, y = np.vstack(X), np.hstack(y)
 
     model = clone(CLF)
-    # scores = cross_val
+    val_score = cross_validate(model, X, y, cv=CV, scoring=("f1_weighted"))["test_f1_weighted"].mean()
+
+    model.fit(X, y)
+    return model, val_score
+
+def get_counts(clusters):
+    return {name: data.shape[0] for name, data in clusters.items()}
 
 if __name__ == "__main__":
+    import os
+    
     save_dir = "/home/laadd/data"
     config_file = "./config/config.yaml"
 
     feats = BSOID(config_file).load_features(collect=False)
     embedding, labels = cluster_strainwise(config_file, save_dir)
 
+    with open(os.path.join(save_dir, "strainwise_ckpt1.sav"), "wb") as f:
+        joblib.dump([feats, embedding, labels], f)
+
     sim_mat, val_mat = pairwise_similarity(feats, embedding, labels)
 
-    import os
-    import joblib
     with open(os.path.join(save_dir, "strainwise.sav"), "wb") as f:
         joblib.dump([feats, embedding, labels, sim_mat, val_mat], f)
+    
+    os.remove(os.path.join(save_dir, "strainwise_ckpt1.sav"))
