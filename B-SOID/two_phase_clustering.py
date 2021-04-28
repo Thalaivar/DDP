@@ -58,6 +58,53 @@ def pairwise_similarity(cluster1, cluster2):
     
     return sim_score, val_score
 
+def par_sim_calc(clusters, save_dir, thresh):
+    import ray
+    import psutil
+    
+    num_cpus = psutil.cpu_count(logical=False)
+    ray.init(num_cpus=num_cpus)
+
+    cluster_labels = list(clusters.keys())
+
+    small_labels = [lab for lab, data in clusters.items() if data["feats"].shape[0] < thresh]
+    for lab in small_labels:
+        del clusters[lab]
+        cluster_labels.remove(lab)
+    
+    for k, lab in enumerate(cluster_labels):
+        clusters[k] = clusters[lab]
+        del clusters[lab]
+    
+    @ray.remote
+    def calculate_sim(idx1, idx2, clusters):
+        cluster1, cluster2 = clusters[idx1], clusters[idx2]
+        sim_score, val_score = pairwise_similarity(cluster1, cluster2)
+        return [sim_score, val_score.mean(), idx1, idx2]
+    
+    cluster_id = ray.put(clusters)
+    futures = [calculate_sim.remote(idx1, idx2, cluster_id) for idx1, idx2 in combinations(list(clusters.keys()), 2)]
+    
+    pbar, sim_data = tqdm(total=len(futures)), []
+    while len(futures) > 0:
+        finished, rest = ray.wait(futures, num_returns=num_cpus)
+        sim_data.extend(ray.get(finished))
+        futures = rest
+        pbar.update(num_cpus)
+        
+    sim_data = np.vstack(sim_data)
+    sim_mat = np.zeros((len(cluster_labels), len(cluster_labels)))
+    val_mat = np.zeros_like(sim_mat)
+
+    for i in range(sim_data.shape[0]):
+        sim_score, val_score, idx1, idx2 = sim_data[i]
+        idx1, idx2 = int(idx1), int(idx2)
+        sim_mat[idx1,idx2], sim_mat[idx2,idx1] = sim_score, sim_score
+        val_mat[idx1,idx2], val_mat[idx2,idx1] = val_score, val_score
+    
+    with open(os.path.join(save_dir, "clusters_sim.sav"), "wb") as f:
+        joblib.dump([clusters, sim_mat, val_mat], f)
+
 def generate_sim_matrix(clusters, save_dir, thresh):
     cluster_labels = list(clusters.keys())
 
@@ -156,4 +203,5 @@ if __name__ == "__main__":
     feats = collect_strainwise_data(bsoid.load_features(collect=False))
     clusters = separate_into_clusters(embedding, labels, feats)
 
-    generate_sim_matrix(clusters, base_dir, thresh=500)
+    # generate_sim_matrix(clusters, base_dir, thresh=500)
+    par_sim_calc(clusters, base_dir, thresh=1000)
