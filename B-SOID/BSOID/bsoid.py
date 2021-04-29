@@ -117,17 +117,17 @@ class BSOID:
             all_data = pd.read_csv(input_csv)
         all_data = list(all_data.groupby("Strain"))
 
-        def filter_for_strain(raw_data, n):
-            n = raw_data[1].shape if n is None else n
+        def filter_for_strain(group_strain, raw_data, n):
+            n = raw_data.shape if n is None else n
             
             count, strain_fdata = 0, []
-            raw_data[1] = raw_data[1].sample(frac=1)
+            raw_data = raw_data.sample(frac=1)
             
-            for j in range(raw_data[1].shape[0]):
+            for j in range(raw_data.shape[0]):
                 if count >= n:
                     break
 
-                metadata = dict(raw_data[1].iloc[j])
+                metadata = dict(raw_data.iloc[j])
                 try:
                     pose_dir, _ = get_pose_data_dir(data_dir, metadata['NetworkFilename'])
                     _, _, movie_name = metadata['NetworkFilename'].split('/')
@@ -154,10 +154,10 @@ class BSOID:
                 except:
                     pass
             
-            logging.info(f"extracted {len(strain_fdata)} animal data from strain {raw_data[0]}")
-            return (strain_fdata, raw_data[0])
+            logging.info(f"extracted {len(strain_fdata)} animal data from strain {group_strain}")
+            return (strain_fdata, group_strain)
             
-        filtered_data = Parallel(n_jobs=-1)(delayed(filter_for_strain)(all_data[i], n) for i in tqdm(range(len(all_data))))
+        filtered_data = Parallel(n_jobs=-1)(delayed(filter_for_strain)(*all_data[i], n) for i in tqdm(range(len(all_data))))
         
         empty_idx = [i for i, data in enumerate(filtered_data) if len(data[0]) == 0]
         for idx in empty_idx:
