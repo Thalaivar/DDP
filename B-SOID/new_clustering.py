@@ -70,6 +70,7 @@ def collect_strainwise_clusters(feats: dict, labels: dict, embedding: dict):
                     "feats": feats[strain][idx,:],
                     "embed": embedding[strain][idx,:]
                 }
+                k += 1
     
     return clusters
 
@@ -174,12 +175,15 @@ if __name__ == "__main__":
     save_dir = "/home/laadd/data"
     config_file = "./config/config.yaml"
 
-    feats = BSOID(config_file).load_features(collect=False)
-    embedding, labels = cluster_strainwise(config_file, save_dir)
+    # feats = BSOID(config_file).load_features(collect=False)
+    # embedding, labels = cluster_strainwise(config_file, save_dir)
 
-    with open(os.path.join(save_dir, "strainwise_ckpt1.sav"), "wb") as f:
-        joblib.dump([feats, embedding, labels], f)
+    # with open(os.path.join(save_dir, "strainwise_ckpt1.sav"), "wb") as f:
+    #     joblib.dump([feats, embedding, labels], f)
 
+    with open(os.path.join(save_dir, "strainwise_ckpt1.sav"), "rb") as f:
+        feats, embedding, labels = joblib.load(f)
+        
     sim_mat, val_mat = pairwise_similarity(feats, embedding, labels)
 
     with open(os.path.join(save_dir, "strainwise.sav"), "wb") as f:
