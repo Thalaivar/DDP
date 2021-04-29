@@ -175,18 +175,21 @@ if __name__ == "__main__":
     save_dir = "/home/laadd/data"
     config_file = "./config/config.yaml"
 
-    # feats = BSOID(config_file).load_features(collect=False)
+    bsoid = BSOID(config_file)
+    bsoid.load_from_dataset(n=10)
+    feats = bsoid.load_features(collect=False)
+
     # embedding, labels = cluster_strainwise(config_file, save_dir)
 
     # with open(os.path.join(save_dir, "strainwise_ckpt1.sav"), "wb") as f:
     #     joblib.dump([feats, embedding, labels], f)
 
-    with open(os.path.join(save_dir, "strainwise_ckpt1.sav"), "rb") as f:
-        feats, embedding, labels = joblib.load(f)
+    # with open(os.path.join(save_dir, "strainwise_ckpt1.sav"), "rb") as f:
+    #     feats, embedding, labels = joblib.load(f)
         
-    sim_mat, val_mat = pairwise_similarity(feats, embedding, labels)
+    # sim_mat, val_mat = pairwise_similarity(feats, embedding, labels)
 
-    with open(os.path.join(save_dir, "strainwise.sav"), "wb") as f:
-        joblib.dump([feats, embedding, labels, sim_mat, val_mat], f)
+    # with open(os.path.join(save_dir, "strainwise.sav"), "wb") as f:
+    #     joblib.dump([feats, embedding, labels, sim_mat, val_mat], f)
     
-    os.remove(os.path.join(save_dir, "strainwise_ckpt1.sav"))
+    # os.remove(os.path.join(save_dir, "strainwise_ckpt1.sav"))

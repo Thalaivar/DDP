@@ -127,14 +127,9 @@ class BSOID:
             if strain_count > n_strains:
                 break
 
-            n = all_data[i][1].shape[0] if n is None else n
-            shuffled_strain_data = all_data[i][1].sample(frac=1)
-            count, strain_fdata = 0, []
-            for j in range(shuffled_strain_data.shape[0]):
-                if count > n:
-                    break
-
-                metadata = dict(shuffled_strain_data.iloc[j])
+            strain_fdata = []
+            for j in range(all_data[i][1].shape[0]):
+                metadata = dict(all_data[i][1].iloc[j])
                 try:
                     pose_dir, _ = get_pose_data_dir(data_dir, metadata['NetworkFilename'])
                     _, _, movie_name = metadata['NetworkFilename'].split('/')
@@ -157,16 +152,20 @@ class BSOID:
                         shape = fdata['x'].shape
                         logging.debug(f'preprocessed {shape} data from {strain}/{mouse_id} with {round(perc_filt, 2)}% data filtered')
                         strain_fdata.append(fdata)
-                        count += 1
 
                 except:
                     pass
             
-            if count - 1 > 0:
-                filtered_data[all_data[i][0]] = strain_fdata
-                logging.info(f"extracted {count - 1} animal data for strain {all_data[i][0]}")
-                strain_count += 1
-            
+            filtered_data[all_data[i][0]] = strain_fdata
+            logging.info(f"extracted {len(strain_fdata)} animal data for strain {all_data[i][0]}")
+            strain_count += 1
+
+        for strain, data in filtered_data.items():
+            if n is None or n >= len(data):
+                filtered_data[strain] = data
+            else:
+                filtered_data[strain] = random.sample(data, n)
+                
         logging.info(f"extracted data from {strain_count - 1} strains with a total of {len(filtered_data)} animals")
         with open(self.output_dir + '/' + self.run_id + '_filtered_data.sav', 'wb') as f:
             joblib.dump(filtered_data, f)
