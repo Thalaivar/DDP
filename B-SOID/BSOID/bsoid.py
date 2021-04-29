@@ -115,21 +115,12 @@ class BSOID:
             all_data = pd.read_csv(input_csv, sep='\t')    
         else:
             all_data = pd.read_csv(input_csv)
-        
         all_data = list(all_data.groupby("Strain"))
-        random.shuffle(all_data)
-        
-        if n_strains is None:
-            n_strains = len(all_data)
-        
-        strain_count, filtered_data = 0, {}
-        for i in range(len(all_data)):
-            if strain_count > n_strains:
-                break
 
+        def filter_for_strain(raw_data, n):
             strain_fdata = []
-            for j in range(all_data[i][1].shape[0]):
-                metadata = dict(all_data[i][1].iloc[j])
+            for j in range(raw_data[1].shape[0]):
+                metadata = dict(raw_data[1].iloc[j])
                 try:
                     pose_dir, _ = get_pose_data_dir(data_dir, metadata['NetworkFilename'])
                     _, _, movie_name = metadata['NetworkFilename'].split('/')
@@ -156,17 +147,25 @@ class BSOID:
                 except:
                     pass
             
-            filtered_data[all_data[i][0]] = strain_fdata
-            logging.info(f"extracted {len(strain_fdata)} animal data for strain {all_data[i][0]}")
-            strain_count += 1
+            logging.info(f"sampling {n} from {len(strain_fdata)} animal data for strain {raw_data[0]}")
 
-        for strain, data in filtered_data.items():
-            if n is None or n >= len(data):
-                filtered_data[strain] = data
+            n = len(strain_fdata) if n is None else n
+            if len(strain_fdata) <= n:
+                return (strain_fdata, raw_data[0])
             else:
-                filtered_data[strain] = random.sample(data, n)
-                
-        logging.info(f"extracted data from {strain_count - 1} strains with a total of {len(filtered_data)} animals")
+                return (random.sample(strain_fdata, n), raw_data[0])
+            
+        filtered_data = Parallel(n_jobs=-1)(delayed(filter_for_strain)(all_data[i], n) for i in tqdm(range(len(all_data))))
+        
+        empty_idx = [i for i, data in enumerate(filtered_data) if len(data[0]) == 0]
+        for idx in empty_idx:
+            del filtered_data[idx]
+        if n_strains is not None:
+            filtered_data = random.sample(filtered_data, n_strains)
+        
+        filtered_data = {strain: data for data, strain in filtered_data}
+        
+        logging.info(f"extracted data from {len(filtered_data)} strains with a total of {sum(len(data) for _, data in filtered_data.items())} animals")
         with open(self.output_dir + '/' + self.run_id + '_filtered_data.sav', 'wb') as f:
             joblib.dump(filtered_data, f)
 
