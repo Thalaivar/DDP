@@ -118,8 +118,15 @@ class BSOID:
         all_data = list(all_data.groupby("Strain"))
 
         def filter_for_strain(raw_data, n):
-            strain_fdata = []
+            n = raw_data[1].shape if n is None else n
+            
+            count, strain_fdata = 0, []
+            raw_data[1] = raw_data[1].sample(frac=1)
+            
             for j in range(raw_data[1].shape[0]):
+                if count >= n:
+                    break
+
                 metadata = dict(raw_data[1].iloc[j])
                 try:
                     pose_dir, _ = get_pose_data_dir(data_dir, metadata['NetworkFilename'])
@@ -143,17 +150,12 @@ class BSOID:
                         shape = fdata['x'].shape
                         logging.debug(f'preprocessed {shape} data from {strain}/{mouse_id} with {round(perc_filt, 2)}% data filtered')
                         strain_fdata.append(fdata)
-
+                        count += 1
                 except:
                     pass
             
-            logging.info(f"sampling {n} from {len(strain_fdata)} animal data for strain {raw_data[0]}")
-
-            n = len(strain_fdata) if n is None else n
-            if len(strain_fdata) <= n:
-                return (strain_fdata, raw_data[0])
-            else:
-                return (random.sample(strain_fdata, n), raw_data[0])
+            logging.info(f"extracted {len(strain_fdata)} animal data from strain {raw_data[0]}")
+            return (strain_fdata, raw_data[0])
             
         filtered_data = Parallel(n_jobs=-1)(delayed(filter_for_strain)(all_data[i], n) for i in tqdm(range(len(all_data))))
         
