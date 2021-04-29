@@ -61,7 +61,7 @@ def cluster_strainwise(config_file, save_dir):
     return embedding, labels
 
 def collect_strainwise_clusters(feats: dict, labels: dict, embedding: dict):
-    k, clusters = 0, {}
+    k, clusters, strain2cluster = 0, {}, {strain: [] for strain in feats.keys()}
     for strain in feats.keys():
         for class_id in np.unique(labels[strain][0]):
             idx = np.where(labels[strain][0] == class_id)[0]
@@ -70,9 +70,10 @@ def collect_strainwise_clusters(feats: dict, labels: dict, embedding: dict):
                     "feats": feats[strain][idx,:],
                     "embed": embedding[strain][idx,:]
                 }
+                strain2cluster[strain].append(k)
                 k += 1
     
-    return clusters
+    return clusters, strain2cluster
 
 def cluster_similarity(cluster1, cluster2):
     X = [cluster1["feats"], cluster2["feats"]]
@@ -93,7 +94,7 @@ def pairwise_similarity(feats, embedding, labels):
     import psutil
 
     feats = collect_strainwise_feats(feats)
-    clusters = collect_strainwise_clusters(feats, labels, embedding)
+    clusters, strain2clusters = collect_strainwise_clusters(feats, labels, embedding)
     del feats, embedding, labels
 
     num_cpus = psutil.cpu_count(logical=False)
@@ -118,16 +119,7 @@ def pairwise_similarity(feats, embedding, labels):
         pbar.update(n)
     
     sim = np.vstack(sim)
-    sim_mat = np.zeros((len(clusters), len(clusters)))
-    val_mat = np.zeros_like(sim_mat)
-
-    for i in range(sim.shape[0]):
-        idx1, idx2 = int(sim[i][2]), int(sim[i][3])
-        sim_mat[idx1,idx2], sim_mat[idx2,idx1] = sim[i][0], sim[i][0]
-        val_mat[idx1,idx2], val_mat[idx2,idx1] = sim[i][1], sim[i][1]
-    
-    return sim_mat, val_mat
-
+    return sim, strain2clusters
 
 def group_clusters_together(feats, labels, embedding, sim):
     feats = collect_strainwise_feats(feats)
@@ -175,21 +167,21 @@ if __name__ == "__main__":
     save_dir = "/home/laadd/data"
     config_file = "./config/config.yaml"
 
-    bsoid = BSOID(config_file)
-    bsoid.load_from_dataset(n=10)
-    feats = bsoid.load_features(collect=False)
+    # bsoid = BSOID(config_file)
+    # bsoid.load_from_dataset(n=10)
+    # feats = bsoid.load_features(collect=False)
 
     # embedding, labels = cluster_strainwise(config_file, save_dir)
 
     # with open(os.path.join(save_dir, "strainwise_ckpt1.sav"), "wb") as f:
     #     joblib.dump([feats, embedding, labels], f)
 
-    # with open(os.path.join(save_dir, "strainwise_ckpt1.sav"), "rb") as f:
-    #     feats, embedding, labels = joblib.load(f)
+    with open(os.path.join(save_dir, "strainwise_ckpt1.sav"), "rb") as f:
+        feats, embedding, labels = joblib.load(f)
         
-    # sim_mat, val_mat = pairwise_similarity(feats, embedding, labels)
+    sim, strain2clusters = pairwise_similarity(feats, embedding, labels)
 
-    # with open(os.path.join(save_dir, "strainwise.sav"), "wb") as f:
-    #     joblib.dump([feats, embedding, labels, sim_mat, val_mat], f)
+    with open(os.path.join(save_dir, "strainwise.sav"), "wb") as f:
+        joblib.dump([feats, embedding, labels, sim, strain2clusters], f)
     
     # os.remove(os.path.join(save_dir, "strainwise_ckpt1.sav"))
