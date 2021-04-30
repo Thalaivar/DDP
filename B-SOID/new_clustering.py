@@ -30,7 +30,7 @@ GROUPWISE_UMAP_PARAMS = {
     "n_neighbors": 60,
     "n_components": 3
 }
-GROUPWISE_CLUSTER_RNG = [1.5, 1.6, 25]
+GROUPWISE_CLUSTER_RNG = [1, 5, 25]
 
 CLF = RandomForestClassifier(class_weight="balanced", n_jobs=-1)
 
@@ -131,11 +131,7 @@ def similarity_matrix(sim):
     
     return mat
 
-def train_classifier(save_file):
-    with open(save_file, "rb") as f:
-        feats, embedding, labels, sim, strain2clusters = joblib.load(f)
-    
-    clusters, _ = collect_strainwise_clusters(feats, labels, embedding)
+def group_clusters(clusters, sim):
     mapper = umap.UMAP(min_dist=0.0, **GROUPWISE_UMAP_PARAMS).fit(similarity_matrix(sim))
     _, _, glabels, _ = cluster_with_hdbscan(mapper.embedding_, GROUPWISE_CLUSTER_RNG, HDBSCAN_PARAMS)
 
@@ -145,13 +141,15 @@ def train_classifier(save_file):
             groups[group_idx] = np.vstack((groups[group_idx], clusters[cluster_idx]["feats"]))
         else:
             groups[group_idx] = clusters[cluster_idx]["feats"]
-    
+
+    return groups       
+
+def train_classifier(groups):
     X, y = [], []
     for lab, feats in groups.items():
         X, y = X + [feats], y + [lab * np.ones((feats.shape[0],))]
     X, y = np.vstack(X), np.hstack(y)
 
-    del feats, embedding, labels, sim, strain2clusters, groups
     from imblearn.under_sampling import RandomUnderSampler
     X, y = RandomUnderSampler(sampling_strategy="majority").fit_resample(X, y)
     
@@ -189,9 +187,25 @@ def main():
     with open(os.path.join(save_dir, "pairwise_sim.sav"), "wb") as f:
         joblib.dump([sim, strain2clusters], f)
 
+def run():
+    import os
+
+    # save_dir = "/home/laadd/data"
+    save_dir = "../../data"
+    with open(os.path.join(save_dir, "strainwise_labels.sav"), "rb") as f:
+        feats, embedding, labels = joblib.load(f)
+
+    clusters, _ = collect_strainwise_clusters(feats, labels, embedding)
+    del feats, labels, embedding
+
+    with open(os.path.join(save_dir, "pairwise_sim.sav"), "rb") as f:
+        sim, _ = joblib.load(f)
+    
+    groups = group_clusters(clusters, sim)
+    # train_classifier(groups)
+
 if __name__ == "__main__":
     import logging
     logging.basicConfig(level=logging.INFO)
 
-    # run()
-    train_classifier("../../data/strainwise.sav")
+    run()
