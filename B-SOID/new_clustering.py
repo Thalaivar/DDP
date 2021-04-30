@@ -21,7 +21,7 @@ STRAINWISE_UMAP_PARAMS = {
 STRAINWISE_CLUSTER_RNG = [0.4, 1.2, 25]
 
 HDBSCAN_PARAMS = {"prediction_data": True, "min_samples": 1}
-THRESH = 1000
+THRESH = 500
 
 DISC_MODEL = LinearDiscriminantAnalysis(solver="svd")
 CV = StratifiedKFold(n_splits=5, shuffle=True)
@@ -30,7 +30,7 @@ GROUPWISE_UMAP_PARAMS = {
     "n_neighbors": 60,
     "n_components": 3
 }
-GROUPWISE_CLUSTER_RNG = [0.5, 4, 25]
+GROUPWISE_CLUSTER_RNG = [1.5, 1.6, 25]
 
 CLF = RandomForestClassifier(class_weight="balanced", n_jobs=-1)
 
@@ -76,7 +76,7 @@ def collect_strainwise_clusters(feats: dict, labels: dict, embedding: dict):
     return clusters, strain2cluster
 
 def cluster_similarity(cluster1, cluster2):
-    X = [cluster1["feats"], cluster2["feats"]]
+    X = [cluster1["embed"], cluster2["embed"]]
     y = [np.zeros((X[0].shape[0],)), np.ones((X[1].shape[0], ))]
     X, y = np.vstack(X), np.hstack(y)
 
@@ -121,48 +121,51 @@ def pairwise_similarity(feats, embedding, labels):
     sim = np.vstack(sim)
     return sim, strain2clusters
 
-def group_clusters_together(feats, labels, embedding, sim):
-    feats = collect_strainwise_feats(feats)
-    clusters = collect_strainwise_clusters(feats, labels, embedding)
-    del feats, embedding, labels
+def similarity_matrix(sim):
+    n_clusters = int(sim[:,2:].max()) + 1
+    mat = np.zeros((n_clusters, n_clusters))
 
-    mapper = umap.UMAP(min_dist=0.0, **GROUPWISE_UMAP_PARAMS).fit(sim)
-    group_labels = cluster_with_hdbscan(mapper.embedding_, GROUPWISE_CLUSTER_RNG, HDBSCAN_PARAMS)[2]
-
-    grouped_clusters = {}
-    for cluster_id, group_id in enumerate(group_labels):
-        if group_id in grouped_clusters:
-            grouped_clusters[group_id] = np.vstack([
-                    grouped_clusters[group_id]["feats"],
-                    clusters[cluster_id]["feats"]
-                ])
-        else:
-            grouped_clusters[group_id] = clusters[cluster_id]["feats"]
-
-    return grouped_clusters
-
-def learn_classifier(grouped_clusters):
-    X, y = [], []
-
-    for class_id, data in grouped_clusters.items():
-        X.append(data)
-        y.append(class_id * np.ones(data.shape[0]))
+    for i in range(sim.shape[0]):
+        idx1, idx2 = sim[i,2:].astype("int")
+        mat[idx1,idx2] = mat[idx2,idx1] = sim[i,0]
     
+    return mat
+
+def train_classifier(save_file):
+    with open(save_file, "rb") as f:
+        feats, embedding, labels, sim, strain2clusters = joblib.load(f)
+    
+    clusters, _ = collect_strainwise_clusters(feats, labels, embedding)
+    mapper = umap.UMAP(min_dist=0.0, **GROUPWISE_UMAP_PARAMS).fit(similarity_matrix(sim))
+    _, _, glabels, _ = cluster_with_hdbscan(mapper.embedding_, GROUPWISE_CLUSTER_RNG, HDBSCAN_PARAMS)
+
+    groups = {}
+    for cluster_idx, group_idx in enumerate(glabels.astype("int")):
+        if group_idx in groups:
+            groups[group_idx] = np.vstack((groups[group_idx], clusters[cluster_idx]["feats"]))
+        else:
+            groups[group_idx] = clusters[cluster_idx]["feats"]
+    
+    X, y = [], []
+    for lab, feats in groups.items():
+        X, y = X + [feats], y + [lab * np.ones((feats.shape[0],))]
     X, y = np.vstack(X), np.hstack(y)
 
+    del feats, embedding, labels, sim, strain2clusters, groups
+    from imblearn.under_sampling import RandomUnderSampler
+    X, y = RandomUnderSampler(sampling_strategy="majority").fit_resample(X, y)
+    
     model = clone(CLF)
-    val_score = cross_validate(model, X, y, cv=CV, scoring=("f1_weighted"))["test_f1_weighted"].mean()
+    val = cross_validate(model, X, y, cv=CV, scoring="f1_weighted")
+    print(val)
 
+    idx = np.random.permutation(np.arange(y.size))
+    X, y = X[idx], y[idx]
     model.fit(X, y)
-    return model, val_score
+    return model
 
-def get_counts(clusters):
-    return {name: data.shape[0] for name, data in clusters.items()}
-
-if __name__ == "__main__":
+def main():
     import os
-    import logging
-    logging.basicConfig(level=logging.INFO)
     
     save_dir = "/home/laadd/data"
     config_file = "./config/config.yaml"
@@ -178,10 +181,19 @@ if __name__ == "__main__":
 
     with open(os.path.join(save_dir, "strainwise_ckpt1.sav"), "rb") as f:
         feats, embedding, labels = joblib.load(f)
-        
-    sim, strain2clusters = pairwise_similarity(feats, embedding, labels)
 
-    with open(os.path.join(save_dir, "strainwise.sav"), "wb") as f:
-        joblib.dump([feats, embedding, labels, sim, strain2clusters], f)
+    clusters, strains2cluster = collect_strainwise_clusters(feats, labels, embedding)     
+    print(len(clusters))
+    # sim, strain2clusters = pairwise_similarity(feats, embedding, labels)
+
+    # with open(os.path.join(save_dir, "strainwise.sav"), "wb") as f:
+    #     joblib.dump([feats, embedding, labels, sim, strain2clusters], f)
     
     # os.remove(os.path.join(save_dir, "strainwise_ckpt1.sav"))
+
+if __name__ == "__main__":
+    import logging
+    logging.basicConfig(level=logging.INFO)
+
+    # run()
+    train_classifier("../../data/strainwise.sav")
