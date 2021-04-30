@@ -148,10 +148,12 @@ def train_classifier(groups):
     X, y = [], []
     for lab, feats in groups.items():
         X, y = X + [feats], y + [lab * np.ones((feats.shape[0],))]
-    X, y = np.vstack(X), np.hstack(y)
+    X, y = np.vstack(X), np.hstack(y).astype(int)
 
+    lab, counts = np.unique(y, return_counts=True)
+    counts = {l: n if n < int(counts.mean()) else int(counts.mean()) for l, n in zip(lab, counts)}
     from imblearn.under_sampling import RandomUnderSampler
-    X, y = RandomUnderSampler(sampling_strategy="majority").fit_resample(X, y)
+    X, y = RandomUnderSampler(sampling_strategy=counts).fit_resample(X, y)
     
     model = clone(CLF)
     val = cross_validate(model, X, y, cv=CV, scoring="f1_weighted")
@@ -182,7 +184,7 @@ def main():
 
     clusters, strains2cluster = collect_strainwise_clusters(feats, labels, embedding)     
     print(f"Total clusters: {len(clusters)}")
-    sim, strain2clusters = pairwise_similarity(feats, embedding, labels)
+    sim, strain2clusters = pairwisse_similarity(feats, embedding, labels)
 
     with open(os.path.join(save_dir, "pairwise_sim.sav"), "wb") as f:
         joblib.dump([sim, strain2clusters], f)
