@@ -176,20 +176,18 @@ def main():
 
     # embedding, labels = cluster_strainwise(config_file, save_dir)
 
-    # with open(os.path.join(save_dir, "strainwise_ckpt1.sav"), "wb") as f:
+    # with open(os.path.join(save_dir, "strainwise_labels.sav"), "wb") as f:
     #     joblib.dump([feats, embedding, labels], f)
 
-    with open(os.path.join(save_dir, "strainwise_ckpt1.sav"), "rb") as f:
+    with open(os.path.join(save_dir, "strainwise_labels.sav"), "rb") as f:
         feats, embedding, labels = joblib.load(f)
 
     clusters, strains2cluster = collect_strainwise_clusters(feats, labels, embedding)     
-    print(len(clusters))
-    # sim, strain2clusters = pairwise_similarity(feats, embedding, labels)
+    print(f"Total clusters: {len(clusters)}")
+    sim, strain2clusters = pairwise_similarity(feats, embedding, labels)
 
-    # with open(os.path.join(save_dir, "strainwise.sav"), "wb") as f:
-    #     joblib.dump([feats, embedding, labels, sim, strain2clusters], f)
-    
-    # os.remove(os.path.join(save_dir, "strainwise_ckpt1.sav"))
+    with open(os.path.join(save_dir, "pairwise_sim.sav"), "wb") as f:
+        joblib.dump([sim, strain2clusters], f)
 
 if __name__ == "__main__":
     import logging
