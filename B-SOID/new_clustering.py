@@ -32,7 +32,7 @@ GROUPWISE_UMAP_PARAMS = {
 }
 GROUPWISE_CLUSTER_RNG = [1, 5, 25]
 
-CLF = RandomForestClassifier(class_weight="balanced", n_jobs=-1)
+CLF = RandomForestClassifier(class_weight="balanced", n_jobs=1)
 
 def reduce_data(feats: np.ndarray):
     feats = StandardScaler().fit_transform(feats)
@@ -156,13 +156,18 @@ def train_classifier(groups):
     X, y = RandomUnderSampler(sampling_strategy=counts).fit_resample(X, y)
     
     model = clone(CLF)
-    val = cross_validate(model, X, y, cv=CV, scoring="f1_weighted")
-    print(val)
 
-    idx = np.random.permutation(np.arange(y.size))
-    X, y = X[idx], y[idx]
-    model.fit(X, y)
+    from sklearn.model_selection import train_test_split
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, shuffle=True, stratify=y)
+    model.fit(X_train, y_train)
+    preds = model.predict(X_test)
+
+    from sklearn.metrics import f1_score, roc_auc_score
+    print(f1_score(y_test, preds, average="weighted"))
+    print(roc_auc_score(y_test, preds, average="weighted", multi_class="ovo"))
+    
     return model
+
 
 def main():
     import os
@@ -184,7 +189,7 @@ def main():
 
     clusters, strains2cluster = collect_strainwise_clusters(feats, labels, embedding)     
     print(f"Total clusters: {len(clusters)}")
-    sim, strain2clusters = pairwisse_similarity(feats, embedding, labels)
+    sim, strain2clusters = pairwise_similarity(feats, embedding, labels)
 
     with open(os.path.join(save_dir, "pairwise_sim.sav"), "wb") as f:
         joblib.dump([sim, strain2clusters], f)
@@ -202,9 +207,11 @@ def run():
 
     with open(os.path.join(save_dir, "pairwise_sim.sav"), "rb") as f:
         sim, _ = joblib.load(f)
-    
+
     groups = group_clusters(clusters, sim)
-    # train_classifier(groups)
+    del clusters, sim
+
+    train_classifier(groups)
 
 if __name__ == "__main__":
     import logging
