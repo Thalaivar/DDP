@@ -126,8 +126,8 @@ def pairwise_similarity(feats, embedding, labels):
 
     @ray.remote
     def par_pwise(idx1, idx2, clusters):
-        sim, val = cluster_similarity(clusters[idx1], clusters[idx2])
-        return [sim, val, idx1, idx2]
+        sim = cluster_similarity(clusters[idx1], clusters[idx2])
+        return [sim, idx1, idx2]
     
     clusters_id = ray.put(clusters)
     futures = [par_pwise.remote(idx1, idx2, clusters_id) 
@@ -146,11 +146,11 @@ def pairwise_similarity(feats, embedding, labels):
     return sim, strain2clusters
 
 def similarity_matrix(sim):
-    n_clusters = int(sim[:,2:].max()) + 1
+    n_clusters = int(sim[:,1:].max()) + 1
     mat = np.zeros((n_clusters, n_clusters))
 
     for i in range(sim.shape[0]):
-        idx1, idx2 = sim[i,2:].astype("int")
+        idx1, idx2 = sim[i,1:].astype("int")
         mat[idx1,idx2] = mat[idx2,idx1] = sim[i,0]
     
     return mat
