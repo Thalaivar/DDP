@@ -21,18 +21,23 @@ STRAINWISE_UMAP_PARAMS = {
 STRAINWISE_CLUSTER_RNG = [0.4, 1.2, 25]
 
 HDBSCAN_PARAMS = {"prediction_data": True, "min_samples": 1}
-THRESH = 500
+THRESH = 0.75
 
 DISC_MODEL = LinearDiscriminantAnalysis(solver="svd")
 CV = StratifiedKFold(n_splits=5, shuffle=True)
 
 GROUPWISE_UMAP_PARAMS = {
-    "n_neighbors": 60,
+    "n_neighbors": 75,
     "n_components": 3
 }
 GROUPWISE_CLUSTER_RNG = [1, 5, 25]
 
-CLF = RandomForestClassifier(class_weight="balanced", n_jobs=1)
+# CLF = RandomForestClassifier(class_weight="balanced", n_jobs=1)
+# from catboost import CatBoostClassifier
+# CLF = CatBoostClassifier(loss_function="MultiClass", eval_metric="Accuracy", iterations=10000, task_type="GPU", verbose=True)
+
+from sklearn.neural_network import MLPClassifier
+CLF = MLPClassifier(hidden_layer_sizes= [100, 10],activation= 'logistic',solver= 'adam',learning_rate= 'constant',learning_rate_init= 0.001,alpha= 0.0001,max_iter= 1000,early_stopping= False,verbose=1)
 
 def reduce_data(feats: np.ndarray):
     feats = StandardScaler().fit_transform(feats)
@@ -61,11 +66,16 @@ def cluster_strainwise(config_file, save_dir):
     return embedding, labels
 
 def collect_strainwise_clusters(feats: dict, labels: dict, embedding: dict):
-    k, clusters, strain2cluster = 0, {}, {strain: [] for strain in feats.keys()}
+    k, clusters, strain2cluster = 0, {}, {}
     for strain in feats.keys():
-        for class_id in np.unique(labels[strain][0]):
-            idx = np.where(labels[strain][0] == class_id)[0]
-            if idx.size >= THRESH:
+        labels[strain] = labels[strain].astype(int)
+        n = labels[strain].max() + 1
+        prop = [x/labels[strain].size for x in np.unique(labels[strain], return_counts=True)[1]]
+        entropy_ratio = sum(p * np.log2(p) for p in prop) / sum(p * np.log2(p) for p in [1/n for _ in range(n)])
+        if entropy_ratio >= THRESH:
+            strain2cluster[strain] = []
+            for class_id in np.unique(labels[strain]):
+                idx = np.where(labels[strain] == class_id)[0]
                 clusters[k] = {
                     "feats": feats[strain][idx,:],
                     "embed": embedding[strain][idx,:]
@@ -74,6 +84,21 @@ def collect_strainwise_clusters(feats: dict, labels: dict, embedding: dict):
                 k += 1
     
     return clusters, strain2cluster
+    
+# def collect_strainwise_clusters(feats: dict, labels: dict, embedding: dict):
+#     k, clusters, strain2cluster = 0, {}, {strain: [] for strain in feats.keys()}
+#     for strain in feats.keys():
+#         for class_id in np.unique(labels[strain]):
+#             idx = np.where(labels[strain] == class_id)[0]
+#             if idx.size >= THRESH:
+#                 clusters[k] = {
+#                     "feats": feats[strain][idx,:],
+#                     "embed": embedding[strain][idx,:]
+#                 }
+#                 strain2cluster[strain].append(k)
+#                 k += 1
+    
+#     return clusters, strain2cluster
 
 def cluster_similarity(cluster1, cluster2):
     X = [cluster1["embed"], cluster2["embed"]]
@@ -81,20 +106,19 @@ def cluster_similarity(cluster1, cluster2):
     X, y = np.vstack(X), np.hstack(y)
 
     model = clone(DISC_MODEL)
-    val_score = cross_val_score(model, X, y, cv=CV, scoring="roc_auc")
 
     model.fit(X, y)
     y_pred = model.predict(X)
     score = roc_auc_score(y, y_pred)
     
-    return score, val_score.mean()
+    return score
 
 def pairwise_similarity(feats, embedding, labels):
     import ray
     import psutil
 
-    feats = collect_strainwise_feats(feats)
     clusters, strain2clusters = collect_strainwise_clusters(feats, labels, embedding)
+    print(f"Total clusters: {len(clusters)}")
     del feats, embedding, labels
 
     num_cpus = psutil.cpu_count(logical=False)
@@ -144,30 +168,41 @@ def group_clusters(clusters, sim):
 
     return groups       
 
-def train_classifier(groups):
+def train_classifier(groups, **params):
     X, y = [], []
     for lab, feats in groups.items():
         X, y = X + [feats], y + [lab * np.ones((feats.shape[0],))]
     X, y = np.vstack(X), np.hstack(y).astype(int)
 
-    lab, counts = np.unique(y, return_counts=True)
-    counts = {l: n if n < int(counts.mean()) else int(counts.mean()) for l, n in zip(lab, counts)}
-    from imblearn.under_sampling import RandomUnderSampler
-    X, y = RandomUnderSampler(sampling_strategy=counts).fit_resample(X, y)
+    _, counts = np.unique(y, return_counts=True)
+    import matplotlib.pyplot as plt
+    plt.bar(range(len(counts)), counts)
+    plt.show()
+
+    if input("Undersampling [yes/no]: ") == "yes":
+        lab, counts = np.unique(y, return_counts=True)
+        counts = {l: n if n < int(counts.mean()) else int(counts.mean()) for l, n in zip(lab, counts)}
+        from imblearn.under_sampling import RandomUnderSampler
+        X, y = RandomUnderSampler(sampling_strategy=counts).fit_resample(X, y)
+        _, counts = np.unique(y, return_counts=True)
+        plt.bar(range(len(counts)), counts)
+        plt.show()
     
     model = clone(CLF)
-
+    model.set_params(**params)
+    
     from sklearn.model_selection import train_test_split
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, shuffle=True, stratify=y)
     model.fit(X_train, y_train)
     preds = model.predict(X_test)
 
-    from sklearn.metrics import f1_score, roc_auc_score
-    print(f1_score(y_test, preds, average="weighted"))
-    print(roc_auc_score(y_test, preds, average="weighted", multi_class="ovo"))
+    from sklearn.metrics import f1_score, roc_auc_score, accuracy_score, balanced_accuracy_score
+    print("f1_score: ", f1_score(y_test, preds, average="weighted"))
+    print("roc_auc_score: ", roc_auc_score(y_test, model.predict_proba(X_test), average="weighted", multi_class="ovo"))
+    print("accuracy: ", accuracy_score(y_test, preds))
+    print("balanced_acc: ", balanced_accuracy_score(y_test, preds))
     
     return model
-
 
 def main():
     import os
@@ -187,8 +222,6 @@ def main():
     with open(os.path.join(save_dir, "strainwise_labels.sav"), "rb") as f:
         feats, embedding, labels = joblib.load(f)
 
-    clusters, strains2cluster = collect_strainwise_clusters(feats, labels, embedding)     
-    print(f"Total clusters: {len(clusters)}")
     sim, strain2clusters = pairwise_similarity(feats, embedding, labels)
 
     with open(os.path.join(save_dir, "pairwise_sim.sav"), "wb") as f:
@@ -217,4 +250,5 @@ if __name__ == "__main__":
     import logging
     logging.basicConfig(level=logging.INFO)
 
-    run()
+    # run()
+    main()
