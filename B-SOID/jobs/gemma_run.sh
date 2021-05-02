@@ -13,10 +13,10 @@
 
 HOME_DIR=/home/laadd
 BASE_DIR=DDP/B-SOID
-OUT_DIR=/fastscratch/dhruvlaad
+OUT_DIR=/fastscratch/laadd
 
 source $HOME_DIR/.bashrc
-cd /fastscratch
+cd $OUT_DIR
 
 CONFIG_FILE=$HOME_DIR/$BASE_DIR/gemma_config.yaml
 SHUFFL_FILE=$HOME_DIR/$BASE_DIR/gemma_shuffle.yaml
