@@ -21,23 +21,19 @@ STRAINWISE_UMAP_PARAMS = {
 STRAINWISE_CLUSTER_RNG = [0.4, 1.2, 25]
 
 HDBSCAN_PARAMS = {"prediction_data": True, "min_samples": 1}
-THRESH = 0.75
+THRESH = 0.85
 
-DISC_MODEL = LinearDiscriminantAnalysis(solver="svd")
 CV = StratifiedKFold(n_splits=5, shuffle=True)
 
 GROUPWISE_UMAP_PARAMS = {
-    "n_neighbors": 75,
+    "n_neighbors": 60,
     "n_components": 3
 }
 GROUPWISE_CLUSTER_RNG = [1, 5, 25]
 
 # CLF = RandomForestClassifier(class_weight="balanced", n_jobs=1)
-# from catboost import CatBoostClassifier
-# CLF = CatBoostClassifier(loss_function="MultiClass", eval_metric="Accuracy", iterations=10000, task_type="GPU", verbose=True)
-
-from sklearn.neural_network import MLPClassifier
-CLF = MLPClassifier(hidden_layer_sizes= [100, 10],activation= 'logistic',solver= 'adam',learning_rate= 'constant',learning_rate_init= 0.001,alpha= 0.0001,max_iter= 1000,early_stopping= False,verbose=1)
+from catboost import CatBoostClassifier
+CLF = CatBoostClassifier(loss_function="MultiClass", eval_metric="Accuracy", iterations=10000, task_type="GPU", verbose=True)
 
 def reduce_data(feats: np.ndarray):
     feats = StandardScaler().fit_transform(feats)
@@ -69,9 +65,12 @@ def collect_strainwise_clusters(feats: dict, labels: dict, embedding: dict):
     k, clusters, strain2cluster = 0, {}, {}
     for strain in feats.keys():
         labels[strain] = labels[strain].astype(int)
+
+        # threshold by entropy
         n = labels[strain].max() + 1
         prop = [x/labels[strain].size for x in np.unique(labels[strain], return_counts=True)[1]]
         entropy_ratio = sum(p * np.log2(p) for p in prop) / sum(p * np.log2(p) for p in [1/n for _ in range(n)])
+
         if entropy_ratio >= THRESH:
             strain2cluster[strain] = []
             for class_id in np.unique(labels[strain]):
@@ -84,34 +83,20 @@ def collect_strainwise_clusters(feats: dict, labels: dict, embedding: dict):
                 k += 1
     
     return clusters, strain2cluster
-    
-# def collect_strainwise_clusters(feats: dict, labels: dict, embedding: dict):
-#     k, clusters, strain2cluster = 0, {}, {strain: [] for strain in feats.keys()}
-#     for strain in feats.keys():
-#         for class_id in np.unique(labels[strain]):
-#             idx = np.where(labels[strain] == class_id)[0]
-#             if idx.size >= THRESH:
-#                 clusters[k] = {
-#                     "feats": feats[strain][idx,:],
-#                     "embed": embedding[strain][idx,:]
-#                 }
-#                 strain2cluster[strain].append(k)
-#                 k += 1
-    
-#     return clusters, strain2cluster
 
 def cluster_similarity(cluster1, cluster2):
-    X = [cluster1["embed"], cluster2["embed"]]
+    X = [cluster1["feats"], cluster2["feats"]]
     y = [np.zeros((X[0].shape[0],)), np.ones((X[1].shape[0], ))]
     X, y = np.vstack(X), np.hstack(y)
 
-    model = clone(DISC_MODEL)
-
+    model = LinearDiscriminantAnalysis(solver="svd", store_covariance=True)
     model.fit(X, y)
-    y_pred = model.predict(X)
-    score = roc_auc_score(y, y_pred)
     
-    return score
+    w, cov = model.coef_.reshape(-1,1), model.covariance_
+    mu1, mu2 = [mu.reshape(-1,1) for mu in model.means_]
+
+    sep = 0.5 * (np.dot(w.T, (mu1-mu2)) ** 2) / np.dot(w.T, np.dot(cov, w))
+    return sep
 
 def pairwise_similarity(feats, embedding, labels):
     import ray
@@ -193,14 +178,14 @@ def train_classifier(groups, **params):
     
     from sklearn.model_selection import train_test_split
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, shuffle=True, stratify=y)
-    model.fit(X_train, y_train)
-    preds = model.predict(X_test)
+    model.fit(X_train, y_train, eval_set=(X_test, y_test))
+    # preds = model.predict(X_test)
 
-    from sklearn.metrics import f1_score, roc_auc_score, accuracy_score, balanced_accuracy_score
-    print("f1_score: ", f1_score(y_test, preds, average="weighted"))
-    print("roc_auc_score: ", roc_auc_score(y_test, model.predict_proba(X_test), average="weighted", multi_class="ovo"))
-    print("accuracy: ", accuracy_score(y_test, preds))
-    print("balanced_acc: ", balanced_accuracy_score(y_test, preds))
+    # from sklearn.metrics import f1_score, roc_auc_score, accuracy_score, balanced_accuracy_score
+    # print("f1_score: ", f1_score(y_test, preds, average="weighted"))
+    # print("roc_auc_score: ", roc_auc_score(y_test, model.predict_proba(X_test), average="weighted", multi_class="ovo"))
+    # print("accuracy: ", accuracy_score(y_test, preds))
+    # print("balanced_acc: ", balanced_accuracy_score(y_test, preds))
     
     return model
 
@@ -231,7 +216,7 @@ def run():
     import os
 
     # save_dir = "/home/laadd/data"
-    save_dir = "../../data"
+    save_dir = "../../data/2clustering"
     with open(os.path.join(save_dir, "strainwise_labels.sav"), "rb") as f:
         feats, embedding, labels = joblib.load(f)
 
