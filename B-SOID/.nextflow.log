@@ -1,0 +1,102 @@
+May-02 09:21:15.951 [main] DEBUG nextflow.cli.Launcher - $> nextflow run TheJacksonLaboratory/mousegwas --yaml /home/laadd/DDP/B-SOID/gemma_config.yaml --shufyaml /home/laadd/DDP/B-SOID/gemma_shuffle.yaml --input /home/laadd/DDP/B-SOID/filt_gemma_input.csv --outdir /fastscratch/dhruvlaad/gemma_output -profile slurm,singularity --addgwas ' -d 10 ' --shuffles 10
+May-02 09:21:16.182 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 20.10.0
+May-02 09:21:17.081 [main] DEBUG nextflow.scm.AssetManager - Git config: /home/laadd/.nextflow/assets/TheJacksonLaboratory/mousegwas/.git/config; branch: master; remote: origin; url: https://github.com/TheJacksonLaboratory/mousegwas.git
+May-02 09:21:17.091 [main] DEBUG nextflow.scm.AssetManager - Git config: /home/laadd/.nextflow/assets/TheJacksonLaboratory/mousegwas/.git/config; branch: master; remote: origin; url: https://github.com/TheJacksonLaboratory/mousegwas.git
+May-02 09:21:17.200 [main] INFO  nextflow.cli.CmdRun - Launching `TheJacksonLaboratory/mousegwas` [hopeful_kirch] - revision: 80efe1e48e [master]
+May-02 09:21:17.579 [main] DEBUG nextflow.config.ConfigBuilder - Found config base: /home/laadd/.nextflow/assets/TheJacksonLaboratory/mousegwas/nextflow.config
+May-02 09:21:17.580 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /home/laadd/.nextflow/assets/TheJacksonLaboratory/mousegwas/nextflow.config
+May-02 09:21:17.590 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `slurm,singularity`
+May-02 09:21:17.700 [main] DEBUG nextflow.config.ConfigBuilder - Available config profiles: [standard, slurm, pbs, singularity]
+May-02 09:21:17.750 [main] DEBUG nextflow.Session - Session uuid: 0d297f3b-ebfc-43b5-8a09-4087f2375ec1
+May-02 09:21:17.751 [main] DEBUG nextflow.Session - Run name: hopeful_kirch
+May-02 09:21:17.751 [main] DEBUG nextflow.Session - Executor pool size: 8
+May-02 09:21:17.764 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 20.10.0 build 5430
+  Created: 01-11-2020 15:14 UTC (10:14 EDT)
+  System: Linux 3.10.0-1062.1.2.el7.x86_64
+  Runtime: Groovy 3.0.5 on OpenJDK 64-Bit Server VM 1.8.0_222-b10
+  Encoding: UTF-8 (UTF-8)
+  Process: 21167@sumner014 [10.5.36.14]
+  CPUs: 8 - Mem: 754.6 GB (28.3 GB) - Swap: 63.9 GB (59.9 GB)
+May-02 09:21:17.794 [main] DEBUG nextflow.Session - Work-dir: /home/laadd/DDP/B-SOID/work [nfs]
+May-02 09:21:17.795 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /home/laadd/.nextflow/assets/TheJacksonLaboratory/mousegwas/bin
+May-02 09:21:17.859 [main] DEBUG nextflow.Session - Observer factory: TowerFactory
+May-02 09:21:17.861 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+May-02 09:21:18.045 [main] DEBUG nextflow.Session - Session start invoked
+May-02 09:21:18.988 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+May-02 09:21:18.997 [main] DEBUG nextflow.Session - Workflow process names [dsl1]: collectShf, GWAS, plotheatmap, shuffle, postp, runINRICH
+May-02 09:21:19.127 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:mousegwas` matches label `mousegwas` for process with name GWAS
+May-02 09:21:19.128 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:long_run` matches label `long_run` for process with name GWAS
+May-02 09:21:19.131 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: slurm
+May-02 09:21:19.131 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'slurm'
+May-02 09:21:19.138 [main] DEBUG nextflow.executor.Executor - [warm up] executor > slurm
+May-02 09:21:19.144 [main] DEBUG n.processor.TaskPollingMonitor - Creating task monitor for executor 'slurm' > capacity: 250; pollInterval: 10s; dumpInterval: 5m 
+May-02 09:21:19.146 [main] DEBUG n.processor.TaskPollingMonitor - Creating submit rate limit of 2 reqs by 1 seconds
+May-02 09:21:19.150 [main] DEBUG n.executor.AbstractGridExecutor - Creating executor 'slurm' > queue-stat-interval: 1m
+May-02 09:21:19.225 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:mousegwas` matches label `mousegwas` for process with name shuffle
+May-02 09:21:19.226 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:single_cpu` matches label `single_cpu` for process with name shuffle
+May-02 09:21:19.226 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: slurm
+May-02 09:21:19.227 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'slurm'
+May-02 09:21:19.253 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: slurm
+May-02 09:21:19.253 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'slurm'
+May-02 09:21:19.285 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:mousegwas` matches label `mousegwas` for process with name postp
+May-02 09:21:19.287 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:high_mem` matches label `high_mem` for process with name postp
+May-02 09:21:19.289 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: slurm
+May-02 09:21:19.289 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'slurm'
+May-02 09:21:19.320 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:mousegwas` matches label `mousegwas` for process with name runINRICH
+May-02 09:21:19.321 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:single_cpu` matches label `single_cpu` for process with name runINRICH
+May-02 09:21:19.321 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: slurm
+May-02 09:21:19.321 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'slurm'
+May-02 09:21:19.338 [main] DEBUG nextflow.processor.TaskProcessor - Creating *combiner* operator for each param(s) at index(es): [1, 2, 3]
+May-02 09:21:19.349 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:mousegwas` matches label `mousegwas` for process with name plotheatmap
+May-02 09:21:19.349 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:single_cpu` matches label `single_cpu` for process with name plotheatmap
+May-02 09:21:19.350 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: slurm
+May-02 09:21:19.350 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'slurm'
+May-02 09:21:19.353 [main] DEBUG nextflow.script.ScriptRunner - > Await termination 
+May-02 09:21:19.354 [main] DEBUG nextflow.Session - Session await
+May-02 09:21:19.359 [Actor Thread 15] INFO  nextflow.container.SingularityCache - Pulling Singularity image shub://singularity-hub.org/asafpr/singularity:latest [cache /fastscratch/singularity-hub.org-asafpr-singularity-latest.img]
+May-02 09:21:23.591 [Actor Thread 15] DEBUG nextflow.container.SingularityCache - Singularity pull complete image=shub://singularity-hub.org/asafpr/singularity:latest path=/fastscratch/singularity-hub.org-asafpr-singularity-latest.img
+May-02 09:21:23.836 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (1) > jobId: 7664483; workDir: /home/laadd/DDP/B-SOID/work/85/6cf6d6e0cacc97f7360785970ee438
+May-02 09:21:23.842 [Task submitter] INFO  nextflow.Session - [85/6cf6d6] Submitted process > shuffle (1)
+May-02 09:21:23.886 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (8) > jobId: 7664484; workDir: /home/laadd/DDP/B-SOID/work/c7/72bfd9872817591090f441c89ecbca
+May-02 09:21:23.886 [Task submitter] INFO  nextflow.Session - [c7/72bfd9] Submitted process > shuffle (8)
+May-02 09:21:23.929 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (3) > jobId: 7664485; workDir: /home/laadd/DDP/B-SOID/work/37/b1fad51f7f86ef4b5e1d7e624bfe6f
+May-02 09:21:23.929 [Task submitter] INFO  nextflow.Session - [37/b1fad5] Submitted process > shuffle (3)
+May-02 09:21:24.284 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process GWAS (1) > jobId: 7664486; workDir: /home/laadd/DDP/B-SOID/work/90/c17623be3548c184542bbefc7c3998
+May-02 09:21:24.284 [Task submitter] INFO  nextflow.Session - [90/c17623] Submitted process > GWAS (1)
+May-02 09:21:24.784 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (7) > jobId: 7664487; workDir: /home/laadd/DDP/B-SOID/work/be/049b6ec8f17bd21dfb3aa159e1bd0c
+May-02 09:21:24.785 [Task submitter] INFO  nextflow.Session - [be/049b6e] Submitted process > shuffle (7)
+May-02 09:21:25.282 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (6) > jobId: 7664488; workDir: /home/laadd/DDP/B-SOID/work/46/c1ab2fbc85bb2d6c36630f4d95fa14
+May-02 09:21:25.282 [Task submitter] INFO  nextflow.Session - [46/c1ab2f] Submitted process > shuffle (6)
+May-02 09:21:25.783 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (2) > jobId: 7664489; workDir: /home/laadd/DDP/B-SOID/work/39/89b3b9afdd030fc755098be413b018
+May-02 09:21:25.784 [Task submitter] INFO  nextflow.Session - [39/89b3b9] Submitted process > shuffle (2)
+May-02 09:21:26.301 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (4) > jobId: 7664490; workDir: /home/laadd/DDP/B-SOID/work/e9/6079e8074ba3d598a524bd0f445dea
+May-02 09:21:26.301 [Task submitter] INFO  nextflow.Session - [e9/6079e8] Submitted process > shuffle (4)
+May-02 09:21:26.783 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (5) > jobId: 7664491; workDir: /home/laadd/DDP/B-SOID/work/23/1dc97adc6f5619e76a4e4aaf138a38
+May-02 09:21:26.783 [Task submitter] INFO  nextflow.Session - [23/1dc97a] Submitted process > shuffle (5)
+May-02 09:21:27.281 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (9) > jobId: 7664492; workDir: /home/laadd/DDP/B-SOID/work/69/09a7f0ad0f3cdae13efa4b1f7ff77f
+May-02 09:21:27.281 [Task submitter] INFO  nextflow.Session - [69/09a7f0] Submitted process > shuffle (9)
+May-02 09:21:27.782 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (10) > jobId: 7664493; workDir: /home/laadd/DDP/B-SOID/work/37/e1ea202b75d53ab776eb726f5bb9bc
+May-02 09:21:27.782 [Task submitter] INFO  nextflow.Session - [37/e1ea20] Submitted process > shuffle (10)
+May-02 09:26:29.164 [Task monitor] DEBUG n.processor.TaskPollingMonitor - !! executor slurm > tasks to be completed: 11 -- submitted tasks are shown below
+~> TaskHandler[jobId: 7664483; id: 2; name: shuffle (1); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/6cf6d6e0cacc97f7360785970ee438 started: 1619961719164; exited: -; ]
+~> TaskHandler[jobId: 7664484; id: 9; name: shuffle (8); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/c7/72bfd9872817591090f441c89ecbca started: 1619961719172; exited: -; ]
+~> TaskHandler[jobId: 7664485; id: 4; name: shuffle (3); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/37/b1fad51f7f86ef4b5e1d7e624bfe6f started: 1619961719177; exited: -; ]
+~> TaskHandler[jobId: 7664486; id: 1; name: GWAS (1); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/90/c17623be3548c184542bbefc7c3998 started: 1619961719181; exited: -; ]
+~> TaskHandler[jobId: 7664487; id: 8; name: shuffle (7); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/be/049b6ec8f17bd21dfb3aa159e1bd0c started: 1619961719186; exited: -; ]
+~> TaskHandler[jobId: 7664488; id: 7; name: shuffle (6); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/46/c1ab2fbc85bb2d6c36630f4d95fa14 started: 1619961719191; exited: -; ]
+~> TaskHandler[jobId: 7664489; id: 3; name: shuffle (2); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/39/89b3b9afdd030fc755098be413b018 started: 1619961719195; exited: -; ]
+~> TaskHandler[jobId: 7664490; id: 5; name: shuffle (4); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/e9/6079e8074ba3d598a524bd0f445dea started: 1619961719200; exited: -; ]
+~> TaskHandler[jobId: 7664491; id: 6; name: shuffle (5); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/23/1dc97adc6f5619e76a4e4aaf138a38 started: 1619961719204; exited: -; ]
+~> TaskHandler[jobId: 7664492; id: 10; name: shuffle (9); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/69/09a7f0ad0f3cdae13efa4b1f7ff77f started: 1619961719208; exited: -; ]
+May-02 09:31:29.180 [Task monitor] DEBUG n.processor.TaskPollingMonitor - !! executor slurm > tasks to be completed: 11 -- submitted tasks are shown below
+~> TaskHandler[jobId: 7664483; id: 2; name: shuffle (1); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/6cf6d6e0cacc97f7360785970ee438 started: 1619961719164; exited: -; ]
+~> TaskHandler[jobId: 7664484; id: 9; name: shuffle (8); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/c7/72bfd9872817591090f441c89ecbca started: 1619961719172; exited: -; ]
+~> TaskHandler[jobId: 7664485; id: 4; name: shuffle (3); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/37/b1fad51f7f86ef4b5e1d7e624bfe6f started: 1619961719177; exited: -; ]
+~> TaskHandler[jobId: 7664486; id: 1; name: GWAS (1); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/90/c17623be3548c184542bbefc7c3998 started: 1619961719181; exited: -; ]
+~> TaskHandler[jobId: 7664487; id: 8; name: shuffle (7); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/be/049b6ec8f17bd21dfb3aa159e1bd0c started: 1619961719186; exited: -; ]
+~> TaskHandler[jobId: 7664488; id: 7; name: shuffle (6); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/46/c1ab2fbc85bb2d6c36630f4d95fa14 started: 1619961719191; exited: -; ]
+~> TaskHandler[jobId: 7664489; id: 3; name: shuffle (2); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/39/89b3b9afdd030fc755098be413b018 started: 1619961719195; exited: -; ]
+~> TaskHandler[jobId: 7664490; id: 5; name: shuffle (4); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/e9/6079e8074ba3d598a524bd0f445dea started: 1619961719200; exited: -; ]
+~> TaskHandler[jobId: 7664491; id: 6; name: shuffle (5); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/23/1dc97adc6f5619e76a4e4aaf138a38 started: 1619961719204; exited: -; ]
+~> TaskHandler[jobId: 7664492; id: 10; name: shuffle (9); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/69/09a7f0ad0f3cdae13efa4b1f7ff77f started: 1619961719208; exited: -; ]

@@ -1,0 +1,247 @@
+Apr-30 05:48:18.500 [main] DEBUG nextflow.cli.Launcher - $> nextflow run TheJacksonLaboratory/mousegwas --yaml /home/laadd/DDP/B-SOID/gemma_config.yaml --shufyaml /home/laadd/DDP/B-SOID/gemma_shuffle.yaml --input /home/laadd/DDP/B-SOID/filt_gemma_input.csv --outdir /fastscratch/laadd/gemma_output -profile slurm,singularity --addgwas ' -d 10 '
+Apr-30 05:48:18.594 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 20.10.0
+Apr-30 05:48:19.488 [main] DEBUG nextflow.scm.AssetManager - Git config: /home/laadd/.nextflow/assets/TheJacksonLaboratory/mousegwas/.git/config; branch: master; remote: origin; url: https://github.com/TheJacksonLaboratory/mousegwas.git
+Apr-30 05:48:19.498 [main] DEBUG nextflow.scm.AssetManager - Git config: /home/laadd/.nextflow/assets/TheJacksonLaboratory/mousegwas/.git/config; branch: master; remote: origin; url: https://github.com/TheJacksonLaboratory/mousegwas.git
+Apr-30 05:48:19.598 [main] INFO  nextflow.cli.CmdRun - Launching `TheJacksonLaboratory/mousegwas` [grave_montalcini] - revision: 80efe1e48e [master]
+Apr-30 05:48:19.950 [main] DEBUG nextflow.config.ConfigBuilder - Found config base: /home/laadd/.nextflow/assets/TheJacksonLaboratory/mousegwas/nextflow.config
+Apr-30 05:48:19.951 [main] DEBUG nextflow.config.ConfigBuilder - Parsing config file: /home/laadd/.nextflow/assets/TheJacksonLaboratory/mousegwas/nextflow.config
+Apr-30 05:48:19.958 [main] DEBUG nextflow.config.ConfigBuilder - Applying config profile: `slurm,singularity`
+Apr-30 05:48:20.030 [main] DEBUG nextflow.config.ConfigBuilder - Available config profiles: [standard, slurm, pbs, singularity]
+Apr-30 05:48:20.076 [main] DEBUG nextflow.Session - Session uuid: 750cbfcb-700c-4bb2-80c1-d5d2232a9913
+Apr-30 05:48:20.076 [main] DEBUG nextflow.Session - Run name: grave_montalcini
+Apr-30 05:48:20.077 [main] DEBUG nextflow.Session - Executor pool size: 8
+Apr-30 05:48:20.088 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 20.10.0 build 5430
+  Created: 01-11-2020 15:14 UTC (10:14 EDT)
+  System: Linux 3.10.0-1062.1.2.el7.x86_64
+  Runtime: Groovy 3.0.5 on OpenJDK 64-Bit Server VM 1.8.0_222-b10
+  Encoding: UTF-8 (UTF-8)
+  Process: 219946@sumner014 [10.5.36.14]
+  CPUs: 8 - Mem: 754.6 GB (582.7 GB) - Swap: 63.9 GB (63.8 GB)
+Apr-30 05:48:20.118 [main] DEBUG nextflow.Session - Work-dir: /home/laadd/DDP/B-SOID/work [nfs]
+Apr-30 05:48:20.119 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /home/laadd/.nextflow/assets/TheJacksonLaboratory/mousegwas/bin
+Apr-30 05:48:20.186 [main] DEBUG nextflow.Session - Observer factory: TowerFactory
+Apr-30 05:48:20.188 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Apr-30 05:48:20.407 [main] DEBUG nextflow.Session - Session start invoked
+Apr-30 05:48:21.479 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Apr-30 05:48:21.488 [main] DEBUG nextflow.Session - Workflow process names [dsl1]: collectShf, GWAS, plotheatmap, shuffle, postp, runINRICH
+Apr-30 05:48:21.624 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:mousegwas` matches label `mousegwas` for process with name GWAS
+Apr-30 05:48:21.625 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:long_run` matches label `long_run` for process with name GWAS
+Apr-30 05:48:21.628 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: slurm
+Apr-30 05:48:21.628 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'slurm'
+Apr-30 05:48:21.636 [main] DEBUG nextflow.executor.Executor - [warm up] executor > slurm
+Apr-30 05:48:21.643 [main] DEBUG n.processor.TaskPollingMonitor - Creating task monitor for executor 'slurm' > capacity: 250; pollInterval: 10s; dumpInterval: 5m 
+Apr-30 05:48:21.645 [main] DEBUG n.processor.TaskPollingMonitor - Creating submit rate limit of 2 reqs by 1 seconds
+Apr-30 05:48:21.650 [main] DEBUG n.executor.AbstractGridExecutor - Creating executor 'slurm' > queue-stat-interval: 1m
+Apr-30 05:48:21.738 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:mousegwas` matches label `mousegwas` for process with name shuffle
+Apr-30 05:48:21.738 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:single_cpu` matches label `single_cpu` for process with name shuffle
+Apr-30 05:48:21.739 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: slurm
+Apr-30 05:48:21.739 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'slurm'
+Apr-30 05:48:21.776 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: slurm
+Apr-30 05:48:21.776 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'slurm'
+Apr-30 05:48:21.782 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:mousegwas` matches label `mousegwas` for process with name postp
+Apr-30 05:48:21.782 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:high_mem` matches label `high_mem` for process with name postp
+Apr-30 05:48:21.783 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: slurm
+Apr-30 05:48:21.783 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'slurm'
+Apr-30 05:48:21.803 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:mousegwas` matches label `mousegwas` for process with name runINRICH
+Apr-30 05:48:21.803 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:single_cpu` matches label `single_cpu` for process with name runINRICH
+Apr-30 05:48:21.804 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: slurm
+Apr-30 05:48:21.804 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'slurm'
+Apr-30 05:48:21.831 [main] DEBUG nextflow.processor.TaskProcessor - Creating *combiner* operator for each param(s) at index(es): [1, 2, 3]
+Apr-30 05:48:21.848 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:mousegwas` matches label `mousegwas` for process with name plotheatmap
+Apr-30 05:48:21.848 [main] DEBUG nextflow.script.ProcessConfig - Config settings `withLabel:single_cpu` matches label `single_cpu` for process with name plotheatmap
+Apr-30 05:48:21.849 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: slurm
+Apr-30 05:48:21.849 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'slurm'
+Apr-30 05:48:21.858 [main] DEBUG nextflow.script.ScriptRunner - > Await termination 
+Apr-30 05:48:21.859 [main] DEBUG nextflow.Session - Session await
+Apr-30 05:48:21.881 [Actor Thread 15] DEBUG nextflow.container.SingularityCache - Singularity found local store for image=shub://singularity-hub.org/asafpr/singularity:latest; path=/fastscratch/singularity-hub.org-asafpr-singularity-latest.img
+Apr-30 05:48:22.121 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (8) > jobId: 7575074; workDir: /home/laadd/DDP/B-SOID/work/85/df66fe3dc4e0a2f8c3a59032a8fd15
+Apr-30 05:48:22.125 [Task submitter] INFO  nextflow.Session - [85/df66fe] Submitted process > shuffle (8)
+Apr-30 05:48:22.216 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (3) > jobId: 7575075; workDir: /home/laadd/DDP/B-SOID/work/5c/2ade0e4018847ace71a066c347fad7
+Apr-30 05:48:22.216 [Task submitter] INFO  nextflow.Session - [5c/2ade0e] Submitted process > shuffle (3)
+Apr-30 05:48:22.698 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (7) > jobId: 7575076; workDir: /home/laadd/DDP/B-SOID/work/4e/b1c1aff81e8c14a528ccc1452286fe
+Apr-30 05:48:22.698 [Task submitter] INFO  nextflow.Session - [4e/b1c1af] Submitted process > shuffle (7)
+Apr-30 05:48:23.184 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (1) > jobId: 7575077; workDir: /home/laadd/DDP/B-SOID/work/62/d5026ffa448dbbdcf25199a1645869
+Apr-30 05:48:23.184 [Task submitter] INFO  nextflow.Session - [62/d5026f] Submitted process > shuffle (1)
+Apr-30 05:48:23.688 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (5) > jobId: 7575078; workDir: /home/laadd/DDP/B-SOID/work/0b/40756fc21381c46e3c661990f193aa
+Apr-30 05:48:23.689 [Task submitter] INFO  nextflow.Session - [0b/40756f] Submitted process > shuffle (5)
+Apr-30 05:48:24.190 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process GWAS (1) > jobId: 7575079; workDir: /home/laadd/DDP/B-SOID/work/2b/93436397831308cd81083151f5e6d9
+Apr-30 05:48:24.190 [Task submitter] INFO  nextflow.Session - [2b/934363] Submitted process > GWAS (1)
+Apr-30 05:48:24.690 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (10) > jobId: 7575080; workDir: /home/laadd/DDP/B-SOID/work/de/65c61f60aef75cedcaa12478d3354d
+Apr-30 05:48:24.691 [Task submitter] INFO  nextflow.Session - [de/65c61f] Submitted process > shuffle (10)
+Apr-30 05:48:25.218 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (6) > jobId: 7575081; workDir: /home/laadd/DDP/B-SOID/work/2a/72cbf7986d21d918a235c6c15ae3be
+Apr-30 05:48:25.218 [Task submitter] INFO  nextflow.Session - [2a/72cbf7] Submitted process > shuffle (6)
+Apr-30 05:48:25.690 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (2) > jobId: 7575082; workDir: /home/laadd/DDP/B-SOID/work/0c/017627faefe9bf34219ed9bbe1bea0
+Apr-30 05:48:25.690 [Task submitter] INFO  nextflow.Session - [0c/017627] Submitted process > shuffle (2)
+Apr-30 05:48:26.190 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (4) > jobId: 7575083; workDir: /home/laadd/DDP/B-SOID/work/28/da0bca730a3f1f181233e1248278a1
+Apr-30 05:48:26.190 [Task submitter] INFO  nextflow.Session - [28/da0bca] Submitted process > shuffle (4)
+Apr-30 05:48:26.689 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (14) > jobId: 7575085; workDir: /home/laadd/DDP/B-SOID/work/15/02d20a61e11838f43576b49012a039
+Apr-30 05:48:26.689 [Task submitter] INFO  nextflow.Session - [15/02d20a] Submitted process > shuffle (14)
+Apr-30 05:48:27.190 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (11) > jobId: 7575086; workDir: /home/laadd/DDP/B-SOID/work/a2/5b81838398f04862a83a1a4333b17f
+Apr-30 05:48:27.190 [Task submitter] INFO  nextflow.Session - [a2/5b8183] Submitted process > shuffle (11)
+Apr-30 05:48:27.689 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (13) > jobId: 7575088; workDir: /home/laadd/DDP/B-SOID/work/ee/19d6f2358ab831d503ec3073b147f7
+Apr-30 05:48:27.689 [Task submitter] INFO  nextflow.Session - [ee/19d6f2] Submitted process > shuffle (13)
+Apr-30 05:48:28.191 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (12) > jobId: 7575089; workDir: /home/laadd/DDP/B-SOID/work/5c/c6c23398db457e8f1db2d11969c922
+Apr-30 05:48:28.192 [Task submitter] INFO  nextflow.Session - [5c/c6c233] Submitted process > shuffle (12)
+Apr-30 05:48:28.691 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (9) > jobId: 7575091; workDir: /home/laadd/DDP/B-SOID/work/c7/f0682430e466b2df1fbe9162a6d850
+Apr-30 05:48:28.691 [Task submitter] INFO  nextflow.Session - [c7/f06824] Submitted process > shuffle (9)
+Apr-30 05:48:29.193 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (15) > jobId: 7575092; workDir: /home/laadd/DDP/B-SOID/work/28/406f896fef92a00b018fc60bb59523
+Apr-30 05:48:29.194 [Task submitter] INFO  nextflow.Session - [28/406f89] Submitted process > shuffle (15)
+Apr-30 05:48:29.690 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (22) > jobId: 7575094; workDir: /home/laadd/DDP/B-SOID/work/96/b40f36465ac3d1755c7ecfc28bbaf0
+Apr-30 05:48:29.690 [Task submitter] INFO  nextflow.Session - [96/b40f36] Submitted process > shuffle (22)
+Apr-30 05:48:30.190 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (17) > jobId: 7575095; workDir: /home/laadd/DDP/B-SOID/work/52/08fa9908bce6eeb667d4406660d05d
+Apr-30 05:48:30.191 [Task submitter] INFO  nextflow.Session - [52/08fa99] Submitted process > shuffle (17)
+Apr-30 05:48:30.692 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (18) > jobId: 7575096; workDir: /home/laadd/DDP/B-SOID/work/2d/78627debdba400da20b5e3629c0bf7
+Apr-30 05:48:30.692 [Task submitter] INFO  nextflow.Session - [2d/78627d] Submitted process > shuffle (18)
+Apr-30 05:48:31.192 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (16) > jobId: 7575097; workDir: /home/laadd/DDP/B-SOID/work/86/3216984118c1c5db1b67e0fefa05fd
+Apr-30 05:48:31.193 [Task submitter] INFO  nextflow.Session - [86/321698] Submitted process > shuffle (16)
+Apr-30 05:48:31.690 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (20) > jobId: 7575099; workDir: /home/laadd/DDP/B-SOID/work/0a/1523de609d2cfd14ed15897aae4458
+Apr-30 05:48:31.690 [Task submitter] INFO  nextflow.Session - [0a/1523de] Submitted process > shuffle (20)
+Apr-30 05:48:32.194 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (25) > jobId: 7575100; workDir: /home/laadd/DDP/B-SOID/work/96/6c0ef7c665f087316df016c67028c6
+Apr-30 05:48:32.194 [Task submitter] INFO  nextflow.Session - [96/6c0ef7] Submitted process > shuffle (25)
+Apr-30 05:48:32.692 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (21) > jobId: 7575101; workDir: /home/laadd/DDP/B-SOID/work/21/17ede3c0c97a180ae1bf3cca0461a5
+Apr-30 05:48:32.692 [Task submitter] INFO  nextflow.Session - [21/17ede3] Submitted process > shuffle (21)
+Apr-30 05:48:33.189 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (19) > jobId: 7575102; workDir: /home/laadd/DDP/B-SOID/work/ca/bb12faf3e4188ee65a169d4a742f33
+Apr-30 05:48:33.190 [Task submitter] INFO  nextflow.Session - [ca/bb12fa] Submitted process > shuffle (19)
+Apr-30 05:48:33.691 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (24) > jobId: 7575103; workDir: /home/laadd/DDP/B-SOID/work/3e/7ac238151fa29ab159ce83aeb896e9
+Apr-30 05:48:33.691 [Task submitter] INFO  nextflow.Session - [3e/7ac238] Submitted process > shuffle (24)
+Apr-30 05:48:34.191 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (26) > jobId: 7575105; workDir: /home/laadd/DDP/B-SOID/work/a0/b8cacea9c155ff0eddd47f16e5bdea
+Apr-30 05:48:34.191 [Task submitter] INFO  nextflow.Session - [a0/b8cace] Submitted process > shuffle (26)
+Apr-30 05:48:44.300 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (29) > jobId: 7575107; workDir: /home/laadd/DDP/B-SOID/work/3e/748e0e3c0fd16fd6278e11d11f0f23
+Apr-30 05:48:44.300 [Task submitter] INFO  nextflow.Session - [3e/748e0e] Submitted process > shuffle (29)
+Apr-30 05:48:44.361 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (27) > jobId: 7575109; workDir: /home/laadd/DDP/B-SOID/work/da/b486fd5e6064502866e08eb67646ad
+Apr-30 05:48:44.361 [Task submitter] INFO  nextflow.Session - [da/b486fd] Submitted process > shuffle (27)
+Apr-30 05:48:44.400 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (28) > jobId: 7575111; workDir: /home/laadd/DDP/B-SOID/work/d6/1d3f1f6119d83f78757129aee707c6
+Apr-30 05:48:44.400 [Task submitter] INFO  nextflow.Session - [d6/1d3f1f] Submitted process > shuffle (28)
+Apr-30 05:48:44.439 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (30) > jobId: 7575112; workDir: /home/laadd/DDP/B-SOID/work/0a/e8ebe6fc7d90a03b95761cccd378d7
+Apr-30 05:48:44.439 [Task submitter] INFO  nextflow.Session - [0a/e8ebe6] Submitted process > shuffle (30)
+Apr-30 05:48:44.842 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (33) > jobId: 7575113; workDir: /home/laadd/DDP/B-SOID/work/92/d766c5a7b152672033e6c5ebb61988
+Apr-30 05:48:44.843 [Task submitter] INFO  nextflow.Session - [92/d766c5] Submitted process > shuffle (33)
+Apr-30 05:48:45.343 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (32) > jobId: 7575115; workDir: /home/laadd/DDP/B-SOID/work/c2/bbe08f290dd4721462e11652a3fb3b
+Apr-30 05:48:45.344 [Task submitter] INFO  nextflow.Session - [c2/bbe08f] Submitted process > shuffle (32)
+Apr-30 05:48:45.842 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (23) > jobId: 7575116; workDir: /home/laadd/DDP/B-SOID/work/fc/2914e6bb47af9f12c3987030dec0c3
+Apr-30 05:48:45.842 [Task submitter] INFO  nextflow.Session - [fc/2914e6] Submitted process > shuffle (23)
+Apr-30 05:48:46.343 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (31) > jobId: 7575118; workDir: /home/laadd/DDP/B-SOID/work/1f/dea5e168d06c6989d9b5e5289fac37
+Apr-30 05:48:46.343 [Task submitter] INFO  nextflow.Session - [1f/dea5e1] Submitted process > shuffle (31)
+Apr-30 05:48:46.843 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (36) > jobId: 7575119; workDir: /home/laadd/DDP/B-SOID/work/60/a31abd26a4ed5dbfb96f8c9ced3123
+Apr-30 05:48:46.844 [Task submitter] INFO  nextflow.Session - [60/a31abd] Submitted process > shuffle (36)
+Apr-30 05:48:47.343 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (34) > jobId: 7575121; workDir: /home/laadd/DDP/B-SOID/work/3b/ad71725b9313acaf905d7016e07153
+Apr-30 05:48:47.343 [Task submitter] INFO  nextflow.Session - [3b/ad7172] Submitted process > shuffle (34)
+Apr-30 05:48:47.842 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (40) > jobId: 7575122; workDir: /home/laadd/DDP/B-SOID/work/60/8ff58834de42a4f47a32d4ec727161
+Apr-30 05:48:47.842 [Task submitter] INFO  nextflow.Session - [60/8ff588] Submitted process > shuffle (40)
+Apr-30 05:48:48.343 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (35) > jobId: 7575124; workDir: /home/laadd/DDP/B-SOID/work/c4/99cf8c796df8b530f47086be7a5e6a
+Apr-30 05:48:48.343 [Task submitter] INFO  nextflow.Session - [c4/99cf8c] Submitted process > shuffle (35)
+Apr-30 05:48:48.843 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (37) > jobId: 7575125; workDir: /home/laadd/DDP/B-SOID/work/b1/86837601f2501e008816a54b645177
+Apr-30 05:48:48.843 [Task submitter] INFO  nextflow.Session - [b1/868376] Submitted process > shuffle (37)
+Apr-30 05:48:49.346 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (38) > jobId: 7575126; workDir: /home/laadd/DDP/B-SOID/work/93/3795f2f03bbf1ae9f23b1c6db2e7b9
+Apr-30 05:48:49.346 [Task submitter] INFO  nextflow.Session - [93/3795f2] Submitted process > shuffle (38)
+Apr-30 05:48:49.845 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (39) > jobId: 7575127; workDir: /home/laadd/DDP/B-SOID/work/8b/c15d9d8666dd80d2a870103e243ccc
+Apr-30 05:48:49.845 [Task submitter] INFO  nextflow.Session - [8b/c15d9d] Submitted process > shuffle (39)
+Apr-30 05:48:50.343 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (42) > jobId: 7575128; workDir: /home/laadd/DDP/B-SOID/work/35/10691feb7fe557bdd1c88d15639e69
+Apr-30 05:48:50.343 [Task submitter] INFO  nextflow.Session - [35/10691f] Submitted process > shuffle (42)
+Apr-30 05:48:50.844 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (44) > jobId: 7575129; workDir: /home/laadd/DDP/B-SOID/work/d4/fc2f0923931a39ed9add4de8f3f3b2
+Apr-30 05:48:50.844 [Task submitter] INFO  nextflow.Session - [d4/fc2f09] Submitted process > shuffle (44)
+Apr-30 05:48:51.343 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (47) > jobId: 7575131; workDir: /home/laadd/DDP/B-SOID/work/1b/6c81385793178cbd660718c2138801
+Apr-30 05:48:51.343 [Task submitter] INFO  nextflow.Session - [1b/6c8138] Submitted process > shuffle (47)
+Apr-30 05:48:51.842 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (43) > jobId: 7575132; workDir: /home/laadd/DDP/B-SOID/work/69/c02e5081e6efa4cd16c5f7e0259d68
+Apr-30 05:48:51.842 [Task submitter] INFO  nextflow.Session - [69/c02e50] Submitted process > shuffle (43)
+Apr-30 05:48:52.344 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (41) > jobId: 7575134; workDir: /home/laadd/DDP/B-SOID/work/23/1520431e748e73ed5c197b20078555
+Apr-30 05:48:52.344 [Task submitter] INFO  nextflow.Session - [23/152043] Submitted process > shuffle (41)
+Apr-30 05:48:52.842 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (50) > jobId: 7575135; workDir: /home/laadd/DDP/B-SOID/work/2d/e2638d28137d4f2636266554038677
+Apr-30 05:48:52.843 [Task submitter] INFO  nextflow.Session - [2d/e2638d] Submitted process > shuffle (50)
+Apr-30 05:48:53.342 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (46) > jobId: 7575137; workDir: /home/laadd/DDP/B-SOID/work/47/45370641b279d752e4ba86599fe089
+Apr-30 05:48:53.342 [Task submitter] INFO  nextflow.Session - [47/453706] Submitted process > shuffle (46)
+Apr-30 05:48:53.841 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (49) > jobId: 7575138; workDir: /home/laadd/DDP/B-SOID/work/b0/0ad4b6e42937b7e69120453a78f326
+Apr-30 05:48:53.842 [Task submitter] INFO  nextflow.Session - [b0/0ad4b6] Submitted process > shuffle (49)
+Apr-30 05:48:54.343 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (53) > jobId: 7575140; workDir: /home/laadd/DDP/B-SOID/work/43/d5eb8fbe146e242f5c840d1e32315d
+Apr-30 05:48:54.343 [Task submitter] INFO  nextflow.Session - [43/d5eb8f] Submitted process > shuffle (53)
+Apr-30 05:48:54.843 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (52) > jobId: 7575141; workDir: /home/laadd/DDP/B-SOID/work/31/84cb8c6bc78fb824d90bacfa0375a5
+Apr-30 05:48:54.843 [Task submitter] INFO  nextflow.Session - [31/84cb8c] Submitted process > shuffle (52)
+Apr-30 05:48:55.343 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (56) > jobId: 7575143; workDir: /home/laadd/DDP/B-SOID/work/ca/ab96900bc2446c63d0a76fea36e300
+Apr-30 05:48:55.343 [Task submitter] INFO  nextflow.Session - [ca/ab9690] Submitted process > shuffle (56)
+Apr-30 05:48:55.845 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (55) > jobId: 7575144; workDir: /home/laadd/DDP/B-SOID/work/09/bcc79c3fa68fa0b7d5457fed91b9c5
+Apr-30 05:48:55.845 [Task submitter] INFO  nextflow.Session - [09/bcc79c] Submitted process > shuffle (55)
+Apr-30 05:48:56.346 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (48) > jobId: 7575146; workDir: /home/laadd/DDP/B-SOID/work/ac/93107504a6ea28db8c2ab9322b6726
+Apr-30 05:48:56.347 [Task submitter] INFO  nextflow.Session - [ac/931075] Submitted process > shuffle (48)
+Apr-30 05:48:56.847 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (45) > jobId: 7575147; workDir: /home/laadd/DDP/B-SOID/work/f8/e6223a071eb650f1001626c2aebdcd
+Apr-30 05:48:56.848 [Task submitter] INFO  nextflow.Session - [f8/e6223a] Submitted process > shuffle (45)
+Apr-30 05:48:57.370 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (51) > jobId: 7575149; workDir: /home/laadd/DDP/B-SOID/work/49/68b1791c7deceaf7397347baa59f9d
+Apr-30 05:48:57.370 [Task submitter] INFO  nextflow.Session - [49/68b179] Submitted process > shuffle (51)
+Apr-30 05:48:57.848 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (54) > jobId: 7575150; workDir: /home/laadd/DDP/B-SOID/work/16/be0d6f43426d8e0e54d5e6e276e8c9
+Apr-30 05:48:57.848 [Task submitter] INFO  nextflow.Session - [16/be0d6f] Submitted process > shuffle (54)
+Apr-30 05:48:58.347 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (57) > jobId: 7575151; workDir: /home/laadd/DDP/B-SOID/work/3c/d04c2eeb63de447fea6a3e70a4afc3
+Apr-30 05:48:58.347 [Task submitter] INFO  nextflow.Session - [3c/d04c2e] Submitted process > shuffle (57)
+Apr-30 05:48:58.866 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (59) > jobId: 7575152; workDir: /home/laadd/DDP/B-SOID/work/e0/f00f73169022fd3d4ab6201c11b634
+Apr-30 05:48:58.866 [Task submitter] INFO  nextflow.Session - [e0/f00f73] Submitted process > shuffle (59)
+Apr-30 05:48:59.344 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (58) > jobId: 7575153; workDir: /home/laadd/DDP/B-SOID/work/4d/b087ec6609f542c7dabb16e336b69d
+Apr-30 05:48:59.344 [Task submitter] INFO  nextflow.Session - [4d/b087ec] Submitted process > shuffle (58)
+Apr-30 05:48:59.845 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (60) > jobId: 7575154; workDir: /home/laadd/DDP/B-SOID/work/67/15ab2025f874fc8260f13a6148120b
+Apr-30 05:48:59.845 [Task submitter] INFO  nextflow.Session - [67/15ab20] Submitted process > shuffle (60)
+Apr-30 05:49:00.344 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (61) > jobId: 7575155; workDir: /home/laadd/DDP/B-SOID/work/24/bcbe164fcce411b76d38fd750e727e
+Apr-30 05:49:00.344 [Task submitter] INFO  nextflow.Session - [24/bcbe16] Submitted process > shuffle (61)
+Apr-30 05:49:00.846 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (65) > jobId: 7575156; workDir: /home/laadd/DDP/B-SOID/work/aa/1b07f1bb311a5609400ad64b2fe16b
+Apr-30 05:49:00.846 [Task submitter] INFO  nextflow.Session - [aa/1b07f1] Submitted process > shuffle (65)
+Apr-30 05:49:01.345 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (67) > jobId: 7575158; workDir: /home/laadd/DDP/B-SOID/work/4b/1e3614d4806d9f3b1c4e66e01e6a51
+Apr-30 05:49:01.346 [Task submitter] INFO  nextflow.Session - [4b/1e3614] Submitted process > shuffle (67)
+Apr-30 05:49:01.847 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (64) > jobId: 7575159; workDir: /home/laadd/DDP/B-SOID/work/12/2bd52ce550598845b4456e72f3de69
+Apr-30 05:49:01.847 [Task submitter] INFO  nextflow.Session - [12/2bd52c] Submitted process > shuffle (64)
+Apr-30 05:49:02.348 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (62) > jobId: 7575161; workDir: /home/laadd/DDP/B-SOID/work/f7/c56c2436c5118d04802a4b1e3b907d
+Apr-30 05:49:02.348 [Task submitter] INFO  nextflow.Session - [f7/c56c24] Submitted process > shuffle (62)
+Apr-30 05:49:02.850 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (70) > jobId: 7575162; workDir: /home/laadd/DDP/B-SOID/work/6a/db27960c5b31f3e5e7ce324dbbd1e4
+Apr-30 05:49:02.850 [Task submitter] INFO  nextflow.Session - [6a/db2796] Submitted process > shuffle (70)
+Apr-30 05:49:03.346 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (69) > jobId: 7575164; workDir: /home/laadd/DDP/B-SOID/work/9d/0dde846c86da7dd55c045f345afdec
+Apr-30 05:49:03.346 [Task submitter] INFO  nextflow.Session - [9d/0dde84] Submitted process > shuffle (69)
+Apr-30 05:49:03.847 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (66) > jobId: 7575165; workDir: /home/laadd/DDP/B-SOID/work/6b/49451cff2231f1b7be3b64de831406
+Apr-30 05:49:03.847 [Task submitter] INFO  nextflow.Session - [6b/49451c] Submitted process > shuffle (66)
+Apr-30 05:49:04.345 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - [SLURM] submitted process shuffle (75) > jobId: 7575167; workDir: /home/laadd/DDP/B-SOID/work/de/f356029d60b505ee59b5620b8b3728
+Apr-30 05:49:04.345 [Task submitter] INFO  nextflow.Session - [de/f35602] Submitted process > shuffle (75)
+Apr-30 05:49:14.845 [Task submitter] DEBUG nextflow.executor.GridTaskHandler - Failed to submit process shuffle (76) > exit: 1; workDir: /home/laadd/DDP/B-SOID/work/0b/d29ac19a71e2127002be8f69c3e73a
+sbatch: error: Batch job submission failed: Socket timed out on send/recv operation
+
+
+Apr-30 05:49:14.875 [Task submitter] DEBUG nextflow.processor.TaskRun - Unable to dump error of process 'null' -- Cause: java.nio.file.NoSuchFileException: /home/laadd/DDP/B-SOID/work/0b/d29ac19a71e2127002be8f69c3e73a/.command.log
+Apr-30 05:49:14.877 [Task submitter] ERROR nextflow.processor.TaskProcessor - Error executing process > 'shuffle (76)'
+
+Caused by:
+  Failed to submit process to grid scheduler for execution
+
+Command executed:
+
+  sbatch .command.run
+
+Command exit status:
+  1
+
+Command output:
+  sbatch: error: Batch job submission failed: Socket timed out on send/recv operation
+
+Work dir:
+  /home/laadd/DDP/B-SOID/work/0b/d29ac19a71e2127002be8f69c3e73a
+
+Tip: you can replicate the issue by changing to the process work dir and entering the command `bash .command.run`
+Apr-30 05:49:14.883 [Task submitter] INFO  nextflow.Session - Execution cancelled -- Finishing pending tasks before exit
+Apr-30 05:49:14.902 [main] DEBUG nextflow.Session - Session await > all process finished
+Apr-30 05:53:34.910 [Task monitor] DEBUG n.processor.TaskPollingMonitor - !! executor slurm > tasks to be completed: 70 -- submitted tasks are shown below
+~> TaskHandler[jobId: 7575074; id: 9; name: shuffle (8); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/85/df66fe3dc4e0a2f8c3a59032a8fd15 started: 1619776141666; exited: -; ]
+~> TaskHandler[jobId: 7575075; id: 4; name: shuffle (3); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/5c/2ade0e4018847ace71a066c347fad7 started: 1619776141674; exited: -; ]
+~> TaskHandler[jobId: 7575076; id: 8; name: shuffle (7); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/4e/b1c1aff81e8c14a528ccc1452286fe started: 1619776141679; exited: -; ]
+~> TaskHandler[jobId: 7575077; id: 2; name: shuffle (1); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/62/d5026ffa448dbbdcf25199a1645869 started: 1619776141683; exited: -; ]
+~> TaskHandler[jobId: 7575078; id: 6; name: shuffle (5); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/0b/40756fc21381c46e3c661990f193aa started: 1619776141687; exited: -; ]
+~> TaskHandler[jobId: 7575079; id: 1; name: GWAS (1); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/2b/93436397831308cd81083151f5e6d9 started: 1619776141691; exited: -; ]
+~> TaskHandler[jobId: 7575080; id: 11; name: shuffle (10); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/de/65c61f60aef75cedcaa12478d3354d started: 1619776141695; exited: -; ]
+~> TaskHandler[jobId: 7575081; id: 7; name: shuffle (6); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/2a/72cbf7986d21d918a235c6c15ae3be started: 1619776141699; exited: -; ]
+~> TaskHandler[jobId: 7575082; id: 3; name: shuffle (2); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/0c/017627faefe9bf34219ed9bbe1bea0 started: 1619776141704; exited: -; ]
+~> TaskHandler[jobId: 7575083; id: 5; name: shuffle (4); status: RUNNING; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/28/da0bca730a3f1f181233e1248278a1 started: 1619776141707; exited: -; ]
+.. remaining tasks omitted.
+Apr-30 05:54:14.985 [Task submitter] DEBUG n.processor.TaskPollingMonitor - %% executor slurm > tasks in the submission queue: 930 -- tasks to be submitted are shown below
+~> TaskHandler[jobId: null; id: 64; name: shuffle (63); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ef/fe02f07b0d60b1a6e553467cbbb057 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 69; name: shuffle (68); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/c0/b7391335e7c59fbe39f5a149a4d323 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 72; name: shuffle (71); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/80/4fda8ba75a8aba7de4f86797aa756b started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 78; name: shuffle (77); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/d7/957d707b431f14b9d5b012123b7951 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 73; name: shuffle (72); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/50/88c800c5fff2451fa11b5c60c8fabd started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 74; name: shuffle (73); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/8e/907c9e7a2a8ad89b9c7bd2a94abfd2 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 75; name: shuffle (74); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/ec/381c1ab3b7a371d1d7401837765dd9 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 79; name: shuffle (78); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/fe/72d387f5cbcf04ce76d07117d3bfca started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 84; name: shuffle (83); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/e7/caf7e4513f45e78c5d2ce241b72785 started: -; exited: -; ]
+~> TaskHandler[jobId: null; id: 85; name: shuffle (84); status: NEW; exit: -; error: -; workDir: /home/laadd/DDP/B-SOID/work/f7/600e57609deb366625b3cffcc1add5 started: -; exited: -; ]
+.. remaining tasks omitted.

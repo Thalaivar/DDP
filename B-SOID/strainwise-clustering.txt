@@ -1,0 +1,665 @@
+  0%|          | 0/62 [00:00<?, ?it/s]    Run ID       : dis
+ Save Location   : /home/laadd/data/bsoid_data/dis/output
+      FPS        : 30
+ Min. Confidence : 0.3
+  Stride Window  : 333ms
+
+ 29%|██▉       | 18/62 [00:00<00:00, 90.91it/s] 29%|██▉       | 18/62 [00:19<00:00, 90.91it/s] 58%|█████▊    | 36/62 [00:30<00:25,  1.02it/s]WARNING:root:mouse:BTBR T<+>ltpr3<tf>/J/BTBR_Female_C5097182-ep2-PSY: % data filtered from raw data is too high (10.701317590259226 %)
+WARNING:root:mouse:129S1/SvlmJ/129S1_Male_S7169466_ep2: % data filtered from raw data is too high (11.522951522951523 %)
+WARNING:root:mouse:BTBR T<+>ltpr3<tf>/J/BTBR_Female_S6423823-ep3-PSY: % data filtered from raw data is too high (23.35604228005232 %)
+WARNING:root:mouse:129S1/SvlmJ/129S1_Male_S7169466_ep3: % data filtered from raw data is too high (15.37346870680204 %)
+ 87%|████████▋ | 54/62 [01:48<00:20,  2.52s/it]100%|██████████| 62/62 [01:48<00:00,  1.75s/it]WARNING:root:mouse:CAST/EiJ/CAST_Female_S6651302_ep3-BAT: % data filtered from raw data is too high (14.16412697931355 %)
+WARNING:root:mouse:MSM/MsJ/LL1-4_003719-F-F29-4.28571428571429-42647-1-S328: % data filtered from raw data is too high (52.760263332498994 %)
+WARNING:root:mouse:NZO/HILtJ/002105-M-AX12-5.28571428571429-42640-3-S331: % data filtered from raw data is too high (14.863858393383953 %)
+WARNING:root:mouse:NZO/HILtJ/002105-M-AX12-5.28571428571429-42640-1-S331: % data filtered from raw data is too high (22.6326617343095 %)
+WARNING:root:mouse:NZO/HILtJ/002105-F-AX12-5.28571428571429-42640-4-S329: % data filtered from raw data is too high (14.019912971505187 %)
+WARNING:root:mouse:PWK/PhJ/003715-M-F29-5.14285714285714-42753-3-S397: % data filtered from raw data is too high (23.164335242543704 %)
+WARNING:root:mouse:NZO/HILtJ/002105-F-AX12-5.28571428571429-42640-2-S329: % data filtered from raw data is too high (17.477989207611476 %)
+WARNING:root:mouse:PWK/PhJ/003715-F-F29-5.57142857142857-42750-3-S399: % data filtered from raw data is too high (31.659671880961465 %)
+WARNING:root:mouse:NZO/HILtJ/002105-F-AX12-5.28571428571429-42640-3-S329: % data filtered from raw data is too high (28.945930392815864 %)
+WARNING:root:mouse:NZO/HILtJ/002105-M-AX12-5.28571428571429-42640-4-S331: % data filtered from raw data is too high (22.319285690140575 %)
+WARNING:root:mouse:WSB/EiJ/001145-F-AX10-3.42857142857143-42689-5-S371: % data filtered from raw data is too high (31.07263545946776 %)
+WARNING:root:mouse:PWK/PhJ/003715-F-F29-5.57142857142857-42750-6-S400: % data filtered from raw data is too high (24.20229753563087 %)
+WARNING:root:mouse:WSB/EiJ/001145-F-AX10-3.42857142857143-42689-6-S371: % data filtered from raw data is too high (26.499448549424645 %)
+WARNING:root:mouse:PWK/PhJ/003715-F-F29-5.57142857142857-42750-1-S399: % data filtered from raw data is too high (14.248039982450452 %)
+WARNING:root:mouse:WSB/EiJ/001145-M-AX10-4.42857142857143-42682-1-S369: % data filtered from raw data is too high (15.765765765765765 %)
+WARNING:root:mouse:PWK/PhJ/003715-F-F29-5.57142857142857-42750-2-S399: % data filtered from raw data is too high (11.179205913914391 %)
+WARNING:root:mouse:WSB/EiJ/001145-M-AX10-3.42857142857143-42689-6-S368: % data filtered from raw data is too high (19.39742497396573 %)
+WARNING:root:mouse:PWK/PhJ/003715-F-F29-5.57142857142857-42750-5-S400: % data filtered from raw data is too high (15.623242289908957 %)
+WARNING:root:mouse:PWK/PhJ/003715-M-F29-5.14285714285714-42753-1-S397: % data filtered from raw data is too high (16.058780506582494 %)
+WARNING:root:mouse:WSB/EiJ/001145-F-AX10-3.42857142857143-42689-8-S371: % data filtered from raw data is too high (36.43436525077994 %)
+WARNING:root:mouse:PWK/PhJ/003715-F-F29-5.57142857142857-42750-4-S400: % data filtered from raw data is too high (21.237541132147456 %)
+WARNING:root:mouse:WSB/EiJ/001145-F-AX10-3.42857142857143-42689-4-S370: % data filtered from raw data is too high (15.003906268722531 %)
+WARNING:root:mouse:WSB/EiJ/001145-M-AX10-3.42857142857143-42689-5-S368: % data filtered from raw data is too high (28.004574371984855 %)
+WARNING:root:mouse:WSB/EiJ/001145-M-AX10-3.42857142857143-42689-7-S368: % data filtered from raw data is too high (22.799361771660354 %)
+WARNING:root:mouse:WSB/EiJ/001145-F-AX10-3.42857142857143-42689-7-S371: % data filtered from raw data is too high (20.40510703657483 %)
+WARNING:root:mouse:WSB/EiJ/001145-F-AX10-3.42857142857143-42689-2-S370: % data filtered from raw data is too high (18.712871755790232 %)
+WARNING:root:mouse:WSB/EiJ/001145-M-AX10-4.42857142857143-42682-4-S369: % data filtered from raw data is too high (12.890509557176223 %)
+WARNING:root:mouse:WSB/EiJ/001145-M-AX10-4.42857142857143-42682-2-S369: % data filtered from raw data is too high (31.310085628677324 %)
+WARNING:root:mouse:WSB/EiJ/001145-F-AX10-3.42857142857143-42689-1-S370: % data filtered from raw data is too high (25.5629259688845 %)
+WARNING:root:mouse:WSB/EiJ/001145-M-AX10-4.42857142857143-42682-3-S369: % data filtered from raw data is too high (30.34491963315347 %)
+
+INFO:root:extracted data from 61 strains with a total of 556 animals
+INFO:root:extracting features from 61 animals
+  0%|          | 0/61 [00:00<?, ?it/s]  2%|▏         | 1/61 [00:20<20:56, 20.94s/it]  3%|▎         | 2/61 [00:37<17:56, 18.24s/it]  5%|▍         | 3/61 [00:53<16:45, 17.33s/it]  7%|▋         | 4/61 [01:09<16:01, 16.86s/it]  8%|▊         | 5/61 [01:25<15:32, 16.65s/it] 10%|▉         | 6/61 [01:42<15:06, 16.47s/it] 11%|█▏        | 7/61 [01:58<14:44, 16.39s/it] 13%|█▎        | 8/61 [02:14<14:26, 16.36s/it] 15%|█▍        | 9/61 [02:32<14:30, 16.73s/it] 16%|█▋        | 10/61 [02:48<14:08, 16.64s/it] 18%|█▊        | 11/61 [03:04<13:47, 16.54s/it] 20%|█▉        | 12/61 [03:21<13:26, 16.46s/it] 21%|██▏       | 13/61 [03:37<13:12, 16.50s/it] 23%|██▎       | 14/61 [03:54<12:54, 16.49s/it] 25%|██▍       | 15/61 [04:10<12:39, 16.51s/it] 26%|██▌       | 16/61 [04:27<12:25, 16.56s/it] 28%|██▊       | 17/61 [04:44<12:09, 16.58s/it] 30%|██▉       | 18/61 [05:02<12:17, 17.16s/it] 31%|███       | 19/61 [05:18<11:50, 16.93s/it] 33%|███▎      | 20/61 [05:35<11:27, 16.76s/it] 34%|███▍      | 21/61 [05:53<11:25, 17.13s/it] 36%|███▌      | 22/61 [06:10<11:09, 17.18s/it] 38%|███▊      | 23/61 [06:23<10:05, 15.93s/it] 39%|███▉      | 24/61 [06:40<09:54, 16.07s/it] 41%|████      | 25/61 [06:56<09:44, 16.24s/it] 43%|████▎     | 26/61 [07:12<09:28, 16.26s/it] 44%|████▍     | 27/61 [07:29<09:13, 16.28s/it] 46%|████▌     | 28/61 [07:45<08:55, 16.22s/it] 48%|████▊     | 29/61 [08:01<08:39, 16.23s/it] 49%|████▉     | 30/61 [08:18<08:24, 16.28s/it] 51%|█████     | 31/61 [08:34<08:09, 16.31s/it] 52%|█████▏    | 32/61 [08:42<06:42, 13.87s/it] 54%|█████▍    | 33/61 [08:58<06:48, 14.60s/it] 56%|█████▌    | 34/61 [09:15<06:47, 15.08s/it] 57%|█████▋    | 35/61 [09:31<06:41, 15.46s/it] 59%|█████▉    | 36/61 [09:47<06:30, 15.60s/it] 61%|██████    | 37/61 [10:04<06:22, 15.93s/it] 62%|██████▏   | 38/61 [10:20<06:09, 16.06s/it] 64%|██████▍   | 39/61 [10:36<05:54, 16.13s/it] 66%|██████▌   | 40/61 [10:53<05:40, 16.21s/it] 67%|██████▋   | 41/61 [11:07<05:10, 15.55s/it] 69%|██████▉   | 42/61 [11:24<05:04, 16.01s/it] 70%|███████   | 43/61 [11:32<04:08, 13.79s/it] 72%|███████▏  | 44/61 [11:49<04:07, 14.55s/it] 74%|███████▍  | 45/61 [12:09<04:18, 16.16s/it] 75%|███████▌  | 46/61 [12:25<04:02, 16.19s/it] 77%|███████▋  | 47/61 [12:33<03:13, 13.82s/it] 79%|███████▊  | 48/61 [12:50<03:10, 14.64s/it] 80%|████████  | 49/61 [13:07<03:06, 15.56s/it] 82%|████████▏ | 50/61 [13:15<02:25, 13.20s/it] 84%|████████▎ | 51/61 [13:31<02:21, 14.12s/it] 85%|████████▌ | 52/61 [13:48<02:13, 14.83s/it] 87%|████████▋ | 53/61 [14:04<02:02, 15.29s/it] 89%|████████▊ | 54/61 [14:12<01:31, 13.02s/it] 90%|█████████ | 55/61 [14:28<01:23, 13.97s/it] 92%|█████████▏| 56/61 [14:45<01:13, 14.71s/it] 93%|█████████▎| 57/61 [15:01<01:00, 15.21s/it] 95%|█████████▌| 58/61 [15:17<00:46, 15.52s/it] 97%|█████████▋| 59/61 [15:33<00:31, 15.75s/it] 98%|█████████▊| 60/61 [15:50<00:15, 16.00s/it]100%|██████████| 61/61 [15:58<00:00, 13.50s/it]INFO:root:extracted 61 datasets of 22D features
+INFO:root:collected features into bins of 333 ms
+
+  0%|          | 0/61 [00:00<?, ?it/s][AINFO:root:running for strain: 129P3/J
+INFO:root:Samples: (53990, 22)
+100%|██████████| 61/61 [16:03<00:00, 15.79s/it]    Run ID       : dis
+ Save Location   : /home/laadd/data/bsoid_data/dis/output
+      FPS        : 30
+ Min. Confidence : 0.3
+  Stride Window  : 333ms
+
+Processing 61 strains...
+
+INFO:root:identified 38 clusters (max is 38) with min_sample_prop=0.4 and entropy_ratio=0.781
+INFO:root:identified 36 clusters (max is 38) with min_sample_prop=0.43 and entropy_ratio=0.788
+INFO:root:identified 33 clusters (max is 38) with min_sample_prop=0.47 and entropy_ratio=0.792
+INFO:root:identified 32 clusters (max is 38) with min_sample_prop=0.5 and entropy_ratio=0.793
+INFO:root:identified 30 clusters (max is 38) with min_sample_prop=0.53 and entropy_ratio=0.794
+INFO:root:identified 25 clusters (max is 38) with min_sample_prop=0.57 and entropy_ratio=0.802
+INFO:root:identified 22 clusters (max is 38) with min_sample_prop=0.6 and entropy_ratio=0.809
+INFO:root:identified 21 clusters (max is 38) with min_sample_prop=0.63 and entropy_ratio=0.817
+INFO:root:identified 20 clusters (max is 38) with min_sample_prop=0.67 and entropy_ratio=0.827
+INFO:root:identified 20 clusters (max is 38) with min_sample_prop=0.7 and entropy_ratio=0.827
+INFO:root:identified 20 clusters (max is 38) with min_sample_prop=0.73 and entropy_ratio=0.827
+INFO:root:identified 20 clusters (max is 38) with min_sample_prop=0.77 and entropy_ratio=0.827
+INFO:root:identified 19 clusters (max is 38) with min_sample_prop=0.8 and entropy_ratio=0.832
+INFO:root:identified 18 clusters (max is 38) with min_sample_prop=0.83 and entropy_ratio=0.846
+INFO:root:identified 18 clusters (max is 38) with min_sample_prop=0.87 and entropy_ratio=0.846
+INFO:root:identified 18 clusters (max is 38) with min_sample_prop=0.9 and entropy_ratio=0.846
+INFO:root:identified 18 clusters (max is 38) with min_sample_prop=0.93 and entropy_ratio=0.846
+INFO:root:identified 16 clusters (max is 38) with min_sample_prop=0.97 and entropy_ratio=0.857
+INFO:root:identified 16 clusters (max is 38) with min_sample_prop=1.0 and entropy_ratio=0.857
+INFO:root:identified 16 clusters (max is 38) with min_sample_prop=1.03 and entropy_ratio=0.857
+INFO:root:identified 15 clusters (max is 38) with min_sample_prop=1.07 and entropy_ratio=0.868
+INFO:root:identified 15 clusters (max is 38) with min_sample_prop=1.1 and entropy_ratio=0.868
+INFO:root:identified 14 clusters (max is 38) with min_sample_prop=1.13 and entropy_ratio=0.885
+INFO:root:identified 14 clusters (max is 38) with min_sample_prop=1.17 and entropy_ratio=0.885
+INFO:root:identified 14 clusters (max is 38) with min_sample_prop=1.2 and entropy_ratio=0.885
+INFO:root:Collected 53990 samples for 129P3/J with 38 classes
+
+  2%|▏         | 1/61 [02:55<2:55:53, 175.89s/it][AINFO:root:running for strain: 129S1/SvlmJ
+INFO:root:Samples: (53990, 22)
+INFO:root:identified 48 clusters (max is 48) with min_sample_prop=0.4 and entropy_ratio=0.778
+INFO:root:identified 44 clusters (max is 48) with min_sample_prop=0.43 and entropy_ratio=0.78
+INFO:root:identified 42 clusters (max is 48) with min_sample_prop=0.47 and entropy_ratio=0.783
+INFO:root:identified 41 clusters (max is 48) with min_sample_prop=0.5 and entropy_ratio=0.787
+INFO:root:identified 38 clusters (max is 48) with min_sample_prop=0.53 and entropy_ratio=0.792
+INFO:root:identified 37 clusters (max is 48) with min_sample_prop=0.57 and entropy_ratio=0.795
+INFO:root:identified 35 clusters (max is 48) with min_sample_prop=0.6 and entropy_ratio=0.797
+INFO:root:identified 32 clusters (max is 48) with min_sample_prop=0.63 and entropy_ratio=0.805
+INFO:root:identified 32 clusters (max is 48) with min_sample_prop=0.67 and entropy_ratio=0.805
+INFO:root:identified 30 clusters (max is 48) with min_sample_prop=0.7 and entropy_ratio=0.806
+INFO:root:identified 30 clusters (max is 48) with min_sample_prop=0.73 and entropy_ratio=0.806
+INFO:root:identified 27 clusters (max is 48) with min_sample_prop=0.77 and entropy_ratio=0.803
+INFO:root:identified 25 clusters (max is 48) with min_sample_prop=0.8 and entropy_ratio=0.804
+INFO:root:identified 24 clusters (max is 48) with min_sample_prop=0.83 and entropy_ratio=0.807
+INFO:root:identified 17 clusters (max is 48) with min_sample_prop=0.87 and entropy_ratio=0.792
+INFO:root:identified 17 clusters (max is 48) with min_sample_prop=0.9 and entropy_ratio=0.792
+INFO:root:identified 16 clusters (max is 48) with min_sample_prop=0.93 and entropy_ratio=0.802
+INFO:root:identified 15 clusters (max is 48) with min_sample_prop=0.97 and entropy_ratio=0.808
+INFO:root:identified 15 clusters (max is 48) with min_sample_prop=1.0 and entropy_ratio=0.808
+INFO:root:identified 15 clusters (max is 48) with min_sample_prop=1.03 and entropy_ratio=0.808
+INFO:root:identified 15 clusters (max is 48) with min_sample_prop=1.07 and entropy_ratio=0.808
+INFO:root:identified 15 clusters (max is 48) with min_sample_prop=1.1 and entropy_ratio=0.808
+INFO:root:identified 15 clusters (max is 48) with min_sample_prop=1.13 and entropy_ratio=0.808
+INFO:root:identified 15 clusters (max is 48) with min_sample_prop=1.17 and entropy_ratio=0.808
+INFO:root:identified 15 clusters (max is 48) with min_sample_prop=1.2 and entropy_ratio=0.808
+INFO:root:Collected 53990 samples for 129S1/SvlmJ with 48 classes
+
+  3%|▎         | 2/61 [05:24<2:36:57, 159.62s/it][AINFO:root:running for strain: 129X1/SvJ
+INFO:root:Samples: (53990, 22)
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=0.4 and entropy_ratio=0.596
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=0.43 and entropy_ratio=0.596
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=0.47 and entropy_ratio=0.596
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=0.5 and entropy_ratio=0.596
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=0.53 and entropy_ratio=0.596
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=0.57 and entropy_ratio=0.596
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=0.6 and entropy_ratio=0.596
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=0.63 and entropy_ratio=0.596
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=0.67 and entropy_ratio=0.596
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=0.7 and entropy_ratio=0.596
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=0.73 and entropy_ratio=0.596
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=0.77 and entropy_ratio=0.596
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=0.8 and entropy_ratio=0.596
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=0.83 and entropy_ratio=0.596
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=0.87 and entropy_ratio=0.596
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=0.9 and entropy_ratio=0.596
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=0.93 and entropy_ratio=0.596
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=0.97 and entropy_ratio=0.596
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=1.0 and entropy_ratio=0.596
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=1.03 and entropy_ratio=0.596
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=1.07 and entropy_ratio=0.596
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=1.1 and entropy_ratio=0.596
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=1.13 and entropy_ratio=0.596
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=1.17 and entropy_ratio=0.596
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=1.2 and entropy_ratio=0.596
+INFO:root:Collected 53990 samples for 129X1/SvJ with 3 classes
+
+  5%|▍         | 3/61 [07:50<2:28:23, 153.50s/it][AINFO:root:running for strain: A/J
+INFO:root:Samples: (53990, 22)
+INFO:root:identified 21 clusters (max is 21) with min_sample_prop=0.4 and entropy_ratio=0.38
+INFO:root:identified 19 clusters (max is 21) with min_sample_prop=0.43 and entropy_ratio=0.391
+INFO:root:identified 18 clusters (max is 21) with min_sample_prop=0.47 and entropy_ratio=0.39
+INFO:root:identified 17 clusters (max is 21) with min_sample_prop=0.5 and entropy_ratio=0.388
+INFO:root:identified 16 clusters (max is 21) with min_sample_prop=0.53 and entropy_ratio=0.387
+INFO:root:identified 15 clusters (max is 21) with min_sample_prop=0.57 and entropy_ratio=0.384
+INFO:root:identified 14 clusters (max is 21) with min_sample_prop=0.6 and entropy_ratio=0.391
+INFO:root:identified 14 clusters (max is 21) with min_sample_prop=0.63 and entropy_ratio=0.391
+INFO:root:identified 14 clusters (max is 21) with min_sample_prop=0.67 and entropy_ratio=0.391
+INFO:root:identified 12 clusters (max is 21) with min_sample_prop=0.7 and entropy_ratio=0.398
+INFO:root:identified 12 clusters (max is 21) with min_sample_prop=0.73 and entropy_ratio=0.398
+INFO:root:identified 5 clusters (max is 21) with min_sample_prop=0.77 and entropy_ratio=0.458
+INFO:root:identified 5 clusters (max is 21) with min_sample_prop=0.8 and entropy_ratio=0.458
+INFO:root:identified 5 clusters (max is 21) with min_sample_prop=0.83 and entropy_ratio=0.458
+INFO:root:identified 5 clusters (max is 21) with min_sample_prop=0.87 and entropy_ratio=0.458
+INFO:root:identified 5 clusters (max is 21) with min_sample_prop=0.9 and entropy_ratio=0.458
+INFO:root:identified 5 clusters (max is 21) with min_sample_prop=0.93 and entropy_ratio=0.458
+INFO:root:identified 5 clusters (max is 21) with min_sample_prop=0.97 and entropy_ratio=0.458
+INFO:root:identified 5 clusters (max is 21) with min_sample_prop=1.0 and entropy_ratio=0.458
+INFO:root:identified 4 clusters (max is 21) with min_sample_prop=1.03 and entropy_ratio=0.501
+INFO:root:identified 4 clusters (max is 21) with min_sample_prop=1.07 and entropy_ratio=0.501
+INFO:root:identified 3 clusters (max is 21) with min_sample_prop=1.1 and entropy_ratio=0.591
+INFO:root:identified 3 clusters (max is 21) with min_sample_prop=1.13 and entropy_ratio=0.591
+INFO:root:identified 3 clusters (max is 21) with min_sample_prop=1.17 and entropy_ratio=0.591
+INFO:root:identified 3 clusters (max is 21) with min_sample_prop=1.2 and entropy_ratio=0.591
+INFO:root:Collected 53990 samples for A/J with 21 classes
+
+  7%|▋         | 4/61 [10:41<2:32:23, 160.41s/it][AINFO:root:running for strain: AKR/J
+INFO:root:Samples: (53990, 22)
+INFO:root:identified 30 clusters (max is 30) with min_sample_prop=0.4 and entropy_ratio=0.635
+INFO:root:identified 29 clusters (max is 30) with min_sample_prop=0.43 and entropy_ratio=0.634
+INFO:root:identified 28 clusters (max is 30) with min_sample_prop=0.47 and entropy_ratio=0.633
+INFO:root:identified 24 clusters (max is 30) with min_sample_prop=0.5 and entropy_ratio=0.629
+INFO:root:identified 21 clusters (max is 30) with min_sample_prop=0.53 and entropy_ratio=0.637
+INFO:root:identified 20 clusters (max is 30) with min_sample_prop=0.57 and entropy_ratio=0.637
+INFO:root:identified 18 clusters (max is 30) with min_sample_prop=0.6 and entropy_ratio=0.656
+INFO:root:identified 16 clusters (max is 30) with min_sample_prop=0.63 and entropy_ratio=0.662
+INFO:root:identified 14 clusters (max is 30) with min_sample_prop=0.67 and entropy_ratio=0.684
+INFO:root:identified 14 clusters (max is 30) with min_sample_prop=0.7 and entropy_ratio=0.684
+INFO:root:identified 14 clusters (max is 30) with min_sample_prop=0.73 and entropy_ratio=0.684
+INFO:root:identified 13 clusters (max is 30) with min_sample_prop=0.77 and entropy_ratio=0.687
+INFO:root:identified 12 clusters (max is 30) with min_sample_prop=0.8 and entropy_ratio=0.692
+INFO:root:identified 12 clusters (max is 30) with min_sample_prop=0.83 and entropy_ratio=0.692
+INFO:root:identified 12 clusters (max is 30) with min_sample_prop=0.87 and entropy_ratio=0.692
+INFO:root:identified 12 clusters (max is 30) with min_sample_prop=0.9 and entropy_ratio=0.692
+INFO:root:identified 12 clusters (max is 30) with min_sample_prop=0.93 and entropy_ratio=0.692
+INFO:root:identified 12 clusters (max is 30) with min_sample_prop=0.97 and entropy_ratio=0.692
+INFO:root:identified 9 clusters (max is 30) with min_sample_prop=1.0 and entropy_ratio=0.73
+INFO:root:identified 9 clusters (max is 30) with min_sample_prop=1.03 and entropy_ratio=0.73
+INFO:root:identified 9 clusters (max is 30) with min_sample_prop=1.07 and entropy_ratio=0.73
+INFO:root:identified 9 clusters (max is 30) with min_sample_prop=1.1 and entropy_ratio=0.73
+INFO:root:identified 9 clusters (max is 30) with min_sample_prop=1.13 and entropy_ratio=0.73
+INFO:root:identified 9 clusters (max is 30) with min_sample_prop=1.17 and entropy_ratio=0.73
+INFO:root:identified 9 clusters (max is 30) with min_sample_prop=1.2 and entropy_ratio=0.73
+INFO:root:Collected 53990 samples for AKR/J with 30 classes
+
+  8%|▊         | 5/61 [13:47<2:38:14, 169.55s/it][AINFO:root:running for strain: B6129PF1/J
+INFO:root:Samples: (53990, 22)
+INFO:root:identified 20 clusters (max is 20) with min_sample_prop=0.4 and entropy_ratio=0.523
+INFO:root:identified 20 clusters (max is 20) with min_sample_prop=0.43 and entropy_ratio=0.523
+INFO:root:identified 19 clusters (max is 20) with min_sample_prop=0.47 and entropy_ratio=0.522
+INFO:root:identified 17 clusters (max is 20) with min_sample_prop=0.5 and entropy_ratio=0.526
+INFO:root:identified 16 clusters (max is 20) with min_sample_prop=0.53 and entropy_ratio=0.526
+INFO:root:identified 15 clusters (max is 20) with min_sample_prop=0.57 and entropy_ratio=0.531
+INFO:root:identified 15 clusters (max is 20) with min_sample_prop=0.6 and entropy_ratio=0.531
+INFO:root:identified 14 clusters (max is 20) with min_sample_prop=0.63 and entropy_ratio=0.531
+INFO:root:identified 13 clusters (max is 20) with min_sample_prop=0.67 and entropy_ratio=0.547
+INFO:root:identified 13 clusters (max is 20) with min_sample_prop=0.7 and entropy_ratio=0.547
+INFO:root:identified 11 clusters (max is 20) with min_sample_prop=0.73 and entropy_ratio=0.576
+INFO:root:identified 11 clusters (max is 20) with min_sample_prop=0.77 and entropy_ratio=0.576
+INFO:root:identified 11 clusters (max is 20) with min_sample_prop=0.8 and entropy_ratio=0.576
+INFO:root:identified 10 clusters (max is 20) with min_sample_prop=0.83 and entropy_ratio=0.607
+INFO:root:identified 9 clusters (max is 20) with min_sample_prop=0.87 and entropy_ratio=0.605
+INFO:root:identified 9 clusters (max is 20) with min_sample_prop=0.9 and entropy_ratio=0.605
+INFO:root:identified 9 clusters (max is 20) with min_sample_prop=0.93 and entropy_ratio=0.605
+INFO:root:identified 8 clusters (max is 20) with min_sample_prop=0.97 and entropy_ratio=0.621
+INFO:root:identified 8 clusters (max is 20) with min_sample_prop=1.0 and entropy_ratio=0.621
+INFO:root:identified 8 clusters (max is 20) with min_sample_prop=1.03 and entropy_ratio=0.621
+INFO:root:identified 8 clusters (max is 20) with min_sample_prop=1.07 and entropy_ratio=0.621
+INFO:root:identified 8 clusters (max is 20) with min_sample_prop=1.1 and entropy_ratio=0.621
+INFO:root:identified 8 clusters (max is 20) with min_sample_prop=1.13 and entropy_ratio=0.621
+INFO:root:identified 8 clusters (max is 20) with min_sample_prop=1.17 and entropy_ratio=0.621
+INFO:root:identified 8 clusters (max is 20) with min_sample_prop=1.2 and entropy_ratio=0.621
+INFO:root:Collected 53990 samples for B6129PF1/J with 20 classes
+
+ 10%|▉         | 6/61 [16:51<2:40:04, 174.64s/it][AINFO:root:running for strain: B6129SF1/J
+INFO:root:Samples: (53990, 22)
+INFO:root:identified 37 clusters (max is 37) with min_sample_prop=0.4 and entropy_ratio=0.767
+INFO:root:identified 35 clusters (max is 37) with min_sample_prop=0.43 and entropy_ratio=0.771
+INFO:root:identified 31 clusters (max is 37) with min_sample_prop=0.47 and entropy_ratio=0.779
+INFO:root:identified 29 clusters (max is 37) with min_sample_prop=0.5 and entropy_ratio=0.787
+INFO:root:identified 28 clusters (max is 37) with min_sample_prop=0.53 and entropy_ratio=0.794
+INFO:root:identified 27 clusters (max is 37) with min_sample_prop=0.57 and entropy_ratio=0.795
+INFO:root:identified 27 clusters (max is 37) with min_sample_prop=0.6 and entropy_ratio=0.795
+INFO:root:identified 22 clusters (max is 37) with min_sample_prop=0.63 and entropy_ratio=0.791
+INFO:root:identified 20 clusters (max is 37) with min_sample_prop=0.67 and entropy_ratio=0.805
+INFO:root:identified 20 clusters (max is 37) with min_sample_prop=0.7 and entropy_ratio=0.805
+INFO:root:identified 20 clusters (max is 37) with min_sample_prop=0.73 and entropy_ratio=0.805
+INFO:root:identified 19 clusters (max is 37) with min_sample_prop=0.77 and entropy_ratio=0.812
+INFO:root:identified 19 clusters (max is 37) with min_sample_prop=0.8 and entropy_ratio=0.812
+INFO:root:identified 2 clusters (max is 37) with min_sample_prop=0.83 and entropy_ratio=0.19
+INFO:root:identified 2 clusters (max is 37) with min_sample_prop=0.87 and entropy_ratio=0.19
+INFO:root:identified 2 clusters (max is 37) with min_sample_prop=0.9 and entropy_ratio=0.19
+INFO:root:identified 2 clusters (max is 37) with min_sample_prop=0.93 and entropy_ratio=0.19
+INFO:root:identified 2 clusters (max is 37) with min_sample_prop=0.97 and entropy_ratio=0.19
+INFO:root:identified 2 clusters (max is 37) with min_sample_prop=1.0 and entropy_ratio=0.19
+INFO:root:identified 2 clusters (max is 37) with min_sample_prop=1.03 and entropy_ratio=0.19
+INFO:root:identified 2 clusters (max is 37) with min_sample_prop=1.07 and entropy_ratio=0.19
+INFO:root:identified 2 clusters (max is 37) with min_sample_prop=1.1 and entropy_ratio=0.19
+INFO:root:identified 2 clusters (max is 37) with min_sample_prop=1.13 and entropy_ratio=0.19
+INFO:root:identified 2 clusters (max is 37) with min_sample_prop=1.17 and entropy_ratio=0.19
+INFO:root:identified 2 clusters (max is 37) with min_sample_prop=1.2 and entropy_ratio=0.19
+INFO:root:Collected 53990 samples for B6129SF1/J with 37 classes
+
+ 11%|█▏        | 7/61 [19:58<2:40:39, 178.50s/it][AINFO:root:running for strain: B6AF1/J
+INFO:root:Samples: (53990, 22)
+INFO:root:identified 27 clusters (max is 27) with min_sample_prop=0.4 and entropy_ratio=0.689
+INFO:root:identified 12 clusters (max is 27) with min_sample_prop=0.43 and entropy_ratio=0.591
+INFO:root:identified 12 clusters (max is 27) with min_sample_prop=0.47 and entropy_ratio=0.591
+INFO:root:identified 10 clusters (max is 27) with min_sample_prop=0.5 and entropy_ratio=0.606
+INFO:root:identified 9 clusters (max is 27) with min_sample_prop=0.53 and entropy_ratio=0.618
+INFO:root:identified 9 clusters (max is 27) with min_sample_prop=0.57 and entropy_ratio=0.618
+INFO:root:identified 9 clusters (max is 27) with min_sample_prop=0.6 and entropy_ratio=0.618
+INFO:root:identified 9 clusters (max is 27) with min_sample_prop=0.63 and entropy_ratio=0.618
+INFO:root:identified 9 clusters (max is 27) with min_sample_prop=0.67 and entropy_ratio=0.618
+INFO:root:identified 9 clusters (max is 27) with min_sample_prop=0.7 and entropy_ratio=0.618
+INFO:root:identified 8 clusters (max is 27) with min_sample_prop=0.73 and entropy_ratio=0.628
+INFO:root:identified 8 clusters (max is 27) with min_sample_prop=0.77 and entropy_ratio=0.628
+INFO:root:identified 6 clusters (max is 27) with min_sample_prop=0.8 and entropy_ratio=0.561
+INFO:root:identified 6 clusters (max is 27) with min_sample_prop=0.83 and entropy_ratio=0.561
+INFO:root:identified 6 clusters (max is 27) with min_sample_prop=0.87 and entropy_ratio=0.561
+INFO:root:identified 6 clusters (max is 27) with min_sample_prop=0.9 and entropy_ratio=0.561
+INFO:root:identified 6 clusters (max is 27) with min_sample_prop=0.93 and entropy_ratio=0.561
+INFO:root:identified 6 clusters (max is 27) with min_sample_prop=0.97 and entropy_ratio=0.561
+INFO:root:identified 5 clusters (max is 27) with min_sample_prop=1.0 and entropy_ratio=0.612
+INFO:root:identified 5 clusters (max is 27) with min_sample_prop=1.03 and entropy_ratio=0.612
+INFO:root:identified 5 clusters (max is 27) with min_sample_prop=1.07 and entropy_ratio=0.612
+INFO:root:identified 5 clusters (max is 27) with min_sample_prop=1.1 and entropy_ratio=0.612
+INFO:root:identified 5 clusters (max is 27) with min_sample_prop=1.13 and entropy_ratio=0.612
+INFO:root:identified 5 clusters (max is 27) with min_sample_prop=1.17 and entropy_ratio=0.612
+INFO:root:identified 5 clusters (max is 27) with min_sample_prop=1.2 and entropy_ratio=0.612
+INFO:root:Collected 53990 samples for B6AF1/J with 27 classes
+
+ 13%|█▎        | 8/61 [23:09<2:41:17, 182.60s/it][AINFO:root:running for strain: B6C3F1/J
+INFO:root:Samples: (53990, 22)
+INFO:root:identified 25 clusters (max is 25) with min_sample_prop=0.4 and entropy_ratio=0.92
+INFO:root:identified 22 clusters (max is 25) with min_sample_prop=0.43 and entropy_ratio=0.898
+INFO:root:identified 20 clusters (max is 25) with min_sample_prop=0.47 and entropy_ratio=0.892
+INFO:root:identified 19 clusters (max is 25) with min_sample_prop=0.5 and entropy_ratio=0.901
+INFO:root:identified 19 clusters (max is 25) with min_sample_prop=0.53 and entropy_ratio=0.901
+INFO:root:identified 18 clusters (max is 25) with min_sample_prop=0.57 and entropy_ratio=0.904
+INFO:root:identified 18 clusters (max is 25) with min_sample_prop=0.6 and entropy_ratio=0.904
+INFO:root:identified 17 clusters (max is 25) with min_sample_prop=0.63 and entropy_ratio=0.908
+INFO:root:identified 11 clusters (max is 25) with min_sample_prop=0.67 and entropy_ratio=0.647
+INFO:root:identified 15 clusters (max is 25) with min_sample_prop=0.7 and entropy_ratio=0.919
+INFO:root:identified 15 clusters (max is 25) with min_sample_prop=0.73 and entropy_ratio=0.919
+INFO:root:identified 14 clusters (max is 25) with min_sample_prop=0.77 and entropy_ratio=0.925
+INFO:root:identified 9 clusters (max is 25) with min_sample_prop=0.8 and entropy_ratio=0.651
+INFO:root:identified 9 clusters (max is 25) with min_sample_prop=0.83 and entropy_ratio=0.651
+INFO:root:identified 9 clusters (max is 25) with min_sample_prop=0.87 and entropy_ratio=0.651
+INFO:root:identified 9 clusters (max is 25) with min_sample_prop=0.9 and entropy_ratio=0.651
+INFO:root:identified 9 clusters (max is 25) with min_sample_prop=0.93 and entropy_ratio=0.651
+INFO:root:identified 9 clusters (max is 25) with min_sample_prop=0.97 and entropy_ratio=0.651
+INFO:root:identified 9 clusters (max is 25) with min_sample_prop=1.0 and entropy_ratio=0.651
+INFO:root:identified 8 clusters (max is 25) with min_sample_prop=1.03 and entropy_ratio=0.676
+INFO:root:identified 7 clusters (max is 25) with min_sample_prop=1.07 and entropy_ratio=0.686
+INFO:root:identified 7 clusters (max is 25) with min_sample_prop=1.1 and entropy_ratio=0.686
+INFO:root:identified 7 clusters (max is 25) with min_sample_prop=1.13 and entropy_ratio=0.686
+INFO:root:identified 7 clusters (max is 25) with min_sample_prop=1.17 and entropy_ratio=0.686
+INFO:root:identified 7 clusters (max is 25) with min_sample_prop=1.2 and entropy_ratio=0.686
+INFO:root:Collected 53990 samples for B6C3F1/J with 25 classes
+
+ 15%|█▍        | 9/61 [26:14<2:38:55, 183.38s/it][AINFO:root:running for strain: B6CBAF1/J
+INFO:root:Samples: (53990, 22)
+INFO:root:identified 32 clusters (max is 32) with min_sample_prop=0.4 and entropy_ratio=0.882
+INFO:root:identified 30 clusters (max is 32) with min_sample_prop=0.43 and entropy_ratio=0.883
+INFO:root:identified 29 clusters (max is 32) with min_sample_prop=0.47 and entropy_ratio=0.884
+INFO:root:identified 2 clusters (max is 32) with min_sample_prop=0.5 and entropy_ratio=0.05
+INFO:root:identified 22 clusters (max is 32) with min_sample_prop=0.53 and entropy_ratio=0.878
+INFO:root:identified 21 clusters (max is 32) with min_sample_prop=0.57 and entropy_ratio=0.876
+INFO:root:identified 20 clusters (max is 32) with min_sample_prop=0.6 and entropy_ratio=0.878
+INFO:root:identified 18 clusters (max is 32) with min_sample_prop=0.63 and entropy_ratio=0.871
+INFO:root:identified 17 clusters (max is 32) with min_sample_prop=0.67 and entropy_ratio=0.882
+INFO:root:identified 15 clusters (max is 32) with min_sample_prop=0.7 and entropy_ratio=0.891
+INFO:root:identified 15 clusters (max is 32) with min_sample_prop=0.73 and entropy_ratio=0.891
+INFO:root:identified 15 clusters (max is 32) with min_sample_prop=0.77 and entropy_ratio=0.891
+INFO:root:identified 14 clusters (max is 32) with min_sample_prop=0.8 and entropy_ratio=0.896
+INFO:root:identified 14 clusters (max is 32) with min_sample_prop=0.83 and entropy_ratio=0.896
+INFO:root:identified 14 clusters (max is 32) with min_sample_prop=0.87 and entropy_ratio=0.896
+INFO:root:identified 13 clusters (max is 32) with min_sample_prop=0.9 and entropy_ratio=0.911
+INFO:root:identified 13 clusters (max is 32) with min_sample_prop=0.93 and entropy_ratio=0.911
+INFO:root:identified 13 clusters (max is 32) with min_sample_prop=0.97 and entropy_ratio=0.911
+INFO:root:identified 12 clusters (max is 32) with min_sample_prop=1.0 and entropy_ratio=0.917
+INFO:root:identified 12 clusters (max is 32) with min_sample_prop=1.03 and entropy_ratio=0.917
+INFO:root:identified 12 clusters (max is 32) with min_sample_prop=1.07 and entropy_ratio=0.917
+INFO:root:identified 6 clusters (max is 32) with min_sample_prop=1.1 and entropy_ratio=0.569
+INFO:root:identified 6 clusters (max is 32) with min_sample_prop=1.13 and entropy_ratio=0.569
+INFO:root:identified 6 clusters (max is 32) with min_sample_prop=1.17 and entropy_ratio=0.569
+INFO:root:identified 6 clusters (max is 32) with min_sample_prop=1.2 and entropy_ratio=0.569
+INFO:root:Collected 53990 samples for B6CBAF1/J with 32 classes
+
+ 16%|█▋        | 10/61 [29:29<2:38:55, 186.98s/it][AINFO:root:running for strain: B6D2F1/J
+INFO:root:Samples: (53990, 22)
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.4 and entropy_ratio=0.043
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.43 and entropy_ratio=0.043
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.47 and entropy_ratio=0.043
+INFO:root:identified 14 clusters (max is 14) with min_sample_prop=0.5 and entropy_ratio=0.6
+INFO:root:identified 14 clusters (max is 14) with min_sample_prop=0.53 and entropy_ratio=0.6
+INFO:root:identified 14 clusters (max is 14) with min_sample_prop=0.57 and entropy_ratio=0.6
+INFO:root:identified 13 clusters (max is 14) with min_sample_prop=0.6 and entropy_ratio=0.609
+INFO:root:identified 12 clusters (max is 14) with min_sample_prop=0.63 and entropy_ratio=0.611
+INFO:root:identified 12 clusters (max is 14) with min_sample_prop=0.67 and entropy_ratio=0.611
+INFO:root:identified 12 clusters (max is 14) with min_sample_prop=0.7 and entropy_ratio=0.611
+INFO:root:identified 12 clusters (max is 14) with min_sample_prop=0.73 and entropy_ratio=0.611
+INFO:root:identified 11 clusters (max is 14) with min_sample_prop=0.77 and entropy_ratio=0.582
+INFO:root:identified 11 clusters (max is 14) with min_sample_prop=0.8 and entropy_ratio=0.582
+INFO:root:identified 11 clusters (max is 14) with min_sample_prop=0.83 and entropy_ratio=0.582
+INFO:root:identified 11 clusters (max is 14) with min_sample_prop=0.87 and entropy_ratio=0.582
+INFO:root:identified 10 clusters (max is 14) with min_sample_prop=0.9 and entropy_ratio=0.598
+INFO:root:identified 10 clusters (max is 14) with min_sample_prop=0.93 and entropy_ratio=0.598
+INFO:root:identified 9 clusters (max is 14) with min_sample_prop=0.97 and entropy_ratio=0.599
+INFO:root:identified 8 clusters (max is 14) with min_sample_prop=1.0 and entropy_ratio=0.624
+INFO:root:identified 7 clusters (max is 14) with min_sample_prop=1.03 and entropy_ratio=0.634
+INFO:root:identified 7 clusters (max is 14) with min_sample_prop=1.07 and entropy_ratio=0.634
+INFO:root:identified 7 clusters (max is 14) with min_sample_prop=1.1 and entropy_ratio=0.634
+INFO:root:identified 7 clusters (max is 14) with min_sample_prop=1.13 and entropy_ratio=0.634
+INFO:root:identified 7 clusters (max is 14) with min_sample_prop=1.17 and entropy_ratio=0.634
+INFO:root:identified 7 clusters (max is 14) with min_sample_prop=1.2 and entropy_ratio=0.634
+INFO:root:Collected 53990 samples for B6D2F1/J with 14 classes
+
+ 18%|█▊        | 11/61 [32:25<2:33:02, 183.65s/it][AINFO:root:running for strain: B6SJLF1/J
+INFO:root:Samples: (53990, 22)
+INFO:root:identified 40 clusters (max is 40) with min_sample_prop=0.4 and entropy_ratio=0.926
+INFO:root:identified 36 clusters (max is 40) with min_sample_prop=0.43 and entropy_ratio=0.929
+INFO:root:identified 36 clusters (max is 40) with min_sample_prop=0.47 and entropy_ratio=0.929
+INFO:root:identified 32 clusters (max is 40) with min_sample_prop=0.5 and entropy_ratio=0.93
+INFO:root:identified 30 clusters (max is 40) with min_sample_prop=0.53 and entropy_ratio=0.935
+INFO:root:identified 28 clusters (max is 40) with min_sample_prop=0.57 and entropy_ratio=0.927
+INFO:root:identified 27 clusters (max is 40) with min_sample_prop=0.6 and entropy_ratio=0.929
+INFO:root:identified 19 clusters (max is 40) with min_sample_prop=0.63 and entropy_ratio=0.709
+INFO:root:identified 18 clusters (max is 40) with min_sample_prop=0.67 and entropy_ratio=0.714
+INFO:root:identified 17 clusters (max is 40) with min_sample_prop=0.7 and entropy_ratio=0.728
+INFO:root:identified 17 clusters (max is 40) with min_sample_prop=0.73 and entropy_ratio=0.728
+INFO:root:identified 18 clusters (max is 40) with min_sample_prop=0.77 and entropy_ratio=0.808
+INFO:root:identified 18 clusters (max is 40) with min_sample_prop=0.8 and entropy_ratio=0.808
+INFO:root:identified 18 clusters (max is 40) with min_sample_prop=0.83 and entropy_ratio=0.808
+INFO:root:identified 17 clusters (max is 40) with min_sample_prop=0.87 and entropy_ratio=0.808
+INFO:root:identified 16 clusters (max is 40) with min_sample_prop=0.9 and entropy_ratio=0.809
+INFO:root:identified 16 clusters (max is 40) with min_sample_prop=0.93 and entropy_ratio=0.809
+INFO:root:identified 15 clusters (max is 40) with min_sample_prop=0.97 and entropy_ratio=0.809
+INFO:root:identified 15 clusters (max is 40) with min_sample_prop=1.0 and entropy_ratio=0.809
+INFO:root:identified 14 clusters (max is 40) with min_sample_prop=1.03 and entropy_ratio=0.805
+INFO:root:identified 14 clusters (max is 40) with min_sample_prop=1.07 and entropy_ratio=0.805
+INFO:root:identified 14 clusters (max is 40) with min_sample_prop=1.1 and entropy_ratio=0.805
+INFO:root:identified 14 clusters (max is 40) with min_sample_prop=1.13 and entropy_ratio=0.805
+INFO:root:identified 12 clusters (max is 40) with min_sample_prop=1.17 and entropy_ratio=0.807
+INFO:root:identified 11 clusters (max is 40) with min_sample_prop=1.2 and entropy_ratio=0.81
+INFO:root:Collected 53990 samples for B6SJLF1/J with 40 classes
+
+ 20%|█▉        | 12/61 [35:17<2:27:03, 180.07s/it][AINFO:root:running for strain: BALB/cByJ
+INFO:root:Samples: (53990, 22)
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=0.4 and entropy_ratio=0.096
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=0.43 and entropy_ratio=0.096
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=0.47 and entropy_ratio=0.096
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=0.5 and entropy_ratio=0.136
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=0.53 and entropy_ratio=0.136
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=0.57 and entropy_ratio=0.136
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=0.6 and entropy_ratio=0.136
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=0.63 and entropy_ratio=0.136
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=0.67 and entropy_ratio=0.136
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=0.7 and entropy_ratio=0.136
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=0.73 and entropy_ratio=0.136
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=0.77 and entropy_ratio=0.136
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=0.8 and entropy_ratio=0.136
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=0.83 and entropy_ratio=0.136
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=0.87 and entropy_ratio=0.136
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=0.9 and entropy_ratio=0.136
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=0.93 and entropy_ratio=0.136
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=0.97 and entropy_ratio=0.136
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=1.0 and entropy_ratio=0.136
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=1.03 and entropy_ratio=0.136
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=1.07 and entropy_ratio=0.136
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=1.1 and entropy_ratio=0.136
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=1.13 and entropy_ratio=0.136
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=1.17 and entropy_ratio=0.136
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=1.2 and entropy_ratio=0.136
+INFO:root:Collected 53990 samples for BALB/cByJ with 3 classes
+
+ 21%|██▏       | 13/61 [38:11<2:22:32, 178.18s/it][AINFO:root:running for strain: BALB/cJ
+INFO:root:Samples: (53990, 22)
+INFO:root:identified 32 clusters (max is 32) with min_sample_prop=0.4 and entropy_ratio=0.939
+INFO:root:identified 32 clusters (max is 32) with min_sample_prop=0.43 and entropy_ratio=0.939
+INFO:root:identified 29 clusters (max is 32) with min_sample_prop=0.47 and entropy_ratio=0.935
+INFO:root:identified 28 clusters (max is 32) with min_sample_prop=0.5 and entropy_ratio=0.937
+INFO:root:identified 28 clusters (max is 32) with min_sample_prop=0.53 and entropy_ratio=0.937
+INFO:root:identified 28 clusters (max is 32) with min_sample_prop=0.57 and entropy_ratio=0.937
+INFO:root:identified 23 clusters (max is 32) with min_sample_prop=0.6 and entropy_ratio=0.848
+INFO:root:identified 22 clusters (max is 32) with min_sample_prop=0.63 and entropy_ratio=0.853
+INFO:root:identified 22 clusters (max is 32) with min_sample_prop=0.67 and entropy_ratio=0.853
+INFO:root:identified 19 clusters (max is 32) with min_sample_prop=0.7 and entropy_ratio=0.855
+INFO:root:identified 18 clusters (max is 32) with min_sample_prop=0.73 and entropy_ratio=0.865
+INFO:root:identified 17 clusters (max is 32) with min_sample_prop=0.77 and entropy_ratio=0.868
+INFO:root:identified 17 clusters (max is 32) with min_sample_prop=0.8 and entropy_ratio=0.868
+INFO:root:identified 17 clusters (max is 32) with min_sample_prop=0.83 and entropy_ratio=0.868
+INFO:root:identified 17 clusters (max is 32) with min_sample_prop=0.87 and entropy_ratio=0.868
+INFO:root:identified 16 clusters (max is 32) with min_sample_prop=0.9 and entropy_ratio=0.871
+INFO:root:identified 15 clusters (max is 32) with min_sample_prop=0.93 and entropy_ratio=0.874
+INFO:root:identified 14 clusters (max is 32) with min_sample_prop=0.97 and entropy_ratio=0.877
+INFO:root:identified 14 clusters (max is 32) with min_sample_prop=1.0 and entropy_ratio=0.877
+INFO:root:identified 13 clusters (max is 32) with min_sample_prop=1.03 and entropy_ratio=0.879
+INFO:root:identified 12 clusters (max is 32) with min_sample_prop=1.07 and entropy_ratio=0.885
+INFO:root:identified 12 clusters (max is 32) with min_sample_prop=1.1 and entropy_ratio=0.885
+INFO:root:identified 12 clusters (max is 32) with min_sample_prop=1.13 and entropy_ratio=0.885
+INFO:root:identified 12 clusters (max is 32) with min_sample_prop=1.17 and entropy_ratio=0.885
+INFO:root:identified 12 clusters (max is 32) with min_sample_prop=1.2 and entropy_ratio=0.885
+INFO:root:Collected 53990 samples for BALB/cJ with 32 classes
+
+ 23%|██▎       | 14/61 [41:41<2:27:10, 187.89s/it][AINFO:root:running for strain: BTBR T<+>ltpr3<tf>/J
+INFO:root:Samples: (53990, 22)
+INFO:root:identified 28 clusters (max is 28) with min_sample_prop=0.4 and entropy_ratio=0.59
+INFO:root:identified 25 clusters (max is 28) with min_sample_prop=0.43 and entropy_ratio=0.597
+INFO:root:identified 24 clusters (max is 28) with min_sample_prop=0.47 and entropy_ratio=0.596
+INFO:root:identified 21 clusters (max is 28) with min_sample_prop=0.5 and entropy_ratio=0.602
+INFO:root:identified 20 clusters (max is 28) with min_sample_prop=0.53 and entropy_ratio=0.609
+INFO:root:identified 16 clusters (max is 28) with min_sample_prop=0.57 and entropy_ratio=0.636
+INFO:root:identified 13 clusters (max is 28) with min_sample_prop=0.6 and entropy_ratio=0.654
+INFO:root:identified 14 clusters (max is 28) with min_sample_prop=0.63 and entropy_ratio=0.64
+INFO:root:identified 13 clusters (max is 28) with min_sample_prop=0.67 and entropy_ratio=0.654
+INFO:root:identified 13 clusters (max is 28) with min_sample_prop=0.7 and entropy_ratio=0.654
+INFO:root:identified 13 clusters (max is 28) with min_sample_prop=0.73 and entropy_ratio=0.654
+INFO:root:identified 12 clusters (max is 28) with min_sample_prop=0.77 and entropy_ratio=0.664
+INFO:root:identified 10 clusters (max is 28) with min_sample_prop=0.8 and entropy_ratio=0.678
+INFO:root:identified 10 clusters (max is 28) with min_sample_prop=0.83 and entropy_ratio=0.678
+INFO:root:identified 10 clusters (max is 28) with min_sample_prop=0.87 and entropy_ratio=0.678
+INFO:root:identified 10 clusters (max is 28) with min_sample_prop=0.9 and entropy_ratio=0.678
+INFO:root:identified 9 clusters (max is 28) with min_sample_prop=0.93 and entropy_ratio=0.711
+INFO:root:identified 9 clusters (max is 28) with min_sample_prop=0.97 and entropy_ratio=0.711
+INFO:root:identified 9 clusters (max is 28) with min_sample_prop=1.0 and entropy_ratio=0.711
+INFO:root:identified 9 clusters (max is 28) with min_sample_prop=1.03 and entropy_ratio=0.711
+INFO:root:identified 9 clusters (max is 28) with min_sample_prop=1.07 and entropy_ratio=0.711
+INFO:root:identified 8 clusters (max is 28) with min_sample_prop=1.1 and entropy_ratio=0.723
+INFO:root:identified 8 clusters (max is 28) with min_sample_prop=1.13 and entropy_ratio=0.723
+INFO:root:identified 8 clusters (max is 28) with min_sample_prop=1.17 and entropy_ratio=0.723
+INFO:root:identified 8 clusters (max is 28) with min_sample_prop=1.2 and entropy_ratio=0.723
+INFO:root:Collected 53990 samples for BTBR T<+>ltpr3<tf>/J with 28 classes
+
+ 25%|██▍       | 15/61 [44:27<2:18:54, 181.18s/it][AINFO:root:running for strain: C3H/HeJ
+INFO:root:Samples: (53990, 22)
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=0.4 and entropy_ratio=0.28
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=0.43 and entropy_ratio=0.28
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=0.47 and entropy_ratio=0.28
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=0.5 and entropy_ratio=0.28
+INFO:root:identified 3 clusters (max is 3) with min_sample_prop=0.53 and entropy_ratio=0.28
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=0.57 and entropy_ratio=0.397
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=0.6 and entropy_ratio=0.397
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=0.63 and entropy_ratio=0.397
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=0.67 and entropy_ratio=0.397
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=0.7 and entropy_ratio=0.397
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=0.73 and entropy_ratio=0.397
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=0.77 and entropy_ratio=0.397
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=0.8 and entropy_ratio=0.397
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=0.83 and entropy_ratio=0.397
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=0.87 and entropy_ratio=0.397
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=0.9 and entropy_ratio=0.397
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=0.93 and entropy_ratio=0.397
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=0.97 and entropy_ratio=0.397
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=1.0 and entropy_ratio=0.397
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=1.03 and entropy_ratio=0.397
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=1.07 and entropy_ratio=0.397
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=1.1 and entropy_ratio=0.397
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=1.13 and entropy_ratio=0.397
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=1.17 and entropy_ratio=0.397
+INFO:root:identified 2 clusters (max is 3) with min_sample_prop=1.2 and entropy_ratio=0.397
+INFO:root:Collected 53990 samples for C3H/HeJ with 3 classes
+
+ 26%|██▌       | 16/61 [47:33<2:17:04, 182.78s/it][AINFO:root:running for strain: C3H/HeOuJ
+INFO:root:Samples: (53990, 22)
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.4 and entropy_ratio=0.235
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.43 and entropy_ratio=0.235
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.47 and entropy_ratio=0.235
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.5 and entropy_ratio=0.235
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.53 and entropy_ratio=0.235
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.57 and entropy_ratio=0.235
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.6 and entropy_ratio=0.235
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.63 and entropy_ratio=0.235
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.67 and entropy_ratio=0.235
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.7 and entropy_ratio=0.235
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.73 and entropy_ratio=0.235
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.77 and entropy_ratio=0.235
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.8 and entropy_ratio=0.235
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.83 and entropy_ratio=0.235
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.87 and entropy_ratio=0.235
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.9 and entropy_ratio=0.235
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.93 and entropy_ratio=0.235
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.97 and entropy_ratio=0.235
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=1.0 and entropy_ratio=0.235
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=1.03 and entropy_ratio=0.235
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=1.07 and entropy_ratio=0.235
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=1.1 and entropy_ratio=0.235
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=1.13 and entropy_ratio=0.235
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=1.17 and entropy_ratio=0.235
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=1.2 and entropy_ratio=0.235
+INFO:root:Collected 53990 samples for C3H/HeOuJ with 2 classes
+
+ 28%|██▊       | 17/61 [50:52<2:17:38, 187.70s/it][AINFO:root:running for strain: C3HeB/FeJ
+INFO:root:Samples: (53990, 22)
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.4 and entropy_ratio=0.419
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.43 and entropy_ratio=0.419
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.47 and entropy_ratio=0.419
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.5 and entropy_ratio=0.419
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.53 and entropy_ratio=0.419
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.57 and entropy_ratio=0.419
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.6 and entropy_ratio=0.419
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.63 and entropy_ratio=0.419
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.67 and entropy_ratio=0.419
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.7 and entropy_ratio=0.419
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.73 and entropy_ratio=0.419
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.77 and entropy_ratio=0.419
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.8 and entropy_ratio=0.419
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.83 and entropy_ratio=0.419
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.87 and entropy_ratio=0.419
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.9 and entropy_ratio=0.419
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.93 and entropy_ratio=0.419
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.97 and entropy_ratio=0.419
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=1.0 and entropy_ratio=0.419
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=1.03 and entropy_ratio=0.419
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=1.07 and entropy_ratio=0.419
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=1.1 and entropy_ratio=0.419
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=1.13 and entropy_ratio=0.419
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=1.17 and entropy_ratio=0.419
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=1.2 and entropy_ratio=0.419
+INFO:root:Collected 53990 samples for C3HeB/FeJ with 2 classes
+
+ 30%|██▉       | 18/61 [53:59<2:14:11, 187.25s/it][AINFO:root:running for strain: C57BL/10SnJ
+INFO:root:Samples: (53990, 22)
+INFO:root:identified 16 clusters (max is 16) with min_sample_prop=0.4 and entropy_ratio=0.552
+INFO:root:identified 23 clusters (max is 23) with min_sample_prop=0.43 and entropy_ratio=0.892
+INFO:root:identified 22 clusters (max is 23) with min_sample_prop=0.47 and entropy_ratio=0.884
+INFO:root:identified 21 clusters (max is 23) with min_sample_prop=0.5 and entropy_ratio=0.887
+INFO:root:identified 21 clusters (max is 23) with min_sample_prop=0.53 and entropy_ratio=0.887
+INFO:root:identified 19 clusters (max is 23) with min_sample_prop=0.57 and entropy_ratio=0.892
+INFO:root:identified 18 clusters (max is 23) with min_sample_prop=0.6 and entropy_ratio=0.895
+INFO:root:identified 17 clusters (max is 23) with min_sample_prop=0.63 and entropy_ratio=0.907
+INFO:root:identified 16 clusters (max is 23) with min_sample_prop=0.67 and entropy_ratio=0.912
+INFO:root:identified 16 clusters (max is 23) with min_sample_prop=0.7 and entropy_ratio=0.912
+INFO:root:identified 15 clusters (max is 23) with min_sample_prop=0.73 and entropy_ratio=0.916
+INFO:root:identified 15 clusters (max is 23) with min_sample_prop=0.77 and entropy_ratio=0.916
+INFO:root:identified 13 clusters (max is 23) with min_sample_prop=0.8 and entropy_ratio=0.913
+INFO:root:identified 13 clusters (max is 23) with min_sample_prop=0.83 and entropy_ratio=0.913
+INFO:root:identified 13 clusters (max is 23) with min_sample_prop=0.87 and entropy_ratio=0.913
+INFO:root:identified 13 clusters (max is 23) with min_sample_prop=0.9 and entropy_ratio=0.913
+INFO:root:identified 13 clusters (max is 23) with min_sample_prop=0.93 and entropy_ratio=0.913
+INFO:root:identified 11 clusters (max is 23) with min_sample_prop=0.97 and entropy_ratio=0.909
+INFO:root:identified 11 clusters (max is 23) with min_sample_prop=1.0 and entropy_ratio=0.909
+INFO:root:identified 11 clusters (max is 23) with min_sample_prop=1.03 and entropy_ratio=0.909
+INFO:root:identified 10 clusters (max is 23) with min_sample_prop=1.07 and entropy_ratio=0.918
+INFO:root:identified 10 clusters (max is 23) with min_sample_prop=1.1 and entropy_ratio=0.918
+INFO:root:identified 10 clusters (max is 23) with min_sample_prop=1.13 and entropy_ratio=0.918
+INFO:root:identified 10 clusters (max is 23) with min_sample_prop=1.17 and entropy_ratio=0.918
+INFO:root:identified 10 clusters (max is 23) with min_sample_prop=1.2 and entropy_ratio=0.918
+INFO:root:Collected 53990 samples for C57BL/10SnJ with 23 classes
+
+ 31%|███       | 19/61 [56:44<2:06:24, 180.58s/it][AINFO:root:running for strain: C57BL/6J
+INFO:root:Samples: (53990, 22)
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.4 and entropy_ratio=0.048
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.43 and entropy_ratio=0.048
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.47 and entropy_ratio=0.048
+INFO:root:identified 2 clusters (max is 2) with min_sample_prop=0.5 and entropy_ratio=0.048
+INFO:root:identified 13 clusters (max is 13) with min_sample_prop=0.53 and entropy_ratio=0.586
+INFO:root:identified 12 clusters (max is 13) with min_sample_prop=0.57 and entropy_ratio=0.594
+INFO:root:identified 12 clusters (max is 13) with min_sample_prop=0.6 and entropy_ratio=0.594
+INFO:root:identified 12 clusters (max is 13) with min_sample_prop=0.63 and entropy_ratio=0.594
+INFO:root:identified 11 clusters (max is 13) with min_sample_prop=0.67 and entropy_ratio=0.614
+INFO:root:identified 11 clusters (max is 13) with min_sample_prop=0.7 and entropy_ratio=0.614
+INFO:root:identified 9 clusters (max is 13) with min_sample_prop=0.73 and entropy_ratio=0.637
+INFO:root:identified 9 clusters (max is 13) with min_sample_prop=0.77 and entropy_ratio=0.637
+INFO:root:identified 9 clusters (max is 13) with min_sample_prop=0.8 and entropy_ratio=0.637
+INFO:root:identified 9 clusters (max is 13) with min_sample_prop=0.83 and entropy_ratio=0.637
+INFO:root:identified 9 clusters (max is 13) with min_sample_prop=0.87 and entropy_ratio=0.637
+INFO:root:identified 9 clusters (max is 13) with min_sample_prop=0.9 and entropy_ratio=0.637
+INFO:root:identified 9 clusters (max is 13) with min_sample_prop=0.93 and entropy_ratio=0.637
+INFO:root:identified 9 clusters (max is 13) with min_sample_prop=0.97 and entropy_ratio=0.637
+INFO:root:identified 9 clusters (max is 13) with min_sample_prop=1.0 and entropy_ratio=0.637
+INFO:root:identified 9 clusters (max is 13) with min_sample_prop=1.03 and entropy_ratio=0.637
+INFO:root:identified 9 clusters (max is 13) with min_sample_prop=1.07 and entropy_ratio=0.637
+INFO:root:identified 9 clusters (max is 13) with min_sample_prop=1.1 and entropy_ratio=0.637
+INFO:root:identified 9 clusters (max is 13) with min_sample_prop=1.13 and entropy_ratio=0.637
+INFO:root:identified 9 clusters (max is 13) with min_sample_prop=1.17 and entropy_ratio=0.637
+INFO:root:identified 9 clusters (max is 13) with min_sample_prop=1.2 and entropy_ratio=0.637
+INFO:root:Collected 53990 samples for C57BL/6J with 13 classes
+
+ 33%|███▎      | 20/61 [59:50<2:04:34, 182.30s/it][AINFO:root:running for strain: C57BL/6NJ
+INFO:root:Samples: (53990, 22)
+INFO:root:identified 22 clusters (max is 22) with min_sample_prop=0.4 and entropy_ratio=0.827
+INFO:root:identified 20 clusters (max is 22) with min_sample_prop=0.43 and entropy_ratio=0.831
+INFO:root:identified 20 clusters (max is 22) with min_sample_prop=0.47 and entropy_ratio=0.831
+INFO:root:identified 18 clusters (max is 22) with min_sample_prop=0.5 and entropy_ratio=0.894
+INFO:root:identified 18 clusters (max is 22) with min_sample_prop=0.53 and entropy_ratio=0.894
+INFO:root:identified 13 clusters (max is 22) with min_sample_prop=0.57 and entropy_ratio=0.75
+INFO:root:identified 10 clusters (max is 22) with min_sample_prop=0.6 and entropy_ratio=0.659
+INFO:root:identified 10 clusters (max is 22) with min_sample_prop=0.63 and entropy_ratio=0.659
+INFO:root:identified 10 clusters (max is 22) with min_sample_prop=0.67 and entropy_ratio=0.659
+INFO:root:identified 10 clusters (max is 22) with min_sample_prop=0.7 and entropy_ratio=0.659
+INFO:root:identified 10 clusters (max is 22) with min_sample_prop=0.73 and entropy_ratio=0.659
+INFO:root:identified 10 clusters (max is 22) with min_sample_prop=0.77 and entropy_ratio=0.659
+INFO:root:identified 10 clusters (max is 22) with min_sample_prop=0.8 and entropy_ratio=0.659
+INFO:root:identified 10 clusters (max is 22) with min_sample_prop=0.83 and entropy_ratio=0.659
+INFO:root:identified 9 clusters (max is 22) with min_sample_prop=0.87 and entropy_ratio=0.667
+INFO:root:identified 9 clusters (max is 22) with min_sample_prop=0.9 and entropy_ratio=0.667
+INFO:root:identified 9 clusters (max is 22) with min_sample_prop=0.93 and entropy_ratio=0.667
+INFO:root:identified 9 clusters (max is 22) with min_sample_prop=0.97 and entropy_ratio=0.667
+INFO:root:identified 9 clusters (max is 22) with min_sample_prop=1.0 and entropy_ratio=0.667
+INFO:root:identified 8 clusters (max is 22) with min_sample_prop=1.03 and entropy_ratio=0.674
+INFO:root:identified 7 clusters (max is 22) with min_sample_prop=1.07 and entropy_ratio=0.697
+INFO:root:identified 7 clusters (max is 22) with min_sample_prop=1.1 and entropy_ratio=0.697
+INFO:root:identified 7 clusters (max is 22) with min_sample_prop=1.13 and entropy_ratio=0.697
+INFO:root:identified 7 clusters (max is 22) with min_sample_prop=1.17 and entropy_ratio=0.697
+INFO:root:identified 7 clusters (max is 22) with min_sample_prop=1.2 and entropy_ratio=0.697
+INFO:root:Collected 53990 samples for C57BL/6NJ with 22 classes
+
+ 34%|███▍      | 21/61 [1:02:54<2:01:52, 182.82s/it][AINFO:root:running for strain: C57BLKS/J
+INFO:root:Samples: (53990, 22)

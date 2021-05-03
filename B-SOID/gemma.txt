@@ -1,0 +1,272 @@
+N E X T F L O W  ~  version 20.10.0
+Launching `TheJacksonLaboratory/mousegwas` [compassionate_shannon] - revision: 80efe1e48e [master]
+[-        ] process > GWAS       -
+[-        ] process > shuffle    -
+[-        ] process > collectShf -
+[-        ] process > postp      -
+
+[-        ] process > GWAS        [  0%] 0 of 1
+[-        ] process > shuffle     -
+[-        ] process > collectShf  -
+[-        ] process > postp       -
+[-        ] process > runINRICH   -
+[-        ] process > plotheatmap -
+
+executor >  slurm (1)
+[ad/ff8347] process > GWAS (1)    [  0%] 0 of 1
+[a9/e7d63a] process > shuffle (9) [100%] 10 of 10, cached: 10 ✔
+[c6/4930dc] process > collectShf  [100%] 1 of 1, cached: 1 ✔
+[-        ] process > postp       -
+[-        ] process > runINRICH   -
+[-        ] process > plotheatmap -
+
+executor >  slurm (1)
+[ad/ff8347] process > GWAS (1)    [  0%] 0 of 1
+[a9/e7d63a] process > shuffle (9) [100%] 10 of 10, cached: 10 ✔
+[c6/4930dc] process > collectShf  [100%] 1 of 1, cached: 1 ✔
+[-        ] process > postp       -
+[-        ] process > runINRICH   -
+[-        ] process > plotheatmap -
+
+executor >  slurm (1)
+[ad/ff8347] process > GWAS (1)    [  0%] 0 of 1
+[a9/e7d63a] process > shuffle (9) [100%] 10 of 10, cached: 10 ✔
+[c6/4930dc] process > collectShf  [100%] 1 of 1, cached: 1 ✔
+[-        ] process > postp       -
+[-        ] process > runINRICH   -
+[-        ] process > plotheatmap -
+WARN: [SLURM] queue (compute) status cannot be fetched
+- cmd executed: squeue --noheader -o %i %t -t all -p compute -u laadd
+- exit status : 1
+- output      :
+  slurm_load_jobs error: Socket timed out on send/recv operation
+
+executor >  slurm (1)
+[ad/ff8347] process > GWAS (1)    [100%] 1 of 1 ✔
+[a9/e7d63a] process > shuffle (9) [100%] 10 of 10, cached: 10 ✔
+[c6/4930dc] process > collectShf  [100%] 1 of 1, cached: 1 ✔
+[-        ] process > postp       [  0%] 0 of 1
+[-        ] process > runINRICH   -
+[-        ] process > plotheatmap -
+
+
+
+
+
+
+executor >  slurm (2)
+[ad/ff8347] process > GWAS (1)    [100%] 1 of 1 ✔
+[a9/e7d63a] process > shuffle (9) [100%] 10 of 10, cached: 10 ✔
+[c6/4930dc] process > collectShf  [100%] 1 of 1, cached: 1 ✔
+[87/2a84f2] process > postp (1)   [  0%] 0 of 1
+[-        ] process > runINRICH   -
+[-        ] process > plotheatmap -
+
+
+
+
+
+
+executor >  slurm (2)
+[ad/ff8347] process > GWAS (1)    [100%] 1 of 1 ✔
+[a9/e7d63a] process > shuffle (9) [100%] 10 of 10, cached: 10 ✔
+[c6/4930dc] process > collectShf  [100%] 1 of 1, cached: 1 ✔
+[87/2a84f2] process > postp (1)   [  0%] 0 of 1
+[-        ] process > runINRICH   -
+[-        ] process > plotheatmap -
+
+executor >  slurm (3)
+[ad/ff8347] process > GWAS (1)    [100%] 1 of 1 ✔
+[a9/e7d63a] process > shuffle (9) [100%] 10 of 10, cached: 10 ✔
+[c6/4930dc] process > collectShf  [100%] 1 of 1, cached: 1 ✔
+[3e/1f6f2c] process > postp (1)   [ 50%] 1 of 2, failed: 1, retries: 1
+[-        ] process > runINRICH   -
+[-        ] process > plotheatmap -
+[87/2a84f2] NOTE: Process `postp (1)` terminated with an error exit status (1) -- Execution is retried (1)
+
+executor >  slurm (3)
+[ad/ff8347] process > GWAS (1)    [100%] 1 of 1 ✔
+[a9/e7d63a] process > shuffle (9) [100%] 10 of 10, cached: 10 ✔
+[c6/4930dc] process > collectShf  [100%] 1 of 1, cached: 1 ✔
+[3e/1f6f2c] process > postp (1)   [ 50%] 1 of 2, failed: 1, retries: 1
+[-        ] process > runINRICH   -
+[-        ] process > plotheatmap -
+[87/2a84f2] NOTE: Process `postp (1)` terminated with an error exit status (1) -- Execution is retried (1)
+
+executor >  slurm (3)
+[ad/ff8347] process > GWAS (1)    [100%] 1 of 1 ✔
+[a9/e7d63a] process > shuffle (9) [100%] 10 of 10, cached: 10 ✔
+[c6/4930dc] process > collectShf  [100%] 1 of 1, cached: 1 ✔
+[3e/1f6f2c] process > postp (1)   [ 67%] 2 of 3, failed: 2, retries: 2
+[-        ] process > runINRICH   -
+[-        ] process > plotheatmap -
+[87/2a84f2] NOTE: Process `postp (1)` terminated with an error exit status (1) -- Execution is retried (1)
+[3e/1f6f2c] NOTE: Process `postp (1)` terminated with an error exit status (1) -- Execution is retried (2)
+
+executor >  slurm (4)
+[ad/ff8347] process > GWAS (1)    [100%] 1 of 1 ✔
+[a9/e7d63a] process > shuffle (9) [100%] 10 of 10, cached: 10 ✔
+[c6/4930dc] process > collectShf  [100%] 1 of 1, cached: 1 ✔
+[67/83255f] process > postp (1)   [ 67%] 2 of 3, failed: 2, retries: 2
+[-        ] process > runINRICH   -
+[-        ] process > plotheatmap -
+[87/2a84f2] NOTE: Process `postp (1)` terminated with an error exit status (1) -- Execution is retried (1)
+[3e/1f6f2c] NOTE: Process `postp (1)` terminated with an error exit status (1) -- Execution is retried (2)
+
+executor >  slurm (4)
+[ad/ff8347] process > GWAS (1)    [100%] 1 of 1 ✔
+[a9/e7d63a] process > shuffle (9) [100%] 10 of 10, cached: 10 ✔
+[c6/4930dc] process > collectShf  [100%] 1 of 1, cached: 1 ✔
+[67/83255f] process > postp (1)   [ 67%] 2 of 3, failed: 2, retries: 2
+[-        ] process > runINRICH   -
+[-        ] process > plotheatmap -
+[3e/1f6f2c] NOTE: Process `postp (1)` terminated with an error exit status (1) -- Execution is retried (2)
+
+
+executor >  slurm (4)
+[ad/ff8347] process > GWAS (1)    [100%] 1 of 1 ✔
+[a9/e7d63a] process > shuffle (9) [100%] 10 of 10, cached: 10 ✔
+[c6/4930dc] process > collectShf  [100%] 1 of 1, cached: 1 ✔
+[67/83255f] process > postp (1)   [ 67%] 2 of 3, failed: 2, retries: 2
+[-        ] process > runINRICH   -
+[-        ] process > plotheatmap -
+[3e/1f6f2c] NOTE: Process `postp (1)` terminated with an error exit status (1) -- Execution is retried (2)
+Error executing process > 'postp (1)'
+
+Caused by:
+  Process `postp (1)` terminated with an error exit status (1)
+
+Command executed:
+
+  outval=
+  echo $outval > pvalue-threshold.txt
+  Rscript -e 'source(file=system.file("exec/postprocess_mv.R", package="mousegwas"))' -p postprocess_nomv -c 7 --external_inrich -s 10000 --nomv --pvalthr $(awk -v o=$outval 'BEGIN{print -(log(o)/log(10))}') --peakcorr 0.2 -o outdir -i 20 -j 200 -y gemma_config.yaml
+
+Command exit status:
+  1
+
+Command output:
+  (empty)
+
+Command error:
+  Bioconductor version 3.10 (BiocManager 1.30.10), ?BiocManager::install for help
+  Bioconductor version '3.10' is out-of-date; the current release version '3.12'
+    is available with R version '4.0'; see https://bioconductor.org/install
+  
+  Attaching package: ‘dplyr’
+  
+  The following objects are masked from ‘package:plyr’:
+  
+      arrange, count, desc, failwith, id, mutate, rename, summarise,
+      summarize
+  
+  The following objects are masked from ‘package:stats’:
+  
+      filter, lag
+  
+  The following objects are masked from ‘package:base’:
+  
+      intersect, setdiff, setequal, union
+  
+  Loading required package: viridisLite
+  
+  Attaching package: ‘gplots’
+  
+  The following object is masked from ‘package:stats’:
+  
+      lowess
+  
+  Error: lexical error: invalid char in json text.
+            ostprocess_nomv", "pvalthr": Infinity, "sample": 10000, "set
+                       (right here) ------^
+  Execution halted
+
+Work dir:
+  /gpfs/ctgs0/fastscratch/laadd/work/67/83255f83e79a866f81130b312e38e4
+
+Tip: you can try to figure out what's wrong by changing to the process work dir and showing the script file named `.command.sh`
+
+executor >  slurm (4)
+[ad/ff8347] process > GWAS (1)    [100%] 1 of 1 ✔
+[a9/e7d63a] process > shuffle (9) [100%] 10 of 10, cached: 10 ✔
+[c6/4930dc] process > collectShf  [100%] 1 of 1, cached: 1 ✔
+[67/83255f] process > postp (1)   [100%] 3 of 3, failed: 3, retries: 2 ✘
+[-        ] process > runINRICH   -
+[-        ] process > plotheatmap -
+[3e/1f6f2c] NOTE: Process `postp (1)` terminated with an error exit status (1) -- Execution is retried (2)
+Error executing process > 'postp (1)'
+
+Caused by:
+  Process `postp (1)` terminated with an error exit status (1)
+
+Command executed:
+
+  outval=
+  echo $outval > pvalue-threshold.txt
+  Rscript -e 'source(file=system.file("exec/postprocess_mv.R", package="mousegwas"))' -p postprocess_nomv -c 7 --external_inrich -s 10000 --nomv --pvalthr $(awk -v o=$outval 'BEGIN{print -(log(o)/log(10))}') --peakcorr 0.2 -o outdir -i 20 -j 200 -y gemma_config.yaml
+
+Command exit status:
+  1
+
+Command output:
+  (empty)
+
+Command error:
+  Bioconductor version 3.10 (BiocManager 1.30.10), ?BiocManager::install for help
+  Bioconductor version '3.10' is out-of-date; the current release version '3.12'
+    is available with R version '4.0'; see https://bioconductor.org/install
+  
+  Attaching package: ‘dplyr’
+  
+  The following objects are masked from ‘package:plyr’:
+  
+      arrange, count, desc, failwith, id, mutate, rename, summarise,
+      summarize
+  
+  The following objects are masked from ‘package:stats’:
+  
+      filter, lag
+  
+  The following objects are masked from ‘package:base’:
+  
+      intersect, setdiff, setequal, union
+  
+  Loading required package: viridisLite
+  
+  Attaching package: ‘gplots’
+  
+  The following object is masked from ‘package:stats’:
+  
+      lowess
+  
+  Error: lexical error: invalid char in json text.
+            ostprocess_nomv", "pvalthr": Infinity, "sample": 10000, "set
+                       (right here) ------^
+  Execution halted
+
+Work dir:
+  /gpfs/ctgs0/fastscratch/laadd/work/67/83255f83e79a866f81130b312e38e4
+
+Tip: you can try to figure out what's wrong by changing to the process work dir and showing the script file named `.command.sh`
+
+-------------------------------------------------------------
+SUMNER/WINTER EPILOGUE
+-------------------------------------------------------------
+Job ID: 7700908
+Cluster: slurm_cluster
+User/Group: root/jaxuser
+State: FAILED (exit code 1)
+Nodes: 1
+Cores per node: 8
+CPU Utilized: 00:02:39
+CPU Efficiency: 0.04% of 4-22:04:40 core-walltime
+Job Wall-clock time: 14:45:35
+Memory Utilized: 711.80 MB
+Memory Efficiency: 8.90% of 7.81 GB
+-------------------------------------------------------------
+       JobID  User   State    CPUTime Exit     MaxRSS        NodeList  Partition                   ReqTRES              Submit               Start                 End    Elapsed 
+------------ ----- ------- ---------- ---- ---------- --------------- ---------- ------------------------- ------------------- ------------------- ------------------- ---------- 
+7700908      laadd  FAILED 4-22:04:40  1:0                  sumner087    compute billing=8,cpu=8,mem=8000+ 2021-05-02T17:39:19 2021-05-02T17:39:21 2021-05-03T08:24:56   14:45:35 
+7700908.bat+        FAILED 4-22:04:40  1:0    711.80M       sumner087                                      2021-05-02T17:39:21 2021-05-02T17:39:21 2021-05-03T08:24:56   14:45:35 
+7700908.ext+       COMPLE+ 4-22:04:40  0:0          0       sumner087                                      2021-05-02T17:39:21 2021-05-02T17:39:21 2021-05-03T08:24:56   14:45:35 
+-------------------------------------------------------------

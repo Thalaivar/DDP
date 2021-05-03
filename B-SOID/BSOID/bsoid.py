@@ -156,8 +156,10 @@ class BSOID:
             
             logging.info(f"extracted {len(strain_fdata)} animal data from strain {group_strain}")
             return (strain_fdata, group_strain)
-            
-        filtered_data = Parallel(n_jobs=-1)(delayed(filter_for_strain)(*all_data[i], n) for i in tqdm(range(len(all_data))))
+        
+        import psutil
+        num_cpus = psutil.cpu_count(logical=False)    
+        filtered_data = Parallel(n_jobs=num_cpus)(delayed(filter_for_strain)(*all_data[i], n) for i in tqdm(range(len(all_data))))
         
         empty_idx = [i for i, data in enumerate(filtered_data) if len(data[0]) == 0]
         for idx in empty_idx:
