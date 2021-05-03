@@ -104,6 +104,7 @@ def trim_data(x, y, conf, fps, end_trim=2, clip_window=30):
             # take first clip_window after trimming
             clip_window *= (60 * fps)
             start_idx = end_trim * 60 * fps
+            conf = conf[start_idx:start_idx + clip_window, :]
             x = x[start_idx:start_idx + clip_window, :]
             y = y[start_idx:start_idx + clip_window, :]
 
