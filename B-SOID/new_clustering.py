@@ -92,11 +92,15 @@ def cluster_similarity(cluster1, cluster2):
     model = LinearDiscriminantAnalysis(solver="svd", store_covariance=True)
     model.fit(X, y)
     
-    w, cov = model.coef_.reshape(-1,1), model.covariance_
-    mu1, mu2 = [mu.reshape(-1,1) for mu in model.means_]
+    # w, cov = model.coef_.reshape(-1,1), model.covariance_
+    # mu1, mu2 = [mu.reshape(-1,1) for mu in model.means_]
 
-    sep = 0.5 * (np.dot(w.T, (mu1-mu2)) ** 2) / np.dot(w.T, np.dot(cov, w))
-    return sep
+    # sep = 0.5 * (np.dot(w.T, (mu1 - mu2)) ** 2) / np.dot(w.T, np.dot(cov, w))
+    # return sep
+
+    Xproj = model.transform(X)
+    y_preds = (Xproj < 0).astype(int)
+    return roc_auc_score(y, y_preds)
 
 def pairwise_similarity(feats, embedding, labels):
     import ray

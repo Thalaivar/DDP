@@ -2,7 +2,7 @@
 #SBATCH --job-name=strainwise
 #SBATCH --output=strainwise.txt
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=16
+#SBATCH --cpus-per-task=24
 #SBATCH --time=72:00:00
 #SBATCH --partition=compute
 #SBATCH --qos=batch
