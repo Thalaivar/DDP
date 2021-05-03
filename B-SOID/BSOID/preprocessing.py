@@ -95,11 +95,17 @@ def trim_data(x, y, conf, fps, end_trim=2, clip_window=30):
         conf, x, y = conf[end_trim:-end_trim, :], x[end_trim:-end_trim, :], y[end_trim:-end_trim, :]
 
     if clip_window > 0:
-            clip_window = clip_window * 60 * fps // 2
-            mid_idx = conf.shape[0] // 2
-            conf = conf[mid_idx - clip_window : mid_idx + clip_window, :]
-            x = x[mid_idx - clip_window : mid_idx + clip_window, :]
-            y = y[mid_idx - clip_window : mid_idx + clip_window, :]
+            # clip_window = clip_window * 60 * fps // 2
+            # mid_idx = conf.shape[0] // 2
+            # conf = conf[mid_idx - clip_window : mid_idx + clip_window, :]
+            # x = x[mid_idx - clip_window : mid_idx + clip_window, :]
+            # y = y[mid_idx - clip_window : mid_idx + clip_window, :]
+            
+            # take first clip_window after trimming
+            clip_window *= (60 * fps)
+            start_idx = end_trim * 60 * fps
+            x = x[start_idx:start_idx + clip_window, :]
+            y = y[start_idx:start_idx + clip_window, :]
 
     return (x, y, conf)
 
