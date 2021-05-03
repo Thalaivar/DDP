@@ -14,4 +14,4 @@ source /home/laadd/.bashrc
 conda activate bsoid 
 
 cd /home/laadd/DDP/B-SOID/
-python scripts.py --script calculate_pairwise_similarity --thresh 0.6 --save-dir /home/laad/data
+python scripts.py --script calculate_pairwise_similarity --thresh 0.6 --save-dir /home/laadd/data
