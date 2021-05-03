@@ -26,7 +26,7 @@ THRESH = 0.85
 CV = StratifiedKFold(n_splits=5, shuffle=True)
 
 GROUPWISE_UMAP_PARAMS = {
-    "n_neighbors": 60,
+    "n_neighbors": 50,
     "n_components": 3
 }
 GROUPWISE_CLUSTER_RNG = [1, 5, 25]
@@ -54,9 +54,10 @@ def cluster_strainwise(config_file, save_dir):
     embedding, labels, pbar = {}, {}, tqdm(total=len(feats))
     for strain, data in feats.items():
         logging.info(f"running for strain: {strain}")
-        embedding[strain] = reduce_data(data)
-        results = cluster_with_hdbscan(embedding[strain], STRAINWISE_CLUSTER_RNG, HDBSCAN_PARAMS)
-        labels[strain] = [results[2], results[3]]
+        embed_ = reduce_data(data)
+        results = cluster_with_hdbscan(embedding[strain], STRAINWISE_CLUSTER_RNG, HDBSCAN_PARAMS)[0]
+        embedding[strain] = embed_[results >= 0]
+        labels[strain] = results[results >= 0]
         pbar.update(1)
     
     return embedding, labels
@@ -199,17 +200,17 @@ def main():
     save_dir = "/home/laadd/data"
     config_file = "./config/config.yaml"
 
-    # bsoid = BSOID(config_file)
-    # bsoid.load_from_dataset(n=10)
-    # feats = bsoid.load_features(collect=False)
+    bsoid = BSOID(config_file)
+    bsoid.load_from_dataset(n=10)
+    feats = bsoid.load_features(collect=False)
 
-    # embedding, labels = cluster_strainwise(config_file, save_dir)
+    embedding, labels = cluster_strainwise(config_file, save_dir)
 
-    # with open(os.path.join(save_dir, "strainwise_labels.sav"), "wb") as f:
-    #     joblib.dump([feats, embedding, labels], f)
+    with open(os.path.join(save_dir, "strainwise_labels.sav"), "wb") as f:
+        joblib.dump([feats, embedding, labels], f)
 
-    with open(os.path.join(save_dir, "strainwise_labels.sav"), "rb") as f:
-        feats, embedding, labels = joblib.load(f)
+    # with open(os.path.join(save_dir, "strainwise_labels.sav"), "rb") as f:
+    #     feats, embedding, labels = joblib.load(f)
 
     sim, strain2clusters = pairwise_similarity(feats, embedding, labels)
 
@@ -239,5 +240,5 @@ if __name__ == "__main__":
     import logging
     logging.basicConfig(level=logging.INFO)
 
-    # run()
-    main()
+    run()
+    # main()
