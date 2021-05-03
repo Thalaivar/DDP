@@ -82,12 +82,12 @@ def likelihood_filter(data: pd.DataFrame, fps, conf_threshold=0.3, end_trim=2, c
 
     return {'conf': conf, 'x': x, 'y': y}, perc_filt * 100 / N
 
-def trim_data(x, y, conf, fps, end_trim=2, clip_window=30):
+def trim_data(x, y, conf, fps, end_trim, clip_window):
     assert x.shape[1] == y.shape[1]
     assert conf.shape[0] == x.shape[0] == y.shape[0]
 
     # baseline video only
-    HOUR_LEN = 60 * 60 * fps
+    HOUR_LEN = 55 * 60 * fps
     conf, x, y = conf[:HOUR_LEN, :], x[:HOUR_LEN, :], y[:HOUR_LEN, :]
     
     if end_trim > 0:
@@ -103,10 +103,9 @@ def trim_data(x, y, conf, fps, end_trim=2, clip_window=30):
             
             # take first clip_window after trimming
             clip_window *= (60 * fps)
-            start_idx = end_trim * 60 * fps
-            conf = conf[start_idx:start_idx + clip_window, :]
-            x = x[start_idx:start_idx + clip_window, :]
-            y = y[start_idx:start_idx + clip_window, :]
+            conf = conf[end_trim:end_trim + clip_window, :]
+            x = x[end_trim:end_trim + clip_window, :]
+            y = y[end_trim:end_trim + clip_window, :]
 
     return (x, y, conf)
 
