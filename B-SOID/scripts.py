@@ -115,7 +115,11 @@ def ensemble_pipeline(config_file, outdir, subsample_size=int(2e5)):
 def cluster_collect_embed(max_samples, thresh):
     import os
     import matplotlib.pyplot as plt
-    from new_clustering import *
+    from new_clustering import (
+                                collect_strainwise_feats, 
+                                collect_strainwise_clusters, 
+                                reduce_data
+                            )   
     
     save_dir = "/home/laadd/data"
     with open(os.path.join(save_dir, "strainwise_labels.sav"), "rb") as f:
