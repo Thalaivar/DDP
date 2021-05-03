@@ -54,27 +54,44 @@ def cluster_strainwise(config_file, save_dir):
     embedding, labels, pbar = {}, {}, tqdm(total=len(feats))
     for strain, data in feats.items():
         logging.info(f"running for strain: {strain}")
-        embed_ = reduce_data(data)
-        results = cluster_with_hdbscan(embed_, STRAINWISE_CLUSTER_RNG, HDBSCAN_PARAMS)[0]
-        embedding[strain] = embed_[results >= 0]
-        labels[strain] = results[results >= 0]
+        logging.info(f"Samples: {data.shape}")
+        embed = reduce_data(data)
+        results = cluster_with_hdbscan(embed, STRAINWISE_CLUSTER_RNG, HDBSCAN_PARAMS)
+        embedding[strain] = embed
+        labels[strain] = [results[0], results[2]]
+
+        logging.info(f"Collected {embed.shape[0]} samples for {strain} with {results[0].max() + 1} classes")
         pbar.update(1)
     
     return embedding, labels
 
+def collect_strainwise_labels(feats, embedding, labels):
+    for strain in embedding.keys():
+        assignments, soft_assignments = labels[strain]
+        
+        feats[strain] = feats[strain][assignments >= 0]
+        embedding[strain] = embedding[strain][assignments >= 0]
+        labels[strain] = soft_assignments[assignments >= 0]
+
+        logging.info(f"Strain: {strain} ; Features: {feats[strain].shape} ; Embedding: {embedding[strain].shape} ; Labels: {labels[strain].shape}")
+    
+    return feats, embedding, labels
+
 def collect_strainwise_clusters(feats: dict, labels: dict, embedding: dict, thresh: float):
+    feats, embedding, labels = collect_strainwise_labels(feats, embedding, labels)
+
     k, clusters, strain2cluster = 0, {}, {}
     for strain in feats.keys():
         labels[strain] = labels[strain].astype(int)
 
         # threshold by entropy
-        n, counts = labels[strain].max() + 1, np.unique(labels[strain], return_counts=True)[1]
+        n, class_ids, counts = labels[strain].max() + 1, np.unique(labels[strain], return_counts=True)
         prop = [x/labels[strain].size for x in counts]
         entropy_ratio = sum(p * np.log2(p) for p in prop) / max_entropy(n)
 
         if entropy_ratio >= thresh:
             strain2cluster[strain] = []
-            for class_id in np.unique(labels[strain]):
+            for class_id in class_ids:
                 idx = np.where(labels[strain] == class_id)[0]
                 clusters[k] = {
                     "feats": feats[strain][idx,:],
@@ -83,6 +100,7 @@ def collect_strainwise_clusters(feats: dict, labels: dict, embedding: dict, thre
                 strain2cluster[strain].append(k)
                 k += 1
     
+    assert len(clusters) == sum(lab.max() + 1 for _, lab in labels.items())
     return clusters, strain2cluster
 
 def cluster_similarity(cluster1, cluster2):
