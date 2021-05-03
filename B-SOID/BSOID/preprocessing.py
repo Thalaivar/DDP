@@ -86,6 +86,10 @@ def trim_data(x, y, conf, fps, end_trim=2, clip_window=30):
     assert x.shape[1] == y.shape[1]
     assert conf.shape[0] == x.shape[0] == y.shape[0]
 
+    # baseline video only
+    HOUR_LEN = 60 * 60 * fps
+    conf, x, y = conf[:HOUR_LEN, :], x[:HOUR_LEN, :], y[:HOUR_LEN, :]
+    
     if end_trim > 0:
         end_trim *= (fps * 60)
         conf, x, y = conf[end_trim:-end_trim, :], x[end_trim:-end_trim, :], y[end_trim:-end_trim, :]

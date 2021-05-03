@@ -112,16 +112,83 @@ def ensemble_pipeline(config_file, outdir, subsample_size=int(2e5)):
     with open(os.path.join(outdir, "ensemble_clustering.sav"), "rb") as f:
         joblib.dump(labels, f)
 
+def cluster_collect_embed(max_samples, thresh):
+    import os
+    import matplotlib.pyplot as plt
+    from new_clustering import *
+    
+    save_dir = "/home/laadd/data"
+    with open(os.path.join(save_dir, "strainwise_labels.sav"), "rb") as f:
+        feats, embedding, labels = joblib.load(f)
+    feats = collect_strainwise_feats(feats)
+    clusters, _ = collect_strainwise_clusters(feats, labels, embedding, thresh)
+    del feats, labels, embedding
+
+    feats = []
+    for _, data in clusters.items():
+        if data["feats"].shape[0] > max_samples:
+            feats.append(np.random.permutation(data["feats"])[:max_samples])
+        else:
+            feats.append(data["feats"])
+    del clusters
+    feats = np.vstack(feats)
+    logging.info(f"Running UMAP on: {feats.shape[0]}")
+    
+    embedding = reduce_data(feats)
+    results = cluster_with_hdbscan(embedding, STRAINWISE_CLUSTER_RNG, HDBSCAN_PARAMS)
+    
+    with open(os.path.join(save_dir, "cluster_collect_embed.sav"), "wb") as f:
+        joblib.dump([feats, embedding, results], f)
+
+def strainwise_cluster(config_file, save_dir):
+    from new_clustering import cluster_strainwise
+
+    bsoid = BSOID(config_file)
+    bsoid.load_from_dataset(n=10)
+    
+    embedding, labels = cluster_strainwise(config_file, save_dir)
+    
+    with open(os.path.join(save_dir, "strainwise_labels.sav"), "wb") as f:
+        joblib.dump([bsoid.load_features(collect=False), embedding, labels], f)
+    
+def calculate_pairwise_similarity(save_dir, thresh):
+    import os
+    from new_clustering import pairwise_similarity, collect_strainwise_feats
+
+    with open(os.path.join(save_dir, "strainwise_labels.sav"), "rb") as f:
+        feats, embedding, labels = joblib.load(f)
+
+    feats = collect_strainwise_feats(feats)
+    sim, strain2clusters = pairwise_similarity(feats, embedding, labels, thresh)
+
+    with open(os.path.join(save_dir, "pairwise_sim.sav"), "wb") as f:
+        joblib.dump([sim, strain2clusters], f)
 
 if __name__ == "__main__":
-    import argparse
+    import logging
+    logging.basicConfig(level=logging.basicConfig)
+
+    import argparse 
     parser = argparse.ArgumentParser("scripts.py")
     parser.add_argument("--config", type=str, help="configuration file for B-SOID")
-    parser.add_argument("--script", type=str, help="script to run", choices=["results", "validate_and_train", "hyperparamter_tuning", "main", "small_umap", "ensemble_pipeline", "strainwise_test"])
+    parser.add_argument("--script", type=str, help="script to run", choices=[
+                                                                    "results", 
+                                                                    "validate_and_train", 
+                                                                    "hyperparamter_tuning", 
+                                                                    "main", 
+                                                                    "small_umap", 
+                                                                    "ensemble_pipeline", 
+                                                                    "cluster_collect_embed", 
+                                                                    "calculate_pairwise_similarity", 
+                                                                    "strainwise_cluster"
+                                                                ])
     parser.add_argument("--n", type=int)
     parser.add_argument("--n_strains", type=int, default=None)
     parser.add_argument("--outdir", type=str)
     parser.add_argument("--strain-file", type=str)
+    parser.add_argument("--max-samples", type=int)
+    parser.add_argument("--save-dir", type=str)
+    parser.add_argument("--thresh", type=float)
     args = parser.parse_args()
 
     if args.script == "main":
@@ -130,7 +197,11 @@ if __name__ == "__main__":
         small_umap(config_file=args.config, outdir=args.outdir, n=args.n)
     elif args.script == "ensemble_pipeline":
         eval(args.script)(config_file=args.config, outdir=args.outdir)
-    elif args.script == "strainwise_test":
-        strainwise_test(args.config, args.outdir, args.strain_file)
+    elif args.script == "cluster_collect_embed":
+        cluster_collect_embed(args.max_samples, args.thresh)
+    elif args.script == "calculate_pairwise_similarity":
+        calculate_pairwise_similarity(args.save_dir, args.thresh)
+    elif args.script == "strainwise_cluster":
+        strainwise_cluster(args.config, args.save_dir)
     else:
         eval(args.script)(args.config)

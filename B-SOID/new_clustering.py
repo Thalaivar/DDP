@@ -6,6 +6,7 @@ import numpy as np
 from tqdm import tqdm
 from sklearn import clone
 from BSOID.bsoid import BSOID
+from BSOID.utils import max_entropy
 from itertools import combinations
 from sklearn.metrics import roc_auc_score
 from BSOID.utils import cluster_with_hdbscan
@@ -21,7 +22,6 @@ STRAINWISE_UMAP_PARAMS = {
 STRAINWISE_CLUSTER_RNG = [0.4, 1.2, 25]
 
 HDBSCAN_PARAMS = {"prediction_data": True, "min_samples": 1}
-THRESH = 0.85
 
 CV = StratifiedKFold(n_splits=5, shuffle=True)
 
@@ -32,8 +32,8 @@ GROUPWISE_UMAP_PARAMS = {
 GROUPWISE_CLUSTER_RNG = [1, 5, 25]
 
 # CLF = RandomForestClassifier(class_weight="balanced", n_jobs=1)
-from catboost import CatBoostClassifier
-CLF = CatBoostClassifier(loss_function="MultiClassOneVsAll", eval_metric="Accuracy", iterations=10000, task_type="GPU", verbose=True)
+# from catboost import CatBoostClassifier
+# CLF = CatBoostClassifier(loss_function="MultiClassOneVsAll", eval_metric="Accuracy", iterations=10000, task_type="GPU", verbose=True)
 
 def reduce_data(feats: np.ndarray):
     feats = StandardScaler().fit_transform(feats)
@@ -62,17 +62,17 @@ def cluster_strainwise(config_file, save_dir):
     
     return embedding, labels
 
-def collect_strainwise_clusters(feats: dict, labels: dict, embedding: dict):
+def collect_strainwise_clusters(feats: dict, labels: dict, embedding: dict, thresh: float):
     k, clusters, strain2cluster = 0, {}, {}
     for strain in feats.keys():
         labels[strain] = labels[strain].astype(int)
 
         # threshold by entropy
-        n = labels[strain].max() + 1
-        prop = [x/labels[strain].size for x in np.unique(labels[strain], return_counts=True)[1]]
-        entropy_ratio = sum(p * np.log2(p) for p in prop) / sum(p * np.log2(p) for p in [1/n for _ in range(n)])
+        n, counts = labels[strain].max() + 1, np.unique(labels[strain], return_counts=True)[1]
+        prop = [x/labels[strain].size for x in counts]
+        entropy_ratio = sum(p * np.log2(p) for p in prop) / max_entropy(n)
 
-        if entropy_ratio >= THRESH:
+        if entropy_ratio >= thresh:
             strain2cluster[strain] = []
             for class_id in np.unique(labels[strain]):
                 idx = np.where(labels[strain] == class_id)[0]
@@ -92,22 +92,17 @@ def cluster_similarity(cluster1, cluster2):
 
     model = LinearDiscriminantAnalysis(solver="svd", store_covariance=True)
     model.fit(X, y)
-    
-    # w, cov = model.coef_.reshape(-1,1), model.covariance_
-    # mu1, mu2 = [mu.reshape(-1,1) for mu in model.means_]
-
-    # sep = 0.5 * (np.dot(w.T, (mu1 - mu2)) ** 2) / np.dot(w.T, np.dot(cov, w))
-    # return sep
 
     Xproj = model.transform(X)
     y_preds = (Xproj < 0).astype(int)
+
     return roc_auc_score(y, y_preds)
 
-def pairwise_similarity(feats, embedding, labels):
+def pairwise_similarity(feats, embedding, labels, thresh):
     import ray
     import psutil
 
-    clusters, strain2clusters = collect_strainwise_clusters(feats, labels, embedding)
+    clusters, strain2clusters = collect_strainwise_clusters(feats, labels, embedding, thresh)
     print(f"Total clusters: {len(clusters)}")
     del feats, embedding, labels
 
@@ -220,56 +215,6 @@ def train_classifier(groups, **params):
     # print("balanced_acc: ", balanced_accuracy_score(y_test, preds))
     
     return model
-
-def embed_collected(max_samples):
-    import matplotlib.pyplot as plt
-    import os
-    
-    save_dir = "../../data/2clustering"
-    with open(os.path.join(save_dir, "strainwise_labels.sav"), "rb") as f:
-        feats, embedding, labels = joblib.load(f)
-
-    clusters, _ = collect_strainwise_clusters(feats, labels, embedding)
-    del feats, labels, embedding
-
-    feats = []
-    for _, data in clusters.items():
-        if data["feats"].shape[0] > max_samples:
-            feats.append(np.random.permutation(data["feats"])[:max_samples])
-        else:
-            feats.append(data["feats"])
-    del clusters
-    feats = np.vstack(feats)
-
-    print(f"Running UMAP on: {feats.shape[0]}")
-    mapper = umap.UMAP(min_dist=0.0, **STRAINWISE_UMAP_PARAMS).fit(feats)
-    _, _, glabels, _ = cluster_with_hdbscan(mapper.embedding_, [0.4, 1.2], HDBSCAN_PARAMS)
-    counts = np.unique(glabels, return_counts=True)[1]
-    plt.bar(range(len(counts)), sorted(counts))
-    plt.show()
-
-def main():
-    import os
-    
-    save_dir = "/home/laadd/data"
-    config_file = "./config/config.yaml"
-
-    bsoid = BSOID(config_file)
-    bsoid.load_from_dataset(n=10)
-    feats = bsoid.load_features(collect=False)
-
-    embedding, labels = cluster_strainwise(config_file, save_dir)
-
-    with open(os.path.join(save_dir, "strainwise_labels.sav"), "wb") as f:
-        joblib.dump([feats, embedding, labels], f)
-
-    # with open(os.path.join(save_dir, "strainwise_labels.sav"), "rb") as f:
-    #     feats, embedding, labels = joblib.load(f)
-
-    sim, strain2clusters = pairwise_similarity(feats, embedding, labels)
-
-    with open(os.path.join(save_dir, "pairwise_sim.sav"), "wb") as f:
-        joblib.dump([sim, strain2clusters], f)
 
 def run():
     import os

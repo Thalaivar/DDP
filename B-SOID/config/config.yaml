@@ -1,7 +1,6 @@
 run_id: 'dis'
-# base_dir: '/home/laadd/data/bsoid_data'
-# base_dir: "/Users/dhruvlaad/IIT/DDP/data"
-base_dir: 'D:/IIT/DDP/data'
+base_dir: '/home/laadd/data/bsoid_data'
+# base_dir: 'D:/IIT/DDP/data'
 
 # basic config
 fps: 30
@@ -43,5 +42,5 @@ hdbscan_params:
   prediction_data: True
 
 trim_params:
-  end_trim: 2
+  end_trim: 5
   clip_window: 30
