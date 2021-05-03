@@ -26,14 +26,14 @@ THRESH = 0.85
 CV = StratifiedKFold(n_splits=5, shuffle=True)
 
 GROUPWISE_UMAP_PARAMS = {
-    "n_neighbors": 50,
+    "n_neighbors": 60,
     "n_components": 3
 }
 GROUPWISE_CLUSTER_RNG = [1, 5, 25]
 
 # CLF = RandomForestClassifier(class_weight="balanced", n_jobs=1)
 from catboost import CatBoostClassifier
-CLF = CatBoostClassifier(loss_function="MultiClass", eval_metric="Accuracy", iterations=10000, task_type="GPU", verbose=True)
+CLF = CatBoostClassifier(loss_function="MultiClassOneVsAll", eval_metric="Accuracy", iterations=10000, task_type="GPU", verbose=True)
 
 def reduce_data(feats: np.ndarray):
     feats = StandardScaler().fit_transform(feats)
@@ -55,7 +55,7 @@ def cluster_strainwise(config_file, save_dir):
     for strain, data in feats.items():
         logging.info(f"running for strain: {strain}")
         embed_ = reduce_data(data)
-        results = cluster_with_hdbscan(embedding[strain], STRAINWISE_CLUSTER_RNG, HDBSCAN_PARAMS)[0]
+        results = cluster_with_hdbscan(embed_, STRAINWISE_CLUSTER_RNG, HDBSCAN_PARAMS)[0]
         embedding[strain] = embed_[results >= 0]
         labels[strain] = results[results >= 0]
         pbar.update(1)
@@ -135,7 +135,34 @@ def pairwise_similarity(feats, embedding, labels):
     sim = np.vstack(sim)
     return sim, strain2clusters
 
-def similarity_matrix(sim):
+def impute_same_strain_values(sim, strain2cluster):
+    idxmap = {}
+    for _, idxs in strain2cluster.items():
+        for idx in idxs:
+            idxmap[idx] = [i for i in idxs if i != idx]
+    
+    retain_idx, same_strain_idx = [], []
+    for i in range(sim.shape[0]):
+        if int(sim[i,2]) in idxmap[int(sim[i,1])]:
+            same_strain_idx.append(i)
+        else:
+            retain_idx.append(i)
+    
+    diff_strain_sim = sim[retain_idx]
+
+    from sklearn.neighbors import KNeighborsRegressor
+    filler = KNeighborsRegressor(n_neighbors=20, n_jobs=-1, metric="canberra", weights="distance")
+    filler.fit(diff_strain_sim[:,1:].astype(int), diff_strain_sim[:,0])
+    
+    same_strain_sim = filler.predict(sim[same_strain_idx, 1:])
+    same_strain_sim = np.hstack((same_strain_sim.reshape(-1,1), sim[same_strain_idx,1:]))
+
+    sim = np.vstack((diff_strain_sim, same_strain_sim))
+    return sim
+
+def similarity_matrix(sim, strain2cluster):
+    sim = impute_same_strain_values(sim, strain2cluster)
+
     n_clusters = int(sim[:,1:].max()) + 1
     mat = np.zeros((n_clusters, n_clusters))
 
@@ -145,8 +172,8 @@ def similarity_matrix(sim):
     
     return mat
 
-def group_clusters(clusters, sim):
-    mapper = umap.UMAP(min_dist=0.0, **GROUPWISE_UMAP_PARAMS).fit(similarity_matrix(sim))
+def group_clusters(clusters, sim, strain2cluster):
+    mapper = umap.UMAP(min_dist=0.0, **GROUPWISE_UMAP_PARAMS).fit(similarity_matrix(sim, strain2cluster))
     _, _, glabels, _ = cluster_with_hdbscan(mapper.embedding_, GROUPWISE_CLUSTER_RNG, HDBSCAN_PARAMS)
 
     groups = {}
@@ -194,6 +221,33 @@ def train_classifier(groups, **params):
     
     return model
 
+def embed_collected(max_samples):
+    import matplotlib.pyplot as plt
+    import os
+    
+    save_dir = "../../data/2clustering"
+    with open(os.path.join(save_dir, "strainwise_labels.sav"), "rb") as f:
+        feats, embedding, labels = joblib.load(f)
+
+    clusters, _ = collect_strainwise_clusters(feats, labels, embedding)
+    del feats, labels, embedding
+
+    feats = []
+    for _, data in clusters.items():
+        if data["feats"].shape[0] > max_samples:
+            feats.append(np.random.permutation(data["feats"])[:max_samples])
+        else:
+            feats.append(data["feats"])
+    del clusters
+    feats = np.vstack(feats)
+
+    print(f"Running UMAP on: {feats.shape[0]}")
+    mapper = umap.UMAP(min_dist=0.0, **STRAINWISE_UMAP_PARAMS).fit(feats)
+    _, _, glabels, _ = cluster_with_hdbscan(mapper.embedding_, [0.4, 1.2], HDBSCAN_PARAMS)
+    counts = np.unique(glabels, return_counts=True)[1]
+    plt.bar(range(len(counts)), sorted(counts))
+    plt.show()
+
 def main():
     import os
     
@@ -229,9 +283,9 @@ def run():
     del feats, labels, embedding
 
     with open(os.path.join(save_dir, "pairwise_sim.sav"), "rb") as f:
-        sim, _ = joblib.load(f)
+        sim, strain2cluster = joblib.load(f)
 
-    groups = group_clusters(clusters, sim)
+    groups = group_clusters(clusters, sim, strain2cluster)
     del clusters, sim
 
     train_classifier(groups)
@@ -240,5 +294,6 @@ if __name__ == "__main__":
     import logging
     logging.basicConfig(level=logging.INFO)
 
-    run()
+    # run()
     # main()
+    embed_collected(1200)
