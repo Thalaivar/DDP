@@ -50,11 +50,12 @@ def cluster_strainwise(config_file, save_dir):
 
     @ray.remote
     def cluster_strain_data(strain, feats):
-        logger = logging.getLogger(__name__)
+        logger = open("/home/laadd/DDP/B-SOID/strainwise_clustering.log", "a")
         data = feats[strain]
-        logger.info(f"running for strain: {strain} with samples: {data.shape}")
+
+        logger.write(f"running for strain: {strain} with samples: {data.shape}\n")
         logger.addHandler(logging.StreamHandler())
-        
+
         strainwise_umap_params = {"n_neighbors": 90, "n_components": 12}
         strainwise_cluster_rng = [0.4, 1.2, 25]
         hdbscan_params = {"prediction_data": True, "min_samples": 1, "core_dist_n_jobs": 1}
@@ -65,7 +66,7 @@ def cluster_strainwise(config_file, save_dir):
         prop = [p / soft_assignments.size for p in np.unique(soft_assignments, return_counts=True)[1]]
         entropy_ratio = sum(p * np.log2(p) for p in prop) / max_entropy(assignments.max() + 1)
 
-        logger.info(f"collected {embedding.shape[0]} samples for {strain} with {assignments.max() + 1} classes and entropy ratio: {entropy_ratio}")
+        logger.write(f"collected {embedding.shape[0]} samples for {strain} with {assignments.max() + 1} classes and entropy ratio: {entropy_ratio}\n")
         return (strain, embedding, (assignments, soft_assignments))
     
     bsoid = BSOID(config_file)
