@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from BSOID.bsoid import BSOID
 from analysis import *
 
-logging.basicConfig(level=logging.INFO, filename='training.log', filemode='w', format='%(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO, format='%(name)s - %(levelname)s - %(message)s')
 
 GET_DATA          = False
 PROCESS_CSVS      = False
@@ -118,8 +118,11 @@ def cluster_collect_embed(max_samples, thresh):
     from new_clustering import (
                                 collect_strainwise_feats, 
                                 collect_strainwise_clusters, 
-                                reduce_data
+                                reduce_data,
+                                STRAINWISE_CLUSTER_RNG, 
+                                HDBSCAN_PARAMS,
                             )   
+    from BSOID.utils import cluster_with_hdbscan
     
     save_dir = "/home/laadd/data"
     with open(os.path.join(save_dir, "strainwise_labels.sav"), "rb") as f:
@@ -148,8 +151,9 @@ def strainwise_cluster(config_file, save_dir):
     from new_clustering import cluster_strainwise
 
     bsoid = BSOID(config_file)
-    bsoid.load_from_dataset(n=10)
-    bsoid.features_from_points()
+
+    # bsoid.load_from_dataset(n=10)
+    # bsoid.features_from_points()
  
     embedding, labels = cluster_strainwise(config_file, save_dir)
     

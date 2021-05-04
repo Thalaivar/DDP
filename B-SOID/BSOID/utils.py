@@ -50,7 +50,7 @@ def cluster_with_hdbscan(feats, cluster_range, HDBSCAN_PARAMS):
         prop = prop/prop.sum()
         entropy.append(-sum([p*np.log2(p) for p in prop])/max_entropy(numulab[-1]))
 
-        logging.info(f'identified {numulab[-1]} clusters (max is {max(numulab)}) with min_sample_prop={round(min_c, 2)} and entropy_ratio={round(entropy[-1], 3)}')
+        logging.debug(f'identified {numulab[-1]} clusters (max is {max(numulab)}) with min_sample_prop={round(min_c, 2)} and entropy_ratio={round(entropy[-1], 3)}')
         
         # retain max_clusters
         if numulab[-1] > highest_numulab:

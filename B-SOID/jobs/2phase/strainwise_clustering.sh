@@ -2,11 +2,11 @@
 #SBATCH --job-name=bsoid-strainwise-clustering
 #SBATCH --output=strainwise-clustering.txt
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=8
+#SBATCH --cpus-per-task=30
 #SBATCH --time=72:00:00
 #SBATCH --partition=compute
 #SBATCH --qos=batch
-#SBATCH --mem=30000
+#SBATCH --mem=50000
 #SBATCH --mail-user=dhruv.laad@jax.org
 #SBATCH --mail-type=ALL
 

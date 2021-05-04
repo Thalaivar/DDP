@@ -1,6 +1,5 @@
 import umap
 import joblib
-import logging
 import numpy as np
 
 from tqdm import tqdm
@@ -15,11 +14,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.model_selection import cross_val_score, StratifiedKFold, cross_validate
 
-STRAINWISE_UMAP_PARAMS = {
-    "n_neighbors": 90,
-    "n_components": 12
-}
-STRAINWISE_CLUSTER_RNG = [0.4, 1.2, 25]
+import logging
+logger = logging.getLogger(__name__)
 
 HDBSCAN_PARAMS = {"prediction_data": True, "min_samples": 1}
 
@@ -35,9 +31,9 @@ GROUPWISE_CLUSTER_RNG = [1, 5, 25]
 # from catboost import CatBoostClassifier
 # CLF = CatBoostClassifier(loss_function="MultiClassOneVsAll", eval_metric="Accuracy", iterations=10000, task_type="GPU", verbose=True)
 
-def reduce_data(feats: np.ndarray):
+def reduce_data(feats: np.ndarray, **umap_params):
     feats = StandardScaler().fit_transform(feats)
-    mapper = umap.UMAP(min_dist=0.0, **STRAINWISE_UMAP_PARAMS).fit(feats)
+    mapper = umap.UMAP(min_dist=0.0, **umap_params).fit(feats)
     return mapper.embedding_
 
 def collect_strainwise_feats(feats: dict):
@@ -46,23 +42,52 @@ def collect_strainwise_feats(feats: dict):
     return feats
 
 def cluster_strainwise(config_file, save_dir):
+    import ray
+    import psutil
+
+    num_cpus = psutil.cpu_count(logical=False)
+    ray.init(num_cpus=num_cpus)
+
+    @ray.remote
+    def cluster_strain_data(strain, feats):
+        logger = logging.getLogger(__name__)
+        data = feats[strain]
+        logger.info(f"running for strain: {strain} with samples: {data.shape}")
+        
+        strainwise_umap_params = {"n_neighbors": 90, "n_components": 12, "n_jobs": -1}
+        strainwise_cluster_rng = [0.4, 1.2, 25]
+        hdbscan_params = {"prediction_data": True, "min_samples": 1}
+        
+        embedding = reduce_data(data, **strainwise_umap_params)
+        assignments, _, soft_assignments, _ = cluster_with_hdbscan(embedding, strainwise_cluster_rng, hdbscan_params)
+        
+        prop = [p / soft_assignments.size for p in np.unique(soft_assignments, return_counts=True)[1]]
+        entropy_ratio = sum(p * np.log2(p) for p in prop) / max_entropy(assignments.max() + 1)
+
+        logger.info(f"collected {embedding.shape[0]} samples for {strain} with {assignments.max() + 1} classes and entropy ratio: {entropy_ratio}")
+        return (strain, embedding, (assignments, soft_assignments))
+    
     bsoid = BSOID(config_file)
     feats = collect_strainwise_feats(bsoid.load_features(collect=False))
+    feats_id = ray.put(feats)
 
     print(f"Processing {len(feats)} strains...")
+    futures = [cluster_strain_data.remote(strain, feats_id) for strain in feats.keys()]
     
-    embedding, labels, pbar = {}, {}, tqdm(total=len(feats))
-    for strain, data in feats.items():
-        logging.info(f"running for strain: {strain}")
-        logging.info(f"Samples: {data.shape}")
-        embed = reduce_data(data)
-        results = cluster_with_hdbscan(embed, STRAINWISE_CLUSTER_RNG, HDBSCAN_PARAMS)
-        embedding[strain] = embed
-        labels[strain] = [results[0], results[2]]
+    pbar, results = tqdm(total=len(futures)), []
+    while len(futures) > 0:
+        n = len(futures) if len(futures) < num_cpus else num_cpus
+        fin, rest = ray.wait(futures, num_returns=n)
+        results.extend(ray.get(fin))
+        futures = rest
+        pbar.update(n)
 
-        logging.info(f"Collected {embed.shape[0]} samples for {strain} with {results[0].max() + 1} classes")
-        pbar.update(1)
-    
+    embedding, labels = {}, {}
+    for res in results:
+        strain, embed, lab = res
+        embedding[strain] = embed
+        labels[strain] = lab
+
     return embedding, labels
 
 def collect_strainwise_labels(feats, embedding, labels):
