@@ -63,7 +63,7 @@ def cluster_strainwise(config_file, save_dir, logfile):
         assignments, _, soft_assignments, _ = cluster_with_hdbscan(embedding, strainwise_cluster_rng, hdbscan_params)
         
         prop = [p / soft_assignments.size for p in np.unique(soft_assignments, return_counts=True)[1]]
-        entropy_ratio = sum(p * np.log2(p) for p in prop) / max_entropy(assignments.max() + 1)
+        entropy_ratio = -sum(p * np.log2(p) for p in prop) / max_entropy(assignments.max() + 1)
 
         logger.write(f"collected {embedding.shape[0]} samples for {strain} with {assignments.max() + 1} classes and entropy ratio: {entropy_ratio}\n")
         return (strain, embedding, (assignments, soft_assignments))
@@ -115,7 +115,7 @@ def collect_strainwise_clusters(feats: dict, labels: dict, embedding: dict, thre
         n = labels[strain].max() + 1
         class_ids, counts = np.unique(labels[strain], return_counts=True)
         prop = [x/labels[strain].size for x in counts]
-        entropy_ratio = sum(p * np.log2(p) for p in prop) / max_entropy(n)
+        entropy_ratio = -sum(p * np.log2(p) for p in prop) / max_entropy(n)
 
         if entropy_ratio >= thresh:
             logger.info(f"pooling {len(class_ids)} clusters from {strain} with entropy ratio {entropy_ratio}")
