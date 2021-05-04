@@ -262,21 +262,8 @@ def train_classifier(groups, **params):
     
     return model
 
-def run():
-    import os
-
-    # save_dir = "/home/laadd/data"
-    save_dir = "../../data/2clustering"
-    with open(os.path.join(save_dir, "strainwise_labels.sav"), "rb") as f:
+if __name__ == "__main__":
+    with open("../../data/2clustering/strainwise_labels.sav", "rb") as f:
         feats, embedding, labels = joblib.load(f)
-
-    clusters, _ = collect_strainwise_clusters(feats, labels, embedding)
-    del feats, labels, embedding
-
-    with open(os.path.join(save_dir, "pairwise_sim.sav"), "rb") as f:
-        sim, strain2cluster = joblib.load(f)
-
-    groups = group_clusters(clusters, sim, strain2cluster)
-    del clusters, sim
-
-    train_classifier(groups)
+    feats = collect_strainwise_feats(feats)
+    feats, embedding, labels = collect_strainwise_clusters(feats, labels, embedding, thresh=0.6)
