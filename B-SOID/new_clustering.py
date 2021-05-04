@@ -54,7 +54,6 @@ def cluster_strainwise(config_file, save_dir, logfile):
         data = feats[strain]
 
         logger.write(f"running for strain: {strain} with samples: {data.shape}\n")
-        logger.addHandler(logging.StreamHandler())
 
         strainwise_umap_params = {"n_neighbors": 90, "n_components": 12}
         strainwise_cluster_rng = [0.4, 1.2, 25]
