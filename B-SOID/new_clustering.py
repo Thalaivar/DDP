@@ -130,19 +130,7 @@ def collect_strainwise_clusters(feats: dict, labels: dict, embedding: dict, thre
                 k += 1
     
     return clusters, strain2cluster
-
-def cluster_similarity(cluster1, cluster2):
-    X = [cluster1["feats"], cluster2["feats"]]
-    y = [np.zeros((X[0].shape[0],)), np.ones((X[1].shape[0], ))]
-    X, y = np.vstack(X), np.hstack(y)
-
-    model = LinearDiscriminantAnalysis(solver="svd", store_covariance=True)
-    model.fit(X, y)
-
-    Xproj = model.transform(X)
-    y_preds = (Xproj < 0).astype(int)
-
-    return roc_auc_score(y, y_preds)
+    
 
 def pairwise_similarity(feats, embedding, labels, thresh):
     import ray
@@ -157,7 +145,18 @@ def pairwise_similarity(feats, embedding, labels, thresh):
 
     @ray.remote
     def par_pwise(idx1, idx2, clusters):
-        sim = cluster_similarity(clusters[idx1], clusters[idx2])
+        cluster1, cluster2 = clusters[idx1], clusters[idx2]
+        X = [cluster1["feats"], cluster2["feats"]]
+        y = [np.zeros((X[0].shape[0],)), np.ones((X[1].shape[0], ))]
+        X, y = np.vstack(X), np.hstack(y)
+
+        model = LinearDiscriminantAnalysis(solver="svd", store_covariance=True)
+        model.fit(X, y)
+
+        Xproj = model.transform(X)
+        y_preds = (Xproj < 0).astype(int)
+
+        sim = roc_auc_score(y, y_preds)
         return [sim, idx1, idx2]
     
     clusters_id = ray.put(clusters)
