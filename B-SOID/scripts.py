@@ -1,13 +1,10 @@
 import os
 import joblib
-import logging
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 from BSOID.bsoid import BSOID
 from analysis import *
-
-logging.basicConfig(level=logging.INFO, format='%(name)s - %(levelname)s - %(message)s')
 
 GET_DATA          = False
 PROCESS_CSVS      = False
@@ -120,8 +117,6 @@ def cluster_collect_embed(max_samples, thresh):
                                 collect_strainwise_feats, 
                                 collect_strainwise_clusters, 
                                 reduce_data,
-                                STRAINWISE_CLUSTER_RNG, 
-                                HDBSCAN_PARAMS,
                             )   
     from BSOID.utils import cluster_with_hdbscan
     
@@ -142,8 +137,8 @@ def cluster_collect_embed(max_samples, thresh):
     feats = np.vstack(feats)
     logging.info(f"Running UMAP on: {feats.shape[0]}")
     
-    embedding = reduce_data(feats)
-    results = cluster_with_hdbscan(embedding, STRAINWISE_CLUSTER_RNG, HDBSCAN_PARAMS)
+    embedding = reduce_data(feats, n_neighbors=90, min_dist=0.0, n_components=12)
+    results = cluster_with_hdbscan(embedding, [0.4, 1.2, 25], {"prediction_data": True, "min_samples": 1})
     
     with open(os.path.join(save_dir, "cluster_collect_embed.sav"), "wb") as f:
         joblib.dump([feats, embedding, results], f)
@@ -175,9 +170,6 @@ def calculate_pairwise_similarity(save_dir, thresh):
         joblib.dump([sim, strain2clusters], f)
 
 if __name__ == "__main__":
-    import logging
-    logging.basicConfig(level=logging.basicConfig)
-
     import argparse 
     parser = argparse.ArgumentParser("scripts.py")
     parser.add_argument("--config", type=str, help="configuration file for B-SOID")
@@ -200,6 +192,11 @@ if __name__ == "__main__":
     parser.add_argument("--save-dir", type=str)
     parser.add_argument("--thresh", type=float)
     args = parser.parse_args()
+
+    import logging
+    for handler in logging.root.handlers[:]:
+        logging.root.removeHandler(handler)
+    logging.basicConfig(level=logging.INFO, filename=f"./{args.script}.log", filemode="w")
 
     if args.script == "main":
         main(config_file=args.config, n=args.n, n_strains=args.n_strains)

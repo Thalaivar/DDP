@@ -94,11 +94,12 @@ def collect_strainwise_labels(feats, embedding, labels):
     for strain in embedding.keys():
         assignments, soft_assignments = labels[strain]
         
-        feats[strain] = feats[strain][assignments >= 0]
-        embedding[strain] = embedding[strain][assignments >= 0]
-        labels[strain] = soft_assignments[assignments >= 0]
+        # feats[strain] = feats[strain][assignments >= 0]
+        # embedding[strain] = embedding[strain][assignments >= 0]
+        # labels[strain] = soft_assignments[assignments >= 0]
 
-        logging.info(f"Strain: {strain} ; Features: {feats[strain].shape} ; Embedding: {embedding[strain].shape} ; Labels: {labels[strain].shape}")
+        labels[strain] = soft_assignments
+        logger.info(f"Strain: {strain} ; Features: {feats[strain].shape} ; Embedding: {embedding[strain].shape} ; Labels: {labels[strain].shape}")
     
     return feats, embedding, labels
 
@@ -277,11 +278,3 @@ def run():
     del clusters, sim
 
     train_classifier(groups)
-
-if __name__ == "__main__":
-    import logging
-    logging.basicConfig(level=logging.INFO)
-
-    # run()
-    # main()
-    embed_collected(1200)
