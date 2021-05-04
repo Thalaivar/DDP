@@ -143,7 +143,7 @@ def cluster_collect_embed(max_samples, thresh):
     with open(os.path.join(save_dir, "cluster_collect_embed.sav"), "wb") as f:
         joblib.dump([feats, embedding, results], f)
 
-def strainwise_cluster(config_file, save_dir):
+def strainwise_cluster(config_file, save_dir, logfile):
     os.environ["NUMBA_NUM_THREADS"] = "1"
     from new_clustering import cluster_strainwise
 
@@ -152,7 +152,7 @@ def strainwise_cluster(config_file, save_dir):
     # bsoid.load_from_dataset(n=10)
     # bsoid.features_from_points()
  
-    embedding, labels = cluster_strainwise(config_file, save_dir)
+    embedding, labels = cluster_strainwise(config_file, save_dir, logfile)
     
     with open(os.path.join(save_dir, "strainwise_labels.sav"), "wb") as f:
         joblib.dump([bsoid.load_features(collect=False), embedding, labels], f)
@@ -191,6 +191,7 @@ if __name__ == "__main__":
     parser.add_argument("--max-samples", type=int)
     parser.add_argument("--save-dir", type=str)
     parser.add_argument("--thresh", type=float)
+    parser.add_argument("--logfile", type=str)
     args = parser.parse_args()
 
     import logging
@@ -209,6 +210,6 @@ if __name__ == "__main__":
     elif args.script == "calculate_pairwise_similarity":
         calculate_pairwise_similarity(args.save_dir, args.thresh)
     elif args.script == "strainwise_cluster":
-        strainwise_cluster(args.config, args.save_dir)
+        strainwise_cluster(args.config, args.save_dir, args.logfile)
     else:
         eval(args.script)(args.config)

@@ -14,4 +14,4 @@ source /home/laadd/.bashrc
 conda activate bsoid 
 
 cd /home/laadd/DDP/B-SOID/
-python scripts.py --script strainwise_cluster --config ./config/config.yaml --save-dir /home/laadd/data
+python scripts.py --script strainwise_cluster --config ./config/config.yaml --save-dir /home/laadd/data --logfile ./strainwise_cluster.log

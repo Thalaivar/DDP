@@ -41,7 +41,7 @@ def collect_strainwise_feats(feats: dict):
         feats[strain] = np.vstack(animal_data)
     return feats
 
-def cluster_strainwise(config_file, save_dir):
+def cluster_strainwise(config_file, save_dir, logfile):
     import ray
     import psutil
 
@@ -50,7 +50,7 @@ def cluster_strainwise(config_file, save_dir):
 
     @ray.remote
     def cluster_strain_data(strain, feats):
-        logger = open("/home/laadd/DDP/B-SOID/strainwise_clustering.log", "a")
+        logger = open(logfile, "a")
         data = feats[strain]
 
         logger.write(f"running for strain: {strain} with samples: {data.shape}\n")
