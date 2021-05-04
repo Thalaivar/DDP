@@ -56,7 +56,7 @@ def cluster_strainwise(config_file, save_dir):
         
         strainwise_umap_params = {"n_neighbors": 90, "n_components": 12, "n_jobs": -1}
         strainwise_cluster_rng = [0.4, 1.2, 25]
-        hdbscan_params = {"prediction_data": True, "min_samples": 1}
+        hdbscan_params = {"prediction_data": True, "min_samples": 1, "core_dist_n_jobs": 1}
         
         embedding = reduce_data(data, **strainwise_umap_params)
         assignments, _, soft_assignments, _ = cluster_with_hdbscan(embedding, strainwise_cluster_rng, hdbscan_params)
