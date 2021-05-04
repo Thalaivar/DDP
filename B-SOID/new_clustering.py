@@ -117,6 +117,7 @@ def collect_strainwise_clusters(feats: dict, labels: dict, embedding: dict, thre
         entropy_ratio = sum(p * np.log2(p) for p in prop) / max_entropy(n)
 
         if entropy_ratio >= thresh:
+            logger.info(f"pooling {len(class_ids)} clusters from {strain}")
             strain2cluster[strain] = []
             for class_id in class_ids:
                 idx = np.where(labels[strain] == class_id)[0]
@@ -127,7 +128,6 @@ def collect_strainwise_clusters(feats: dict, labels: dict, embedding: dict, thre
                 strain2cluster[strain].append(k)
                 k += 1
     
-    assert len(clusters) == sum(lab.max() + 1 for _, lab in labels.items())
     return clusters, strain2cluster
 
 def cluster_similarity(cluster1, cluster2):
