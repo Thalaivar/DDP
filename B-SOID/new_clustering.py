@@ -54,7 +54,7 @@ def cluster_strainwise(config_file, save_dir):
         data = feats[strain]
         logger.info(f"running for strain: {strain} with samples: {data.shape}")
         
-        strainwise_umap_params = {"n_neighbors": 90, "n_components": 12, "n_jobs": -1}
+        strainwise_umap_params = {"n_neighbors": 90, "n_components": 12}
         strainwise_cluster_rng = [0.4, 1.2, 25]
         hdbscan_params = {"prediction_data": True, "min_samples": 1, "core_dist_n_jobs": 1}
         

@@ -1,3 +1,4 @@
+import os
 import joblib
 import logging
 import numpy as np
@@ -148,6 +149,7 @@ def cluster_collect_embed(max_samples, thresh):
         joblib.dump([feats, embedding, results], f)
 
 def strainwise_cluster(config_file, save_dir):
+    os.environ["NUMBA_NUM_THREADS"] = "1"
     from new_clustering import cluster_strainwise
 
     bsoid = BSOID(config_file)
@@ -161,7 +163,6 @@ def strainwise_cluster(config_file, save_dir):
         joblib.dump([bsoid.load_features(collect=False), embedding, labels], f)
     
 def calculate_pairwise_similarity(save_dir, thresh):
-    import os
     from new_clustering import pairwise_similarity, collect_strainwise_feats
 
     with open(os.path.join(save_dir, "strainwise_labels.sav"), "rb") as f:
