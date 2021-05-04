@@ -112,7 +112,8 @@ def collect_strainwise_clusters(feats: dict, labels: dict, embedding: dict, thre
         labels[strain] = labels[strain].astype(int)
 
         # threshold by entropy
-        n, class_ids, counts = labels[strain].max() + 1, np.unique(labels[strain], return_counts=True)
+        n = labels[strain].max() + 1
+        class_ids, counts = np.unique(labels[strain], return_counts=True)
         prop = [x/labels[strain].size for x in counts]
         entropy_ratio = sum(p * np.log2(p) for p in prop) / max_entropy(n)
 

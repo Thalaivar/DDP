@@ -135,7 +135,7 @@ def cluster_collect_embed(max_samples, thresh):
             feats.append(data["feats"])
     del clusters
     feats = np.vstack(feats)
-    logging.info(f"Running UMAP on: {feats.shape[0]}")
+    logging.info(f"running UMAP on: {feats.shape[0]}")
     
     embedding = reduce_data(feats, n_neighbors=90, min_dist=0.0, n_components=12)
     results = cluster_with_hdbscan(embedding, [0.4, 1.2, 25], {"prediction_data": True, "min_samples": 1})
