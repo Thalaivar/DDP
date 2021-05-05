@@ -5,7 +5,7 @@ import pandas as pd
 
 from BSOID.utils import *
 from BSOID.bsoid import BSOID
-from BSOID.prediction import *
+from prediction import *
 from BSOID.preprocessing import likelihood_filter
 from BSOID.features.displacement_feats import *
 
@@ -118,3 +118,26 @@ def predict_labels(bsoid: BSOID, csv_file, video_file, video_length):
     logging.info(f'predicted {len(labels)} frames in {feats[0].shape[1]}D with trained classifier')
 
     return labels, frame_dir
+
+def extract_frames_from_all_videos():
+    from joblib import Parallel, delayed
+
+    bsoid = BSOID("./config/config.yaml")
+    video_dir = "../../data/videos"
+
+    video_files = sorted([os.path.join(video_dir, f) for f in os.listdir(video_dir) if f.endswith(".avi")])
+    raw_files = sorted([os.path.join(video_dir, f) for f in os.listdir(video_dir) if f.endswith(".h5")])
+    
+    Parallel(n_jobs=1)(delayed(extract_data_from_video)(bsoid, raw_file, video_file) for raw_file, video_file in zip(raw_files, video_files))
+
+if __name__ == "__main__":
+    import logging
+    logging.basicConfig(level=logging.INFO)
+    
+    # extract_frames_from_all_videos()
+
+    bsoid = BSOID("./config/config.yaml")
+    video_dir = "../../data/videos"
+    results_dir=f"../../data/videos/{bsoid.run_id}_results"
+    create_class_examples(bsoid, video_dir, min_bout_len=200, n_examples=10, outdir=results_dir)
+    

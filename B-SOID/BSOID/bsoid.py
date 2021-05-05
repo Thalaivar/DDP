@@ -18,7 +18,6 @@ from sklearn.model_selection import train_test_split, cross_val_score
 from BSOID.utils import *
 from BSOID.data import *
 from BSOID.preprocessing import *
-from BSOID.prediction import *
 
 from BSOID.features.displacement_feats import *
 
@@ -35,7 +34,6 @@ class BSOID:
         self.raw_dir = os.path.join(base_dir, "raw")
         self.csv_dir = os.path.join(base_dir, "csvs")
         self.output_dir = os.path.join(base_dir, "output")
-        self.test_dir = os.path.join(base_dir, "test")
 
         self.fps = config["fps"]
         self.stride_window = round(config["stride_window"] * self.fps / 1000)
@@ -50,7 +48,7 @@ class BSOID:
         self.sample_size = config["sample_size"]
         self.cluster_range = config["cluster_range"]
         
-        for d in [self.base_dir, self.output_dir, self.test_dir, self.csv_dir, self.raw_dir]:
+        for d in [self.base_dir, self.output_dir, self.csv_dir, self.raw_dir]:
             try: os.mkdir(d)
             except FileExistsError: pass
         
@@ -133,12 +131,7 @@ class BSOID:
                     _, _, movie_name = metadata['NetworkFilename'].split('/')
                     filename = f'{pose_dir}/{movie_name[0:-4]}_pose_est_v2.h5'
 
-                    f = h5py.File(filename, "r")
-                    filename = filename.split('/')[-1]
-                    data = list(f.keys())[0]
-                    keys = list(f[data].keys())
-                    conf, pos = np.array(f[data][keys[0]]), np.array(f[data][keys[1]])
-                    f.close()
+                    conf, pos = process_h5py_data(h5py.File(filename, "r"))
 
                     bsoid_data = bsoid_format(conf, pos)
                     fdata, perc_filt = likelihood_filter(bsoid_data, self.fps, self.conf_threshold, **self.trim_params)
@@ -302,7 +295,6 @@ class BSOID:
         
         # extract 
         if extract_frames:
-            logging.info('extracting frames from video {} to dir {}'.format(video_file, frame_dir))
             frames_from_video(video_file, frame_dir)
         
         logging.debug('extracting features from {}'.format(csv_file))

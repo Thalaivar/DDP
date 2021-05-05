@@ -20,16 +20,23 @@ BSOID_DATA = ['NOSE', 'LEFT_EAR', 'RIGHT_EAR',
 RETAIN_WINDOW = 30*60
 FPS = 30
 
-def extract_to_csv(filename, save_dir):
-    f = h5py.File(filename, "r")
-    # retain only filename
-    filename = os.path.split(filename)[-1]
-
+def process_h5py_data(f: h5py.File):
     data = list(f.keys())[0]
     keys = list(f[data].keys())
 
     conf = np.array(f[data][keys[0]])
     pos = np.array(f[data][keys[1]])
+
+    f.close()
+    
+    return conf, pos
+
+def extract_to_csv(filename, save_dir):
+    f = h5py.File(filename, "r")
+    # retain only filename
+    filename = os.path.split(filename)[-1]
+    
+    conf, pos = process_h5py_data(f)
 
     bsoid_data = bsoid_format(conf, pos)
     bsoid_data.to_csv(save_dir + '/' + filename[:-3] +'.csv', index=False)

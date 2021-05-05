@@ -27,10 +27,6 @@ GROUPWISE_UMAP_PARAMS = {
 }
 GROUPWISE_CLUSTER_RNG = [1, 5, 25]
 
-# CLF = RandomForestClassifier(class_weight="balanced", n_jobs=1)
-# from catboost import CatBoostClassifier
-# CLF = CatBoostClassifier(loss_function="MultiClassOneVsAll", eval_metric="Accuracy", iterations=10000, task_type="GPU", verbose=True)
-
 def reduce_data(feats: np.ndarray, **umap_params):
     feats = StandardScaler().fit_transform(feats)
     mapper = umap.UMAP(min_dist=0.0, **umap_params).fit(feats)
@@ -230,6 +226,9 @@ def train_classifier(groups, **params):
     for lab, feats in groups.items():
         X, y = X + [feats], y + [lab * np.ones((feats.shape[0],))]
     X, y = np.vstack(X), np.hstack(y).astype(int)
+    
+    idx = np.random.permutation(np.arange(y.size))
+    X, y = X[idx], y[idx]
 
     _, counts = np.unique(y, return_counts=True)
     import matplotlib.pyplot as plt
@@ -245,24 +244,26 @@ def train_classifier(groups, **params):
         plt.bar(range(len(counts)), counts)
         plt.show()
     
-    model = clone(CLF)
+    from catboost import CatBoostClassifier
+    model = CatBoostClassifier(loss_function="MultiClass", eval_metric="Accuracy", iterations=3000, task_type="GPU", verbose=True, learning_rate=0.1)
     model.set_params(**params)
     
-    from sklearn.model_selection import train_test_split
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, shuffle=True, stratify=y)
-    model.fit(X_train, y_train, eval_set=(X_test, y_test))
-    # preds = model.predict(X_test)
+    # model.fit(X_train, y_train, eval_set=(X_test, y_test))
 
+    # preds = model.predict(X_test)
     # from sklearn.metrics import f1_score, roc_auc_score, accuracy_score, balanced_accuracy_score
     # print("f1_score: ", f1_score(y_test, preds, average="weighted"))
     # print("roc_auc_score: ", roc_auc_score(y_test, model.predict_proba(X_test), average="weighted", multi_class="ovo"))
     # print("accuracy: ", accuracy_score(y_test, preds))
     # print("balanced_acc: ", balanced_accuracy_score(y_test, preds))
     
+    model.fit(X, y)
     return model
 
 if __name__ == "__main__":
-    with open("../../data/2clustering/strainwise_labels.sav", "rb") as f:
-        feats, embedding, labels = joblib.load(f)
-    feats = collect_strainwise_feats(feats)
-    feats, embedding, labels = collect_strainwise_clusters(feats, labels, embedding, thresh=0.6)
+    with open("../../data/undersampling/cluster_collect_embed.sav", "rb") as f:
+        groups = joblib.load(f)
+    
+    model = train_classifier(groups)
+    with open("../../data/dis/output/dis_classifiers.sav", "wb") as f:
+        joblib.dump(model, f)

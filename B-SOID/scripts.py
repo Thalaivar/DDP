@@ -137,11 +137,21 @@ def cluster_collect_embed(max_samples, thresh):
     feats = np.vstack(feats)
     logging.info(f"running UMAP on: {feats.shape[0]}")
     
-    embedding = reduce_data(feats, n_neighbors=90, n_components=12)
+    embedding = reduce_data(feats, n_neighbors=60, n_components=13)
     results = cluster_with_hdbscan(embedding, [0.4, 1.2, 25], {"prediction_data": True, "min_samples": 1})
     
+    from BSOID.utils import max_entropy
+    prop = [p / results[2].size for p in np.unique(results[2], return_counts=True)[1]]
+    entropy_ratio = -sum(p * np.log2(p) for p in prop) / max_entropy(results[0].max() + 1)
+
+    logging.info(f"identified {results[0].max() + 1} clusters with entropy ratio {entropy_ratio}")
+
+    groups = {}
+    for lab in np.unique(results[2]):
+        groups[lab] = feats[np.where(results[2] == lab)[0]]
+
     with open(os.path.join(save_dir, "cluster_collect_embed.sav"), "wb") as f:
-        joblib.dump([feats, embedding, results], f)
+        joblib.dump(groups, f)
 
 def strainwise_cluster(config_file, save_dir, logfile):
     os.environ["NUMBA_NUM_THREADS"] = "1"

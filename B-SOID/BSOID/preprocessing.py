@@ -82,11 +82,12 @@ def likelihood_filter(data: pd.DataFrame, fps, conf_threshold=0.3, end_trim=2, c
 
     return {'conf': conf, 'x': x, 'y': y}, perc_filt * 100 / N
 
+# NOTE: if you change this you should also change the frame extraction function
 def trim_data(x, y, conf, fps, end_trim, clip_window):
     assert x.shape[1] == y.shape[1]
     assert conf.shape[0] == x.shape[0] == y.shape[0]
 
-    # baseline video only
+    # baseline video only 
     HOUR_LEN = 55 * 60 * fps
     conf, x, y = conf[:HOUR_LEN, :], x[:HOUR_LEN, :], y[:HOUR_LEN, :]
     
@@ -108,7 +109,6 @@ def trim_data(x, y, conf, fps, end_trim, clip_window):
             y = y[end_trim:end_trim + clip_window, :]
 
     return (x, y, conf)
-
 
 def windowed_feats(feats, window_len: int=3, mode: str='mean'):
     """
