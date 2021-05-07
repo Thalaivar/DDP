@@ -1,3 +1,4 @@
+import os
 import umap
 import joblib
 import numpy as np
@@ -88,22 +89,23 @@ def cluster_strainwise(config_file, save_dir, logfile):
     return embedding, labels
 
 def collect_strainwise_labels(feats, embedding, labels):
-    for strain in embedding.keys():
-        assignments, soft_assignments = labels[strain]
-        
+    import copy
+    new_labels = copy.deepcopy(labels)
+    for strain, (assignments, soft_assignments) in labels.items():
         # feats[strain] = feats[strain][assignments >= 0]
         # embedding[strain] = embedding[strain][assignments >= 0]
         # labels[strain] = soft_assignments[assignments >= 0]
 
-        labels[strain] = soft_assignments
-        logger.info(f"Strain: {strain} ; Features: {feats[strain].shape} ; Embedding: {embedding[strain].shape} ; Labels: {labels[strain].shape}")
+        new_labels[strain] = soft_assignments
+        logger.info(f"Strain: {strain} ; Features: {feats[strain].shape} ; Embedding: {embedding[strain].shape} ; Labels: {new_labels[strain].shape}")
     
-    return feats, embedding, labels
+    return feats, embedding, new_labels
 
 def collect_strainwise_clusters(feats: dict, labels: dict, embedding: dict, thresh: float):
+    feats = collect_strainwise_feats(feats)
     feats, embedding, labels = collect_strainwise_labels(feats, embedding, labels)
 
-    k, clusters, strain2cluster = 0, {}, {}
+    k, clusters = 0, {}
     for strain in feats.keys():
         labels[strain] = labels[strain].astype(int)
 
@@ -115,24 +117,31 @@ def collect_strainwise_clusters(feats: dict, labels: dict, embedding: dict, thre
 
         if entropy_ratio >= thresh:
             logger.info(f"pooling {len(class_ids)} clusters from {strain} with entropy ratio {entropy_ratio}")
-            strain2cluster[strain] = []
             for class_id in class_ids:
                 idx = np.where(labels[strain] == class_id)[0]
-                clusters[k] = {
+                clusters[f"{strain}:{class_id}:{k}"] = {
                     "feats": feats[strain][idx,:],
                     "embed": embedding[strain][idx,:]
                 }
-                strain2cluster[strain].append(k)
                 k += 1
     
-    return clusters, strain2cluster
-    
+    return clusters
+
+def get_strain2cluster_map(clusters):
+    strain2cluster = {}
+    for cluster_id in clusters.keys():
+        strain, _, k = cluster_id.split(':')
+        if strain in strain2cluster:
+            strain2cluster[strain].append(int(k))
+        else:
+            strain2cluster[strain] = [int(k)]
+    return strain2cluster
 
 def pairwise_similarity(feats, embedding, labels, thresh):
     import ray
     import psutil
 
-    clusters, strain2clusters = collect_strainwise_clusters(feats, labels, embedding, thresh)
+    clusters = collect_strainwise_clusters(feats, labels, embedding, thresh)
     print(f"Total clusters: {len(clusters)}")
     del feats, embedding, labels
 
@@ -150,9 +159,9 @@ def pairwise_similarity(feats, embedding, labels, thresh):
         model.fit(X, y)
 
         Xproj = model.transform(X)
-        y_preds = (Xproj < 0).astype(int)
 
-        sim = roc_auc_score(y, y_preds)
+        sim = roc_auc_score(y, Xproj)
+        idx1, idx2 = int(idx1.split(':')[-1]), int(idx2.split(':')[-1])
         return [sim, idx1, idx2]
     
     clusters_id = ray.put(clusters)
@@ -169,9 +178,11 @@ def pairwise_similarity(feats, embedding, labels, thresh):
         pbar.update(n)
     
     sim = np.vstack(sim)
-    return sim, strain2clusters
+    return sim
 
-def impute_same_strain_values(sim, strain2cluster):
+def impute_same_strain_values(sim, clusters):
+    strain2cluster = get_strain2cluster_map(clusters)
+
     idxmap = {}
     for _, idxs in strain2cluster.items():
         for idx in idxs:
@@ -190,16 +201,17 @@ def impute_same_strain_values(sim, strain2cluster):
     filler = KNeighborsRegressor(n_neighbors=20, n_jobs=-1, metric="canberra", weights="distance")
     filler.fit(diff_strain_sim[:,1:].astype(int), diff_strain_sim[:,0])
     
-    same_strain_sim = filler.predict(sim[same_strain_idx, 1:])
+    same_strain_sim = filler.predict(sim[same_strain_idx, 1:].astype(int))
     same_strain_sim = np.hstack((same_strain_sim.reshape(-1,1), sim[same_strain_idx,1:]))
 
     sim = np.vstack((diff_strain_sim, same_strain_sim))
     return sim
 
-def similarity_matrix(sim, strain2cluster):
-    sim = impute_same_strain_values(sim, strain2cluster)
-
+def similarity_matrix(sim):
     n_clusters = int(sim[:,1:].max()) + 1
+    sim[:,0] = np.abs(sim[:,0] - 0.5) + 0.5
+    sim[:,0] = (sim[:,0] - 0.5) / 0.5
+    
     mat = np.zeros((n_clusters, n_clusters))
 
     for i in range(sim.shape[0]):

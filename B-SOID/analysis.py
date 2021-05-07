@@ -18,7 +18,7 @@ from tqdm import tqdm
 from joblib import Parallel, delayed
 from BSOID.data import bsoid_format, get_pose_data_dir
 from BSOID.preprocessing import likelihood_filter
-from BSOID.prediction import *
+from prediction import *
 from BSOID.features.displacement_feats import extract_feats
 from sklearn.neural_network import MLPClassifier
 

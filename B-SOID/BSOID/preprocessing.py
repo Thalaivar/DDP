@@ -19,7 +19,7 @@ BASE_TAIL_INDEX = 9
 MID_TAIL_INDEX = 10
 TIP_TAIL_INDEX = 11
 
-bodyparts = [NOSE_INDEX, LEFT_EAR_INDEX, RIGHT_EAR_INDEX,
+BODYPARTS = [NOSE_INDEX, LEFT_EAR_INDEX, RIGHT_EAR_INDEX,
             BASE_NECK_INDEX, CENTER_SPINE_INDEX,
             LEFT_REAR_PAW_INDEX, RIGHT_REAR_PAW_INDEX,
             BASE_TAIL_INDEX, MID_TAIL_INDEX, TIP_TAIL_INDEX]
@@ -29,7 +29,7 @@ def smoothen_data(data, win_len=7):
     smoothed_data = data.rolling(win_len, min_periods=1, center=True)
     return np.array(smoothed_data.mean())
 
-def likelihood_filter(data: pd.DataFrame, fps, conf_threshold=0.3, end_trim=2, clip_window=30):
+def likelihood_filter(data: pd.DataFrame, fps, conf_threshold=0.3, end_trim=2, clip_window=30, bodyparts=BODYPARTS):
     N = data.shape[0]
 
     # retrieve confidence, x and y data from csv data
@@ -45,38 +45,39 @@ def likelihood_filter(data: pd.DataFrame, fps, conf_threshold=0.3, end_trim=2, c
     conf, x, y = conf[:,bodyparts], x[:,bodyparts], y[:,bodyparts]
     
     # take average of nose and ears
-    conf = np.hstack((conf[:,:3].mean(axis=1).reshape(-1,1), conf[:,3:]))
-    x = np.hstack((x[:,:3].mean(axis=1).reshape(-1,1), x[:,3:]))
-    y = np.hstack((y[:,:3].mean(axis=1).reshape(-1,1), y[:,3:]))
+    # conf = np.hstack((conf[:,:3].mean(axis=1).reshape(-1,1), conf[:,3:]))
+    # x = np.hstack((x[:,:3].mean(axis=1).reshape(-1,1), x[:,3:]))
+    # y = np.hstack((y[:,:3].mean(axis=1).reshape(-1,1), y[:,3:]))
 
     n_dpoints = conf.shape[1]
     
     logging.debug('extracted {} samples of {} features'.format(N, n_dpoints))
 
     filt_x, filt_y = np.zeros_like(x), np.zeros_like(y)
-    
-    j = 0
-    perc_filt = 0
 
-    # find first best point
-    while j < N and np.any(conf[j] < conf_threshold):
-        perc_filt += 1
-        j += 1
-    
-    prev_best_idx = j
-    filt_x[0:j,:] = np.repeat(np.expand_dims(x[prev_best_idx], axis=0), prev_best_idx, axis=0)
-    filt_y[0:j,:] = np.repeat(np.expand_dims(y[prev_best_idx], axis=0), prev_best_idx, axis=0)
+    points_filtered_by_idx = np.zeros((n_dpoints,))
+    for i in range(n_dpoints):    
+        j, perc_filt = 0, 0
 
-    for j in range(j, N):
-        if np.any(conf[j] < conf_threshold):
-            filt_x[j] = x[prev_best_idx]
-            filt_y[j] = y[prev_best_idx]
+        # find first best point
+        while j < N and conf[j,i] < conf_threshold:
             perc_filt += 1
-        else:
-            filt_x[j], filt_y[j] = x[j], y[j]
-            prev_best_idx = j
-    
-    logging.debug(f'filtered {round(perc_filt * 100 / N, 2)}% of data')
+            j += 1
+        
+        filt_x[0:j,i] = np.repeat(x[j, i], j)
+        filt_y[0:j,i] = np.repeat(x[j, i], j)
+        prev_best_idx = j
+
+        for j in range(j, N):
+            if conf[j,i] < conf_threshold:
+                filt_x[j,i] = x[prev_best_idx,i]
+                filt_y[j,i] = y[prev_best_idx,i]
+                perc_filt += 1
+            else:
+                filt_x[j,i], filt_y[j,i] = x[j,i], y[j,i]
+                prev_best_idx = j
+
+        points_filtered_by_idx[i] = perc_filt
 
     x, y, conf = trim_data(filt_x, filt_y, conf, fps, end_trim, clip_window)
 

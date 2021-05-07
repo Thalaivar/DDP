@@ -134,10 +134,10 @@ class BSOID:
                     conf, pos = process_h5py_data(h5py.File(filename, "r"))
 
                     bsoid_data = bsoid_format(conf, pos)
-                    fdata, perc_filt = likelihood_filter(bsoid_data, self.fps, self.conf_threshold, **self.trim_params)
+                    fdata, perc_filt = likelihood_filter(bsoid_data, self.fps, self.conf_threshold, bodyparts=np.arange(12), **self.trim_params)
                     strain, mouse_id = metadata['Strain'], metadata['MouseID']
                     
-                    if perc_filt > filter_thresh:
+                    if perc_filt.max() > filter_thresh:
                         logging.warning(f'mouse:{strain}/{mouse_id}: % data filtered from raw data is too high ({perc_filt} %)')
                     else:
                         shape = fdata['x'].shape
@@ -178,7 +178,7 @@ class BSOID:
         feats = {}
         for strain, fdata in filtered_data.items():
             feats[strain] = Parallel(n_jobs=-1)(delayed(extract_feats)(data, self.fps, self.stride_window) for data in fdata)
-            feats[strain] = window_extracted_feats(feats[strain], self.stride_window)
+            # feats[strain] = window_extracted_feats(feats[strain], self.stride_window)
             pbar.update(1)
 
         logging.info(f'extracted {len(feats)} datasets of {feats[list(feats.keys())[0]][0].shape[1]}D features')

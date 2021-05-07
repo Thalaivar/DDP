@@ -23,7 +23,7 @@ def main(config_file, n=None, n_strains=None):
     if LOAD_FROM_DATASET:
         bsoid.load_from_dataset(n, n_strains)
     if GET_FEATURES:
-        bsoid.features_from_points(parallel=True)
+        bsoid.features_from_points()
     if UMAP_REDUCE:
         bsoid.umap_reduce()
     if CLUSTER_DATA:
@@ -123,8 +123,7 @@ def cluster_collect_embed(max_samples, thresh):
     save_dir = "/home/laadd/data"
     with open(os.path.join(save_dir, "strainwise_labels.sav"), "rb") as f:
         feats, embedding, labels = joblib.load(f)
-    feats = collect_strainwise_feats(feats)
-    clusters, _ = collect_strainwise_clusters(feats, labels, embedding, thresh)
+    clusters = collect_strainwise_clusters(feats, labels, embedding, thresh)
     del feats, labels, embedding
 
     feats = []
@@ -159,8 +158,8 @@ def strainwise_cluster(config_file, save_dir, logfile):
 
     bsoid = BSOID(config_file)
 
-    # bsoid.load_from_dataset(n=10)
-    # bsoid.features_from_points()
+    bsoid.load_from_dataset(n=10)
+    bsoid.features_from_points()
  
     embedding, labels = cluster_strainwise(config_file, save_dir, logfile)
     
@@ -174,10 +173,10 @@ def calculate_pairwise_similarity(save_dir, thresh):
         feats, embedding, labels = joblib.load(f)
 
     feats = collect_strainwise_feats(feats)
-    sim, strain2clusters = pairwise_similarity(feats, embedding, labels, thresh)
+    sim = pairwise_similarity(feats, embedding, labels, thresh)
 
     with open(os.path.join(save_dir, "pairwise_sim.sav"), "wb") as f:
-        joblib.dump([sim, strain2clusters], f)
+        joblib.dump([sim, thresh], f)
 
 if __name__ == "__main__":
     import argparse 
