@@ -19,7 +19,7 @@ from BSOID.utils import *
 from BSOID.data import *
 from BSOID.preprocessing import *
 
-from BSOID.features.displacement_feats import *
+from BSOID.features import extract_comb_feats as extract_feats
 
 from joblib import Parallel, delayed
 
@@ -176,7 +176,6 @@ class BSOID:
         feats = {}
         for strain, fdata in filtered_data.items():
             feats[strain] = Parallel(n_jobs=-1)(delayed(extract_feats)(data, self.fps, self.stride_window) for data in fdata)
-            # feats[strain] = window_extracted_feats(feats[strain], self.stride_window)
             pbar.update(1)
 
         logging.info(f'extracted {len(feats)} datasets of {feats[list(feats.keys())[0]][0].shape[1]}D features')
