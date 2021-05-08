@@ -19,7 +19,7 @@ from joblib import Parallel, delayed
 from BSOID.data import bsoid_format, get_pose_data_dir
 from BSOID.preprocessing import likelihood_filter
 from prediction import *
-from BSOID.features.displacement_feats import extract_feats
+from BSOID.features import extract_dis_feats as extract_feats
 from sklearn.neural_network import MLPClassifier
 
 from sklearn.preprocessing import StandardScaler
