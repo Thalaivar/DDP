@@ -6,7 +6,7 @@ import logging
 import numpy as np
 from BSOID.bsoid import BSOID
 from BSOID.utils import alphanum_key
-from BSOID.features.displacement_feats import *
+from BSOID.features import extract_comb_feats as extract_feats
 from BSOID.data import process_h5py_data, bsoid_format
 from BSOID.preprocessing import smoothen_data, likelihood_filter
 from sklearn.preprocessing import StandardScaler
