@@ -154,9 +154,7 @@ class BSOID:
         num_cpus = psutil.cpu_count(logical=False)    
         filtered_data = Parallel(n_jobs=num_cpus)(delayed(filter_for_strain)(*all_data[i], n) for i in tqdm(range(len(all_data))))
         
-        empty_idx = [i for i, data in enumerate(filtered_data) if len(data[0]) == 0]
-        for idx in empty_idx:
-            del filtered_data[idx]
+        filtered_data = [data for data in filtered_data if len(data[0]) > 0]
         if n_strains is not None:
             filtered_data = random.sample(filtered_data, n_strains)
         
