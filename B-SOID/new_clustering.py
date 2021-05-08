@@ -175,16 +175,27 @@ def pairwise_similarity(feats, embedding, labels, thresh):
     #                 combinations(list(clusters.keys()), 2)]
     
     pwise_combs = list(combinations(list(clusters.keys()), 2))
-    k, pbar, sim = 0, tqdm(total=len(pwise_combs)), []
-    futures = []
+    N = len(pwise_combs)
+
+    pbar, sim = tqdm(total=len(pwise_combs)), []
+    
+    k, futures = 0, []
+    for _ in range(num_cpus):
+        idx1, idx2 = pwise_combs[k]
+        X1, X2 = clusters[idx1]["feats"], clusters[idx2]["feats"]
+        futures.append(par_pwise.remote(idx1, idx2, X1, X2))
+
     while k < len(pwise_combs):
+        fin, futures = ray.wait(futures, num_returns=min(num_cpus, len(futures)), timeout=3000)
+        sim.extend(ray.get(fin))
+        pbar.update(len(fin))
+        k += len(fin)
+        
         for i in range(k, min(k+num_cpus, len(pwise_combs))):
             idx1, idx2 = pwise_combs[i]
             X1, X2 = clusters[idx1]["feats"], clusters[idx2]["feats"]
             futures.append(par_pwise.remote(idx1, idx2, X1, X2))
-        fin, futures = ray.wait(futures, num_returns=min(num_cpus, len(futures)), timeout=3000)
-        sim.extend(ray.get(fin))
-        pbar.update(len(fin))
+        
     
     sim = np.vstack(sim)
     return sim
