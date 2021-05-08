@@ -177,7 +177,7 @@ def pairwise_similarity(feats, embedding, labels, thresh):
     pbar, sim = tqdm(total=len(futures)), []
     while len(futures) > 0:
         n = len(futures) if len(futures) < num_cpus else num_cpus
-        fin, rest = ray.wait(futures, num_returns=n)
+        fin, rest = ray.wait(futures, num_returns=n, timeout=3000)
         sim.extend(ray.get(fin))
         futures = rest
         pbar.update(n)
