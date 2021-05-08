@@ -4,15 +4,16 @@ import joblib
 import numpy as np
 
 from tqdm import tqdm
+from numba import njit
 from sklearn import clone
 from BSOID.bsoid import BSOID
 from BSOID.utils import max_entropy
 from itertools import combinations
+from scipy.spatial.distance import cdist
 from sklearn.metrics import roc_auc_score
 from BSOID.utils import cluster_with_hdbscan
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.model_selection import cross_val_score, StratifiedKFold, cross_validate
 
 import logging
@@ -137,6 +138,15 @@ def get_strain2cluster_map(clusters):
             strain2cluster[strain] = [int(k)]
     return strain2cluster
 
+@njit
+def cdist2sim(D):
+    m, n = D.shape
+    result = 0.0
+    for i in range(m):
+        for j in range(i, n):
+            result += D[i,j]
+    return result / (m * n)
+
 def pairwise_similarity(feats, embedding, labels, thresh):
     import ray
     import psutil
@@ -147,20 +157,14 @@ def pairwise_similarity(feats, embedding, labels, thresh):
 
     num_cpus = psutil.cpu_count(logical=False)
     ray.init(num_cpus=num_cpus)
-
+    
     @ray.remote
     def par_pwise(idx1, idx2, clusters):
         cluster1, cluster2 = clusters[idx1], clusters[idx2]
-        X = [cluster1["feats"], cluster2["feats"]]
-        y = [np.zeros((X[0].shape[0],)), np.ones((X[1].shape[0], ))]
-        X, y = np.vstack(X), np.hstack(y)
-
-        model = LinearDiscriminantAnalysis(solver="svd", store_covariance=True)
-        model.fit(X, y)
-
-        Xproj = model.transform(X)
-
-        sim = roc_auc_score(y, Xproj)
+        X1, X2 = cluster1["feats"], cluster2["feats"]
+        D = cdist(X1, X2, metric="euclidean")
+        sim = cdist2sim(D)
+        
         idx1, idx2 = int(idx1.split(':')[-1]), int(idx2.split(':')[-1])
         return [sim, idx1, idx2]
     
