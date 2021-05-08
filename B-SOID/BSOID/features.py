@@ -78,7 +78,7 @@ def extract_comb_feats(filtered_data, fps, stride_window):
         x[:,i] = smoothen_data(x_raw[:,i], win_len)
         y[:,i] = smoothen_data(y_raw[:,i], win_len)
     
-    links = [np.array(x[:,i] - x[:,j], y[:,i] - y[:,j]).T for i, j in combinations(range(n_dpoints), 2)]
+    links = [np.array([x[:,i] - x[:,j], y[:,i] - y[:,j]]).T for i, j in combinations(range(n_dpoints), 2)]
     link_lens = np.vstack([np.linalg.norm(link, axis=1) for link in links]).T
     link_angles = np.vstack([np.arctan2(link[:,1], link[:,0]) for i, link in enumerate(links)]).T
 
