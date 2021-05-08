@@ -45,6 +45,7 @@ def cluster_strainwise(config_file, save_dir, logfile):
 
     num_cpus = psutil.cpu_count(logical=False)
     ray.init(num_cpus=num_cpus)
+    logger.info(f"running on: {num_cpus} CPUs")
 
     @ray.remote
     def cluster_strain_data(strain, feats):
@@ -157,10 +158,10 @@ def pairwise_similarity(feats, embedding, labels, thresh):
 
     num_cpus = psutil.cpu_count(logical=False)
     ray.init(num_cpus=num_cpus)
+    logger.info(f"running on: {num_cpus} CPUs")
     
     @ray.remote
-    def par_pwise(idx1, idx2, clusters):
-        cluster1, cluster2 = clusters[idx1], clusters[idx2]
+    def par_pwise(idx1, idx2, cluster1, cluster2):
         X1, X2 = cluster1["feats"], cluster2["feats"]
         D = cdist(X1, X2, metric="euclidean")
         sim = cdist2sim(D)
@@ -168,8 +169,8 @@ def pairwise_similarity(feats, embedding, labels, thresh):
         idx1, idx2 = int(idx1.split(':')[-1]), int(idx2.split(':')[-1])
         return [sim, idx1, idx2]
     
-    clusters_id = ray.put(clusters)
-    futures = [par_pwise.remote(idx1, idx2, clusters_id) 
+    # clusters_id = ray.put(clusters)
+    futures = [par_pwise.remote(idx1, idx2, clusters[idx1], clusters[idx2]) 
                     for idx1, idx2 in 
                     combinations(list(clusters.keys()), 2)]
     
