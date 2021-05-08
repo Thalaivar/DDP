@@ -161,8 +161,7 @@ def pairwise_similarity(feats, embedding, labels, thresh):
     logger.info(f"running on: {num_cpus} CPUs")
     
     @ray.remote
-    def par_pwise(idx1, idx2, cluster1, cluster2):
-        X1, X2 = cluster1["feats"], cluster2["feats"]
+    def par_pwise(idx1, idx2, X1, X2):
         D = cdist(X1, X2, metric="euclidean")
         sim = cdist2sim(D)
         
@@ -170,7 +169,8 @@ def pairwise_similarity(feats, embedding, labels, thresh):
         return [sim, idx1, idx2]
     
     # clusters_id = ray.put(clusters)
-    futures = [par_pwise.remote(idx1, idx2, clusters[idx1], clusters[idx2]) 
+    logger.info("initializing tasks")
+    futures = [par_pwise.remote(idx1, idx2, clusters[idx1]["feats"], clusters[idx2]["feats"]) 
                     for idx1, idx2 in 
                     combinations(list(clusters.keys()), 2)]
     
