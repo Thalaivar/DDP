@@ -1,0 +1,115 @@
+INFO:new_clustering:Strain: 129P3/J ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: 129S1/SvlmJ ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: 129X1/SvJ ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: A/J ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: AKR/J ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: B6129PF1/J ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: B6129SF1/J ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: B6AF1/J ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: B6C3F1/J ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: B6CBAF1/J ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: B6D2F1/J ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: B6SJLF1/J ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: BALB/cByJ ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: BALB/cJ ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: BTBR T<+>ltpr3<tf>/J ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: C3H/HeJ ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: C3H/HeOuJ ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: C3HeB/FeJ ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: C57BL/10SnJ ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: C57BL/6J ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: C57BL/6NJ ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: C57BLKS/J ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: C57BR/cdJ ; Features: (43192, 22) ; Embedding: (43192, 12) ; Labels: (43192,)
+INFO:new_clustering:Strain: C57L/J ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: C58/J ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: CAF1/J ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: CAST/EiJ ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: CB6F1/J ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: CBA/CaJ ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: CBA/J ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: CByB6F1/J ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: CZECHII/EiJ ; Features: (21596, 22) ; Embedding: (21596, 12) ; Labels: (21596,)
+INFO:new_clustering:Strain: DBA/1J ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: FVB/NJ ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: I/LnJ ; Features: (48591, 22) ; Embedding: (48591, 12) ; Labels: (48591,)
+INFO:new_clustering:Strain: NZO/HILtJ ; Features: (5399, 22) ; Embedding: (5399, 12) ; Labels: (5399,)
+INFO:new_clustering:Strain: DBA/2J ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: KK/HiJ ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: LG/J ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: LP/J ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: MA/MyJ ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: MOLF/EiJ ; Features: (43192, 22) ; Embedding: (43192, 12) ; Labels: (43192,)
+INFO:new_clustering:Strain: MRL/MpJ ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: MSM/MsJ ; Features: (16197, 22) ; Embedding: (16197, 12) ; Labels: (16197,)
+INFO:new_clustering:Strain: NOD/ShiLtJ ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: NON/ShiLtJ ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: NOR/LtJ ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: NU/J ; Features: (10798, 22) ; Embedding: (10798, 12) ; Labels: (10798,)
+INFO:new_clustering:Strain: NZB/BlNJ ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: NZW/LacJ ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: PL/J ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: PWK/PhJ ; Features: (5399, 22) ; Embedding: (5399, 12) ; Labels: (5399,)
+INFO:new_clustering:Strain: SM/J ; Features: (48591, 22) ; Embedding: (48591, 12) ; Labels: (48591,)
+INFO:new_clustering:Strain: WSB/EiJ ; Features: (5399, 22) ; Embedding: (5399, 12) ; Labels: (5399,)
+INFO:new_clustering:Strain: NZBWF1/J ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: PWD/PhJ ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: RIIIS/J ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: SEA/GnJ ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: SJL/J ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: SWR/J ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:Strain: TALLYHO/JngJ ; Features: (53990, 22) ; Embedding: (53990, 12) ; Labels: (53990,)
+INFO:new_clustering:pooling 39 clusters from 129P3/J with entropy ratio 0.9368466864762711
+INFO:new_clustering:pooling 57 clusters from 129S1/SvlmJ with entropy ratio 0.9448555408750117
+INFO:new_clustering:pooling 3 clusters from 129X1/SvJ with entropy ratio 0.6326129296753578
+INFO:new_clustering:pooling 28 clusters from AKR/J with entropy ratio 0.6778269234786414
+INFO:new_clustering:pooling 19 clusters from B6129PF1/J with entropy ratio 0.7128565675503827
+INFO:new_clustering:pooling 37 clusters from B6129SF1/J with entropy ratio 0.9503090760248815
+INFO:new_clustering:pooling 34 clusters from B6AF1/J with entropy ratio 0.9504081097931297
+INFO:new_clustering:pooling 11 clusters from B6C3F1/J with entropy ratio 0.758477232046511
+INFO:new_clustering:pooling 24 clusters from B6D2F1/J with entropy ratio 0.9600910402634995
+INFO:new_clustering:pooling 29 clusters from B6SJLF1/J with entropy ratio 0.7766490717470318
+INFO:new_clustering:pooling 33 clusters from BALB/cJ with entropy ratio 0.9245931849590799
+INFO:new_clustering:pooling 23 clusters from BTBR T<+>ltpr3<tf>/J with entropy ratio 0.7214458542124562
+INFO:new_clustering:pooling 15 clusters from C3H/HeJ with entropy ratio 0.701391654031869
+INFO:new_clustering:pooling 12 clusters from C57BL/10SnJ with entropy ratio 0.67843930389849
+INFO:new_clustering:pooling 22 clusters from C57BL/6J with entropy ratio 0.7486958578053177
+INFO:new_clustering:pooling 29 clusters from C57BL/6NJ with entropy ratio 0.9414674922381822
+INFO:new_clustering:pooling 24 clusters from C57BLKS/J with entropy ratio 0.9577947789855502
+INFO:new_clustering:pooling 16 clusters from C57BR/cdJ with entropy ratio 0.677912763913243
+INFO:new_clustering:pooling 47 clusters from CAF1/J with entropy ratio 0.9636684742110121
+INFO:new_clustering:pooling 10 clusters from CAST/EiJ with entropy ratio 0.7409831544961771
+INFO:new_clustering:pooling 24 clusters from CB6F1/J with entropy ratio 0.9571596173349464
+INFO:new_clustering:pooling 33 clusters from CBA/CaJ with entropy ratio 0.9331836210293518
+INFO:new_clustering:pooling 41 clusters from CBA/J with entropy ratio 0.9568402811531074
+INFO:new_clustering:pooling 29 clusters from CByB6F1/J with entropy ratio 0.9333462730131035
+INFO:new_clustering:pooling 65 clusters from CZECHII/EiJ with entropy ratio 0.9661655802182814
+INFO:new_clustering:pooling 16 clusters from DBA/1J with entropy ratio 0.6279957381926006
+INFO:new_clustering:pooling 38 clusters from DBA/2J with entropy ratio 0.9524914122606575
+INFO:new_clustering:pooling 5 clusters from FVB/NJ with entropy ratio 0.9399498293294575
+INFO:new_clustering:pooling 52 clusters from I/LnJ with entropy ratio 0.9312728323399928
+INFO:new_clustering:pooling 20 clusters from KK/HiJ with entropy ratio 0.7708926536941607
+INFO:new_clustering:pooling 25 clusters from LG/J with entropy ratio 0.8918462878242392
+INFO:new_clustering:pooling 50 clusters from LP/J with entropy ratio 0.881588483443669
+INFO:new_clustering:pooling 33 clusters from MA/MyJ with entropy ratio 0.9613553110157503
+INFO:new_clustering:pooling 53 clusters from MOLF/EiJ with entropy ratio 0.9540962627232243
+INFO:new_clustering:pooling 57 clusters from MSM/MsJ with entropy ratio 0.9466648559946487
+INFO:new_clustering:pooling 13 clusters from NOD/ShiLtJ with entropy ratio 0.7138384833102422
+INFO:new_clustering:pooling 26 clusters from NON/ShiLtJ with entropy ratio 0.8866770224740296
+INFO:new_clustering:pooling 14 clusters from NOR/LtJ with entropy ratio 0.6507008546003743
+INFO:new_clustering:pooling 57 clusters from NU/J with entropy ratio 0.9749347489402221
+INFO:new_clustering:pooling 47 clusters from NZB/BlNJ with entropy ratio 0.8842432908808591
+INFO:new_clustering:pooling 51 clusters from NZBWF1/J with entropy ratio 0.8413623968336417
+INFO:new_clustering:pooling 47 clusters from NZO/HILtJ with entropy ratio 0.8930018043995329
+INFO:new_clustering:pooling 34 clusters from NZW/LacJ with entropy ratio 0.8173762079716183
+INFO:new_clustering:pooling 24 clusters from PL/J with entropy ratio 0.9451106508119642
+INFO:new_clustering:pooling 10 clusters from PWD/PhJ with entropy ratio 0.8553878284827344
+INFO:new_clustering:pooling 19 clusters from RIIIS/J with entropy ratio 0.9305245456140635
+INFO:new_clustering:pooling 12 clusters from SEA/GnJ with entropy ratio 0.9262199703454963
+INFO:new_clustering:pooling 18 clusters from SJL/J with entropy ratio 0.9810978530632337
+INFO:new_clustering:pooling 30 clusters from SM/J with entropy ratio 0.9664621289136871
+INFO:new_clustering:pooling 10 clusters from SWR/J with entropy ratio 0.8172403727936652
+INFO:new_clustering:pooling 25 clusters from TALLYHO/JngJ with entropy ratio 0.9622258417540185
+INFO:new_clustering:pooling 55 clusters from WSB/EiJ with entropy ratio 0.9519280825991626
+INFO:root:running UMAP on: 1436248
+INFO:root:identified 13 clusters with entropy ratio 0.9100097810438352

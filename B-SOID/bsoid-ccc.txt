@@ -1,0 +1,21 @@
+-------------------------------------------------------------
+SUMNER/WINTER EPILOGUE
+-------------------------------------------------------------
+Job ID: 7799453
+Cluster: slurm_cluster
+User/Group: root/jaxuser
+State: COMPLETED (exit code 0)
+Nodes: 1
+Cores per node: 24
+CPU Utilized: 20:36:27
+CPU Efficiency: 12.04% of 7-03:12:00 core-walltime
+Job Wall-clock time: 07:08:00
+Memory Utilized: 22.69 GB
+Memory Efficiency: 46.47% of 48.83 GB
+-------------------------------------------------------------
+       JobID  User   State    CPUTime Exit     MaxRSS        NodeList  Partition                   ReqTRES              Submit               Start                 End    Elapsed 
+------------ ----- ------- ---------- ---- ---------- --------------- ---------- ------------------------- ------------------- ------------------- ------------------- ---------- 
+7799453      laadd COMPLE+ 7-03:12:00  0:0                  sumner045    compute billing=24,cpu=24,mem=50+ 2021-05-05T04:24:03 2021-05-05T04:24:15 2021-05-05T11:32:15   07:08:00 
+7799453.bat+       COMPLE+ 7-03:12:00  0:0  23233.53M       sumner045                                      2021-05-05T04:24:15 2021-05-05T04:24:15 2021-05-05T11:32:15   07:08:00 
+7799453.ext+       COMPLE+ 7-03:12:00  0:0          0       sumner045                                      2021-05-05T04:24:15 2021-05-05T04:24:15 2021-05-05T11:32:15   07:08:00 
+-------------------------------------------------------------

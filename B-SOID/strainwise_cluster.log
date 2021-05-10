@@ -1,0 +1,125 @@
+INFO:root:extracting features from 61 animals
+INFO:root:extracted 61 datasets of 56D features
+INFO:root:collected features into bins of 333 ms
+running for strain: 129X1/SvJ with samples: (53990, 56)
+collected 53990 samples for 129X1/SvJ with 72 classes and entropy ratio: 0.957871915342911
+running for strain: BALB/cJ with samples: (53990, 56)
+collected 53990 samples for BALB/cJ with 39 classes and entropy ratio: 0.7389901922318354
+running for strain: B6129SF1/J with samples: (53990, 56)
+collected 53990 samples for B6129SF1/J with 53 classes and entropy ratio: 0.9440306396855512
+running for strain: A/J with samples: (53990, 56)
+collected 53990 samples for A/J with 67 classes and entropy ratio: 0.9494185968813842
+running for strain: BALB/cByJ with samples: (53990, 56)
+collected 53990 samples for BALB/cByJ with 53 classes and entropy ratio: 0.9281342374087871
+running for strain: C3HeB/FeJ with samples: (53990, 56)
+collected 53990 samples for C3HeB/FeJ with 56 classes and entropy ratio: 0.9411474551486242
+running for strain: 129P3/J with samples: (53990, 56)
+collected 53990 samples for 129P3/J with 74 classes and entropy ratio: 0.9440549053568476
+running for strain: AKR/J with samples: (53990, 56)
+collected 53990 samples for AKR/J with 52 classes and entropy ratio: 0.9171774007744945
+running for strain: C3H/HeJ with samples: (53990, 56)
+collected 53990 samples for C3H/HeJ with 57 classes and entropy ratio: 0.9329749239204406
+running for strain: 129S1/SvlmJ with samples: (53990, 56)
+collected 53990 samples for 129S1/SvlmJ with 71 classes and entropy ratio: 0.8370075939570065
+running for strain: BTBR T<+>ltpr3<tf>/J with samples: (53990, 56)
+collected 53990 samples for BTBR T<+>ltpr3<tf>/J with 53 classes and entropy ratio: 0.94615023175938
+running for strain: C3H/HeOuJ with samples: (53990, 56)
+collected 53990 samples for C3H/HeOuJ with 40 classes and entropy ratio: 0.9279327724634617
+running for strain: B6129PF1/J with samples: (53990, 56)
+collected 53990 samples for B6129PF1/J with 44 classes and entropy ratio: 0.9191769424629994
+running for strain: B6SJLF1/J with samples: (53990, 56)
+collected 53990 samples for B6SJLF1/J with 45 classes and entropy ratio: 0.9520367264617708
+running for strain: B6C3F1/J with samples: (53990, 56)
+collected 53990 samples for B6C3F1/J with 3 classes and entropy ratio: 0.10138369721497086
+running for strain: B6CBAF1/J with samples: (53990, 56)
+collected 53990 samples for B6CBAF1/J with 29 classes and entropy ratio: 0.9753402747813328
+running for strain: B6D2F1/J with samples: (53990, 56)
+collected 53990 samples for B6D2F1/J with 2 classes and entropy ratio: 0.11748611752148336
+running for strain: B6AF1/J with samples: (53990, 56)
+collected 53990 samples for B6AF1/J with 6 classes and entropy ratio: 0.25674128980032696
+running for strain: CZECHII/EiJ with samples: (21596, 56)
+collected 21596 samples for CZECHII/EiJ with 64 classes and entropy ratio: 0.9283137047167646
+running for strain: C57BR/cdJ with samples: (43192, 56)
+collected 43192 samples for C57BR/cdJ with 33 classes and entropy ratio: 0.9071251566184243
+running for strain: CAF1/J with samples: (53990, 56)
+collected 53990 samples for CAF1/J with 50 classes and entropy ratio: 0.9071025092935219
+running for strain: C57BL/6NJ with samples: (53990, 56)
+collected 53990 samples for C57BL/6NJ with 7 classes and entropy ratio: 0.2701428276628052
+running for strain: C57BL/6J with samples: (53990, 56)
+collected 53990 samples for C57BL/6J with 40 classes and entropy ratio: 0.9226643397800387
+running for strain: CBA/J with samples: (53990, 56)
+collected 53990 samples for CBA/J with 56 classes and entropy ratio: 0.957047135330364
+running for strain: I/LnJ with samples: (48591, 56)
+collected 48591 samples for I/LnJ with 80 classes and entropy ratio: 0.9651370890021475
+running for strain: CAST/EiJ with samples: (53990, 56)
+collected 53990 samples for CAST/EiJ with 37 classes and entropy ratio: 0.9465124692380738
+running for strain: C57L/J with samples: (53990, 56)
+collected 53990 samples for C57L/J with 18 classes and entropy ratio: 0.9691445869033235
+running for strain: C57BLKS/J with samples: (53990, 56)
+collected 53990 samples for C57BLKS/J with 31 classes and entropy ratio: 0.9580286280209375
+running for strain: C57BL/10SnJ with samples: (53990, 56)
+collected 53990 samples for C57BL/10SnJ with 35 classes and entropy ratio: 0.9451835925262371
+running for strain: DBA/2J with samples: (53990, 56)
+collected 53990 samples for DBA/2J with 60 classes and entropy ratio: 0.9494678246000532
+running for strain: C58/J with samples: (53990, 56)
+collected 53990 samples for C58/J with 33 classes and entropy ratio: 0.9322871928719318
+running for strain: DBA/1J with samples: (53990, 56)
+collected 53990 samples for DBA/1J with 6 classes and entropy ratio: 0.206853894848361
+running for strain: CBA/CaJ with samples: (53990, 56)
+collected 53990 samples for CBA/CaJ with 37 classes and entropy ratio: 0.9444063896442496
+running for strain: CByB6F1/J with samples: (53990, 56)
+collected 53990 samples for CByB6F1/J with 40 classes and entropy ratio: 0.945792947686508
+running for strain: CB6F1/J with samples: (53990, 56)
+collected 53990 samples for CB6F1/J with 30 classes and entropy ratio: 0.9056915193914004
+running for strain: FVB/NJ with samples: (53990, 56)
+collected 53990 samples for FVB/NJ with 23 classes and entropy ratio: 0.9460221991309016
+running for strain: NZO/HILtJ with samples: (5399, 56)
+collected 5399 samples for NZO/HILtJ with 73 classes and entropy ratio: 0.9626384812378413
+running for strain: NU/J with samples: (10798, 56)
+collected 10798 samples for NU/J with 60 classes and entropy ratio: 0.9332929115975188
+running for strain: MSM/MsJ with samples: (16197, 56)
+collected 16197 samples for MSM/MsJ with 80 classes and entropy ratio: 0.9651148293572362
+running for strain: PWK/PhJ with samples: (5399, 56)
+collected 5399 samples for PWK/PhJ with 9 classes and entropy ratio: 0.23101072552757035
+running for strain: KK/HiJ with samples: (53990, 56)
+collected 53990 samples for KK/HiJ with 9 classes and entropy ratio: 0.9274716379643939
+running for strain: MOLF/EiJ with samples: (43192, 56)
+collected 43192 samples for MOLF/EiJ with 76 classes and entropy ratio: 0.9688464766982599
+running for strain: LG/J with samples: (53990, 56)
+collected 53990 samples for LG/J with 60 classes and entropy ratio: 0.9322273184814311
+running for strain: WSB/EiJ with samples: (5399, 56)
+collected 5399 samples for WSB/EiJ with 85 classes and entropy ratio: 0.9649933180047415
+running for strain: LP/J with samples: (53990, 56)
+collected 53990 samples for LP/J with 68 classes and entropy ratio: 0.8333246513517422
+running for strain: MRL/MpJ with samples: (53990, 56)
+collected 53990 samples for MRL/MpJ with 63 classes and entropy ratio: 0.9611080497809877
+running for strain: NZBWF1/J with samples: (53990, 56)
+collected 53990 samples for NZBWF1/J with 60 classes and entropy ratio: 0.9085494877605836
+running for strain: MA/MyJ with samples: (53990, 56)
+collected 53990 samples for MA/MyJ with 45 classes and entropy ratio: 0.9481139976522892
+running for strain: NZB/BlNJ with samples: (53990, 56)
+collected 53990 samples for NZB/BlNJ with 73 classes and entropy ratio: 0.9251246368247693
+running for strain: NOR/LtJ with samples: (53990, 56)
+collected 53990 samples for NOR/LtJ with 5 classes and entropy ratio: 0.1201678536604103
+running for strain: NON/ShiLtJ with samples: (53990, 56)
+collected 53990 samples for NON/ShiLtJ with 27 classes and entropy ratio: 0.9490296613614723
+running for strain: NZW/LacJ with samples: (53990, 56)
+collected 53990 samples for NZW/LacJ with 62 classes and entropy ratio: 0.9497573000643325
+running for strain: NOD/ShiLtJ with samples: (53990, 56)
+collected 53990 samples for NOD/ShiLtJ with 37 classes and entropy ratio: 0.952649198324906
+running for strain: PL/J with samples: (53990, 56)
+collected 53990 samples for PL/J with 42 classes and entropy ratio: 0.8748254678547294
+running for strain: PWD/PhJ with samples: (53990, 56)
+collected 53990 samples for PWD/PhJ with 51 classes and entropy ratio: 0.9170956014061695
+running for strain: SM/J with samples: (48591, 56)
+collected 48591 samples for SM/J with 24 classes and entropy ratio: 0.9501157229506184
+running for strain: SJL/J with samples: (53990, 56)
+collected 53990 samples for SJL/J with 75 classes and entropy ratio: 0.9611345088825094
+running for strain: SEA/GnJ with samples: (53990, 56)
+collected 53990 samples for SEA/GnJ with 3 classes and entropy ratio: 0.05511524487167818
+running for strain: RIIIS/J with samples: (53990, 56)
+collected 53990 samples for RIIIS/J with 54 classes and entropy ratio: 0.8786122447325964
+running for strain: SWR/J with samples: (53990, 56)
+collected 53990 samples for SWR/J with 16 classes and entropy ratio: 0.9266310875173076
+running for strain: TALLYHO/JngJ with samples: (53990, 56)
+collected 53990 samples for TALLYHO/JngJ with 58 classes and entropy ratio: 0.9372785989593699
