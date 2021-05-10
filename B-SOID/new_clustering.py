@@ -155,7 +155,7 @@ def pairwise_similarity(feats, embedding, labels, thresh):
     @ray.remote
     def par_pwise(idx1, idx2, X1, X2):
         X = np.vstack((X1, X2))
-        y = np.hstack([np.zeros((X1.shape[0],)), np.zeros((X2.shape[0],))])
+        y = np.hstack([np.zeros((X1.shape[0],)), np.ones((X2.shape[0],))])
 
         model = LinearDiscriminantAnalysis().fit(X, y)
         Xproj = model.transform(X)
