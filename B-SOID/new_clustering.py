@@ -14,6 +14,7 @@ from sklearn.metrics import roc_auc_score
 from BSOID.utils import cluster_with_hdbscan
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.model_selection import cross_val_score, StratifiedKFold, cross_validate
 
 import logging
@@ -139,15 +140,6 @@ def get_strain2cluster_map(clusters):
             strain2cluster[strain] = [int(k)]
     return strain2cluster
 
-@njit
-def cdist2sim(D):
-    m, n = D.shape
-    result = 0.0
-    for i in range(m):
-        for j in range(i, n):
-            result += D[i,j]
-    return result / (m * n)
-
 def pairwise_similarity(feats, embedding, labels, thresh):
     import ray
     import psutil
@@ -162,8 +154,12 @@ def pairwise_similarity(feats, embedding, labels, thresh):
     
     @ray.remote
     def par_pwise(idx1, idx2, X1, X2):
-        D = cdist(X1, X2, metric="euclidean")
-        sim = cdist2sim(D)
+        X = np.vstack((X1, X2))
+        y = np.hstack([np.zeros((X1.shape[0],)), np.zeros((X2.shape[0],))])
+
+        model = LinearDiscriminantAnalysis().fit(X, y)
+        Xproj = model.transform(X)
+        sim = roc_auc_score(y, Xproj)
         
         idx1, idx2 = int(idx1.split(':')[-1]), int(idx2.split(':')[-1])
         return [sim, idx1, idx2]
@@ -229,9 +225,6 @@ def impute_same_strain_values(sim, clusters):
 
 def similarity_matrix(sim):
     n_clusters = int(sim[:,1:].max()) + 1
-    sim[:,0] = np.abs(sim[:,0] - 0.5) + 0.5
-    sim[:,0] = (sim[:,0] - 0.5) / 0.5
-    
     mat = np.zeros((n_clusters, n_clusters))
 
     for i in range(sim.shape[0]):
