@@ -97,7 +97,7 @@ def cluster_strainwise(config_file, save_dir, logfile):
 
     return embedding, labels
 
-def collect_strainwise_labels(feats, embedding, labels):
+def collect_strainwise_labels(feats, labels):
     import copy
     new_labels = copy.deepcopy(labels)
     for strain, clusterer in labels.items():
@@ -105,18 +105,16 @@ def collect_strainwise_labels(feats, embedding, labels):
         soft_assignments = np.argmax(hdbscan.all_points_membership_vectors(clusterer), axis=1)
         
         # feats[strain] = feats[strain][assignments >= 0]
-        # embedding[strain] = embedding[strain][assignments >= 0]
         # labels[strain] = soft_assignments[assignments >= 0]
 
         new_labels[strain] = {"assignments": soft_assignments.astype("int"), "exemplars": clusterer.exemplars_indices_}
-        logger.info(f"Strain: {strain} ; Features: {feats[strain].shape} ; Embedding: {embedding[strain].shape} ; Labels: {soft_assignments.shape}")
+        logger.info(f"Strain: {strain} ; Features: {feats[strain].shape} ; Labels: {soft_assignments.shape}")
     
-    return feats, embedding, new_labels
+    return feats, new_labels
 
-def collect_strainwise_clusters(feats: dict, labels: dict, embedding: dict, thresh: float):
-    print(thresh)
+def collect_strainwise_clusters(feats: dict, labels: dict, thresh: float):
     feats = collect_strainwise_feats(feats)
-    feats, embedding, labels = collect_strainwise_labels(feats, embedding, labels)
+    feats, embedding, labels = collect_strainwise_labels(feats, labels)
 
     k, clusters = 0, {}
     for strain in feats.keys():

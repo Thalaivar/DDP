@@ -122,8 +122,8 @@ def cluster_collect_embed(max_samples, thresh):
     
     save_dir = "/home/laadd/data"
     with open(os.path.join(save_dir, "strainwise_labels.sav"), "rb") as f:
-        feats, embedding, labels = joblib.load(f)
-    clusters = collect_strainwise_clusters(feats, labels, embedding, thresh)
+        feats, _,  labels = joblib.load(f)
+    clusters = collect_strainwise_clusters(feats, labels, thresh)
     del feats, labels, embedding
 
     feats = []
