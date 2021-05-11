@@ -158,7 +158,7 @@ def strainwise_cluster(config_file, save_dir, logfile):
 
     bsoid = BSOID(config_file)
 
-    # bsoid.load_from_dataset(n=10)
+    bsoid.load_from_dataset(n=10)
     bsoid.features_from_points()
  
     embedding, labels = cluster_strainwise(config_file, save_dir, logfile)
