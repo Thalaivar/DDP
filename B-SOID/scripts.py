@@ -6,6 +6,9 @@ import matplotlib.pyplot as plt
 from BSOID.bsoid import BSOID
 from analysis import *
 
+import warnings
+warnings.filterwarnings("ignore")
+
 GET_DATA          = False
 PROCESS_CSVS      = False
 LOAD_FROM_DATASET = True
@@ -167,7 +170,7 @@ def strainwise_cluster(config_file, save_dir, logfile):
         joblib.dump([bsoid.load_features(collect=False), embedding, labels], f)
     
 def calculate_pairwise_similarity(save_dir, thresh):
-    from new_clustering import pairwise_similarity, collect_strainwise_feats
+    from new_clustering import pairwise_similarity
 
     with open(os.path.join(save_dir, "strainwise_labels.sav"), "rb") as f:
         feats, _, labels = joblib.load(f)
