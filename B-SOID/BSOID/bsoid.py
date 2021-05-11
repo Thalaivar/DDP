@@ -137,7 +137,7 @@ class BSOID:
                     conf, pos = process_h5py_data(h5py.File(filename, "r"))
 
                     bsoid_data = bsoid_format(conf, pos)
-                    fdata, perc_filt = likelihood_filter(bsoid_data, self.fps, self.conf_threshold, bodyparts=np.arange(12), **self.trim_params)
+                    fdata, perc_filt = likelihood_filter(bsoid_data, self.fps, self.conf_threshold, bodyparts=self.bodyparts, **self.trim_params)
                     strain, mouse_id = metadata['Strain'], metadata['MouseID']
                     
                     if perc_filt.max() > filter_thresh:
@@ -154,7 +154,7 @@ class BSOID:
             return (strain_fdata, group_strain)
         
         logger.info(f"extracting from {len(all_data)} strains with {n} animals per strain")
-        
+
         import psutil
         num_cpus = psutil.cpu_count(logical=False)    
         filtered_data = Parallel(n_jobs=num_cpus)(delayed(filter_for_strain)(*all_data[i], n) for i in tqdm(range(len(all_data))))
