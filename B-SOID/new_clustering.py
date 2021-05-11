@@ -98,23 +98,17 @@ def cluster_strainwise(config_file, save_dir, logfile):
     return embedding, labels
 
 def collect_strainwise_labels(feats, labels):
-    import copy
-    new_labels = copy.deepcopy(labels)
     for strain, clusterer in labels.items():
-        assignments = clusterer.labels_
         soft_assignments = np.argmax(hdbscan.all_points_membership_vectors(clusterer), axis=1)
-        
-        # feats[strain] = feats[strain][assignments >= 0]
-        # labels[strain] = soft_assignments[assignments >= 0]
 
-        new_labels[strain] = {"assignments": soft_assignments.astype("int"), "exemplars": clusterer.exemplars_indices_}
+        labels[strain] = {"assignments": soft_assignments.astype("int"), "exemplars": clusterer.exemplars_indices_}
         logger.info(f"Strain: {strain} ; Features: {feats[strain].shape} ; Labels: {soft_assignments.shape}")
     
-    return feats, new_labels
+    return feats, labels
 
 def collect_strainwise_clusters(feats: dict, labels: dict, thresh: float):
     feats = collect_strainwise_feats(feats)
-    feats, embedding, labels = collect_strainwise_labels(feats, labels)
+    feats, labels = collect_strainwise_labels(feats, labels)
 
     k, clusters = 0, {}
     for strain in feats.keys():
@@ -144,12 +138,12 @@ def get_strain2cluster_map(clusters):
             strain2cluster[strain] = [int(k)]
     return strain2cluster
 
-def pairwise_similarity(feats, embedding, labels, thresh):
+def pairwise_similarity(feats, labels, thresh):
     import ray
     import psutil
 
-    clusters = collect_strainwise_clusters(feats, labels, embedding, thresh)
-    del feats, embedding, labels
+    clusters = collect_strainwise_clusters(feats, labels, thresh)
+    del feats, labels
     
     logger.info(f"total clusters: {len(clusters)}")
 

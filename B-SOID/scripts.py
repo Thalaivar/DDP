@@ -124,7 +124,7 @@ def cluster_collect_embed(max_samples, thresh):
     with open(os.path.join(save_dir, "strainwise_labels.sav"), "rb") as f:
         feats, _,  labels = joblib.load(f)
     clusters = collect_strainwise_clusters(feats, labels, thresh)
-    del feats, labels, embedding
+    del feats, labels
 
     feats = []
     for _, data in clusters.items():
@@ -170,9 +170,8 @@ def calculate_pairwise_similarity(save_dir, thresh):
     from new_clustering import pairwise_similarity, collect_strainwise_feats
 
     with open(os.path.join(save_dir, "strainwise_labels.sav"), "rb") as f:
-        feats, embedding, labels = joblib.load(f)
+        feats, _, labels = joblib.load(f)
 
-    feats = collect_strainwise_feats(feats)
     sim = pairwise_similarity(feats, embedding, labels, thresh)
 
     with open(os.path.join(save_dir, "pairwise_sim.sav"), "wb") as f:
