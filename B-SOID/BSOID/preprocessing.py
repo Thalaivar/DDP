@@ -45,9 +45,9 @@ def likelihood_filter(data, fps, conf_threshold, bodyparts, end_trim, clip_windo
     conf, x, y = conf[:,bodyparts], x[:,bodyparts], y[:,bodyparts]
     
     # take average of nose and ears
-    # conf = np.hstack((conf[:,:3].mean(axis=1).reshape(-1,1), conf[:,3:]))
-    # x = np.hstack((x[:,:3].mean(axis=1).reshape(-1,1), x[:,3:]))
-    # y = np.hstack((y[:,:3].mean(axis=1).reshape(-1,1), y[:,3:]))
+    conf = np.hstack((conf[:,:3].mean(axis=1).reshape(-1,1), conf[:,3:]))
+    x = np.hstack((x[:,:3].mean(axis=1).reshape(-1,1), x[:,3:]))
+    y = np.hstack((y[:,:3].mean(axis=1).reshape(-1,1), y[:,3:]))
 
     n_dpoints = conf.shape[1]
     

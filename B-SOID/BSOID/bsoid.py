@@ -23,6 +23,8 @@ from BSOID.features import extract_comb_feats as extract_feats
 
 from joblib import Parallel, delayed
 
+logger = logging.getLogger(__name__)
+
 class BSOID:
     def __init__(self, config_file):
         with open(config_file, 'r') as f:
@@ -68,7 +70,7 @@ class BSOID:
             download_data('bsoid_strain_data.csv', self.raw_dir)
         
         files = os.listdir(self.raw_dir)
-        logging.info("converting {} HDF5 files to csv files".format(len(files)))
+        logger.info("converting {} HDF5 files to csv files".format(len(files)))
         if n is not None:
             files = random.sample(files, n)
         if parallel:
@@ -83,7 +85,7 @@ class BSOID:
         csv_data_files = os.listdir(self.csv_dir)
         csv_data_files = [self.csv_dir + '/' + f for f in csv_data_files if f.endswith('.csv')]
 
-        logging.info('processing {} csv files from {}'.format(len(csv_data_files), self.csv_dir))
+        logger.info('processing {} csv files from {}'.format(len(csv_data_files), self.csv_dir))
 
         filtered_data = []
         skipped = 0
@@ -94,12 +96,12 @@ class BSOID:
                 assert fdata['x'].shape == fdata['y'].shape == fdata['conf'].shape, 'filtered data shape does not match across x, y, and conf values'
                 filtered_data.append(fdata)
                 shape = fdata['x'].shape
-                logging.info(f'preprocessed {shape} data from animal #{i}, with {round(perc_filt, 2)}% data filtered')
+                logger.info(f'preprocessed {shape} data from animal #{i}, with {round(perc_filt, 2)}% data filtered')
             else:
-                logging.info(f'skpping {i}-th dataset since % filtered is {round(perc_filt, 2)}')
+                logger.info(f'skpping {i}-th dataset since % filtered is {round(perc_filt, 2)}')
                 skipped += 1
 
-        logging.info(f'skipped {skipped}/{len(csv_data_files)} datasets')
+        logger.info(f'skipped {skipped}/{len(csv_data_files)} datasets')
         with open(self.output_dir + '/' + self.run_id + '_filtered_data.sav', 'wb') as f:
             joblib.dump(filtered_data, f)
 
@@ -139,17 +141,19 @@ class BSOID:
                     strain, mouse_id = metadata['Strain'], metadata['MouseID']
                     
                     if perc_filt.max() > filter_thresh:
-                        logging.warning(f'mouse:{strain}/{mouse_id}: % data filtered from raw data is too high ({perc_filt} %)')
+                        logger.warning(f'mouse:{strain}/{mouse_id}: % data filtered from raw data is too high ({perc_filt} %)')
                     else:
                         shape = fdata['x'].shape
-                        logging.debug(f'preprocessed {shape} data from {strain}/{mouse_id} with {round(perc_filt, 2)}% data filtered')
+                        logger.debug(f'preprocessed {shape} data from {strain}/{mouse_id} with {round(perc_filt, 2)}% data filtered')
                         strain_fdata.append(fdata)
                         count += 1
                 except:
                     pass
             
-            logging.info(f"extracted {len(strain_fdata)} animal data from strain {group_strain}")
+            logger.info(f"extracted {len(strain_fdata)} animal data from strain {group_strain}")
             return (strain_fdata, group_strain)
+        
+        logger.info(f"extracting from {len(all_data)} strains with {n} animals per strain")
         
         import psutil
         num_cpus = psutil.cpu_count(logical=False)    
@@ -161,7 +165,7 @@ class BSOID:
         
         filtered_data = {strain: data for data, strain in filtered_data}
         
-        logging.info(f"extracted data from {len(filtered_data)} strains with a total of {sum(len(data) for _, data in filtered_data.items())} animals")
+        logger.info(f"extracted data from {len(filtered_data)} strains with a total of {sum(len(data) for _, data in filtered_data.items())} animals")
         with open(self.output_dir + '/' + self.run_id + '_filtered_data.sav', 'wb') as f:
             joblib.dump(filtered_data, f)
 
@@ -169,7 +173,7 @@ class BSOID:
 
     def features_from_points(self):
         filtered_data = self.load_filtered_data()
-        logging.info(f'extracting features from {len(filtered_data)} animals')
+        logger.info(f'extracting features from {len(filtered_data)} animals')
         
         # extract geometric features
 
@@ -179,8 +183,8 @@ class BSOID:
             feats[strain] = Parallel(n_jobs=-1)(delayed(extract_feats)(data, self.fps, self.stride_window) for data in fdata)
             pbar.update(1)
 
-        logging.info(f'extracted {len(feats)} datasets of {feats[list(feats.keys())[0]][0].shape[1]}D features')
-        logging.info(f'collected features into bins of {1000 * self.stride_window // self.fps} ms')
+        logger.info(f'extracted {len(feats)} datasets of {feats[list(feats.keys())[0]][0].shape[1]}D features')
+        logger.info(f'collected features into bins of {1000 * self.stride_window // self.fps} ms')
 
         with open(self.output_dir + '/' + self.run_id + '_features.sav', 'wb') as f:
             joblib.dump(feats, f)
@@ -203,7 +207,7 @@ class BSOID:
             feats_train = feats_sc
             feats_usc = feats
 
-        logging.info('running UMAP on {} samples from {}D to {}D with params: {}'.format(*feats_train.shape, reduced_dim, self.umap_params))
+        logger.info('running UMAP on {} samples from {}D to {}D with params: {}'.format(*feats_train.shape, reduced_dim, self.umap_params))
         mapper = umap.UMAP(n_components=reduced_dim,  **self.umap_params).fit(feats_train)
 
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'wb') as f:
@@ -216,9 +220,9 @@ class BSOID:
         with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
             _, _, umap_embeddings, _ = joblib.load(f)
 
-        logging.info(f'clustering {umap_embeddings.shape[0]} in {umap_embeddings.shape[1]}D with cluster range={cluster_range}')
+        logger.info(f'clustering {umap_embeddings.shape[0]} in {umap_embeddings.shape[1]}D with cluster range={cluster_range}')
         assignments, soft_clusters, soft_assignments, best_clf = cluster_with_hdbscan(umap_embeddings, cluster_range, self.hdbscan_params)
-        logging.info('identified {} clusters from {} samples in {}D'.format(len(np.unique(soft_assignments)), *umap_embeddings.shape))
+        logger.info('identified {} clusters from {} samples in {}D'.format(len(np.unique(soft_assignments)), *umap_embeddings.shape))
 
         with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'wb') as f:
             joblib.dump([assignments, soft_clusters, soft_assignments, best_clf], f)
@@ -229,7 +233,7 @@ class BSOID:
         _, _, soft_assignments, _ = self.load_identified_clusters()
         _, feats_sc, _ = self.load_umap_results(collect=True)
 
-        logging.info('training neural network on {} scaled samples in {}D'.format(*feats_sc.shape))
+        logger.info('training neural network on {} scaled samples in {}D'.format(*feats_sc.shape))
         clf = MLPClassifier(**self.mlp_params).fit(feats_sc, soft_assignments)
 
         with open(self.output_dir + '/' + self.run_id + '_classifiers.sav', 'wb') as f:
@@ -239,12 +243,12 @@ class BSOID:
         _, _, soft_assignments, _ = self.load_identified_clusters()
         _, feats_sc, _ = self.load_umap_results(collect=True)
 
-        logging.info('validating classifier on {} features'.format(*feats_sc.shape))
+        logger.info('validating classifier on {} features'.format(*feats_sc.shape))
         feats_train, feats_test, labels_train, labels_test = train_test_split(feats_sc, soft_assignments)
         clf = MLPClassifier(**self.mlp_params).fit(feats_train, labels_train)
         sc_scores = cross_val_score(clf, feats_test, labels_test, cv=5, n_jobs=-1)
         sc_cf = create_confusion_matrix(feats_test, labels_test, clf)
-        logging.info('classifier accuracy: {} +- {}'.format(sc_scores.mean(), sc_scores.std())) 
+        logger.info('classifier accuracy: {} +- {}'.format(sc_scores.mean(), sc_scores.std())) 
          
         with open(self.output_dir + '/' + self.run_id + '_validation.sav', 'wb') as f:
             joblib.dump([sc_scores, sc_cf], f)
@@ -257,7 +261,7 @@ class BSOID:
         video_files.sort()
 
         n_animals = len(csv_files)
-        logging.info(f'generating {n_examples} examples from {n_animals} videos each with minimum bout length of {1000 * bout_length / self.fps} ms')
+        logger.info(f'generating {n_examples} examples from {n_animals} videos each with minimum bout length of {1000 * bout_length / self.fps} ms')
 
         labels = []
         frame_dirs = []
@@ -270,7 +274,7 @@ class BSOID:
         try:
             os.mkdir(output_path)
         except FileExistsError:
-            logging.info(f'results directory: {output_path} already exists, deleting')
+            logger.info(f'results directory: {output_path} already exists, deleting')
             [os.remove(output_path+'/'+f) for f in os.listdir(output_path)]
 
         clip_window = self.trim_params['end_trim']*60*self.fps
@@ -295,7 +299,7 @@ class BSOID:
         if extract_frames:
             frames_from_video(video_file, frame_dir)
         
-        logging.debug('extracting features from {}'.format(csv_file))
+        logger.debug('extracting features from {}'.format(csv_file))
         
         # filter data from test file
         data = pd.read_csv(csv_file, low_memory=False)
@@ -307,7 +311,7 @@ class BSOID:
             clf = joblib.load(f)
 
         labels = frameshift_predict(feats, clf, self.stride_window)
-        logging.info(f'predicted {len(labels)} frames in {feats[0].shape[1]}D with trained classifier')
+        logger.info(f'predicted {len(labels)} frames in {feats[0].shape[1]}D with trained classifier')
 
         return labels, frame_dir
     

@@ -4,7 +4,9 @@ import h5py
 import logging
 
 import numpy as np
+import pandas as pd
 from BSOID.bsoid import BSOID
+from itertools import combinations
 from BSOID.utils import alphanum_key
 from BSOID.features import extract_comb_feats as extract_feats
 from BSOID.data import process_h5py_data, bsoid_format
@@ -95,6 +97,27 @@ def example_video_segments(labels, bout_length, n_examples):
             class_vid_locs[k] = class_vids[0:n_examples]        
 
     return class_vid_locs
+
+def labels_for_video(bsoid: BSOID, filtered_data: dict):
+    x_raw, y_raw = filtered_data['x'], filtered_data['y']
+    assert x_raw.shape == y_raw.shape
+    _, n_dpoints = x_raw.shape
+
+    win_len = np.int(np.round(0.05 / (1 / bsoid.fps)) * 2 - 1) if bsoid.stride_window is None else bsoid.stride_window // 2
+    x, y = np.zeros_like(x_raw), np.zeros_like(y_raw)
+    for i in range(n_dpoints):
+        x[:,i] = smoothen_data(x_raw[:,i], win_len)
+        y[:,i] = smoothen_data(y_raw[:,i], win_len)
+    
+    links = [np.array([x[:,i] - x[:,j], y[:,i] - y[:,j]]).T for i, j in combinations(range(n_dpoints), 2)]
+    link_lens = np.vstack([np.linalg.norm(link, axis=1) for link in links]).T
+    link_angles = np.vstack([np.arctan2(link[:,1], link[:,0]) for i, link in enumerate(links)]).T
+
+    for i in range(link_lens.shape[1]):
+        link_lens[:,i] = np.array(pd.Series(link_lens[:,i]).rolling(bsoid.stride_window, min_periods=1, center=True).mean())
+    for i in range(link_angles.shape[1]):
+        link_angles[:,i] = np.array(pd.Series(link_angles[:,i]).rolling(bsoid.stride_window, min_periods=1, center=True).sum())
+    return np.hstack((link_angles, link_lens))
 
 def frameshift_features(filtered_data, stride_window, fps, feats_extractor, windower):
     if not isinstance(filtered_data, list):
