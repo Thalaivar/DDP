@@ -117,7 +117,10 @@ def labels_for_video(bsoid: BSOID, filtered_data: dict):
         link_lens[:,i] = np.array(pd.Series(link_lens[:,i]).rolling(bsoid.stride_window, min_periods=1, center=True).mean())
     for i in range(link_angles.shape[1]):
         link_angles[:,i] = np.array(pd.Series(link_angles[:,i]).rolling(bsoid.stride_window, min_periods=1, center=True).sum())
-    return np.hstack((link_angles, link_lens))
+    feats = np.hstack((link_angles, link_lens))
+    clf = bsoid.load_classifier()
+    labels = clf.predict(feats)
+    return labels
 
 def frameshift_features(filtered_data, stride_window, fps, feats_extractor, windower):
     if not isinstance(filtered_data, list):

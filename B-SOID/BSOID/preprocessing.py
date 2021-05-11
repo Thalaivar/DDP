@@ -80,7 +80,8 @@ def likelihood_filter(data, fps, conf_threshold, bodyparts, end_trim, clip_windo
         points_filtered_by_idx[i] = perc_filt
 
     x, y, conf = trim_data(filt_x, filt_y, conf, fps, end_trim, clip_window)
-
+    perc_filt = points_filtered_by_idx.max()
+    
     return {'conf': conf, 'x': x, 'y': y}, perc_filt * 100 / N
 
 # NOTE: if you change this you should also change the frame extraction function
