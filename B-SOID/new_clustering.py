@@ -62,8 +62,9 @@ def cluster_strainwise(config_file, save_dir, logfile):
         embedding = reduce_data(data, **strainwise_umap_params)
         assignments, _, soft_assignments, clusterer = cluster_with_hdbscan(embedding, strainwise_cluster_rng, hdbscan_params)
         
+        soft_assignments = soft_assignments[assignments >= 0]
         prop = [p / soft_assignments.size for p in np.unique(soft_assignments, return_counts=True)[1]]
-        entropy_ratio = -sum(p * np.log2(p) for p in prop) / max_entropy(assignments.max() + 1)
+        entropy_ratio = -sum(p * np.log2(p) for p in prop) / max_entropy(soft_assignments.max() + 1)
 
         logger.write(f"collected {embedding.shape[0]} samples for {strain} with {assignments.max() + 1} classes and entropy ratio: {entropy_ratio}\n")
         return (strain, embedding, clusterer)
@@ -72,7 +73,7 @@ def cluster_strainwise(config_file, save_dir, logfile):
     feats = collect_strainwise_feats(bsoid.load_features(collect=False))
     feats_id = ray.put(feats)
 
-    print(f"Processing {len(feats)} strains...")
+    logger.info(f"Processing {len(feats)} strains...")
     futures = [cluster_strain_data.remote(strain, feats_id) for strain in feats.keys()]
     
     pbar, results = tqdm(total=len(futures)), []
@@ -102,7 +103,7 @@ def collect_strainwise_labels(feats, embedding, labels):
         # embedding[strain] = embedding[strain][assignments >= 0]
         # labels[strain] = soft_assignments[assignments >= 0]
 
-        new_labels[strain] = {"assignments": soft_assignments.astype("int"), "exemplars": clusterer.exemplars_}
+        new_labels[strain] = {"assignments": soft_assignments.astype("int"), "exemplars": clusterer.exemplars_indices_}
         logger.info(f"Strain: {strain} ; Features: {feats[strain].shape} ; Embedding: {embedding[strain].shape} ; Labels: {new_labels[strain].shape}")
     
     return feats, embedding, new_labels
@@ -114,20 +115,17 @@ def collect_strainwise_clusters(feats: dict, labels: dict, embedding: dict, thre
 
     k, clusters = 0, {}
     for strain in feats.keys():
+        class_labels, exemplars = labels[strain]["assignments"], labels[strain]["exemplars"]
         # threshold by entropy
-        n = labels[strain]["assignments"].max() + 1
-        class_ids, counts = np.unique(labels[strain]["assignments"], return_counts=True)
-        prop = [x/labels[strain].size for x in counts]
+        n = class_labels.max() + 1
+        class_ids, counts = np.unique(class_labels, return_counts=True)
+        prop = [x/class_labels.size for x in counts]
         entropy_ratio = -sum(p * np.log2(p) for p in prop) / max_entropy(n)
 
         if entropy_ratio >= thresh:
             logger.info(f"pooling {len(class_ids)} clusters from {strain} with entropy ratio {entropy_ratio}")
             for class_id in class_ids:
-                idx = np.where(labels[strain]["assignments"] == class_id)[0]
-                clusters[f"{strain}:{class_id}:{k}"] = {
-                    "feats": feats[strain][idx,:],
-                    "exemplars": labels[strain]["exemplars"][class_id]
-                }
+                clusters[f"{strain}:{class_id}:{k}"] = feats[strain][exemplars[class_id],:],
                 k += 1
     
     return clusters
