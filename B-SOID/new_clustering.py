@@ -97,18 +97,19 @@ def cluster_strainwise(config_file, save_dir, logfile):
 
     return embedding, labels
 
-def collect_strainwise_labels(feats, labels):
-    for strain, clusterer in labels.items():
+def collect_strainwise_labels(labels):
+    def extract_label_info(strain, clusterer):
         soft_assignments = np.argmax(hdbscan.all_points_membership_vectors(clusterer), axis=1)
+        return (strain, {"assignments": soft_assignments.astype("int"), "exemplars": clusterer.exemplars_indices_})
 
-        labels[strain] = {"assignments": soft_assignments.astype("int"), "exemplars": clusterer.exemplars_indices_}
-        logger.info(f"Strain: {strain} ; Features: {feats[strain].shape} ; Labels: {soft_assignments.shape}")
-    
-    return feats, labels
+    from joblib import Parallel, delayed
+    labels = Parallel(n_jobs=-1)(delayed(extract_label_info)(strain, clusterer) for strain, clusterer in labels.items())
+    labels = {x[0]: x[1] for x in labels}
+    return labels
 
 def collect_strainwise_clusters(feats: dict, labels: dict, thresh: float):
     feats = collect_strainwise_feats(feats)
-    feats, labels = collect_strainwise_labels(feats, labels)
+    labels = collect_strainwise_labels(labels)
 
     k, clusters = 0, {}
     for strain in feats.keys():
@@ -123,7 +124,7 @@ def collect_strainwise_clusters(feats: dict, labels: dict, thresh: float):
         if entropy_ratio >= thresh:
             logger.info(f"pooling {len(class_ids)} clusters from {strain} with entropy ratio {entropy_ratio}")
             for class_id in class_ids:
-                clusters[f"{strain}:{class_id}:{k}"] = feats[strain][exemplars[class_id],:],
+                clusters[f"{strain}:{class_id}:{k}"] = feats[strain][exemplars[class_id],:]
                 k += 1
     
     return clusters
@@ -271,9 +272,15 @@ def train_classifier(groups, **params):
     return model
 
 if __name__ == "__main__":
-    with open("../../data/undersampling/cluster_collect_embed.sav", "rb") as f:
-        groups = joblib.load(f)
+    # with open("../../data/undersampling/cluster_collect_embed.sav", "rb") as f:
+    #     groups = joblib.load(f)
     
-    model = train_classifier(groups)
-    with open("../../data/dis/output/dis_classifiers.sav", "wb") as f:
-        joblib.dump(model, f)
+    # model = train_classifier(groups)
+    # with open("../../data/dis/output/dis_classifiers.sav", "wb") as f:
+    #     joblib.dump(model, f)
+
+
+    data_dir = "../data/2clustering"
+    with open(os.path.join(data_dir, "strainwise_labels.sav"), "rb") as f:
+        feats, _, labels = joblib.load(f)
+    clusters = collect_strainwise_clusters(feats, labels, 0.8)
