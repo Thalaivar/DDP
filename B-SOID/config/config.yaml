@@ -14,6 +14,7 @@ JAX_DATASET:
 
 # preprocessing
 filter_thresh: 10
+bodyparts: [0, 1, 2, 3, 6, 7, 8, 9, 10, 11]
 
 # dimensionality reduction
 reduced_dim: 13

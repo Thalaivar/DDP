@@ -38,6 +38,7 @@ class BSOID:
         self.fps = config["fps"]
         self.stride_window = round(config["stride_window"] * self.fps / 1000)
         self.conf_threshold = config["conf_threshold"]
+        self.bodyparts = config["bodyparts"]
         self.filter_thresh = config["filter_thresh"]
         self.trim_params = config["trim_params"]
         self.hdbscan_params = config["hdbscan_params"]
@@ -88,7 +89,7 @@ class BSOID:
         skipped = 0
         for i in range(len(csv_data_files)):
             data = pd.read_csv(csv_data_files[i])
-            fdata, perc_filt = likelihood_filter(data, fps=self.fps, conf_threshold=self.conf_threshold,**self.trim_params)
+            fdata, perc_filt = likelihood_filter(data, fps=self.fps, conf_threshold=self.conf_threshold, bodyparts=self.bodyparts, **self.trim_params)
             if fdata is not None and perc_filt < self.filter_thresh:
                 assert fdata['x'].shape == fdata['y'].shape == fdata['conf'].shape, 'filtered data shape does not match across x, y, and conf values'
                 filtered_data.append(fdata)

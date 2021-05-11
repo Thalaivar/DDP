@@ -12,14 +12,6 @@ from BSOID.features.displacement_feats import *
 import logging
 logging.basicConfig(level=logging.INFO)
 
-BASE_DIR = 'D:/IIT/DDP/data'
-RUN_ID = 'dis'
-
-SAVE_DIR = BASE_DIR + '/analysis'
-try:
-    os.mkdir(SAVE_DIR)
-except FileExistsError:
-    pass
 
 def extract_analysis_data(csv_files):
     bsoid = BSOID.load_config(BASE_DIR, RUN_ID)

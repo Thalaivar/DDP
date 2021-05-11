@@ -34,7 +34,7 @@ def extract_data_from_video(bsoid: BSOID, raw_data_file: str, video_file: str, e
     # get keypoint data from video
     conf, pos = process_h5py_data(h5py.File(raw_data_file, "r"))
     bsoid_data = bsoid_format(conf, pos)
-    fdata, perc_filt = likelihood_filter(bsoid_data, bsoid.fps, bsoid.conf_threshold, **bsoid.trim_params)
+    fdata, perc_filt = likelihood_filter(bsoid_data, bsoid.fps, bsoid.conf_threshold, bsoid.bodyparts, **bsoid.trim_params)
     if perc_filt > bsoid.filter_thresh:
         logger.warning(f"% data filtered from {os.path.split(raw_data_file)[-1]} too high ({perc_filt}%)")
 

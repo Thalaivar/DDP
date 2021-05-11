@@ -15,5 +15,4 @@ conda activate bsoid
 
 cd /home/laadd/DDP/B-SOID/
 
-# python active_inactive_split.py
 python scripts.py --config ./config/config.yaml --script main --n 10

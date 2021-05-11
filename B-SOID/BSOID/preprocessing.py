@@ -24,12 +24,12 @@ BODYPARTS = [NOSE_INDEX, LEFT_EAR_INDEX, RIGHT_EAR_INDEX,
             LEFT_REAR_PAW_INDEX, RIGHT_REAR_PAW_INDEX,
             BASE_TAIL_INDEX, MID_TAIL_INDEX, TIP_TAIL_INDEX]
 
-def smoothen_data(data, win_len=7):
+def smoothen_data(data, win_len):
     data = pd.Series(data)
     smoothed_data = data.rolling(win_len, min_periods=1, center=True)
     return np.array(smoothed_data.mean())
 
-def likelihood_filter(data: pd.DataFrame, fps, conf_threshold=0.3, end_trim=2, clip_window=30, bodyparts=BODYPARTS):
+def likelihood_filter(data, fps, conf_threshold, bodyparts, end_trim, clip_window):
     N = data.shape[0]
 
     # retrieve confidence, x and y data from csv data
