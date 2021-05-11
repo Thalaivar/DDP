@@ -66,6 +66,7 @@ def extract_frames_from_video(video: cv2.VideoCapture, frame_dir: str, end_trim:
     logger.info(f"extracted {frame_idx + 1} frames at {fps} FPS")
 
 def get_all_bouts(labels):
+    labels = labels.astype("int")
     classes = np.unique(labels)
     vid_locs = [[] for i in range(np.max(classes)+1)]
     
@@ -98,7 +99,8 @@ def example_video_segments(labels, bout_length, n_examples):
 
     return class_vid_locs
 
-def labels_for_video(bsoid: BSOID, filtered_data: dict):
+def labels_for_video(bsoid: BSOID, raw_data_file: str, video_file: str, extract_frames=False):
+    filtered_data, frames = extract_data_from_video(bsoid, raw_data_file, video_file, extract_frames)
     x_raw, y_raw = filtered_data['x'], filtered_data['y']
     assert x_raw.shape == y_raw.shape
     _, n_dpoints = x_raw.shape
@@ -120,7 +122,7 @@ def labels_for_video(bsoid: BSOID, filtered_data: dict):
     feats = np.hstack((link_angles, link_lens))
     clf = bsoid.load_classifier()
     labels = clf.predict(feats)
-    return labels
+    return labels.reshape(1,-1)[0], frames
 
 def frameshift_features(filtered_data, stride_window, fps, feats_extractor, windower):
     if not isinstance(filtered_data, list):
@@ -170,14 +172,12 @@ def frameshift_predict(feats, clf, stride_window):
     return fs_labels
 
 def videomaker(frames, fps, outfile):
-    frames = np.array(frames, dtype=np.uint8)
-
     fourcc = cv2.VideoWriter_fourcc(*'avc1')
     height, width, _ = frames[0].shape
 
     video = cv2.VideoWriter(outfile, fourcc, fps, (width, height))
-    for i in range(frames.shape[0]):
-        video.write(frames[i])
+    for i in range(len(frames)):
+        video.write(frames[i].astype(np.uint8))
 
     cv2.destroyAllWindows()
     video.release()
@@ -197,9 +197,10 @@ def create_class_examples(bsoid: BSOID, video_dir: str, min_bout_len: int, n_exa
     for raw_file, video_file in zip(raw_files, video_files):
         video_name = os.path.split(video_file)[-1][:-4]
         # get trimmed labels and frames
-        fdata, frames = extract_data_from_video(bsoid, raw_file, video_file)        
-        feats = frameshift_features(fdata, bsoid.stride_window, bsoid.fps, extract_feats, window_extracted_feats)
-        labels = frameshift_predict(feats, clf, bsoid.stride_window)
+        # fdata, frames = extract_data_from_video(bsoid, raw_file, video_file)        
+        # feats = frameshift_features(fdata, bsoid.stride_window, bsoid.fps, extract_feats, window_extracted_feats)
+        # labels = frameshift_predict(feats, clf, bsoid.stride_window)
+        labels, frames = labels_for_video(bsoid, raw_file, video_file)
         
         if labels.size != len(frames):
             if len(frames) > labels.size:
@@ -239,3 +240,16 @@ def create_class_examples(bsoid: BSOID, video_dir: str, min_bout_len: int, n_exa
                     video_frames.append(np.zeros(shape=(height, width, layers), dtype=np.uint8))
             
         videomaker(video_frames, int(bsoid.fps), video_name)
+
+if __name__ == "__main__":
+    import logging
+    logging.basicConfig(level=logging.DEBUG)
+
+    bsoid = BSOID("./config/config.yaml")
+    raw_file = "../../data/videos/WT009G2NCIN20825M-25-PSY_pose_est_v2.h5"
+    video_file = "../../data/videos/WT009G2NCIN20825M-25-PSY.avi"
+
+    fdata, frames = extract_data_from_video(bsoid, raw_file, video_file)
+    labels = labels_for_video(bsoid, fdata)
+
+    print(labels.shape)

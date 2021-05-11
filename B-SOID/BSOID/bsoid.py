@@ -140,14 +140,15 @@ class BSOID:
                     fdata, perc_filt = likelihood_filter(bsoid_data, self.fps, self.conf_threshold, bodyparts=self.bodyparts, **self.trim_params)
                     strain, mouse_id = metadata['Strain'], metadata['MouseID']
                     
-                    if perc_filt.max() > filter_thresh:
+                    if perc_filt > filter_thresh:
                         logger.warning(f'mouse:{strain}/{mouse_id}: % data filtered from raw data is too high ({perc_filt} %)')
                     else:
                         shape = fdata['x'].shape
                         logger.debug(f'preprocessed {shape} data from {strain}/{mouse_id} with {round(perc_filt, 2)}% data filtered')
                         strain_fdata.append(fdata)
                         count += 1
-                except:
+                except Exception as e:
+                    logger.warning(e)
                     pass
             
             logger.info(f"extracted {len(strain_fdata)} animal data from strain {group_strain}")
