@@ -59,7 +59,7 @@ def cluster_strainwise(config_file, save_dir, logfile):
         pca = PCA().fit(StandardScaler().fit_transform(data))
         n_components = np.where(np.cumsum(pca.explained_variance_ratio_) >= 0.85)[0][0]
         strainwise_umap_params = {"n_neighbors": 90, "n_components": n_components}
-        
+
         strainwise_cluster_rng = [0.4, 1.2, 25]
         hdbscan_params = {"prediction_data": True, "min_samples": 1, "core_dist_n_jobs": 1}
         
@@ -69,7 +69,7 @@ def cluster_strainwise(config_file, save_dir, logfile):
         prop = [p / soft_assignments.size for p in np.unique(soft_assignments, return_counts=True)[1]]
         entropy_ratio = -sum(p * np.log2(p) for p in prop) / max_entropy(assignments.max() + 1)
 
-        logger.write(f"collected {embedding.shape[0]} samples for {strain} with {assignments.max() + 1} classes and entropy ratio: {entropy_ratio}\n")
+        logger.write(f"collected {embedding.shape} samples for {strain} with {assignments.max() + 1} classes and entropy ratio: {entropy_ratio}\n")
         return (strain, embedding, clusterer)
     
     bsoid = BSOID(config_file)
