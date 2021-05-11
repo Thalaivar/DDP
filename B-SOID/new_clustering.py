@@ -7,6 +7,7 @@ from tqdm import tqdm
 from numba import njit
 from sklearn import clone
 from BSOID.bsoid import BSOID
+from BSOID.similarity import *
 from BSOID.utils import max_entropy
 from itertools import combinations
 from sklearn.decomposition import PCA
@@ -149,31 +150,21 @@ def pairwise_similarity(feats, embedding, labels, thresh):
     import psutil
 
     clusters = collect_strainwise_clusters(feats, labels, embedding, thresh)
-    print(f"Total clusters: {len(clusters)}")
     del feats, embedding, labels
+    
+    logger.info(f"total clusters: {len(clusters)}")
 
     num_cpus = psutil.cpu_count(logical=False)
     ray.init(num_cpus=num_cpus)
     logger.info(f"running on: {num_cpus} CPUs")
     
     @ray.remote
-    def par_pwise(idx1, idx2, X1, X2):
-        X = np.vstack((X1, X2))
-        y = np.hstack([np.zeros((X1.shape[0],)), np.ones((X2.shape[0],))])
-
-        model = LinearDiscriminantAnalysis().fit(X, y)
-        Xproj = model.transform(X)
-        sim = roc_auc_score(y, Xproj)
-        
+    def par_pwise(idx1, idx2, clusters):
+        sim = density_separation_similarity(idx1, idx2, clusters, metric="cosine") 
         idx1, idx2 = int(idx1.split(':')[-1]), int(idx2.split(':')[-1])
         return [sim, idx1, idx2]
     
-    # clusters_id = ray.put(clusters)
-    # logger.info("initializing tasks")
-    # futures = [par_pwise.remote(idx1, idx2, clusters[idx1]["feats"], clusters[idx2]["feats"]) 
-    #                 for idx1, idx2 in 
-    #                 combinations(list(clusters.keys()), 2)]
-    
+    clusters_id = ray.put(clusters)
     pwise_combs = list(combinations(list(clusters.keys()), 2))
     N = len(pwise_combs)
 
@@ -182,8 +173,7 @@ def pairwise_similarity(feats, embedding, labels, thresh):
     k, futures = 0, []
     for _ in range(num_cpus):
         idx1, idx2 = pwise_combs[k]
-        X1, X2 = clusters[idx1]["feats"], clusters[idx2]["feats"]
-        futures.append(par_pwise.remote(idx1, idx2, X1, X2))
+        futures.append(par_pwise.remote(idx1, idx2, clusters_id))
 
     while k < len(pwise_combs):
         fin, futures = ray.wait(futures, num_returns=min(num_cpus, len(futures)), timeout=3000)
@@ -193,9 +183,7 @@ def pairwise_similarity(feats, embedding, labels, thresh):
         
         for i in range(k, min(k+num_cpus, len(pwise_combs))):
             idx1, idx2 = pwise_combs[i]
-            X1, X2 = clusters[idx1]["feats"], clusters[idx2]["feats"]
-            futures.append(par_pwise.remote(idx1, idx2, X1, X2))
-        
+            futures.append(par_pwise.remote(idx1, idx2, clusters_id))
     
     sim = np.vstack(sim)
     return sim
