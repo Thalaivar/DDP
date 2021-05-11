@@ -105,6 +105,7 @@ def collect_strainwise_labels(feats, embedding, labels):
     return feats, embedding, new_labels
 
 def collect_strainwise_clusters(feats: dict, labels: dict, embedding: dict, thresh: float):
+    print(thresh)
     feats = collect_strainwise_feats(feats)
     feats, embedding, labels = collect_strainwise_labels(feats, embedding, labels)
 

@@ -1,0 +1,25 @@
+  File "analysis.py", line 35
+    'N/A': [4, 14, 16]
+        ^
+SyntaxError: invalid syntax
+-------------------------------------------------------------
+SUMNER/WINTER EPILOGUE
+-------------------------------------------------------------
+Job ID: 6293845
+Cluster: slurm_cluster
+User/Group: root/jaxuser
+State: FAILED (exit code 1)
+Nodes: 1
+Cores per node: 4
+CPU Utilized: 00:00:01
+CPU Efficiency: 8.33% of 00:00:12 core-walltime
+Job Wall-clock time: 00:00:03
+Memory Utilized: 0.00 MB (estimated maximum)
+Memory Efficiency: 0.00% of 7.81 GB (7.81 GB/node)
+-------------------------------------------------------------
+       JobID  User   State    CPUTime Exit     MaxRSS        NodeList  Partition                   ReqTRES              Submit               Start                 End    Elapsed 
+------------ ----- ------- ---------- ---- ---------- --------------- ---------- ------------------------- ------------------- ------------------- ------------------- ---------- 
+6293845      laadd  FAILED   00:00:12  1:0                  sumner103    compute billing=4,cpu=4,mem=8000+ 2021-01-24T04:17:48 2021-01-24T04:17:48 2021-01-24T04:17:51   00:00:03 
+6293845.bat+        FAILED   00:00:12  1:0          0       sumner103                                      2021-01-24T04:17:48 2021-01-24T04:17:48 2021-01-24T04:17:51   00:00:03 
+6293845.ext+       COMPLE+   00:00:12  0:0          0       sumner103                                      2021-01-24T04:17:48 2021-01-24T04:17:48 2021-01-24T04:17:51   00:00:03 
+-------------------------------------------------------------
