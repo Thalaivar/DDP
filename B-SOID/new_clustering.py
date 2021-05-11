@@ -1,6 +1,7 @@
 import os
 import umap
 import joblib
+import hdbscan
 import numpy as np
 
 from tqdm import tqdm
