@@ -107,7 +107,7 @@ def collect_strainwise_labels(labels):
     labels = {x[0]: x[1] for x in labels}
     return labels
 
-def collect_strainwise_clusters(feats: dict, labels: dict, thresh: float):
+def collect_strainwise_clusters(feats: dict, labels: dict, thresh: float, use_exemplars: bool):
     feats = collect_strainwise_feats(feats)
     labels = collect_strainwise_labels(labels)
 
@@ -124,7 +124,10 @@ def collect_strainwise_clusters(feats: dict, labels: dict, thresh: float):
         if entropy_ratio >= thresh:
             logger.info(f"pooling {len(class_ids)} clusters from {strain} with entropy ratio {entropy_ratio}")
             for class_id in class_ids:
-                clusters[f"{strain}:{class_id}:{k}"] = feats[strain][exemplars[class_id],:]
+                if use_exemplars:
+                    clusters[f"{strain}:{class_id}:{k}"] = feats[strain][exemplars[class_id],:]
+                else:
+                    clusters[f"{strain}:{class_id}:{k}"] = feats[strain][np.where(class_labels == class_id)[0]]
                 k += 1
     
     return clusters
@@ -256,7 +259,7 @@ def train_classifier(groups, **params):
         plt.show()
     
     from catboost import CatBoostClassifier
-    model = CatBoostClassifier(loss_function="MultiClass", eval_metric="Accuracy", iterations=3000, task_type="GPU", verbose=True, learning_rate=0.1)
+    model = CatBoostClassifier(loss_function="MultiClass", eval_metric="Accuracy", iterations=3000, task_type="GPU", verbose=True)
     model.set_params(**params)
     
     # model.fit(X_train, y_train, eval_set=(X_test, y_test))
@@ -272,15 +275,23 @@ def train_classifier(groups, **params):
     return model
 
 if __name__ == "__main__":
-    # with open("../../data/undersampling/cluster_collect_embed.sav", "rb") as f:
-    #     groups = joblib.load(f)
+    import logging
+    logging.basicConfig(level=logging.INFO)
+
+    with open("../../data/undersampling/cluster_collect_embed.sav", "rb") as f:
+        groups = joblib.load(f)
     
-    # model = train_classifier(groups)
-    # with open("../../data/dis/output/dis_classifiers.sav", "wb") as f:
-    #     joblib.dump(model, f)
+    model = train_classifier(groups)
+    with open("../../data/dis/output/dis_classifiers.sav", "wb") as f:
+        joblib.dump(model, f)
 
+    from label_video import create_class_examples
+    bsoid = BSOID("D:/IIT/DDP/DDP/B-SOID/config/config.yaml")
+    video_dir = "D:/IIT/DDP/data/videos"
+    results_dir=f"{video_dir}/{bsoid.run_id}_results"
+    create_class_examples(bsoid, video_dir, min_bout_len=200, n_examples=10, outdir=results_dir)
 
-    data_dir = "../data/2clustering"
-    with open(os.path.join(data_dir, "strainwise_labels.sav"), "rb") as f:
-        feats, _, labels = joblib.load(f)
-    clusters = collect_strainwise_clusters(feats, labels, 0.8)
+    # data_dir = "../data/2clustering"
+    # with open(os.path.join(data_dir, "strainwise_labels.sav"), "rb") as f:
+    #     feats, _, labels = joblib.load(f)
+    # clusters = collect_strainwise_clusters(feats, labels, 0.8)
