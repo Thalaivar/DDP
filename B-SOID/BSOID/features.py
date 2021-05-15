@@ -67,25 +67,17 @@ def extract_dis_feats(filtered_data, fps, stride_window):
 
     return win_feats
 
-def extract_comb_feats(filtered_data, fps, stride_window):
-    x_raw, y_raw = filtered_data['x'], filtered_data['y']
-    assert x_raw.shape == y_raw.shape
-    N, n_dpoints = x_raw.shape
+def extract_comb_feats(filtered_data: dict, fps: int, stride_window: int):
+    x, y = filtered_data['x'], filtered_data['y']
+    assert x.shape == y.shape
+    N, n_dpoints = x.shape
 
-    win_len = np.int(np.round(0.05 / (1 / fps)) * 2 - 1) if stride_window is None else stride_window // 2
-    x, y = np.zeros_like(x_raw), np.zeros_like(y_raw)
-    for i in range(n_dpoints):
-        x[:,i] = smoothen_data(x_raw[:,i], win_len)
-        y[:,i] = smoothen_data(y_raw[:,i], win_len)
+    win_len = np.int(np.round(0.05 / (1 / fps)) * 2 - 1)
     
     # disp = np.linalg.norm(np.array([x[1:,:] - x[0:N-1,:], y[1:,:] - y[0:N-1,:]]), axis=0)
     links = [np.array([x[:,i] - x[:,j], y[:,i] - y[:,j]]).T for i, j in combinations(range(n_dpoints), 2)]
-    link_lens = np.vstack([np.linalg.norm(link, axis=1) for link in links]).T
+    ll = np.vstack([np.linalg.norm(link, axis=1) for link in links]).T
     # link_angles = np.vstack([np.arctan2(link[:,1], link[:,0]) for i, link in enumerate(links)]).T
     dis_angles = np.vstack([np.arctan2(np.cross(link[0:N-1], link[1:]), np.sum(link[0:N-1] * link[1:], axis=1)) for link in links]).T
 
-    link_lens = windowed_feats(link_lens, stride_window, mode="mean")
-    dis_angles = windowed_feats(dis_angles, stride_window, mode="sum")
-    # disp = windowed_feats(disp, stride_window, mode="sum")
-
-    return np.hstack((dis_angles, link_lens))
+    return np.hstack((ll[1:], dis_angles))

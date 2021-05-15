@@ -20,6 +20,8 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.model_selection import cross_val_score, StratifiedKFold, cross_validate
 
+from BSOID.features import extract_comb_feats
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -33,15 +35,34 @@ GROUPWISE_UMAP_PARAMS = {
 }
 GROUPWISE_CLUSTER_RNG = [1, 5, 25]
 
-def reduce_data(feats: np.ndarray, **umap_params):
+def reduce_data(feats: np.ndarray):
     feats = StandardScaler().fit_transform(feats)
-    mapper = umap.UMAP(min_dist=0.0, **umap_params).fit(feats)
+    mapper = umap.UMAP(min_dist=0.0, n_neighbors=60, n_components=20, metric="cosine").fit(feats)
     return mapper.embedding_
 
-def collect_strainwise_feats(feats: dict):
-    for strain, animal_data in feats.items():
-        feats[strain] = np.vstack(animal_data)
-    return feats
+def get_clusters(feats: np.ndarray):
+    embedding = reduce_data(feats)
+    labels, _, soft_labels, clusterer = cluster_with_hdbscan(feats, [0.4, 1.2], {"prediction_data": True, "min_samples": 1})
+    exemplars = [feats[idxs] for idxs in clusterer.exemplars_indices]
+    return {"labels": labels, "soft_labels": soft_labels, "exemplars": exemplars}
+
+def sample_points_from_clustering(labels, feats, n):
+    classes, counts = np.unique(labels, return_counts=True)
+
+    # probabilty of selecting a group is inversely proportional to its density
+    props = np.array([1 / (x / labels.size) for x in counts])
+    props = {classes[i]: props[i] / props.sum() for i in range(props.size)}
+
+    p = np.array([props[lab] for lab in labels])
+    return feats[np.random.choice(np.arange(feats.shape[0]), n, p, replace=False)]
+
+def cluster_for_strain(feats: list, n: int):
+    clustering = [get_clusters(raw_data) for raw_data in feats]
+    rep_data = np.vstack([sample_points_from_clustering(cdata["soft_labels"], raw_data, n) for cdata, raw_data in zip(clustering, feats)])
+    
+    clustering = get_clusters(rep_data)
+    return rep_data, clustering
+    
 
 def cluster_strainwise(config_file, save_dir, logfile):
     import ray

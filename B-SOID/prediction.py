@@ -2,6 +2,7 @@ import os
 import cv2
 import h5py
 import logging
+import joblib
 
 import numpy as np
 import pandas as pd
@@ -31,7 +32,7 @@ def extract_data_from_video(bsoid: BSOID, raw_data_file: str, video_file: str, e
         
         video_fps = video.get(cv2.CAP_PROP_FPS)
         assert video_fps == bsoid.fps, f"video fps ({video_fps}) not matching ({bsoid.fps})"
-        extract_frames_from_video(video, frame_dir, **bsoid.trim_params)
+        extract_frames_from_video(video, frame_dir)
     
     # get keypoint data from video
     conf, pos = process_h5py_data(h5py.File(raw_data_file, "r"))
@@ -41,28 +42,35 @@ def extract_data_from_video(bsoid: BSOID, raw_data_file: str, video_file: str, e
         logger.warning(f"% data filtered from {os.path.split(raw_data_file)[-1]} too high ({perc_filt}%)")
 
     frames = sorted([os.path.join(frame_dir, f) for f in os.listdir(frame_dir)], key=alphanum_key)
+    frames = trim_frames(frames, bsoid.fps, **bsoid.trim_params)
     assert len(frames) == fdata['x'].shape[0], f"video:{video_name}: # of frames ({len(frames)}) does not match with no. of datapoints ({fdata['x'].shape[0]})"
     
     return fdata, frames
 
-def extract_frames_from_video(video: cv2.VideoCapture, frame_dir: str, end_trim: int, clip_window: int):
-    fps = video.get(cv2.CAP_PROP_FPS)
+def trim_frames(frames, fps, end_trim, clip_window):
+    # baseline video only 
+    HOUR_LEN = 55 * 60 * fps
+    frames = frames[:HOUR_LEN]
     
-    hour_len = 55 * 60 * fps
-    end_trim *= (fps * 60)
-    clip_window *= (fps * 60)
-    
-    assert clip_window + 2 * end_trim < hour_len, "(end_trim + clip_window) is too large"
+    if end_trim > 0:
+        end_trim *= (fps * 60)
+        frames = frames[end_trim:-end_trim]
 
+    if clip_window > 0:
+            # take first clip_window after trimming
+            clip_window *= (60 * fps)
+            frames = frames[end_trim:end_trim + clip_window]
+
+    return frames
+
+def extract_frames_from_video(video: cv2.VideoCapture, frame_dir: str):
+    fps = video.get(cv2.CAP_PROP_FPS)
     success, image = video.read()
-    frame_idx, count = 0, 0
+    frame_idx = 0
     while success:
-        if (count > 2 * end_trim) and (count <= 2 * end_trim + clip_window):
-            cv2.imwrite(os.path.join(frame_dir, f"frame{frame_idx}.jpg"), image)
-            frame_idx += 1
+        cv2.imwrite(os.path.join(frame_dir, f"frame{frame_idx}.jpg"), image)
+        frame_idx += 1
         success, image = video.read()
-        count += 1
-    
     logger.info(f"extracted {frame_idx + 1} frames at {fps} FPS")
 
 def get_all_bouts(labels):
@@ -98,6 +106,31 @@ def example_video_segments(labels, bout_length, n_examples):
             class_vid_locs[k] = class_vids[0:n_examples]        
 
     return class_vid_locs
+
+def labels_for_video2(bsoid, rawfile, vid_file, extract_frames=False):
+    filtered_data, frames = extract_data_from_video(bsoid, rawfile, vid_file, extract_frames)
+    x, y = filtered_data['x'], filtered_data['y']
+    N, n_dpoints = x.shape
+
+    win_len = np.int(np.round(0.05 / (1 / bsoid.fps)) * 2 - 1)
+
+    links = [np.array([x[:,i] - x[:,j], y[:,i] - y[:,j]]).T for i, j in combinations(range(n_dpoints), 2)]
+    ll = np.vstack([np.linalg.norm(link, axis=1) for link in links]).T
+    disp = np.linalg.norm(np.array([x[1:,:] - x[0:N-1,:], y[1:,:] - y[0:N-1,:]]), axis=0)
+    ll_disp_th = np.vstack([np.arctan2(np.cross(link[0:N-1], link[1:]), np.sum(link[0:N-1] * link[1:], axis=1)) for link in links]).T
+
+    for i in range(ll.shape[1]):
+        ll[:,i] = smoothen_data(ll[:,i], win_len)
+        ll_disp_th[:,i] = smoothen_data(ll_disp_th[:,i], win_len)
+    for i in range(disp.shape[1]):
+        disp[:,i] = smoothen_data(disp[:,i], win_len)
+
+    feats = np.hstack((ll[1:], ll_disp_th))
+    
+    with open("D:/IIT/DDP/data/tests/test.model", "rb") as f:
+        clf = joblib.load(f)
+    labels = clf.predict(feats)
+    return labels, frames
 
 def labels_for_video(bsoid: BSOID, raw_data_file: str, video_file: str, extract_frames=False):
     filtered_data, frames = extract_data_from_video(bsoid, raw_data_file, video_file, extract_frames)
@@ -200,7 +233,7 @@ def create_class_examples(bsoid: BSOID, video_dir: str, min_bout_len: int, n_exa
         # fdata, frames = extract_data_from_video(bsoid, raw_file, video_file)        
         # feats = frameshift_features(fdata, bsoid.stride_window, bsoid.fps, extract_feats, window_extracted_feats)
         # labels = frameshift_predict(feats, clf, bsoid.stride_window)
-        labels, frames = labels_for_video(bsoid, raw_file, video_file)
+        labels, frames = labels_for_video2(bsoid, raw_file, video_file)
         
         if labels.size != len(frames):
             if len(frames) > labels.size:
@@ -238,8 +271,9 @@ def create_class_examples(bsoid: BSOID, video_dir: str, min_bout_len: int, n_exa
                     video_frames.append(cv2.imread(curr_frames[idx]))
                 for idx in range(bsoid.fps):
                     video_frames.append(np.zeros(shape=(height, width, layers), dtype=np.uint8))
-            
-        videomaker(video_frames, int(bsoid.fps), video_name)
+        
+        if len(video_frames) > 0:
+            videomaker(video_frames, int(bsoid.fps), video_name)
 
 if __name__ == "__main__":
     import logging
