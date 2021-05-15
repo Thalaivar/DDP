@@ -56,7 +56,7 @@ def sample_points_from_clustering(labels, feats, n):
     props = {classes[i]: props[i] / props.sum() for i in range(props.size)}
 
     p = np.array([props[lab] for lab in labels])
-    return feats[np.random.choice(np.arange(feats.shape[0]), n, p, replace=False)]
+    return feats[np.random.choice(np.arange(feats.shape[0]), size=n, replace=False, p=p)]
 
 def cluster_for_strain(feats: list, n: int, parallel=False, verbose=False):
     if parallel:
@@ -309,7 +309,6 @@ if __name__ == "__main__":
     import logging
     logging.basicConfig(level=logging.INFO)
 
-    logging.w
     bsoid = BSOID("./config/config.yaml")
     fdata = bsoid.load_filtered_data()["C57BL/6J"]
     for data in fdata:

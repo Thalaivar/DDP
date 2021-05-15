@@ -17,4 +17,4 @@ cd /home/laadd/DDP/
 git checkout fixing
 
 cd B-SOID/
-python new_clustering.py
+python scripts.py --config ./config/config.yaml --script rep_cluster
