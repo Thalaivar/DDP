@@ -48,7 +48,12 @@ def cluster_with_hdbscan(feats, cluster_range, HDBSCAN_PARAMS, verbose=False):
                 prop[labels[i]] += 1
         prop = np.array(prop)
         prop = prop/prop.sum()
-        entropy.append(-sum([p*np.log2(p) for p in prop])/max_entropy(numulab[-1]))
+
+        if max_entropy(numulab[-1]) != 0:
+            e_ratio = -sum([p*np.log2(p) for p in prop])/max_entropy(numulab[-1])
+        else:
+            e_ratio = 0
+        entropy.append(e_ratio)
 
         # logging.info(f'identified {numulab[-1]} clusters (max is {max(numulab)}) with min_sample_prop={round(min_c, 2)} and entropy_ratio={round(entropy[-1], 3)}')
         
@@ -63,7 +68,7 @@ def cluster_with_hdbscan(feats, cluster_range, HDBSCAN_PARAMS, verbose=False):
         #     best_clf = trained_classifier
 
         if verbose:
-            logging.info(f"identified {numulab[-1]} clusters with min_sample_prop={round(min_c,2)} and entropy ratio={round(entropy[-1], 3)}")
+            logger.info(f"identified {numulab[-1]} clusters with min_sample_prop={round(min_c,2)} and entropy ratio={round(entropy[-1], 3)}")
         if entropy[-1] > highest_entropy:
             highest_entropy = entropy[-1]
             best_clf = trained_classifier
