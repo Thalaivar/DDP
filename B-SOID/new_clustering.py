@@ -59,11 +59,12 @@ def sample_points_from_clustering(labels, feats, n):
     # get labels for sampled points
     rep_point_labels = np.random.choice(classes, size=n, replace=True, p=props)
     rep_classes, rep_counts = np.unique(rep_point_labels, return_counts=True)
-
+    
     # get sampled points
     data = []
     for i in range(rep_classes.size):
         idxs = np.where(labels == rep_classes[i])[0]
+        logger.info(f"sampling {rep_counts[i]} from {idxs.size} points in class {rep_classes[i]}")
         if rep_counts[i] > idxs.size:
             rep_counts[i] = idxs.size
         
