@@ -9,7 +9,7 @@ from numba import njit
 from sklearn import clone
 from BSOID.bsoid import BSOID
 from BSOID.similarity import *
-from BSOID.utils import max_entropy
+from BSOID.utils import max_entropy, calculate_entropy_ratio
 from itertools import combinations
 from sklearn.decomposition import PCA
 from scipy.spatial.distance import cdist
@@ -44,6 +44,8 @@ def get_clusters(feats: np.ndarray):
     embedding = reduce_data(feats)
     labels, _, soft_labels, clusterer = cluster_with_hdbscan(feats, [0.4, 1.2], {"prediction_data": True, "min_samples": 1})
     exemplars = [feats[idxs] for idxs in clusterer.exemplars_indices]
+    
+    logger.info(f"embedded {feats.shape} to {embedding.shape[1]}D with {labels.max() + 1} clusters and entrop ratio={round(calculate_entropy_ratio(soft_labels),3)}")
     return {"labels": labels, "soft_labels": soft_labels, "exemplars": exemplars}
 
 def sample_points_from_clustering(labels, feats, n):
@@ -60,6 +62,8 @@ def cluster_for_strain(feats: list, n: int):
     clustering = [get_clusters(raw_data) for raw_data in feats]
     rep_data = np.vstack([sample_points_from_clustering(cdata["soft_labels"], raw_data, n) for cdata, raw_data in zip(clustering, feats)])
     
+    logger.info(f"extracted ({rep_data.shape}) dataset from {len(feats)} animals, now clustering...")
+
     clustering = get_clusters(rep_data)
     return rep_data, clustering
     

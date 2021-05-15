@@ -25,7 +25,7 @@ from sklearn.metrics import confusion_matrix
 
 logger = logging.getLogger(__name__)
 
-def cluster_with_hdbscan(feats, cluster_range, HDBSCAN_PARAMS):
+def cluster_with_hdbscan(feats, cluster_range, HDBSCAN_PARAMS, verbose=False):
     highest_numulab, highest_entropy = -np.infty, -np.infty
     numulab, entropy = [], []
     if not isinstance(cluster_range, list):
@@ -50,15 +50,21 @@ def cluster_with_hdbscan(feats, cluster_range, HDBSCAN_PARAMS):
         prop = prop/prop.sum()
         entropy.append(-sum([p*np.log2(p) for p in prop])/max_entropy(numulab[-1]))
 
-        logging.info(f'identified {numulab[-1]} clusters (max is {max(numulab)}) with min_sample_prop={round(min_c, 2)} and entropy_ratio={round(entropy[-1], 3)}')
+        # logging.info(f'identified {numulab[-1]} clusters (max is {max(numulab)}) with min_sample_prop={round(min_c, 2)} and entropy_ratio={round(entropy[-1], 3)}')
         
-        # retain max_clusters
-        if numulab[-1] > highest_numulab:
-            highest_numulab = numulab[-1]
-            best_clf = trained_classifier
+        # # retain max_clusters
+        # if numulab[-1] > highest_numulab:
+        #     highest_numulab = numulab[-1]
+        #     best_clf = trained_classifier
 
-        # retain best distribution
-        if numulab[-1] == highest_numulab and entropy[-1] > highest_entropy:
+        # # retain best distribution
+        # if numulab[-1] == highest_numulab and entropy[-1] > highest_entropy:
+        #     highest_entropy = entropy[-1]
+        #     best_clf = trained_classifier
+
+        if verbose:
+            logging.info(f"identified {numulab[-1]} clusters with min_sample_prop={round(min_c,2)} and entropy ratio={round(entropy[-1], 3)}")
+        if entropy[-1] > highest_entropy:
             highest_entropy = entropy[-1]
             best_clf = trained_classifier
 
@@ -93,6 +99,11 @@ def alphanum_key(s):
 def max_entropy(n):
     probs = [1/n for _ in range(n)]
     return -sum([p*np.log2(p) for p in probs])
+
+def calculate_entropy_ratio(labels):
+    prop = [p / labels.size for p in np.unique(labels, return_counts=True)[1]]
+    entropy_ratio = -sum(p * np.log2(p) for p in prop) / max_entropy(labels.max() + 1)
+    return entropy_ratio
 
 def get_random_video_and_keypoints(data_file, save_dir):
     data = pd.read_csv(data_file)
