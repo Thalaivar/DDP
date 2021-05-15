@@ -61,9 +61,10 @@ def sample_points_from_clustering(labels, feats, n):
 def cluster_for_strain(feats: list, n: int, parallel=False, verbose=False):
     if parallel:
         import psutil
-        clustering = Parallel(n_jobs=psutil.cpu_count(logical=False))(delayed(get_clusters)(feats[i], verbose) for i in tqdm(range(len(feats))))
+        from joblib import Parallel, delayed
+        clustering = Parallel(n_jobs=psutil.cpu_count(logical=False))(delayed(get_clusters)(raw_data, verbose) for raw_data in feats)
     else:
-        clustering = [get_clusters(feats[i], verbose) for i in tqdm(range(len(feats)))]
+        clustering = [get_clusters(raw_data, verbose) for raw_data in feats]
 
     rep_data = np.vstack([sample_points_from_clustering(cdata["soft_labels"], raw_data, n) for cdata, raw_data in zip(clustering, feats)])
     
@@ -317,3 +318,7 @@ if __name__ == "__main__":
     import psutil
     from joblib import Parallel, delayed
     feats = Parallel(n_jobs=psutil.cpu_count(logical=False))(delayed(extract_comb_feats)(data, bsoid.fps, None) for data in fdata)
+
+    rep_data, clustering = cluster_for_strain(feats, 5000, parallel=True, verbose=True)
+    with open("/fastscratch/laadd/strain.data", "wb") as f:
+        joblib.dump([rep_data, clustering], f)
