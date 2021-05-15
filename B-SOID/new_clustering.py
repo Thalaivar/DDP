@@ -43,7 +43,7 @@ def reduce_data(feats: np.ndarray):
 
 def get_clusters(feats: np.ndarray, verbose=False):
     embedding = reduce_data(feats)
-    labels, _, soft_labels, clusterer = cluster_with_hdbscan(feats, [0.4, 1.2], {"prediction_data": True, "min_samples": 1}, verbose=verbose)
+    labels, _, soft_labels, clusterer = cluster_with_hdbscan(embedding, [0.4, 1.2], {"prediction_data": True, "min_samples": 1}, verbose=verbose)
     exemplars = [feats[idxs] for idxs in clusterer.exemplars_indices_]
     
     logger.info(f"embedded {feats.shape} to {embedding.shape[1]}D with {labels.max() + 1} clusters and entrop ratio={round(calculate_entropy_ratio(soft_labels),3)}")
