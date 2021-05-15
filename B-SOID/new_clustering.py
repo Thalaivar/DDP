@@ -46,7 +46,7 @@ def get_clusters(feats: np.ndarray, verbose=False):
     labels, _, soft_labels, clusterer = cluster_with_hdbscan(embedding, [0.4, 1.2], {"prediction_data": True, "min_samples": 1}, verbose=verbose)
     exemplars = [feats[idxs] for idxs in clusterer.exemplars_indices_]
     
-    logger.info(f"embedded {feats.shape} to {embedding.shape[1]}D with {labels.max() + 1} clusters and entrop ratio={round(calculate_entropy_ratio(soft_labels),3)}")
+    logger.info(f"embedded {feats.shape} to {embedding.shape[1]}D with {labels.max() + 1} clusters and entropyiip ratio={round(calculate_entropy_ratio(soft_labels),3)}")
     return {"labels": labels, "soft_labels": soft_labels, "exemplars": exemplars}
 
 def sample_points_from_clustering(labels, feats, n):
@@ -103,24 +103,11 @@ def cluster_strainwise(config_file, save_dir, logfile):
 
         logger.write(f"running for strain: {strain} with samples: {data.shape}\n")
 
-        pca = PCA().fit(StandardScaler().fit_transform(data))
-        n_components = np.where(np.cumsum(pca.explained_variance_ratio_) >= 0.85)[0][0]
-        strainwise_umap_params = {"n_neighbors": 90, "n_components": n_components}
-
-        strainwise_cluster_rng = [0.4, 1.2, 25]
-        hdbscan_params = {"prediction_data": True, "min_samples": 1, "core_dist_n_jobs": 1}
-        
-        embedding = reduce_data(data, **strainwise_umap_params)
-        assignments, _, soft_assignments, clusterer = cluster_with_hdbscan(embedding, strainwise_cluster_rng, hdbscan_params)
-        
-        prop = [p / soft_assignments.size for p in np.unique(soft_assignments, return_counts=True)[1]]
-        entropy_ratio = -sum(p * np.log2(p) for p in prop) / max_entropy(assignments.max() + 1)
-
-        logger.write(f"collected {embedding.shape} samples for {strain} with {assignments.max() + 1} classes and entropy ratio: {entropy_ratio}\n")
-        return (strain, embedding, clusterer)
+        rep_data, clustering = cluster_for_strain(data, n=5000, verbose=True)
+        return strain, rep_data, clustering
     
     bsoid = BSOID(config_file)
-    feats = collect_strainwise_feats(bsoid.load_features(collect=False))
+    feats = bsoid.load_features(collect=False)
     feats_id = ray.put(feats)
 
     logger.info(f"Processing {len(feats)} strains...")
