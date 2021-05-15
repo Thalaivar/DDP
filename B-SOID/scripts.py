@@ -172,7 +172,7 @@ def strainwise_cluster(config_file, save_dir, logfile):
 def rep_cluster(config_file):
     from BSOID.features import extract_comb_feats
     from new_clustering import cluster_for_strain
-    
+
     bsoid = BSOID(config_file)
     fdata = bsoid.load_filtered_data()["C57BL/6J"]
     for data in fdata:
@@ -211,7 +211,8 @@ if __name__ == "__main__":
                                                                     "ensemble_pipeline", 
                                                                     "cluster_collect_embed", 
                                                                     "calculate_pairwise_similarity", 
-                                                                    "strainwise_cluster"
+                                                                    "strainwise_cluster",
+                                                                    "rep_cluster"
                                                                 ])
     parser.add_argument("--n", type=int)
     parser.add_argument("--n_strains", type=int, default=None)
