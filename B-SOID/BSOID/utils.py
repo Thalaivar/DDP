@@ -26,6 +26,9 @@ from sklearn.metrics import confusion_matrix
 logger = logging.getLogger(__name__)
 
 def cluster_with_hdbscan(feats, cluster_range, HDBSCAN_PARAMS, verbose=False):
+    if verbose:
+        logger.info(f"Clustering {feats.shape} with range {cluster_range}")
+        
     highest_numulab, highest_entropy = -np.infty, -np.infty
     numulab, entropy = [], []
     if not isinstance(cluster_range, list):
