@@ -1,4 +1,5 @@
 import os
+import re
 import umap
 import joblib
 import hdbscan
@@ -52,11 +53,23 @@ def sample_points_from_clustering(labels, feats, n):
     classes, counts = np.unique(labels, return_counts=True)
 
     # probabilty of selecting a group is inversely proportional to its density
-    props = np.array([1 / (x / labels.size) for x in counts])
-    props = {classes[i]: props[i] / props.sum() for i in range(props.size)}
+    props = np.array([1 / (counts[i] / labels.size) for i in range(counts.size)])
+    props = props / props.sum()
+    
+    # get labels for sampled points
+    rep_point_labels = np.random.choice(classes, size=n, replace=True, p=props)
+    rep_classes, rep_counts = np.unique(rep_point_labels, return_counts=True)
 
-    p = np.array([props[lab] for lab in labels])
-    return feats[np.random.choice(np.arange(feats.shape[0]), size=n, replace=False, p=p)]
+    # get sampled points
+    data = []
+    for i in range(rep_classes.size):
+        idxs = np.where(labels == rep_classes[i])[0]
+        if rep_counts[i] > idxs.size:
+            rep_counts[i] = idxs.size
+        
+        data.append(feats[np.random.choice(idxs, rep_counts[i], replace=False)])
+
+    return np.vstack(data)
 
 def cluster_for_strain(feats: list, n: int, parallel=False, verbose=False):
     if parallel:
