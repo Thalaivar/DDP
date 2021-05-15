@@ -40,9 +40,9 @@ def reduce_data(feats: np.ndarray):
     mapper = umap.UMAP(min_dist=0.0, n_neighbors=60, n_components=20, metric="cosine").fit(feats)
     return mapper.embedding_
 
-def get_clusters(feats: np.ndarray):
+def get_clusters(feats: np.ndarray, verbose=False):
     embedding = reduce_data(feats)
-    labels, _, soft_labels, clusterer = cluster_with_hdbscan(feats, [0.4, 1.2], {"prediction_data": True, "min_samples": 1})
+    labels, _, soft_labels, clusterer = cluster_with_hdbscan(feats, [0.4, 1.2], {"prediction_data": True, "min_samples": 1}, verbose=verbose)
     exemplars = [feats[idxs] for idxs in clusterer.exemplars_indices]
     
     logger.info(f"embedded {feats.shape} to {embedding.shape[1]}D with {labels.max() + 1} clusters and entrop ratio={round(calculate_entropy_ratio(soft_labels),3)}")
@@ -58,8 +58,13 @@ def sample_points_from_clustering(labels, feats, n):
     p = np.array([props[lab] for lab in labels])
     return feats[np.random.choice(np.arange(feats.shape[0]), n, p, replace=False)]
 
-def cluster_for_strain(feats: list, n: int):
-    clustering = [get_clusters(raw_data) for raw_data in feats]
+def cluster_for_strain(feats: list, n: int, parallel=False, verbose=False):
+    if parallel:
+        import psutil
+        clustering = Parallel(n_jobs=psutil.cpu_count(logical=False))(delayed(get_clusters)(feats[i], verbose) for i in tqdm(range(len(feats))))
+    else:
+        clustering = [get_clusters(feats[i], verbose) for i in tqdm(range(len(feats)))]
+
     rep_data = np.vstack([sample_points_from_clustering(cdata["soft_labels"], raw_data, n) for cdata, raw_data in zip(clustering, feats)])
     
     logger.info(f"extracted ({rep_data.shape}) dataset from {len(feats)} animals, now clustering...")
@@ -303,20 +308,12 @@ if __name__ == "__main__":
     import logging
     logging.basicConfig(level=logging.INFO)
 
-    with open("../../data/undersampling/cluster_collect_embed.sav", "rb") as f:
-        groups = joblib.load(f)
-    
-    model = train_classifier(groups)
-    with open("../../data/dis/output/dis_classifiers.sav", "wb") as f:
-        joblib.dump(model, f)
+    bsoid = BSOID("./config/config.yaml")
+    fdata = bsoid.load_filtered_data()["C57BL/6J"]
+    for data in fdata:
+        data['x'] = np.hstack((data['x'][:,:3].mean(axis=1).reshape(-1,1), data['x'][:,3:]))
+        data['y'] = np.hstack((data['y'][:,:3].mean(axis=1).reshape(-1,1), data['y'][:,3:]))
 
-    from label_video import create_class_examples
-    bsoid = BSOID("D:/IIT/DDP/DDP/B-SOID/config/config.yaml")
-    video_dir = "D:/IIT/DDP/data/videos"
-    results_dir=f"{video_dir}/{bsoid.run_id}_results"
-    create_class_examples(bsoid, video_dir, min_bout_len=200, n_examples=10, outdir=results_dir)
-
-    # data_dir = "../data/2clustering"
-    # with open(os.path.join(data_dir, "strainwise_labels.sav"), "rb") as f:
-    #     feats, _, labels = joblib.load(f)
-    # clusters = collect_strainwise_clusters(feats, labels, 0.8)
+    import psutil
+    from joblib import Parallel, delayed
+    feats = Parallel(n_jobs=psutil.cpu_count(logical=False))(delayed(extract_comb_feats)(data, bsoid.fps, None) for data in fdata)
