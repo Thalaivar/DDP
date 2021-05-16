@@ -216,6 +216,7 @@ if __name__ == "__main__":
     parser.add_argument("--save-dir", type=str)
     parser.add_argument("--thresh", type=float)
     parser.add_argument("--logfile", type=str)
+    parser.add_argument("--strain", type=str)
     args = parser.parse_args()
 
     import logging
@@ -235,5 +236,7 @@ if __name__ == "__main__":
         calculate_pairwise_similarity(args.save_dir, args.thresh)
     elif args.script == "strainwise_cluster":
         strainwise_cluster(args.config, args.save_dir, args.logfile)
+    elif args.script == "rep_cluster":
+        rep_cluster(args.config, args.strain, args.save_dir)
     else:
         eval(args.script)(args.config)
