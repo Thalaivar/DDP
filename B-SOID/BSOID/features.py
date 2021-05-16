@@ -1,11 +1,10 @@
 import math
 import logging
+import psutil
 import numpy as np
 from itertools import combinations
-from sklearn import model_selection
-from sklearn.decomposition import PCA
 from BSOID.preprocessing import windowed_feats, smoothen_data
-
+from behavelet import wavelet_transform
 
 def extract_dis_feats(filtered_data, fps, stride_window):
     """
@@ -91,3 +90,29 @@ def extract_comb_feats(filtered_data: dict, fps: int, stride_window: int):
     disp = windowed_feats(disp, stride_window, mode="sum")
 
     return np.hstack((ll, dis_angles, disp))
+
+def extract_temporal_feats(filtered_data: dict, fps: int, stride_window: int):
+    x, y = filtered_data['x'], filtered_data['y']
+    N, n_dpoints = x.shape
+    
+    win_len = np.int(np.round(0.05 / (1 / fps)) * 2 - 1)
+    
+    links = [np.array([x[:,i] - x[:,j], y[:,i] - y[:,j]]).T for i, j in combinations(range(n_dpoints), 2)]
+    ll = np.vstack([np.linalg.norm(link, axis=1) for link in links]).T
+    ll_disp = ll[1:] - ll[:N-1]
+    disp = np.linalg.norm(np.array([x[1:,:] - x[0:N-1,:], y[1:,:] - y[0:N-1,:]]), axis=0)
+    ll_disp_th = np.vstack([np.arctan2(np.cross(link[0:N-1], link[1:]), np.sum(link[0:N-1] * link[1:], axis=1)) for link in links]).T
+    link_angles = np.vstack([np.arctan2(link[:,1], link[:,0]) for link in links]).T
+    
+    for i in range(ll.shape[1]):
+        ll[:,i] = smoothen_data(ll[:,i], win_len)
+        ll_disp_th[:,i] = smoothen_data(ll_disp_th[:,i], win_len)
+        link_angles[:,i] = smoothen_data(link_angles[:,i], win_len)
+    for i in range(disp.shape[1]):
+        disp[:,i] = smoothen_data(disp[:,i], win_len)
+    
+    feats = np.hstack((ll, link_angles))
+    feats = wavelet_transform(feats, n_jobs=psutil.cpu_count(logical=False), n_freqs=25, fmin=0.15, fmax=15, fsample=30)[2]
+
+    feats = feats[stride_window:-1:stride_window]
+    return feats    
