@@ -172,6 +172,48 @@ class BSOID:
 
         return filtered_data
 
+    def get_random_animal_data(self, strain):
+        input_csv = self.jax_dataset["input_csv"]
+        data_dir = self.jax_dataset["data_dir"]
+        filter_thresh = self.filter_thresh
+
+        if input_csv.endswith('.tsv'):
+            data = pd.read_csv(input_csv, sep='\t')    
+        else:
+            data = pd.read_csv(input_csv)
+        data = data.groupby("Strain")
+        data = data.get_group(strain)
+        data = data.sample(frac=1)
+
+        k = 0
+        while True:
+            metadata = dict(data.iloc[k])
+            try:
+                pose_dir, _ = get_pose_data_dir(data_dir, metadata['NetworkFilename'])
+                _, _, movie_name = metadata['NetworkFilename'].split('/')
+                filename = f'{pose_dir}/{movie_name[0:-4]}_pose_est_v2.h5'
+
+                conf, pos = process_h5py_data(h5py.File(filename, "r"))
+
+                bsoid_data = bsoid_format(conf, pos)
+                fdata, perc_filt = likelihood_filter(bsoid_data, self.fps, self.conf_threshold, bodyparts=self.bodyparts, **self.trim_params)
+                strain, mouse_id = metadata['Strain'], metadata['MouseID']
+                
+                if perc_filt > filter_thresh:
+                    logger.warning(f'mouse:{strain}/{mouse_id}: % data filtered from raw data is too high ({perc_filt} %)')
+                else:
+                    shape = fdata['x'].shape
+                    logger.debug(f'preprocessed {shape} data from {strain}/{mouse_id} with {round(perc_filt, 2)}% data filtered')
+                    break
+            except Exception as e:
+                logger.warning(e)
+                pass
+            
+            k += 1
+        
+        feats = extract_feats(fdata, self.fps, self.stride_window)
+        return feats
+
     def features_from_points(self):
         filtered_data = self.load_filtered_data()
         logger.info(f'extracting features from {len(filtered_data)} animals')

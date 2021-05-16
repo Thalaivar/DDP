@@ -91,11 +91,12 @@ def cluster_for_strain(feats: list, n: int, parallel=False, verbose=False, logfi
 
     try:
         clustering = get_clusters(rep_data, return_embedding=False)
+        return rep_data, clustering
     except:
         if logfile:
             logfile.write(f"Failed to cluster representative points {rep_data.shape}")
         logger.warn(f"Failed to cluster representative points {rep_data.shape}")
-    return rep_data, clustering
+        return None
     
 
 def cluster_strainwise(config_file, save_dir, logfile):

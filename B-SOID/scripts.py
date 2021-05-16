@@ -1,3 +1,4 @@
+from sklearn.metrics import cluster
 from BSOID.features import extract_temporal_feats
 import os
 import joblib
@@ -178,13 +179,22 @@ def rep_cluster(config_file, strain, save_dir, n):
     feats = bsoid.load_features(collect=False)
     feats = feats[strain]
 
-    
+    Xtest = bsoid.get_random_animal_data(strain)
+    failed = False
+
+    labels = []
     for _ in range(n):
         rep_data, clustering = cluster_for_strain(feats, 5000, parallel=False, verbose=True)
+        if rep_data is None:
+            failed = True
+            break
         model = RandomForestClassifier(n_jobs=-1)
-        
-    with open(os.path.join(save_dir, f"{strain}.data"), "wb") as f:
-        joblib.dump([rep_data, clustering], f)
+        model.fit(rep_data, clustering["soft_labels"])
+        labels.append(model.predict(Xtest))
+    
+    if not failed:
+        with open(os.path.join(save_dir, f"{strain}.data"), "wb") as f:
+            joblib.dump(np.array(labels), f)
 
 def calculate_pairwise_similarity(save_dir, thresh):
     from new_clustering import pairwise_similarity
@@ -242,6 +252,6 @@ if __name__ == "__main__":
     elif args.script == "strainwise_cluster":
         strainwise_cluster(args.config, args.save_dir, args.logfile)
     elif args.script == "rep_cluster":
-        rep_cluster(args.config, args.strain, args.save_dir)
+        rep_cluster(args.config, args.strain, args.save_dir, args.n)
     else:
         eval(args.script)(args.config)

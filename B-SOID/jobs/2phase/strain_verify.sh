@@ -26,7 +26,7 @@ cd /home/laadd/DDP/B-SOID
 for((i=1;i<=$N_JOB;i++))
 do
     mkdir $BASE_DIR/$JOBNAME-${strains[$i]}
-    python scripts.py --script rep_cluster --config ./config/config.yaml --save-dir $BASE_DIR/$JOBNAME-${strains[$i]} --strain ${strains[$i]}
+    python scripts.py --script rep_cluster --config ./config/config.yaml --save-dir $BASE_DIR/$JOBNAME-${strains[$i]} --strain ${strains[$i]} -n 200
 done
 
 wait
