@@ -37,8 +37,8 @@ GROUPWISE_UMAP_PARAMS = {
 GROUPWISE_CLUSTER_RNG = [1, 5, 25]
 
 def reduce_data(feats: np.ndarray):
-    # feats = StandardScaler().fit_transform(feats)
-    mapper = umap.UMAP(min_dist=0.0, n_neighbors=60, n_components=20, metric="symmetric_kl").fit(feats)
+    feats = StandardScaler().fit_transform(feats)
+    mapper = umap.UMAP(min_dist=0.0, n_neighbors=60, n_components=20, metric="cosine").fit(feats)
     return mapper.embedding_
 
 def get_clusters(feats: np.ndarray, verbose=False):

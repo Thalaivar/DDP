@@ -162,13 +162,13 @@ def strainwise_cluster(config_file, save_dir, logfile):
 
     bsoid = BSOID(config_file)
 
-    # bsoid.load_from_dataset(n=10)
+    bsoid.load_from_dataset(n=10)
     bsoid.features_from_points()
  
-    embedding, labels = cluster_strainwise(config_file, save_dir, logfile)
+    rep_data, clustering = cluster_strainwise(config_file, save_dir, logfile)
     
     with open(os.path.join(save_dir, "strainwise_labels.sav"), "wb") as f:
-        joblib.dump([bsoid.load_features(collect=False), embedding, labels], f)
+        joblib.dump([rep_data, clustering], f)
 
 def rep_cluster(config_file):
     from BSOID.features import extract_comb_feats
