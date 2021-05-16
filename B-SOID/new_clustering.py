@@ -83,7 +83,7 @@ def cluster_for_strain(feats: list, n: int, parallel=False, verbose=False, logfi
     else:
         clustering = [get_clusters(raw_data, verbose, return_embedding=False) for raw_data in feats]
 
-    rep_data = np.vstack([sample_points_from_clustering(cdata["soft_labels"], raw_data, n)[0] for cdata, raw_data in zip(clustering, feats)])
+    rep_data = np.vstack([sample_points_from_clustering(cdata["soft_labels"], raw_data, n) for cdata, raw_data in zip(clustering, feats)])
     if logfile is not None:
         logfile.write(f"extracted ({rep_data.shape}) dataset from {len(feats)} animals, now clustering...")
 
