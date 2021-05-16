@@ -43,7 +43,7 @@ def reduce_data(feats: np.ndarray):
 
 def get_clusters(feats: np.ndarray, verbose=False, return_embedding=False):
     embedding = reduce_data(feats)
-    labels, _, soft_labels, clusterer = cluster_with_hdbscan(embedding, [0.4, 1.2], {"prediction_data": True, "min_samples": 1}, verbose=verbose)
+    labels, _, soft_labels, clusterer = cluster_with_hdbscan(embedding, [0.4, 1.2], {"prediction_data": True, "min_samples": 1, "core_dist_n_jobs": 1}, verbose=verbose)
     exemplars = [feats[idxs] for idxs in clusterer.exemplars_indices_]
     
     logger.info(f"embedded {feats.shape} to {embedding.shape[1]}D with {labels.max() + 1} clusters and entropyiip ratio={round(calculate_entropy_ratio(soft_labels),3)}")
@@ -131,10 +131,10 @@ def cluster_strainwise(config_file, save_dir, logfile):
 
     return rep_data, clustering
 
-def collect_strainwise_clusters(feats: dict, labels: dict, thresh: float, use_exemplars: bool): 
+def collect_strainwise_clusters(feats: dict, clustering: dict, thresh: float, use_exemplars: bool): 
     k, clusters = 0, {}
     for strain in feats.keys():
-        class_labels, exemplars = labels[strain]["assignments"], labels[strain]["exemplars"]
+        class_labels, exemplars = clustering[strain]["assignments"], clustering[strain]["exemplars"]
         
         # threshold by entropy
         n = class_labels.max() + 1
@@ -178,9 +178,13 @@ def pairwise_similarity(feats, labels, thresh):
     
     @ray.remote
     def par_pwise(idx1, idx2, clusters):
-        sim = density_separation_similarity(idx1, idx2, clusters, metric="cosine") 
+        metric = "cosine"
+        sim_dense = density_separation_similarity(idx1, idx2, clusters, metric) 
+        sim_min_dis = minimum_distance_similarity(idx1, idx2, clusters, metric)
+        sim_dbcv = dbcv_index_similarity(idx1, idx2, clusters, metric)
+        
         idx1, idx2 = int(idx1.split(':')[-1]), int(idx2.split(':')[-1])
-        return [sim, idx1, idx2]
+        return [sim_dense, sim_min_dis, sim_dbcv, idx1, idx2]
     
     clusters_id = ray.put(clusters)
     pwise_combs = list(combinations(list(clusters.keys()), 2))
