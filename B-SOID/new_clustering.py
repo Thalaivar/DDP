@@ -75,7 +75,7 @@ def sample_points_from_clustering(labels, feats, n):
 
     return np.vstack(data)
 
-def cluster_for_strain(feats: list, n: int, parallel=False, verbose=False):
+def cluster_for_strain(feats: list, n: int, parallel=False, verbose=False, logfile=None):
     if parallel:
         import psutil
         from joblib import Parallel, delayed
@@ -84,9 +84,17 @@ def cluster_for_strain(feats: list, n: int, parallel=False, verbose=False):
         clustering = [get_clusters(raw_data, verbose, return_embedding=False) for raw_data in feats]
 
     rep_data = np.vstack([sample_points_from_clustering(cdata["soft_labels"], raw_data, n)[0] for cdata, raw_data in zip(clustering, feats)])
+    if logfile is not None:
+        logfile.write(f"extracted ({rep_data.shape}) dataset from {len(feats)} animals, now clustering...")
+
     logger.info(f"extracted ({rep_data.shape}) dataset from {len(feats)} animals, now clustering...")
 
-    clustering = get_clusters(rep_data, return_embedding=False)
+    try:
+        clustering = get_clusters(rep_data, return_embedding=False)
+    except:
+        if logfile:
+            logfile.write(f"Failed to cluster representative points {rep_data.shape}")
+        logger.warn(f"Failed to cluster representative points {rep_data.shape}")
     return rep_data, clustering
     
 
@@ -105,7 +113,7 @@ def cluster_strainwise(config_file, save_dir, logfile):
 
         logger.write(f"running for strain: {strain} with samples: ({sum(x.shape[0] for x in data)},{data[0].shape[1]})\n")
 
-        rep_data, clustering = cluster_for_strain(data, n=5000, verbose=True)
+        rep_data, clustering = cluster_for_strain(data, n=5000, verbose=True, logfile=logger)
         return strain, rep_data, clustering
     
     bsoid = BSOID(config_file)

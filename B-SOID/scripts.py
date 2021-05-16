@@ -162,22 +162,27 @@ def strainwise_cluster(config_file, save_dir, logfile):
 
     bsoid = BSOID(config_file)
 
-    bsoid.load_from_dataset(n=10)
-    bsoid.features_from_points()
+    # bsoid.load_from_dataset(n=10)
+    # bsoid.features_from_points()
  
     rep_data, clustering = cluster_strainwise(config_file, save_dir, logfile)
     
     with open(os.path.join(save_dir, "strainwise_labels.sav"), "wb") as f:
         joblib.dump([rep_data, clustering], f)
 
-def rep_cluster(config_file, strain, save_dir):
+def rep_cluster(config_file, strain, save_dir, n):
     from new_clustering import cluster_for_strain
+    from sklearn.ensemble import RandomForestClassifier
 
     bsoid = BSOID(config_file)
     feats = bsoid.load_features(collect=False)
     feats = feats[strain]
 
-    rep_data, clustering = cluster_for_strain(feats, 5000, parallel=False, verbose=True)
+    
+    for _ in range(n):
+        rep_data, clustering = cluster_for_strain(feats, 5000, parallel=False, verbose=True)
+        model = RandomForestClassifier(n_jobs=-1)
+        
     with open(os.path.join(save_dir, f"{strain}.data"), "wb") as f:
         joblib.dump([rep_data, clustering], f)
 
