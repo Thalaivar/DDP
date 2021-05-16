@@ -40,6 +40,6 @@ def roc_similiarity(idx1, idx2, clusters, metric=None):
     return roc_auc_score(y, Xproj)
 
 def hausdorff_similarity(idx1, idx2, clusters, metric=None):
-    X1, X2 = clusters[idx1], clusters[idx2]
+    X1, X2 = clusters[idx1].copy(), clusters[idx2].copy()
     dist = directed_hausdorff(X1, X2)[0]
     return dist
