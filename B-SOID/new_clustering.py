@@ -176,7 +176,7 @@ def pairwise_similarity(feats, labels, thresh):
     import ray
     import psutil
 
-    clusters = collect_strainwise_clusters(feats, labels, thresh)
+    clusters = collect_strainwise_clusters(feats, labels, thresh, use_exemplars=False)
     del feats, labels
     
     logger.info(f"total clusters: {len(clusters)}")
