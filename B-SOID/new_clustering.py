@@ -83,7 +83,7 @@ def cluster_for_strain(feats: list, n: int, parallel=False, verbose=False):
     else:
         clustering = [get_clusters(raw_data, verbose, return_embedding=False) for raw_data in feats]
 
-    rep_data = np.vstack([sample_points_from_clustering(cdata["soft_labels"], raw_data, embed, n)[0] for cdata, raw_data, embed in zip(clustering, feats, embeddings)])
+    rep_data = np.vstack([sample_points_from_clustering(cdata["soft_labels"], raw_data, n)[0] for cdata, raw_data in zip(clustering, feats)])
     logger.info(f"extracted ({rep_data.shape}) dataset from {len(feats)} animals, now clustering...")
 
     clustering = get_clusters(rep_data, return_embedding=False)
@@ -134,7 +134,7 @@ def cluster_strainwise(config_file, save_dir, logfile):
 def collect_strainwise_clusters(feats: dict, clustering: dict, thresh: float, use_exemplars: bool): 
     k, clusters = 0, {}
     for strain in feats.keys():
-        class_labels, exemplars = clustering[strain]["assignments"], clustering[strain]["exemplars"]
+        class_labels, exemplars = clustering[strain]["soft_labels"], clustering[strain]["exemplars"]
         
         # threshold by entropy
         n = class_labels.max() + 1
@@ -182,9 +182,11 @@ def pairwise_similarity(feats, labels, thresh):
         sim_dense = density_separation_similarity(idx1, idx2, clusters, metric) 
         sim_min_dis = minimum_distance_similarity(idx1, idx2, clusters, metric)
         sim_dbcv = dbcv_index_similarity(idx1, idx2, clusters, metric)
-        
+        sim_roc = roc_similiarity(idx1, idx2, clusters, metric)
+        sim_hdoff = hausdorff_similarity(idx1, idx2, clusters, metric)
+
         idx1, idx2 = int(idx1.split(':')[-1]), int(idx2.split(':')[-1])
-        return [sim_dense, sim_min_dis, sim_dbcv, idx1, idx2]
+        return [sim_dense, sim_min_dis, sim_dbcv, sim_roc, sim_hdoff, idx1, idx2]
     
     clusters_id = ray.put(clusters)
     pwise_combs = list(combinations(list(clusters.keys()), 2))

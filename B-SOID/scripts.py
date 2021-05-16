@@ -170,22 +170,15 @@ def strainwise_cluster(config_file, save_dir, logfile):
     with open(os.path.join(save_dir, "strainwise_labels.sav"), "wb") as f:
         joblib.dump([rep_data, clustering], f)
 
-def rep_cluster(config_file):
-    from BSOID.features import extract_comb_feats
+def rep_cluster(config_file, strain, save_dir):
     from new_clustering import cluster_for_strain
 
     bsoid = BSOID(config_file)
-    fdata = bsoid.load_filtered_data()["C57BL/6J"]
-    for data in fdata:
-        data['x'] = np.hstack((data['x'][:,:3].mean(axis=1).reshape(-1,1), data['x'][:,3:]))
-        data['y'] = np.hstack((data['y'][:,:3].mean(axis=1).reshape(-1,1), data['y'][:,3:]))
-
-    import psutil
-    from joblib import Parallel, delayed
-    feats = Parallel(n_jobs=psutil.cpu_count(logical=False))(delayed(extract_comb_feats)(data, bsoid.fps, 3) for data in fdata)
+    feats = bsoid.load_features(collect=False)
+    feats = feats[strain]
 
     rep_data, clustering = cluster_for_strain(feats, 5000, parallel=False, verbose=True)
-    with open("/fastscratch/laadd/strain.data", "wb") as f:
+    with open(os.path.join(save_dir, f"{strain}.data"), "wb") as f:
         joblib.dump([rep_data, clustering], f)
 
 def calculate_pairwise_similarity(save_dir, thresh):
