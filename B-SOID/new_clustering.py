@@ -103,7 +103,7 @@ def cluster_strainwise(config_file, save_dir, logfile):
         logger = open(logfile, "a")
         data = feats[strain]
 
-        logger.write(f"running for strain: {strain} with samples: {data.shape}\n")
+        logger.write(f"running for strain: {strain} with samples: ({sum(x.shape[0] for x in data)},{data[0].shape[1]})\n")
 
         rep_data, clustering = cluster_for_strain(data, n=5000, verbose=True)
         return strain, rep_data, clustering
@@ -131,20 +131,7 @@ def cluster_strainwise(config_file, save_dir, logfile):
 
     return rep_data, clustering
 
-def collect_strainwise_labels(labels):
-    def extract_label_info(strain, clusterer):
-        soft_assignments = np.argmax(hdbscan.all_points_membership_vectors(clusterer), axis=1)
-        return (strain, {"assignments": soft_assignments.astype("int"), "exemplars": clusterer.exemplars_indices_})
-
-    from joblib import Parallel, delayed
-    labels = Parallel(n_jobs=-1)(delayed(extract_label_info)(strain, clusterer) for strain, clusterer in labels.items())
-    labels = {x[0]: x[1] for x in labels}
-    return labels
-
-def collect_strainwise_clusters(feats: dict, labels: dict, thresh: float, use_exemplars: bool):
-    feats = collect_strainwise_feats(feats)
-    labels = collect_strainwise_labels(labels)
-
+def collect_strainwise_clusters(feats: dict, labels: dict, thresh: float, use_exemplars: bool): 
     k, clusters = 0, {}
     for strain in feats.keys():
         class_labels, exemplars = labels[strain]["assignments"], labels[strain]["exemplars"]
