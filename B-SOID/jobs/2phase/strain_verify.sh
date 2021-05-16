@@ -25,9 +25,8 @@ cd /home/laadd/DDP/B-SOID
 
 for t in ${strains[@]}; do
     strain=${t/\//-}
-    mkdir $BASE_DIR/$JOBNAME-$strain
-    logfile=$BASE_DIR/$JOBNAME-$strain/log
-    python scripts.py --script rep_cluster --config ./config/config.yaml --save-dir $BASE_DIR/$JOBNAME-${strains[$i]} --strain ${strains[$i]} --n 200 > $logfile &
+    mkdir $BASE_DIR/$JOBNAME-$t
+    python scripts.py --script rep_cluster --config ./config/config.yaml --save-dir $BASE_DIR/$JOBNAME-$t --strain $t --n 200
 done
 
 wait

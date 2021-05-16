@@ -237,7 +237,10 @@ if __name__ == "__main__":
     import logging
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
-    logging.basicConfig(level=logging.INFO, filename=f"./{args.script}.log", filemode="w")
+    if args.save_dir is not None:
+        logging.basicConfig(level=logging.INFO, filename=f"{args.save_dir}/{args.script}.log", filemode="w")
+    else:
+        logging.basicConfig(level=logging.INFO, filename=f"./{args.script}.log", filemode="w")
 
     if args.script == "main":
         main(config_file=args.config, n=args.n, n_strains=args.n_strains)
