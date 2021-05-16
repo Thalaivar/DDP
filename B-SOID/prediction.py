@@ -1,3 +1,4 @@
+import enum
 import os
 import cv2
 import h5py
@@ -11,7 +12,7 @@ from itertools import combinations
 from BSOID.utils import alphanum_key
 from BSOID.features import extract_comb_feats as extract_feats
 from BSOID.data import process_h5py_data, bsoid_format
-from BSOID.preprocessing import smoothen_data, likelihood_filter
+from BSOID.preprocessing import smoothen_data, likelihood_filter, windowed_feats
 from sklearn.preprocessing import StandardScaler
 
 logger = logging.getLogger(__name__)
@@ -107,29 +108,62 @@ def example_video_segments(labels, bout_length, n_examples):
 
     return class_vid_locs
 
+def predict_frames(fdata, fps, stride_window, clf):
+    def extract(fdata, fps, stride_window):
+        x, y = fdata['x'], fdata['y']
+        assert x.shape == y.shape
+        N, n_dpoints = x.shape
+
+        win_len = np.int(np.round(0.05 / (1 / fps)) * 2 - 1)
+        
+        disp = np.linalg.norm(np.array([x[1:,:] - x[0:N-1,:], y[1:,:] - y[0:N-1,:]]), axis=0)
+        links = [np.array([x[:,i] - x[:,j], y[:,i] - y[:,j]]).T for i, j in combinations(range(n_dpoints), 2)]
+        link_angles = np.vstack([np.arctan2(link[:,1], link[:,0]) for link in links]).T
+        ll = np.vstack([np.linalg.norm(link, axis=1) for link in links]).T
+        dis_angles = np.vstack([np.arctan2(np.cross(link[0:N-1], link[1:]), np.sum(link[0:N-1] * link[1:], axis=1)) for link in links]).T
+        
+        for i in range(ll.shape[1]):
+            ll[:,i] = smoothen_data(ll[:,i], win_len)
+            dis_angles[:,i] = smoothen_data(dis_angles[:,i], win_len)
+            link_angles[:,i] = smoothen_data(link_angles[:,i], win_len)
+        for i in range(disp.shape[1]):
+            disp[:,i] = smoothen_data(disp[:,i], win_len)
+
+        fs_feats = []
+        for i in range(stride_window):
+            win_ll = windowed_feats(ll[i:], stride_window, mode="mean")
+            win_link_angles = windowed_feats(link_angles[i:], stride_window, mode="mean")
+            win_disp = windowed_feats(disp[i:], stride_window, mode="sum")
+            win_dis_angles = windowed_feats(dis_angles[i:], stride_window, mode="sum")
+
+            if win_ll.shape[0] != win_disp.shape[0]:
+                if win_ll.shape[0] - 1 == win_disp.shape[0]:
+                    win_ll, win_link_angles = win_ll[1:], win_link_angles[1:]
+                else:
+                    raise ValueError(f"incorrect shapes for geometric {win_ll.shape} and displacement {win_disp.shape} features")
+                    
+            fs_feats.append(np.hstack((win_ll, win_link_angles, win_dis_angles, win_disp)))
+        
+        return fs_feats
+    
+    fs_feats = extract(fdata, fps, stride_window)
+    fs_labels = [clf.predict(f) for f in fs_feats]
+
+    max_len = max([f.shape[0] for f in fs_labels])
+    for i, f in enumerate(fs_labels):
+        pad_arr = -1 * np.ones((max_len,))
+        pad_arr[:f.shape[0]] = f
+        fs_labels[i] = pad_arr
+    labels = np.array(fs_labels).flatten('F')
+    labels = labels[labels >= 0]
+
+    return labels
+
 def labels_for_video2(bsoid, rawfile, vid_file, extract_frames=False):
     filtered_data, frames = extract_data_from_video(bsoid, rawfile, vid_file, extract_frames)
-    x, y = filtered_data['x'], filtered_data['y']
-    N, n_dpoints = x.shape
-
-    win_len = np.int(np.round(0.05 / (1 / bsoid.fps)) * 2 - 1)
-    
-    disp = np.linalg.norm(np.array([x[1:,:] - x[0:N-1,:], y[1:,:] - y[0:N-1,:]]), axis=0)
-    links = [np.array([x[:,i] - x[:,j], y[:,i] - y[:,j]]).T for i, j in combinations(range(n_dpoints), 2)]
-    ll = np.vstack([np.linalg.norm(link, axis=1) for link in links]).T
-    dis_angles = np.vstack([np.arctan2(np.cross(link[0:N-1], link[1:]), np.sum(link[0:N-1] * link[1:], axis=1)) for link in links]).T
-    
-    for i in range(ll.shape[1]):
-        ll[:,i] = smoothen_data(ll[:,i], win_len)
-        dis_angles[:,i] = smoothen_data(dis_angles[:,i], win_len)
-    for i in range(disp.shape[1]):
-        disp[:,i] = smoothen_data(disp[:,i], win_len)
-
-    feats = np.hstack((ll[1:], dis_angles, disp))
-    
     with open("D:/IIT/DDP/data/tests/test.model", "rb") as f:
         clf = joblib.load(f)
-    labels = clf.predict(feats)
+    labels = predict_frames(filtered_data, bsoid.fps, 3, clf)
     return labels, frames
 
 def labels_for_video(bsoid: BSOID, raw_data_file: str, video_file: str, extract_frames=False):

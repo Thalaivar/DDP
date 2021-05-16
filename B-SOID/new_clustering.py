@@ -41,13 +41,16 @@ def reduce_data(feats: np.ndarray):
     mapper = umap.UMAP(min_dist=0.0, n_neighbors=60, n_components=20, metric="cosine").fit(feats)
     return mapper.embedding_
 
-def get_clusters(feats: np.ndarray, verbose=False):
+def get_clusters(feats: np.ndarray, verbose=False, return_embedding=False):
     embedding = reduce_data(feats)
     labels, _, soft_labels, clusterer = cluster_with_hdbscan(embedding, [0.4, 1.2], {"prediction_data": True, "min_samples": 1}, verbose=verbose)
     exemplars = [feats[idxs] for idxs in clusterer.exemplars_indices_]
     
     logger.info(f"embedded {feats.shape} to {embedding.shape[1]}D with {labels.max() + 1} clusters and entropyiip ratio={round(calculate_entropy_ratio(soft_labels),3)}")
-    return {"labels": labels, "soft_labels": soft_labels, "exemplars": exemplars}
+    if return_embedding:
+        return embedding, {"labels": labels, "soft_labels": soft_labels, "exemplars": exemplars}
+    else:
+        return {"labels": labels, "soft_labels": soft_labels, "exemplars": exemplars}
 
 def sample_points_from_clustering(labels, feats, n):
     classes, counts = np.unique(labels, return_counts=True)
@@ -76,15 +79,14 @@ def cluster_for_strain(feats: list, n: int, parallel=False, verbose=False):
     if parallel:
         import psutil
         from joblib import Parallel, delayed
-        clustering = Parallel(n_jobs=psutil.cpu_count(logical=False))(delayed(get_clusters)(raw_data, verbose) for raw_data in feats)
+        clustering = Parallel(n_jobs=psutil.cpu_count(logical=False))(delayed(get_clusters)(raw_data, verbose, False) for raw_data in feats)
     else:
-        clustering = [get_clusters(raw_data, verbose) for raw_data in feats]
+        clustering = [get_clusters(raw_data, verbose, return_embedding=False) for raw_data in feats]
 
-    rep_data = np.vstack([sample_points_from_clustering(cdata["soft_labels"], raw_data, n) for cdata, raw_data in zip(clustering, feats)])
-    
+    rep_data = np.vstack([sample_points_from_clustering(cdata["soft_labels"], raw_data, embed, n)[0] for cdata, raw_data, embed in zip(clustering, feats, embeddings)])
     logger.info(f"extracted ({rep_data.shape}) dataset from {len(feats)} animals, now clustering...")
 
-    clustering = get_clusters(rep_data)
+    clustering = get_clusters(rep_data, return_embedding=False)
     return rep_data, clustering
     
 
