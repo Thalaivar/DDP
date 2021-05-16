@@ -182,7 +182,7 @@ def rep_cluster(config_file):
 
     import psutil
     from joblib import Parallel, delayed
-    feats = Parallel(n_jobs=psutil.cpu_count(logical=False))(delayed(extract_temporal_feats)(data, bsoid.fps, None) for data in fdata)
+    feats = Parallel(n_jobs=psutil.cpu_count(logical=False))(delayed(extract_comb_feats)(data, bsoid.fps, 3) for data in fdata)
 
     rep_data, clustering = cluster_for_strain(feats, 5000, parallel=False, verbose=True)
     with open("/fastscratch/laadd/strain.data", "wb") as f:
