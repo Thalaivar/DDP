@@ -113,19 +113,19 @@ def labels_for_video2(bsoid, rawfile, vid_file, extract_frames=False):
     N, n_dpoints = x.shape
 
     win_len = np.int(np.round(0.05 / (1 / bsoid.fps)) * 2 - 1)
-
+    
+    disp = np.linalg.norm(np.array([x[1:,:] - x[0:N-1,:], y[1:,:] - y[0:N-1,:]]), axis=0)
     links = [np.array([x[:,i] - x[:,j], y[:,i] - y[:,j]]).T for i, j in combinations(range(n_dpoints), 2)]
     ll = np.vstack([np.linalg.norm(link, axis=1) for link in links]).T
-    disp = np.linalg.norm(np.array([x[1:,:] - x[0:N-1,:], y[1:,:] - y[0:N-1,:]]), axis=0)
-    ll_disp_th = np.vstack([np.arctan2(np.cross(link[0:N-1], link[1:]), np.sum(link[0:N-1] * link[1:], axis=1)) for link in links]).T
+    dis_angles = np.vstack([np.arctan2(np.cross(link[0:N-1], link[1:]), np.sum(link[0:N-1] * link[1:], axis=1)) for link in links]).T
+    
+    for i in range(ll.shape[1]):
+        ll[:,i] = smoothen_data(ll[:,i], win_len)
+        dis_angles[:,i] = smoothen_data(dis_angles[:,i], win_len)
+    for i in range(disp.shape[1]):
+        disp[:,i] = smoothen_data(disp[:,i], win_len)
 
-    # for i in range(ll.shape[1]):
-    #     ll[:,i] = smoothen_data(ll[:,i], win_len)
-    #     ll_disp_th[:,i] = smoothen_data(ll_disp_th[:,i], win_len)
-    # for i in range(disp.shape[1]):
-    #     disp[:,i] = smoothen_data(disp[:,i], win_len)
-
-    feats = np.hstack((ll[1:], ll_disp_th))
+    feats = np.hstack((ll[1:], dis_angles, disp))
     
     with open("D:/IIT/DDP/data/tests/test.model", "rb") as f:
         clf = joblib.load(f)

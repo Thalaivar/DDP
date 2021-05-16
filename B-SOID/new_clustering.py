@@ -121,13 +121,13 @@ def cluster_strainwise(config_file, save_dir, logfile):
         futures = rest
         pbar.update(n)
 
-    embedding, labels = {}, {}
+    rep_data, clustering = {}, {}
     for res in results:
-        strain, embed, lab = res
-        embedding[strain] = embed
-        labels[strain] = lab
+        strain, data, labels = res
+        rep_data[strain] = data
+        clustering[strain] = labels
 
-    return embedding, labels
+    return rep_data, clustering
 
 def collect_strainwise_labels(labels):
     def extract_label_info(strain, clusterer):

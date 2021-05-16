@@ -161,7 +161,7 @@ def strainwise_cluster(config_file, save_dir, logfile):
 
     bsoid = BSOID(config_file)
 
-    bsoid.load_from_dataset(n=10)
+    # bsoid.load_from_dataset(n=10)
     bsoid.features_from_points()
  
     embedding, labels = cluster_strainwise(config_file, save_dir, logfile)
@@ -183,7 +183,7 @@ def rep_cluster(config_file):
     from joblib import Parallel, delayed
     feats = Parallel(n_jobs=psutil.cpu_count(logical=False))(delayed(extract_comb_feats)(data, bsoid.fps, None) for data in fdata)
 
-    rep_data, clustering = cluster_for_strain(feats, 5000, parallel=True, verbose=True)
+    rep_data, clustering = cluster_for_strain(feats, 5000, parallel=False, verbose=True)
     with open("/fastscratch/laadd/strain.data", "wb") as f:
         joblib.dump([rep_data, clustering], f)
 

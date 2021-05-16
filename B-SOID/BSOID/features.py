@@ -2,6 +2,7 @@ import math
 import logging
 import numpy as np
 from itertools import combinations
+from sklearn import model_selection
 from sklearn.decomposition import PCA
 from BSOID.preprocessing import windowed_feats, smoothen_data
 
@@ -85,4 +86,8 @@ def extract_comb_feats(filtered_data: dict, fps: int, stride_window: int):
     for i in range(disp.shape[1]):
         disp[:,i] = smoothen_data(disp[:,i], win_len)
 
-    return np.hstack((ll[1:], dis_angles, disp))
+    ll = windowed_feats(ll, stride_window, mode="mean")
+    dis_angles = windowed_feats(dis_angles, stride_window, mode="sum")
+    disp = windowed_feats(disp, stride_window, mode="sum")
+
+    return np.hstack((ll, dis_angles, disp))
