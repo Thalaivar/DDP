@@ -200,9 +200,9 @@ def calculate_pairwise_similarity(save_dir, thresh):
     from new_clustering import pairwise_similarity
 
     with open(os.path.join(save_dir, "strainwise_labels.sav"), "rb") as f:
-        feats, _, labels = joblib.load(f)
+        feats, clustering = joblib.load(f)
 
-    sim = pairwise_similarity(feats, labels, thresh)
+    sim = pairwise_similarity(feats, clustering, thresh)
 
     with open(os.path.join(save_dir, "pairwise_sim.sav"), "wb") as f:
         joblib.dump([sim, thresh], f)
