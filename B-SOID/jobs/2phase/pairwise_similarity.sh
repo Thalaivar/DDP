@@ -1,13 +1,12 @@
 #!/bin/bash
-#SBATCH --nodes 5
 #SBATCH --job-name=bsoid-pwise-strain
 #SBATCH --output=strain-pwise-calc.txt
 #SBATCH --time=72:00:00
 #SBATCH --partition=high_mem
 #SBATCH --qos=batch
-#SBATCH --ntasks-per-node 1
+#SBATCH --ntasks 5
 #SBATCH --cpus-per-task 18
-#SBATCH --mem=50000
+#SBATCH --mem=70000
 #SBATCH --mail-user=dhruv.laad@jax.org
 #SBATCH --mail-type=ALL
 

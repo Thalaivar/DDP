@@ -4,7 +4,7 @@ base_dir: '/home/laadd/data/bsoid_data'
 
 # basic config
 fps: 30
-stride_window: 350
+stride_window: 100
 conf_threshold: 0.3
 
 # loading from JAX dataset

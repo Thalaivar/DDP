@@ -201,7 +201,7 @@ def rep_cluster(config_file, strain, save_dir, n):
 def calculate_pairwise_similarity(save_dir, thresh, sim_measure):
     from new_clustering import strain_pairs_sim
 
-    with open(os.path.join(save_dir, "strainwise_labels.sav"), "rb") as f:
+    with open(os.path.join("/home/laadd/data", "strainwise_labels.sav"), "rb") as f:
         feats, clustering = joblib.load(f)
 
     sim = strain_pairs_sim(feats, clustering, thresh, sim_measure)

@@ -212,7 +212,7 @@ class BSOID:
             k += 1
         
         feats = extract_feats(fdata, self.fps, self.stride_window)
-        return feats
+        return feats, fdata
 
     def features_from_points(self):
         filtered_data = self.load_filtered_data()

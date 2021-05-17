@@ -205,7 +205,7 @@ def strain_pairs_sim(feats, clustering, thresh, sim_measure):
     
     k, futures = 0, []
     for k in range(num_cpus):
-        futures.append(par_pwise.remote(combs[k], clusters_id))
+        futures.append(par_pwise.remote(combs[k], clusters_id, sim_measure))
 
     while k < len(combs):
         fin, futures = ray.wait(futures, num_returns=min(num_cpus, len(futures)), timeout=3000)
@@ -214,7 +214,7 @@ def strain_pairs_sim(feats, clustering, thresh, sim_measure):
         k += len(fin)
         
         for i in range(k, min(k+num_cpus, len(combs))):
-            futures.append(par_pwise.remote(combs[i], clusters_id))
+            futures.append(par_pwise.remote(combs[i], clusters_id, sim_measure))
 
     sim_data = {"sim": [], "strain1": [], "strain2": [], "idx1": [], "idx2": []}
     for data in sim:
