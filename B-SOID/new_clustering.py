@@ -184,11 +184,12 @@ def strain_pairs_sim(feats, clustering, thresh):
     for strain1, strain2 in combinations(list(clusters.keys()), 2):
         for i in range(len(clusters[strain1])):
             for j in range(len(clusters[strain2])):
-                combs.append([f"{strain1};{strain2};{i};{j}"])
+                combs.append(f"{strain1};{strain2};{i};{j}")
 
     @ray.remote
     def par_pwise(comb, clusters):
         strain1, strain2, i, j = comb.split(';')
+        i, j = int(i), int(j)
         X1 = clusters[strain1][i].copy()
         X2 = clusters[strain2][j].copy()
         sim_kwargs = {"X1": X1, "X2": X2, "metric": "cosine"}
@@ -232,9 +233,9 @@ def strain_pairs_sim(feats, clustering, thresh):
         
         strain1, strain2, idx1, idx2 = data[n_measures].split(';')
         sim_data["strain1"].append(strain1)
-        sim_data["idx1"].append(idx1)
+        sim_data["idx1"].append(int(idx1))
         sim_data["strain2"].append(strain2)
-        sim_data["idx2"].append(idx2)
+        sim_data["idx2"].append(int(idx2))
     
     import pandas as pd
     return pd.DataFrame.from_dict(sim_data)

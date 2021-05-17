@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --job-name=bsoid-pwise-calc
-#SBATCH --output=pwise-calc.txt
+#SBATCH --job-name=bsoid-pwise-strain
+#SBATCH --output=strain-pwise-calc.txt
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=16
+#SBATCH --cpus-per-task=56
 #SBATCH --time=72:00:00
 #SBATCH --partition=compute
 #SBATCH --qos=batch
