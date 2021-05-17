@@ -1,10 +1,10 @@
 #!/bin/bash
+#SBATCH -n 5
 #SBATCH --job-name=bsoid-pwise-strain
 #SBATCH --output=strain-pwise-calc.txt
 #SBATCH --time=72:00:00
-#SBATCH --partition=compute
+#SBATCH --partition=high_mem
 #SBATCH --qos=batch
-#SBATCH -n 5
 #SBATCH --cpus-per-task 18
 #SBATCH --mem=50000
 #SBATCH --mail-user=dhruv.laad@jax.org
@@ -24,6 +24,7 @@ conda activate bsoid
 cd /home/laadd/DDP/B-SOID/
 
 for measure in "${sim_measures[@]}"; do
+    mkdir $BASE_DIR/$JOBNAME-$measure
     srun --exclusive --ntasks 1 python scripts.py --script calculate_pairwise_similarity --thresh 0.9 --save-dir $BASE_DIR/$JOBNAME-$measure --sim-measure $measure
 done
 
