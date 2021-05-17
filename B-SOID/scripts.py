@@ -1,3 +1,4 @@
+from numpy.random import choice
 from new_clustering import strain_pairs_sim
 from sklearn.metrics import cluster
 from BSOID.features import extract_temporal_feats
@@ -197,13 +198,13 @@ def rep_cluster(config_file, strain, save_dir, n):
         with open(os.path.join(save_dir, f"{strain}.data"), "wb") as f:
             joblib.dump(np.array(labels), f)
 
-def calculate_pairwise_similarity(save_dir, thresh):
+def calculate_pairwise_similarity(save_dir, thresh, sim_measure):
     from new_clustering import strain_pairs_sim
 
     with open(os.path.join(save_dir, "strainwise_labels.sav"), "rb") as f:
         feats, clustering = joblib.load(f)
 
-    sim = strain_pairs_sim(feats, clustering, thresh)
+    sim = strain_pairs_sim(feats, clustering, thresh, sim_measure)
     sim.to_csv(os.path.join(save_dir, "pairwise_sim.csv"))
 
     # with open(os.path.join(save_dir, "pairwise_sim.sav"), "wb") as f:
@@ -234,6 +235,14 @@ if __name__ == "__main__":
     parser.add_argument("--thresh", type=float)
     parser.add_argument("--logfile", type=str)
     parser.add_argument("--strain", type=str)
+    parser.add_argument("--sim-measure", type=str, choices=[
+                                                        "density_separation_similarity", 
+                                                        "dbcv_index_similarity", 
+                                                        "roc_similiarity",
+                                                        "minimum_distance_similarity",
+                                                        "hausdorff_similarity"
+                                                    ]
+                                                )
     args = parser.parse_args()
 
     import logging
@@ -253,7 +262,7 @@ if __name__ == "__main__":
     elif args.script == "cluster_collect_embed":
         cluster_collect_embed(args.max_samples, args.thresh)
     elif args.script == "calculate_pairwise_similarity":
-        calculate_pairwise_similarity(args.save_dir, args.thresh)
+        calculate_pairwise_similarity(args.save_dir, args.thresh, args.sim_measure)
     elif args.script == "strainwise_cluster":
         strainwise_cluster(args.config, args.save_dir, args.logfile)
     elif args.script == "rep_cluster":

@@ -167,10 +167,11 @@ def collect_diff_strain_clusters(feats: dict, clustering: dict, thresh: float, u
     
     return clusters
 
-def strain_pairs_sim(feats, clustering, thresh):
+def strain_pairs_sim(feats, clustering, thresh, sim_measure):
     import ray
     import psutil
 
+    sim_measure = eval(sim_measure)
     clusters = collect_diff_strain_clusters(feats, clustering, thresh, use_exemplars=False)
     del feats, clustering
 
@@ -187,26 +188,17 @@ def strain_pairs_sim(feats, clustering, thresh):
                 combs.append(f"{strain1};{strain2};{i};{j}")
 
     @ray.remote
-    def par_pwise(comb, clusters):
+    def par_pwise(comb, clusters, sim_measure):
         strain1, strain2, i, j = comb.split(';')
         i, j = int(i), int(j)
         X1 = clusters[strain1][i].copy()
         X2 = clusters[strain2][j].copy()
-        sim_kwargs = {"X1": X1, "X2": X2, "metric": "cosine"}
 
-        sim_measures = [
-                    density_separation_similarity, 
-                    dbcv_index_similarity, 
-                    roc_similiarity,
-                    minimum_distance_similarity,
-                    hausdorff_similarity
-                ]
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
-            sim_vals = [f(**sim_kwargs) for f in sim_measures]
+            sim_val = sim_measure(X1, X2, metric="cosine")
         
-        sim_vals.append(comb)
-        return sim_vals
+        return [sim_val, comb]
     
     clusters_id = ray.put(clusters)
     pbar, sim = tqdm(total=len(combs)), []
@@ -224,14 +216,10 @@ def strain_pairs_sim(feats, clustering, thresh):
         for i in range(k, min(k+num_cpus, len(combs))):
             futures.append(par_pwise.remote(combs[i], clusters_id))
 
-    n_measures = len(sim[0]) - 1
-    sim_data = {f"measure_{k}": [] for k in range(n_measures)}
-    sim_data.update({"strain1": [], "strain2": [], "idx1": [], "idx2": []})
+    sim_data = {"sim": [], "strain1": [], "strain2": [], "idx1": [], "idx2": []}
     for data in sim:
-        for i in range(n_measures):
-            sim_data[f"measure_{i}"].append(data[i])
-        
-        strain1, strain2, idx1, idx2 = data[n_measures].split(';')
+        sim_data["sim"].append(data[0])
+        strain1, strain2, idx1, idx2 = data[1].split(';')
         sim_data["strain1"].append(strain1)
         sim_data["idx1"].append(int(idx1))
         sim_data["strain2"].append(strain2)
