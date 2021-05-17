@@ -1,3 +1,4 @@
+from new_clustering import strain_pairs_sim
 from sklearn.metrics import cluster
 from BSOID.features import extract_temporal_feats
 import os
@@ -197,15 +198,16 @@ def rep_cluster(config_file, strain, save_dir, n):
             joblib.dump(np.array(labels), f)
 
 def calculate_pairwise_similarity(save_dir, thresh):
-    from new_clustering import pairwise_similarity
+    from new_clustering import strain_pairs_sim
 
     with open(os.path.join(save_dir, "strainwise_labels.sav"), "rb") as f:
         feats, clustering = joblib.load(f)
 
-    sim = pairwise_similarity(feats, clustering, thresh)
+    sim = strain_pairs_sim(feats, clustering, thresh)
+    sim.to_csv(os.path.join(save_dir, "pairwise_sim.csv"))
 
-    with open(os.path.join(save_dir, "pairwise_sim.sav"), "wb") as f:
-        joblib.dump([sim, thresh], f)
+    # with open(os.path.join(save_dir, "pairwise_sim.sav"), "wb") as f:
+    #     joblib.dump([sim, thresh], f)
 
 if __name__ == "__main__":
     import argparse 

@@ -3,6 +3,7 @@ import re
 import umap
 import joblib
 import hdbscan
+import warnings
 import numpy as np
 
 from tqdm import tqdm
@@ -139,6 +140,104 @@ def cluster_strainwise(config_file, save_dir, logfile):
         clustering[strain] = labels
 
     return rep_data, clustering
+
+def collect_diff_strain_clusters(feats: dict, clustering: dict, thresh: float, use_exemplars: bool) -> dict:
+    clusters = {}
+    for strain in feats.keys():
+        class_labels, exemplars = clustering[strain]["soft_labels"], clustering[strain]["exemplars"]
+
+        # threshold by entropy
+        n = class_labels.max() + 1
+        class_ids, counts = np.unique(class_labels, return_counts=True)
+        prop = [x/class_labels.size for x in counts]
+        entropy_ratio = -sum(p * np.log2(p) for p in prop) / max_entropy(n)
+
+        if entropy_ratio >= thresh:
+            logger.info(f"pooling {len(class_ids)} clusters from {strain} with entropy ratio {entropy_ratio}")
+            for class_id in class_ids:
+                if use_exemplars:
+                    class_data = feats[strain][exemplars[class_id],:]
+                else:
+                    class_data = feats[strain][np.where(class_labels == class_id)[0]]
+                
+                if strain in clusters:
+                    clusters[strain].append(class_data)
+                else:
+                    clusters[strain] = [class_data]    
+    
+    return clusters
+
+def strain_pairs_sim(feats, clustering, thresh):
+    import ray
+    import psutil
+
+    clusters = collect_diff_strain_clusters(feats, clustering, thresh, use_exemplars=False)
+    del feats, clustering
+
+    logger.info(f"total clusters: {sum(len(data) for _, data in clusters.items())}")
+
+    num_cpus = psutil.cpu_count(logical=False)
+    ray.init(num_cpus=num_cpus)
+    logger.info(f"running on: {num_cpus} CPUs")
+
+    combs = []
+    for strain1, strain2 in combinations(list(clusters.keys()), 2):
+        for i in range(len(clusters[strain1])):
+            for j in range(len(clusters[strain2])):
+                combs.append([f"{strain1};{strain2};{i};{j}"])
+
+    @ray.remote
+    def par_pwise(comb, clusters):
+        strain1, strain2, i, j = comb.split(';')
+        X1 = clusters[strain1][i].copy()
+        X2 = clusters[strain2][j].copy()
+        sim_kwargs = {"X1": X1, "X2": X2, "metric": "cosine"}
+
+        sim_measures = [
+                    density_separation_similarity, 
+                    dbcv_index_similarity, 
+                    roc_similiarity,
+                    minimum_distance_similarity,
+                    hausdorff_similarity
+                ]
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            sim_vals = [f(**sim_kwargs) for f in sim_measures]
+        
+        sim_vals.append(comb)
+        return sim_vals
+    
+    clusters_id = ray.put(clusters)
+    pbar, sim = tqdm(total=len(combs)), []
+    
+    k, futures = 0, []
+    for k in range(num_cpus):
+        futures.append(par_pwise.remote(combs[k], clusters_id))
+
+    while k < len(combs):
+        fin, futures = ray.wait(futures, num_returns=min(num_cpus, len(futures)), timeout=3000)
+        sim.extend(ray.get(fin))
+        pbar.update(len(fin))
+        k += len(fin)
+        
+        for i in range(k, min(k+num_cpus, len(combs))):
+            futures.append(par_pwise.remote(combs[i], clusters_id))
+
+    n_measures = len(sim[0]) - 1
+    sim_data = {f"measure_{k}": [] for k in range(n_measures)}
+    sim_data.update({"strain1": [], "strain2": [], "idx1": [], "idx2": []})
+    for data in sim:
+        for i in range(n_measures):
+            sim_data[f"measure_{i}"].append(data[i])
+        
+        strain1, strain2, idx1, idx2 = data[n_measures].split(';')
+        sim_data["strain1"].append(strain1)
+        sim_data["idx1"].append(idx1)
+        sim_data["strain2"].append(strain2)
+        sim_data["idx2"].append(idx2)
+    
+    import pandas as pd
+    return pd.DataFrame.from_dict(sim_data)
 
 def collect_strainwise_clusters(feats: dict, clustering: dict, thresh: float, use_exemplars: bool): 
     k, clusters = 0, {}
