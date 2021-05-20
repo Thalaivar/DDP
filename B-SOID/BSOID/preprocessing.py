@@ -97,13 +97,7 @@ def trim_data(x, y, conf, fps, end_trim, clip_window):
         end_trim *= (fps * 60)
         conf, x, y = conf[end_trim:-end_trim, :], x[end_trim:-end_trim, :], y[end_trim:-end_trim, :]
 
-    if clip_window > 0:
-            # clip_window = clip_window * 60 * fps // 2
-            # mid_idx = conf.shape[0] // 2
-            # conf = conf[mid_idx - clip_window : mid_idx + clip_window, :]
-            # x = x[mid_idx - clip_window : mid_idx + clip_window, :]
-            # y = y[mid_idx - clip_window : mid_idx + clip_window, :]
-            
+    if clip_window > 0:            
             # take first clip_window after trimming
             clip_window *= (60 * fps)
             conf = conf[end_trim:end_trim + clip_window, :]
@@ -128,20 +122,3 @@ def windowed_feats(feats, window_len: int=3, mode: str='mean'):
             win_feats.append(feats[i-window_len:i,:].sum(axis=0))
 
     return np.array(win_feats)
-
-def windowed_fft(feats, stride_window, temporal_window):
-    assert temporal_window > stride_window + 2
-
-    fft_feats = []
-    N = feats.shape[0]
-
-    temporal_window = (temporal_window - stride_window) // 2
-    for i in range(stride_window + temporal_window, N - temporal_window + 1, stride_window):
-        win_feats = feats[i - stride_window - temporal_window:i + temporal_window, :]
-        win_fft = np.fft.rfftn(win_feats, axes=[0])
-        win_fft = win_fft.real ** 2 + win_fft.imag ** 2
-        fft_feats.append(win_fft.reshape(1, -1))
-
-    fft_feats = np.vstack(fft_feats)
-
-    return fft_feats
