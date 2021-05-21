@@ -107,10 +107,11 @@ class BSOID:
 
         return filtered_data
     
-    def load_from_dataset(self, n=None, n_strains=None):
+    def load_from_dataset(self, n=None, n_strains=None, min_video_length=120):
         input_csv = self.jax_dataset["input_csv"]
         data_dir = self.jax_dataset["data_dir"]
         filter_thresh = self.filter_thresh
+        min_video_length *= 60 * 30
 
         if input_csv.endswith('.tsv'):
             all_data = pd.read_csv(input_csv, sep='\t')    
@@ -136,17 +137,18 @@ class BSOID:
 
                     conf, pos = process_h5py_data(h5py.File(filename, "r"))
 
-                    bsoid_data = bsoid_format(conf, pos)
-                    fdata, perc_filt = likelihood_filter(bsoid_data, self.fps, self.conf_threshold, bodyparts=self.bodyparts, **self.trim_params)
-                    strain, mouse_id = metadata['Strain'], metadata['MouseID']
-                    
-                    if perc_filt > filter_thresh:
-                        logger.warning(f'mouse:{strain}/{mouse_id}: % data filtered from raw data is too high ({perc_filt} %)')
-                    else:
-                        shape = fdata['x'].shape
-                        logger.debug(f'preprocessed {shape} data from {strain}/{mouse_id} with {round(perc_filt, 2)}% data filtered')
-                        strain_fdata.append(fdata)
-                        count += 1
+                    if conf.shape[0] >= min_video_length:
+                        bsoid_data = bsoid_format(conf, pos)
+                        fdata, perc_filt = likelihood_filter(bsoid_data, self.fps, self.conf_threshold, bodyparts=self.bodyparts, **self.trim_params)
+                        strain, mouse_id = metadata['Strain'], metadata['MouseID']
+                        
+                        if perc_filt > filter_thresh:
+                            logger.warning(f'mouse:{strain}/{mouse_id}: % data filtered from raw data is too high ({perc_filt} %)')
+                        else:
+                            shape = fdata['x'].shape
+                            logger.debug(f'preprocessed {shape} data from {strain}/{mouse_id} with {round(perc_filt, 2)}% data filtered')
+                            strain_fdata.append(fdata)
+                            count += 1
                 except Exception as e:
                     logger.warning(e)
                     pass
