@@ -253,7 +253,7 @@ class BSOID:
         pbar = tqdm(total=len(filtered_data))
         feats = {}
         for strain, fdata in filtered_data.items():
-            feats[strain] = Parallel(n_jobs=-1)(delayed(extract_comb_feats)(data, self.fps) for data in fdata)
+            feats[strain] = Parallel(n_jobs=psutil.cpu_count(logical=False))(delayed(extract_comb_feats)(data, self.fps) for data in fdata)
             feats[strain] = [aggregate_features(f, self.stride_window) for f in feats[strain]]
             pbar.update(1)
 
