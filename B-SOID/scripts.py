@@ -131,7 +131,11 @@ def cluster_collect_embed(config_file, thresh, save_dir):
 
 def strainwise_cluster(config_file, logfile):
     bsoid = BSOID(config_file)
-    bsoid.cluster_strainwise(logfile)
+    
+    bsoid.load_from_dataset(n=10)
+    bsoid.features_from_points()
+    
+    # bsoid.cluster_strainwise(logfile)
 
 def rep_cluster(config_file, strain, save_dir, n):
     from new_clustering import cluster_for_strain
