@@ -95,7 +95,7 @@ def find_templates(labels, num_points):
         class_idxs = np.where(labels == rep_classes[i])[0]
         idx.append(np.random.choice(class_idxs, size=rep_counts[i], replace=False))
 
-    return np.array(idx)
+    return np.hstack(idx)
 
 def cluster_for_strain(feats, num_points, umap_params, hdbscan_params, scale, verbose=False):
     # embed and cluster each animal
