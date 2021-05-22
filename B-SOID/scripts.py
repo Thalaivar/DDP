@@ -1,17 +1,11 @@
-from numpy.random import choice
-from new_clustering import strain_pairs_sim
-from sklearn.metrics import cluster
-from BSOID.features import extract_temporal_feats
 import os
+from posixpath import join
 import joblib
 import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
-from BSOID.bsoid import BSOID
+from ray._private import services
 from analysis import *
-
-import warnings
-warnings.filterwarnings("ignore")
+from BSOID.bsoid import BSOID
+from BSOID.clustering import *
 
 GET_DATA          = False
 PROCESS_CSVS      = False
@@ -117,61 +111,27 @@ def ensemble_pipeline(config_file, outdir, subsample_size=int(2e5)):
     with open(os.path.join(outdir, "ensemble_clustering.sav"), "rb") as f:
         joblib.dump(labels, f)
 
-def cluster_collect_embed(max_samples, thresh):
-    import os
-    import matplotlib.pyplot as plt
-    from new_clustering import (
-                                collect_strainwise_feats, 
-                                collect_strainwise_clusters, 
-                                reduce_data,
-                            )   
-    from BSOID.utils import cluster_with_hdbscan
-    
-    save_dir = "/home/laadd/data"
-    with open(os.path.join(save_dir, "strainwise_labels.sav"), "rb") as f:
-        feats, _,  labels = joblib.load(f)
-    clusters = collect_strainwise_clusters(feats, labels, thresh)
-    del feats, labels
-
-    feats = []
-    for _, data in clusters.items():
-        if data["feats"].shape[0] > max_samples:
-            feats.append(np.random.permutation(data["feats"])[:max_samples])
-        else:
-            feats.append(data["feats"])
-    del clusters
-    feats = np.vstack(feats)
-    logging.info(f"running UMAP on: {feats.shape[0]}")
-    
-    embedding = reduce_data(feats, n_neighbors=60, n_components=13)
-    results = cluster_with_hdbscan(embedding, [0.4, 1.2, 25], {"prediction_data": True, "min_samples": 1})
-    
-    from BSOID.utils import max_entropy
-    prop = [p / results[2].size for p in np.unique(results[2], return_counts=True)[1]]
-    entropy_ratio = -sum(p * np.log2(p) for p in prop) / max_entropy(results[0].max() + 1)
-
-    logging.info(f"identified {results[0].max() + 1} clusters with entropy ratio {entropy_ratio}")
-
-    groups = {}
-    for lab in np.unique(results[2]):
-        groups[lab] = feats[np.where(results[2] == lab)[0]]
-
-    with open(os.path.join(save_dir, "cluster_collect_embed.sav"), "wb") as f:
-        joblib.dump(groups, f)
-
-def strainwise_cluster(config_file, save_dir, logfile):
-    os.environ["NUMBA_NUM_THREADS"] = "1"
-    from new_clustering import cluster_strainwise
-
+def cluster_collect_embed(config_file, thresh, save_dir):
     bsoid = BSOID(config_file)
+    templates, clustering = bsoid.load_strainwise_clustering()
+    clusters = collect_strain_clusters(templates, clustering, thresh, use_exemplars=False)
+    del templates, clustering
 
-    # bsoid.load_from_dataset(n=10)
-    # bsoid.features_from_points()
- 
-    rep_data, clustering = cluster_strainwise(config_file, save_dir, logfile)
+    templates = np.vstack([data for _, data in clusters.items()])
+    logger.info(f"embedding {templates.shape} templates from {len(clusters)} clusters")
+
+    umap_params = bsoid.umap_params
+    hdbscan_params = bsoid.hdbscan_params
+
+    clustering = get_clusters(templates, hdbscan_params, umap_params, bsoid.scale_before_umap, verbose=True)
     
-    with open(os.path.join(save_dir, "strainwise_labels.sav"), "wb") as f:
-        joblib.dump([rep_data, clustering], f)
+    with open(os.path.join(save_dir, "together.data"), "wb") as f:
+        joblib.dump([templates, clustering, thresh], f)
+
+
+def strainwise_cluster(config_file, logfile):
+    bsoid = BSOID(config_file)
+    bsoid.cluster_strainwise(logfile)
 
 def rep_cluster(config_file, strain, save_dir, n):
     from new_clustering import cluster_for_strain
@@ -260,11 +220,11 @@ if __name__ == "__main__":
     elif args.script == "ensemble_pipeline":
         eval(args.script)(config_file=args.config, outdir=args.outdir)
     elif args.script == "cluster_collect_embed":
-        cluster_collect_embed(args.max_samples, args.thresh)
+        cluster_collect_embed(args.config, args.thresh, args.save_dir)
     elif args.script == "calculate_pairwise_similarity":
         calculate_pairwise_similarity(args.save_dir, args.thresh, args.sim_measure)
     elif args.script == "strainwise_cluster":
-        strainwise_cluster(args.config, args.save_dir, args.logfile)
+        strainwise_cluster(args.config, args.logfile)
     elif args.script == "rep_cluster":
         rep_cluster(args.config, args.strain, args.save_dir, args.n)
     else:

@@ -3,8 +3,10 @@ try:
     import umap
 except ModuleNotFoundError:
     pass
-import random
+import ray
 import yaml
+import psutil
+import random
 import joblib
 import logging
 import pandas as pd
@@ -17,9 +19,10 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split, cross_val_score
 from BSOID.utils import *
 from BSOID.data import *
+from BSOID.clustering import *
 from BSOID.preprocessing import *
 
-from BSOID.features import extract_comb_feats as extract_feats
+from BSOID.features import extract_comb_feats, aggregate_features
 
 from joblib import Parallel, delayed
 
@@ -30,26 +33,25 @@ class BSOID:
         with open(config_file, 'r') as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
 
-        self.run_id = config["run_id"]
-        base_dir = os.path.join(config["base_dir"], self.run_id)
-        self.base_dir = base_dir
-        self.raw_dir = os.path.join(base_dir, "raw")
-        self.csv_dir = os.path.join(base_dir, "csvs")
+        self.run_id     = config["run_id"]
+        base_dir        = os.path.join(config["base_dir"], self.run_id)
+        self.base_dir   = base_dir
+        self.raw_dir    = os.path.join(base_dir, "raw")
+        self.csv_dir    = os.path.join(base_dir, "csvs")
         self.output_dir = os.path.join(base_dir, "output")
 
-        self.fps = config["fps"]
-        self.stride_window = round(config["stride_window"] * self.fps / 1000)
+        self.fps            = config["fps"]
+        self.stride_window  = round(config["stride_window"] * self.fps / 1000)
         self.conf_threshold = config["conf_threshold"]
-        self.bodyparts = config["bodyparts"]
-        self.filter_thresh = config["filter_thresh"]
-        self.trim_params = config["trim_params"]
+        self.bodyparts      = config["bodyparts"]
+        self.filter_thresh  = config["filter_thresh"]
+        self.trim_params    = config["trim_params"]
+        self.num_points     = config["num_points"]
         self.hdbscan_params = config["hdbscan_params"]
-        self.umap_params = config["umap_params"]
-        self.mlp_params = config["mlp_params"]
-        self.jax_dataset = config["JAX_DATASET"]
-        self.reduced_dim = config["reduced_dim"]
-        self.sample_size = config["sample_size"]
-        self.cluster_range = config["cluster_range"]
+        self.umap_params    = config["umap_params"]
+        self.jax_dataset    = config["JAX_DATASET"]
+        
+        self.scale_before_umap = config["scale_before_umap"]
         
         for d in [self.base_dir, self.output_dir, self.csv_dir, self.raw_dir]:
             try: os.mkdir(d)
@@ -107,7 +109,20 @@ class BSOID:
 
         return filtered_data
     
-    def load_from_dataset(self, n=None, n_strains=None):
+    def load_from_dataset(self, n=None, n_strains=None, min_video_len=120):
+        """
+        Load raw data files from the JAX database. Files are read in HDF5 format and then 
+        confidence thresholded to be saved on disk with the required bodyparts data extracted.
+
+        Inputs:
+            - n (int) : number of animals to consider per strain
+            - n_strains (int) : number of strains to include in dataset
+            - min_video_len (int) : minimum length (in mins) of raw video that the file must contain
+        Outputs:
+            - filtered_data (dict) : strain-wise filtered keypoint data
+        """
+        min_video_len *= (60 * self.fps)
+
         input_csv = self.jax_dataset["input_csv"]
         data_dir = self.jax_dataset["data_dir"]
         filter_thresh = self.filter_thresh
@@ -144,9 +159,10 @@ class BSOID:
                         logger.warning(f'mouse:{strain}/{mouse_id}: % data filtered from raw data is too high ({perc_filt} %)')
                     else:
                         shape = fdata['x'].shape
-                        logger.debug(f'preprocessed {shape} data from {strain}/{mouse_id} with {round(perc_filt, 2)}% data filtered')
-                        strain_fdata.append(fdata)
-                        count += 1
+                        if shape[0] >= min_video_len:
+                            logger.debug(f'preprocessed {shape} data from {strain}/{mouse_id} with {round(perc_filt, 2)}% data filtered')
+                            strain_fdata.append(fdata)
+                            count += 1
                 except Exception as e:
                     logger.warning(e)
                     pass
@@ -173,6 +189,15 @@ class BSOID:
         return filtered_data
 
     def get_random_animal_data(self, strain):
+        """
+        Get filtered keypoint data and geometric features for a random animal from given strain
+        
+        Inputs:
+            - strain (str) : strain from which random animal is picked
+        Outputs:
+            - feats : geometric features extracted from animal
+            - fdata : fitlered keypoint data extracted from animal
+        """
         input_csv = self.jax_dataset["input_csv"]
         data_dir = self.jax_dataset["data_dir"]
         filter_thresh = self.filter_thresh
@@ -211,19 +236,25 @@ class BSOID:
             
             k += 1
         
-        feats = extract_feats(fdata, self.fps, self.stride_window)
+        feats = extract_comb_feats(fdata, self.fps)
+        feats = aggregate_features(feats, self.stride_window)
         return feats, fdata
 
     def features_from_points(self):
+        """
+        Extract geometric features from saved dataset (needs to be called only once, and 
+        after `load_from_dataset`). Geometric features are extracted for the animals from each strain
+        and aggregated into bins.
+        """
+
         filtered_data = self.load_filtered_data()
         logger.info(f'extracting features from {len(filtered_data)} animals')
         
-        # extract geometric features
-
         pbar = tqdm(total=len(filtered_data))
         feats = {}
         for strain, fdata in filtered_data.items():
-            feats[strain] = Parallel(n_jobs=-1)(delayed(extract_feats)(data, self.fps, self.stride_window) for data in fdata)
+            feats[strain] = Parallel(n_jobs=-1)(delayed(extract_comb_feats)(data, self.fps) for data in fdata)
+            feats[strain] = [aggregate_features(f, self.stride_window) for f in feats[strain]]
             pbar.update(1)
 
         logger.info(f'extracted {len(feats)} datasets of {feats[list(feats.keys())[0]][0].shape[1]}D features')
@@ -238,125 +269,55 @@ class BSOID:
         num_dimensions = np.argwhere(np.cumsum(pca.explained_variance_ratio_) >= var_prop)[0][0] + 1
         print(f'At least {num_dimensions} dimensions are needed to retain {var_prop} of the total variance')
 
-    def umap_reduce(self):
-        reduced_dim, sample_size = self.reduced_dim, self.sample_size        
-        feats, feats_sc = self.load_features(collect=True)
-
-        if sample_size > 1:
-            idx = np.random.permutation(np.arange(feats.shape[0]))[0:sample_size]
-            feats_train = feats_sc[idx,:]
-            feats_usc = feats[idx, :]
-        else:
-            feats_train = feats_sc
-            feats_usc = feats
-
-        logger.info('running UMAP on {} samples from {}D to {}D with params: {}'.format(*feats_train.shape, reduced_dim, self.umap_params))
-        mapper = umap.UMAP(n_components=reduced_dim,  **self.umap_params).fit(feats_train)
-
-        with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'wb') as f:
-            joblib.dump([feats_usc, feats_train, mapper.embedding_, mapper], f)
+    def cluster_strainwise(self, logfile=None):
+        num_cpus = psutil.cpu_count(logical=False)
+        ray.init(num_cpus=num_cpus)
         
-        return [feats_usc, feats_train, mapper.embedding_, mapper]
+        kwargs = {
+            "num_points": self.num_points,
+            "umap_params": self.umap_params,
+            "hdbscan_params": self.hdbscan_params,
+            "scale": self.scale_before_umap,
+            "verbose": False
+        }
 
-    def identify_clusters_from_umap(self):
-        cluster_range = self.cluster_range
-        with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
-            _, _, umap_embeddings, _ = joblib.load(f)
+        @ray.remote
+        def par_cluster(strain, feats, **kwargs):    
+            rep_data, clustering = cluster_for_strain(feats[strain], **kwargs)
+            
+            if logfile is not None:
+                soft_labels = clustering["soft_labels"]
+                logger = open(logfile, 'a')
+                logger.write(f"Identified {soft_labels.max() + 1} clusters (with entropy ratio: {round(calculate_entropy_ratio(soft_labels), 3)}) from {rep_data.shape} templates for strain: {strain}")
 
-        logger.info(f'clustering {umap_embeddings.shape[0]} in {umap_embeddings.shape[1]}D with cluster range={cluster_range}')
-        assignments, soft_clusters, soft_assignments, best_clf = cluster_with_hdbscan(umap_embeddings, cluster_range, self.hdbscan_params)
-        logger.info('identified {} clusters from {} samples in {}D'.format(len(np.unique(soft_assignments)), *umap_embeddings.shape))
+            return strain, rep_data, clustering
 
-        with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'wb') as f:
-            joblib.dump([assignments, soft_clusters, soft_assignments, best_clf], f)
+        feats = self.load_features(collect=False)
+        feats_id = ray.put(feats)
 
-        return assignments, soft_clusters, soft_assignments, best_clf
+        logger.info(f"processing {len(feats)} strains...")
+        futures = [par_cluster.remote(strain, feats_id, **kwargs) for strain in feats.keys()]
 
-    def train_classifier(self):
-        _, _, soft_assignments, _ = self.load_identified_clusters()
-        _, feats_sc, _ = self.load_umap_results(collect=True)
+        pbar, results = tqdm(total=len(futures)), []
+        while len(futures) > 0:
+            n = len(futures) if len(futures) < num_cpus else num_cpus
+            fin, rest = ray.wait(futures, num_returns=n)
+            results.extend(ray.get(fin))
+            futures = rest
+            pbar.update(n)
 
-        logger.info('training neural network on {} scaled samples in {}D'.format(*feats_sc.shape))
-        clf = MLPClassifier(**self.mlp_params).fit(feats_sc, soft_assignments)
+        ray.shutdown()
 
-        with open(self.output_dir + '/' + self.run_id + '_classifiers.sav', 'wb') as f:
-            joblib.dump(clf, f)
+        rep_data, clustering = {}, {}
+        for res in results:
+            strain, data, labels = res
+            rep_data[strain] = data
+            clustering[strain] = labels
 
-    def validate_classifier(self):
-        _, _, soft_assignments, _ = self.load_identified_clusters()
-        _, feats_sc, _ = self.load_umap_results(collect=True)
-
-        logger.info('validating classifier on {} features'.format(*feats_sc.shape))
-        feats_train, feats_test, labels_train, labels_test = train_test_split(feats_sc, soft_assignments)
-        clf = MLPClassifier(**self.mlp_params).fit(feats_train, labels_train)
-        sc_scores = cross_val_score(clf, feats_test, labels_test, cv=5, n_jobs=-1)
-        sc_cf = create_confusion_matrix(feats_test, labels_test, clf)
-        logger.info('classifier accuracy: {} +- {}'.format(sc_scores.mean(), sc_scores.std())) 
-         
-        with open(self.output_dir + '/' + self.run_id + '_validation.sav', 'wb') as f:
-            joblib.dump([sc_scores, sc_cf], f)
-
-    def create_examples(self, csv_dir, vid_dir, bout_length=3, n_examples=10):
-        csv_files = [csv_dir + '/' + f for f in os.listdir(csv_dir) if f.endswith('.csv')]
-        video_files = [vid_dir + '/' + f for f in os.listdir(vid_dir) if f.endswith('.avi')]
-
-        csv_files.sort()
-        video_files.sort()
-
-        n_animals = len(csv_files)
-        logger.info(f'generating {n_examples} examples from {n_animals} videos each with minimum bout length of {1000 * bout_length / self.fps} ms')
-
-        labels = []
-        frame_dirs = []
-        for i in range(n_animals):
-            label, frame_dir = self.label_frames(csv_files[i], video_files[i])
-            labels.append(label)
-            frame_dirs.append(frame_dir)
+        with open(os.path.join(self.output_dir, self.run_id + "_strainwise_clustering.sav"), "wb") as f:
+            joblib.dump([rep_data, clustering], f)
         
-        output_path = os.path.join(self.base_dir, "results")
-        try:
-            os.mkdir(output_path)
-        except FileExistsError:
-            logger.info(f'results directory: {output_path} already exists, deleting')
-            [os.remove(output_path+'/'+f) for f in os.listdir(output_path)]
-
-        clip_window = self.trim_params['end_trim']*60*self.fps
-        collect_all_examples(labels, frame_dirs, output_path, bout_length, n_examples, self.fps, clip_window)
-
-    def label_frames(self, csv_file, video_file):
-        # directory to store results for video
-        output_dir = self.test_dir + '/' + csv_file.split('/')[-1][:-4]
-        try:
-            os.mkdir(output_dir)
-        except FileExistsError:
-            pass
-        
-        frame_dir = output_dir + '/pngs'
-        extract_frames = True
-        try:
-            os.mkdir(frame_dir)
-        except FileExistsError:
-            extract_frames = False
-        
-        # extract 
-        if extract_frames:
-            frames_from_video(video_file, frame_dir)
-        
-        logger.debug('extracting features from {}'.format(csv_file))
-        
-        # filter data from test file
-        data = pd.read_csv(csv_file, low_memory=False)
-        data, _ = likelihood_filter(data, self.fps, self.conf_threshold, end_trim=self.trim_params['end_trim'], clip_window=0)
-
-        feats = frameshift_features(data, self.stride_window, self.fps, extract_feats, window_extracted_feats)
-
-        with open(self.output_dir + '/' + self.run_id + '_classifiers.sav', 'rb') as f:
-            clf = joblib.load(f)
-
-        labels = frameshift_predict(feats, clf, self.stride_window)
-        logger.info(f'predicted {len(labels)} frames in {feats[0].shape[1]}D with trained classifier')
-
-        return labels, frame_dir
+        return rep_data, clustering
     
     def load_filtered_data(self):
         with open(self.output_dir + '/' + self.run_id + '_filtered_data.sav', 'rb') as f:
@@ -380,11 +341,11 @@ class BSOID:
         else:
             return feats
 
-    def load_identified_clusters(self):
-        with open(self.output_dir + '/' + self.run_id + '_clusters.sav', 'rb') as f:
-            assignments, soft_clusters, soft_assignments, best_clf = joblib.load(f)
+    def load_strainwise_clustering(self):
+        with open(self.output_dir + '/' + self.run_id + '_strainwise_clustering.sav', 'rb') as f:
+            templates, clustering = joblib.load(f)
         
-        return assignments, soft_clusters, soft_assignments, best_clf
+        return templates, clustering
 
     def load_classifier(self):
         with open(self.output_dir + '/' + self.run_id + '_classifiers.sav', 'rb') as f:

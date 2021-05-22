@@ -25,7 +25,7 @@ cd /home/laadd/DDP/B-SOID/
 
 for measure in "${sim_measures[@]}"; do
     mkdir $BASE_DIR/$JOBNAME-$measure
-    srun --exclusive --ntasks 1 python scripts.py --script calculate_pairwise_similarity --thresh 0.9 --save-dir $BASE_DIR/$JOBNAME-$measure --sim-measure $measure
+    srun --exclusive --ntasks 1 python scripts.py --script calculate_pairwise_similarity --thresh 0.9 --save-dir $BASE_DIR/$JOBNAME-$measure --sim-measure $measure &
 done
 
 wait

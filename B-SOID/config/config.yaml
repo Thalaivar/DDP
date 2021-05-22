@@ -1,6 +1,6 @@
 run_id: 'dis'
-base_dir: '/home/laadd/data/bsoid_data'
-# base_dir: 'D:/IIT/DDP/data'
+# base_dir: '/home/laadd/data/bsoid_data'
+base_dir: 'D:/IIT/DDP/data'
 
 # basic config
 fps: 30
@@ -16,32 +16,22 @@ JAX_DATASET:
 filter_thresh: 10
 bodyparts: [0, 1, 2, 3, 6, 7, 8, 9, 10, 11]
 
-# dimensionality reduction
-reduced_dim: 13
-sample_size: 0
-
 # clustering
-cluster_range: [0.4, 1.2]
-
-mlp_params:
-  hidden_layer_sizes: !!python/tuple [100, 10]
-  activation: 'logistic'
-  solver: 'adam'
-  learning_rate: 'constant'
-  learning_rate_init: 0.001
-  alpha: 0.0001
-  max_iter: 1000
-  early_stopping: False
-  verbose: 1
+num_points: 5000
+scale_before_umap: True
 
 umap_params:
   min_dist: 0.0
   n_neighbors: 60
+  n_components: 25
+  metric: 'cosine'
   
 hdbscan_params:
   min_samples: 10
   prediction_data: True
+  core_dist_n_jobs: 1
+  cluster_range: [0.4, 1.2]
 
 trim_params:
   end_trim: 5
-  clip_window: 30
+  clip_window: -1

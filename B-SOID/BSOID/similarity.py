@@ -4,6 +4,14 @@ from sklearn.metrics import roc_auc_score
 from scipy.spatial.distance import cdist, directed_hausdorff
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 
+SIMILARITY_MEASURES = [
+        "dbcv_index_similarity", 
+        "minimum_distance_similarity", 
+        "density_separation_similarity",
+        "roc_similiarity",
+        "hausdorff_similarity"
+    ]
+    
 def dbcv_index_similarity(X1, X2, metric):
     X = np.vstack((X1, X2))
     y = np.hstack((np.zeros((X1.shape[0],)), np.ones((X2.shape[0],)))).astype("int")

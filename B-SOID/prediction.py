@@ -147,7 +147,7 @@ def predict_frames(fdata, fps, stride_window, clf):
         return fs_feats
     
     fs_feats = extract(fdata, fps, stride_window)
-    fs_labels = [clf.predict(f) for f in fs_feats]
+    fs_labels = [clf.predict(f).squeeze() for f in fs_feats]
 
     max_len = max([f.shape[0] for f in fs_labels])
     for i, f in enumerate(fs_labels):
@@ -168,28 +168,28 @@ def labels_for_video2(bsoid, rawfile, vid_file, extract_frames=False):
 
 def labels_for_video(bsoid: BSOID, raw_data_file: str, video_file: str, extract_frames=False):
     filtered_data, frames = extract_data_from_video(bsoid, raw_data_file, video_file, extract_frames)
-    x_raw, y_raw = filtered_data['x'], filtered_data['y']
-    assert x_raw.shape == y_raw.shape
-    _, n_dpoints = x_raw.shape
+    
+    x, y = filtered_data['x'], filtered_data['y']
+    N, n_dpoints = x.shape
 
-    win_len = np.int(np.round(0.05 / (1 / bsoid.fps)) * 2 - 1) if bsoid.stride_window is None else bsoid.stride_window // 2
-    x, y = np.zeros_like(x_raw), np.zeros_like(y_raw)
-    for i in range(n_dpoints):
-        x[:,i] = smoothen_data(x_raw[:,i], win_len)
-        y[:,i] = smoothen_data(y_raw[:,i], win_len)
+    win_len = np.int(np.round(0.05 / (1 / bsoid.fps)) * 2 - 1)
     
     links = [np.array([x[:,i] - x[:,j], y[:,i] - y[:,j]]).T for i, j in combinations(range(n_dpoints), 2)]
-    link_lens = np.vstack([np.linalg.norm(link, axis=1) for link in links]).T
-    link_angles = np.vstack([np.arctan2(link[:,1], link[:,0]) for i, link in enumerate(links)]).T
+    link_angles = np.vstack([np.arctan2(link[:,1], link[:,0]) for link in links]).T
+    ll = np.vstack([np.linalg.norm(link, axis=1) for link in links]).T
+    
+    for i in range(ll.shape[1]):
+        ll[:,i] = smoothen_data(ll[:,i], win_len)
+        link_angles[:,i] = smoothen_data(link_angles[:,i], win_len)
 
-    for i in range(link_lens.shape[1]):
-        link_lens[:,i] = np.array(pd.Series(link_lens[:,i]).rolling(bsoid.stride_window, min_periods=1, center=True).mean())
-    for i in range(link_angles.shape[1]):
-        link_angles[:,i] = np.array(pd.Series(link_angles[:,i]).rolling(bsoid.stride_window, min_periods=1, center=True).sum())
-    feats = np.hstack((link_angles, link_lens))
-    clf = bsoid.load_classifier()
-    labels = clf.predict(feats)
-    return labels.reshape(1,-1)[0], frames
+    from behavelet import wavelet_transform
+    geom_feats = np.hstack((ll, link_angles))
+    _, _, wav = wavelet_transform(geom_feats, n_freqs=25, fmin=1, fmax=8, fsample=30, n_jobs=6)
+
+    with open("D:/IIT/DDP/data/tests/test.model", "rb") as f:
+        clf = joblib.load(f)
+    labels = clf.predict(wav).squeeze()
+    return labels, frames
 
 def frameshift_features(filtered_data, stride_window, fps, feats_extractor, windower):
     if not isinstance(filtered_data, list):
@@ -268,6 +268,7 @@ def create_class_examples(bsoid: BSOID, video_dir: str, min_bout_len: int, n_exa
         # feats = frameshift_features(fdata, bsoid.stride_window, bsoid.fps, extract_feats, window_extracted_feats)
         # labels = frameshift_predict(feats, clf, bsoid.stride_window)
         labels, frames = labels_for_video2(bsoid, raw_file, video_file)
+        # labels, frames = labels_for_video(bsoid, raw_file, video_file)
         
         if labels.size != len(frames):
             if len(frames) > labels.size:
@@ -314,10 +315,6 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG)
 
     bsoid = BSOID("./config/config.yaml")
-    raw_file = "../../data/videos/WT009G2NCIN20825M-25-PSY_pose_est_v2.h5"
-    video_file = "../../data/videos/WT009G2NCIN20825M-25-PSY.avi"
+    video_dir = "../../data/tests/"
 
-    fdata, frames = extract_data_from_video(bsoid, raw_file, video_file)
-    labels = labels_for_video(bsoid, fdata)
-
-    print(labels.shape)
+    create_class_examples(bsoid, video_dir, min_bout_len=200, n_examples=10, outdir=video_dir)
