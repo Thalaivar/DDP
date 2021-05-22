@@ -108,7 +108,7 @@ def extract_comb_feats(filtered_data: dict, fps: int):
     for i in range(disp.shape[1]):
         disp[:,i] = smoothen_data(disp[:,i], win_len)
 
-    return np.hstack((ll, link_angles, dis_angles, disp))
+    return np.hstack((ll[1:], link_angles[1:], dis_angles, disp))
 
 # NOTE: If you change the feature extraction function to include/exclude (or even change the ordering of) any features you must make appropriate changes here
 def aggregate_features(feats: np.ndarray, stride_window: int):
