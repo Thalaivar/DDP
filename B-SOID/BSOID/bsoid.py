@@ -150,16 +150,15 @@ class BSOID:
                     filename = f'{pose_dir}/{movie_name[0:-4]}_pose_est_v2.h5'
 
                     conf, pos = process_h5py_data(h5py.File(filename, "r"))
-
-                    bsoid_data = bsoid_format(conf, pos)
-                    fdata, perc_filt = likelihood_filter(bsoid_data, self.fps, self.conf_threshold, bodyparts=self.bodyparts, **self.trim_params)
-                    strain, mouse_id = metadata['Strain'], metadata['MouseID']
-                    
-                    if perc_filt > filter_thresh:
-                        logger.warning(f'mouse:{strain}/{mouse_id}: % data filtered from raw data is too high ({perc_filt} %)')
-                    else:
-                        shape = fdata['x'].shape
-                        if shape[0] >= min_video_len:
+                    if conf.shape[0] >= min_video_len:
+                        bsoid_data = bsoid_format(conf, pos)
+                        fdata, perc_filt = likelihood_filter(bsoid_data, self.fps, self.conf_threshold, bodyparts=self.bodyparts, **self.trim_params)
+                        strain, mouse_id = metadata['Strain'], metadata['MouseID']
+                        
+                        if perc_filt > filter_thresh:
+                            logger.warning(f'mouse:{strain}/{mouse_id}: % data filtered from raw data is too high ({perc_filt} %)')
+                        else:
+                            shape = fdata['x'].shape
                             logger.debug(f'preprocessed {shape} data from {strain}/{mouse_id} with {round(perc_filt, 2)}% data filtered')
                             strain_fdata.append(fdata)
                             count += 1
