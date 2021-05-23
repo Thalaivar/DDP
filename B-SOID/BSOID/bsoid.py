@@ -109,7 +109,7 @@ class BSOID:
 
         return filtered_data
     
-    def load_from_dataset(self, n=None, n_strains=None, min_video_len=120):
+    def load_from_dataset(self, n=None, n_strains=None, min_video_len=120, n_jobs=1):
         """
         Load raw data files from the JAX database. Files are read in HDF5 format and then 
         confidence thresholded to be saved on disk with the required bodyparts data extracted.
@@ -173,7 +173,7 @@ class BSOID:
 
         import psutil
         num_cpus = psutil.cpu_count(logical=False)    
-        filtered_data = Parallel(n_jobs=num_cpus)(delayed(filter_for_strain)(*all_data[i], n) for i in tqdm(range(len(all_data))))
+        filtered_data = Parallel(n_jobs=n_jobs)(delayed(filter_for_strain)(*all_data[i], n) for i in tqdm(range(len(all_data))))
         
         filtered_data = [data for data in filtered_data if len(data[0]) > 0]
         if n_strains is not None:
