@@ -238,7 +238,6 @@ class BSOID:
         feats = extract_comb_feats(fdata, self.fps)
         feats = aggregate_features(feats, self.stride_window)
         return feats, fdata
-
     def features_from_points(self):
         """
         Extract geometric features from saved dataset (needs to be called only once, and 

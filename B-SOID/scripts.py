@@ -117,7 +117,7 @@ def cluster_collect_embed(config_file, thresh, save_dir):
     clusters = collect_strain_clusters(templates, clustering, thresh, use_exemplars=False)
     del templates, clustering
 
-    templates = np.vstack([data for _, data in clusters.items()])
+    templates = np.vstack([np.vstack(data) for _, data in clusters.items()])
     logger.info(f"embedding {templates.shape} templates from {len(clusters)} clusters")
 
     umap_params = bsoid.umap_params
