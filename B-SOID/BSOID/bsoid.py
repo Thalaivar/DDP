@@ -109,7 +109,7 @@ class BSOID:
 
         return filtered_data
     
-    def load_from_dataset(self, n=None, n_strains=None, min_video_len=120, n_jobs=1):
+    def load_from_dataset(self, n=None, n_strains=None, min_video_len=120, n_jobs=-1):
         """
         Load raw data files from the JAX database. Files are read in HDF5 format and then 
         confidence thresholded to be saved on disk with the required bodyparts data extracted.
@@ -118,6 +118,7 @@ class BSOID:
             - n (int) : number of animals to consider per strain
             - n_strains (int) : number of strains to include in dataset
             - min_video_len (int) : minimum length (in mins) of raw video that the file must contain
+            - n_jobs (int): number of parallel jobs to run for preprocessing (set to low number when using many CPUs)
         Outputs:
             - filtered_data (dict) : strain-wise filtered keypoint data
         """

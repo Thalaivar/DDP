@@ -132,8 +132,8 @@ def cluster_collect_embed(config_file, thresh, save_dir):
 def strainwise_cluster(config_file, logfile):
     bsoid = BSOID(config_file)
     
-    bsoid.load_from_dataset(n=10)
-    bsoid.features_from_points()
+    # bsoid.load_from_dataset(n=10)
+    # bsoid.features_from_points()
     
     bsoid.cluster_strainwise(logfile)
 

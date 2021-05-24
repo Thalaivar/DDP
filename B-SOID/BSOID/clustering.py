@@ -111,7 +111,7 @@ def cluster_for_strain(feats, num_points, umap_params, hdbscan_params, scale, ve
                 ) for f in feats]
 
     # get representative dataset from each animal
-    templates = np.vstack([find_templates(clusters[i]["soft_labels"], num_points) for i, f in enumerate(feats)])
+    templates = np.vstack([find_templates(clusters[i]["labels"], f, num_points) for i, f in enumerate(feats)])
     logger.info(f"extracted {templates.shape} dataset from {len(feats)} animals")
 
     # embed and cluster templates again
