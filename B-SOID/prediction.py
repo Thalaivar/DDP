@@ -159,7 +159,7 @@ def predict_frames(fdata, fps, stride_window, clf):
 
     return labels
 
-def labels_for_video(bsoid, rawfile, vid_file, extract_frames=False):
+def labels_for_video(bsoid, clf, rawfile, vid_file, extract_frames=False):
     filtered_data, frames = extract_data_from_video(bsoid, rawfile, vid_file, extract_frames)
     geom_feats = extract_comb_feats(filtered_data, bsoid.fps)
     
@@ -168,9 +168,6 @@ def labels_for_video(bsoid, rawfile, vid_file, extract_frames=False):
     fs_feats = []
     for i in range(stride_window):
         fs_feats.append(aggregate_features(geom_feats[i:], stride_window))
-
-    with open("D:/IIT/DDP/data/tests/test.model", "rb") as f:
-        clf = joblib.load(f)
 
     fs_labels = [clf.predict(f).squeeze() for f in fs_feats]
     max_len = max([f.shape[0] for f in fs_labels])
@@ -260,7 +257,9 @@ def videomaker(frames, fps, outfile):
 
 
 def create_class_examples(bsoid: BSOID, video_dir: str, min_bout_len: int, n_examples: int, outdir: str):
-    clf = bsoid.load_classifier()
+    with open(os.path.join(video_dir, "BTBR.verify"), "rb") as f:
+        clf, _, _ = joblib.load(f)
+
     min_bout_len = bsoid.fps * min_bout_len // 1000
 
     try: os.mkdir(outdir)
@@ -276,7 +275,7 @@ def create_class_examples(bsoid: BSOID, video_dir: str, min_bout_len: int, n_exa
         # fdata, frames = extract_data_from_video(bsoid, raw_file, video_file)        
         # feats = frameshift_features(fdata, bsoid.stride_window, bsoid.fps, extract_feats, window_extracted_feats)
         # labels = frameshift_predict(feats, clf, bsoid.stride_window)
-        labels, frames = labels_for_video(bsoid, raw_file, video_file)
+        labels, frames = labels_for_video(bsoid, clf, raw_file, video_file)
         
         if labels.size != len(frames):
             if len(frames) > labels.size:
@@ -332,6 +331,6 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     bsoid = BSOID("./config/config.yaml")
-    video_dir = "../../data/tests/"
+    video_dir = "../../data/tests/BTBR"
 
     create_class_examples(bsoid, video_dir, min_bout_len=200, n_examples=5, outdir=video_dir)

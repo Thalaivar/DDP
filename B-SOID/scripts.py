@@ -135,7 +135,7 @@ def strainwise_cluster(config_file, logfile):
     bsoid.load_from_dataset(n=10)
     bsoid.features_from_points()
     
-    # bsoid.cluster_strainwise(logfile)
+    bsoid.cluster_strainwise(logfile)
 
 def rep_cluster(config_file, strain, save_dir, n):
     from new_clustering import cluster_for_strain

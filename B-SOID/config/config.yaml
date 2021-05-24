@@ -1,6 +1,6 @@
 run_id: 'dis'
-# base_dir: '/home/laadd/data/bsoid_data'
-base_dir: 'D:/IIT/DDP/data'
+base_dir: '/home/laadd/data/bsoid_data'
+# base_dir: 'D:/IIT/DDP/data'
 
 # basic config
 fps: 30
@@ -17,7 +17,7 @@ filter_thresh: 10
 bodyparts: [0, 1, 2, 3, 6, 7, 8, 9, 10, 11]
 
 # clustering
-num_points: 5000
+num_points: 3000
 scale_before_umap: True
 
 umap_params:

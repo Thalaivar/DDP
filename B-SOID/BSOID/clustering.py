@@ -75,7 +75,10 @@ def get_clusters(feats: np.ndarray, hdbscan_params: dict, umap_params: dict, sca
     else:
         return {"labels": labels, "soft_labels": soft_labels, "exemplars": exemplars}
 
-def find_templates(labels, num_points):
+def find_templates(labels, feats, num_points):
+    # if labels contain noise samples remove them
+    feats, labels = feats[labels >= 0], labels[labels >= 0]
+
     classes, counts = np.unique(labels, return_counts=True)
     num_in_group = {classes[i]: counts[i] for i in range(classes.size)}
 
@@ -95,7 +98,7 @@ def find_templates(labels, num_points):
         class_idxs = np.where(labels == rep_classes[i])[0]
         idx.append(np.random.choice(class_idxs, size=rep_counts[i], replace=False))
 
-    return np.hstack(idx)
+    return feats[np.hstack(idx)]
 
 def cluster_for_strain(feats, num_points, umap_params, hdbscan_params, scale, verbose=False):
     # embed and cluster each animal
@@ -108,7 +111,7 @@ def cluster_for_strain(feats, num_points, umap_params, hdbscan_params, scale, ve
                 ) for f in feats]
 
     # get representative dataset from each animal
-    templates = np.vstack([f[find_templates(clusters[i]["soft_labels"], num_points)] for i, f in enumerate(feats)])
+    templates = np.vstack([find_templates(clusters[i]["soft_labels"], num_points) for i, f in enumerate(feats)])
     logger.info(f"extracted {templates.shape} dataset from {len(feats)} animals")
 
     # embed and cluster templates again
