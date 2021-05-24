@@ -287,7 +287,7 @@ class BSOID:
             if logfile is not None:
                 soft_labels = clustering["soft_labels"]
                 logger = open(logfile, 'a')
-                logger.write(f"Identified {soft_labels.max() + 1} clusters (with entropy ratio: {round(calculate_entropy_ratio(soft_labels), 3)}) from {rep_data.shape} templates for strain: {strain}")
+                logger.write(f"Identified {soft_labels.max() + 1} clusters (with entropy ratio: {round(calculate_entropy_ratio(soft_labels), 3)}) from {rep_data.shape} templates for strain: {strain}\n")
 
             return strain, rep_data, clustering
 

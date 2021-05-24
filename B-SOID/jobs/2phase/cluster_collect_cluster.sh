@@ -14,4 +14,4 @@ source /home/laadd/.bashrc
 conda activate bsoid 
 
 cd /home/laadd/DDP/B-SOID/
-python scripts.py --script cluster_collect_embed --config ./config/config.yaml --save-dir /fastscratch/laadd --thresh 0.9
+python scripts.py --script cluster_collect_embed --config ./config/config.yaml --save-dir /fastscratch/laadd/cce_test1 --thresh 0.85

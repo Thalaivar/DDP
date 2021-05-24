@@ -114,7 +114,7 @@ def ensemble_pipeline(config_file, outdir, subsample_size=int(2e5)):
 def cluster_collect_embed(config_file, thresh, save_dir):
     bsoid = BSOID(config_file)
     templates, clustering = bsoid.load_strainwise_clustering()
-    clusters = collect_strain_clusters(templates, clustering, thresh, use_exemplars=False)
+    clusters = collect_strain_clusters(templates, clustering, thresh, use_exemplars=True)
     del templates, clustering
 
     templates = np.vstack([np.vstack(data) for _, data in clusters.items()])
@@ -212,10 +212,11 @@ if __name__ == "__main__":
     import logging
     for handler in logging.root.handlers[:]:
         logging.root.removeHandler(handler)
-    if args.save_dir is not None:
-        logging.basicConfig(level=logging.INFO, filename=f"{args.save_dir}/{args.script}.log", filemode="w")
-    else:
-        logging.basicConfig(level=logging.INFO, filename=f"./{args.script}.log", filemode="w")
+    # if args.save_dir is not None:
+    #     logging.basicConfig(level=logging.INFO, filename=f"{args.save_dir}/{args.script}.log", filemode="w")
+    # else:
+    #     logging.basicConfig(level=logging.INFO, filename=f"./{args.script}.log", filemode="w")
+    logging.basicConfig(level=logging.INFO)
 
     if args.script == "main":
         main(config_file=args.config, n=args.n, n_strains=args.n_strains)

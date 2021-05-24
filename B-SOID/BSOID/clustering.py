@@ -131,7 +131,7 @@ def collect_strain_clusters(feats: dict, clustering: dict, thresh: float, use_ex
             logger.info(f"pooling {len(class_ids)} clusters from {strain} with entropy ratio {entropy_ratio}")
             for class_id in class_ids:
                 if use_exemplars:
-                    class_data = feats[strain][exemplars[class_id],:]
+                    class_data = exemplars[class_id]
                 else:
                     class_data = feats[strain][np.where(class_labels == class_id)[0]]
                 

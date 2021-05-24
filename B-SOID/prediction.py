@@ -257,7 +257,7 @@ def videomaker(frames, fps, outfile):
 
 
 def create_class_examples(bsoid: BSOID, video_dir: str, min_bout_len: int, n_examples: int, outdir: str):
-    with open(os.path.join(video_dir, "BTBR.verify"), "rb") as f:
+    with open(os.path.join(video_dir, "C57BL6J.verify"), "rb") as f:
         clf, _, _ = joblib.load(f)
 
     min_bout_len = bsoid.fps * min_bout_len // 1000
@@ -331,6 +331,6 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     bsoid = BSOID("./config/config.yaml")
-    video_dir = "../../data/tests/BTBR"
+    video_dir = "../../data/tests/C57BL;6J" 
 
     create_class_examples(bsoid, video_dir, min_bout_len=200, n_examples=5, outdir=video_dir)
