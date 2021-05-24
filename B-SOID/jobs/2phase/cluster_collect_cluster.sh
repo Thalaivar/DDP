@@ -1,12 +1,12 @@
 #!/bin/bash
-#SBATCH --job-name=bsoid-ccc
-#SBATCH --output=bsoid-ccc.txt
+#SBATCH --job-name=bsoid-ccc-exem
+#SBATCH --output=bsoid-ccc-exem.txt
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=24
-#SBATCH --time=72:00:00
-#SBATCH --partition=compute
-#SBATCH --qos=batch
-#SBATCH --mem=100000
+#SBATCH --time=5:00:00
+#SBATCH --partition=dev
+#SBATCH --qos=dev
+#SBATCH --mem=60000
 #SBATCH --mail-user=dhruv.laad@jax.org
 #SBATCH --mail-type=ALL
 
