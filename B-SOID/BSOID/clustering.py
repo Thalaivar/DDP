@@ -75,17 +75,20 @@ def get_clusters(feats: np.ndarray, hdbscan_params: dict, umap_params: dict, sca
     else:
         return {"labels": labels, "soft_labels": soft_labels, "exemplars": exemplars}
 
-def find_templates(labels, feats, num_points):
+def find_templates(labels, feats, num_points, use_inverse_density=True):
     # if labels contain noise samples remove them
     feats, labels = feats[labels >= 0], labels[labels >= 0]
 
     classes, counts = np.unique(labels, return_counts=True)
     num_in_group = {classes[i]: counts[i] for i in range(classes.size)}
 
-    # probabilty of selecting a group is inversely proportional to its density
-    props = {lab: 1 / (count / labels.size) for lab, count in num_in_group.items()}
-    prop_sum = sum(prop for _, prop in  props.items())
-    props = {lab: prop / prop_sum for lab, prop in props.items()}
+    if use_inverse_density:
+        # probabilty of selecting a group is inversely proportional to its density
+        props = {lab: 1 / (count / labels.size) for lab, count in num_in_group.items()}
+        prop_sum = sum(prop for _, prop in  props.items())
+        props = {lab: prop / prop_sum for lab, prop in props.items()}
+    else:
+        props = {lab: count / labels.size for lab, count in num_in_group.items()}
 
     # representative dataset of templates
     rep_labels = np.random.choice(classes, size=num_points, replace=True, p=[prop for _, prop in props.items()])
@@ -98,7 +101,7 @@ def find_templates(labels, feats, num_points):
         class_idxs = np.where(labels == rep_classes[i])[0]
         idx.append(np.random.choice(class_idxs, size=rep_counts[i], replace=False))
 
-    return feats[np.hstack(idx)]
+    return feats[np.hstack(idx)], labels[np.hstack(idx)]
 
 def cluster_for_strain(feats, num_points, umap_params, hdbscan_params, scale, verbose=False):
     # embed and cluster each animal
@@ -111,7 +114,7 @@ def cluster_for_strain(feats, num_points, umap_params, hdbscan_params, scale, ve
                 ) for f in feats]
 
     # get representative dataset from each animal
-    templates = np.vstack([find_templates(clusters[i]["labels"], f, num_points) for i, f in enumerate(feats)])
+    templates = np.vstack([find_templates(clusters[i]["labels"], f, num_points)[0] for i, f in enumerate(feats)])
     logger.info(f"extracted {templates.shape} dataset from {len(feats)} animals")
 
     # embed and cluster templates again

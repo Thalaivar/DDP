@@ -51,6 +51,7 @@ class BSOID:
         self.umap_params    = config["umap_params"]
         self.jax_dataset    = config["JAX_DATASET"]
         
+        self.training_set_size = config["training_set_size"]
         self.scale_before_umap = config["scale_before_umap"]
         
         for d in [self.base_dir, self.output_dir, self.csv_dir, self.raw_dir]:

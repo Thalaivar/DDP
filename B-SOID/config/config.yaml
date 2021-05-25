@@ -20,6 +20,8 @@ bodyparts: [0, 1, 2, 3, 6, 7, 8, 9, 10, 11]
 num_points: 3000
 scale_before_umap: True
 
+training_set_size: 300000
+
 umap_params:
   min_dist: 0.0
   n_neighbors: 60

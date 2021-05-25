@@ -1,5 +1,6 @@
 import os
 from posixpath import join
+from re import template
 import joblib
 import numpy as np
 from ray._private import services
@@ -47,78 +48,22 @@ def hyperparamter_tuning(config_file):
     print(n_clusters)
 
 
-def validate_and_train(config_file):
-    bsoid = BSOID(config_file)
-    bsoid.validate_classifier()
-    bsoid.train_classifier()    
-
-def results(config_file):
-    bsoid = BSOID(config_file)
-
-    video_dir = bsoid.test_dir + '/videos'
-    csv_dir = bsoid.test_dir
-    bsoid.create_examples(csv_dir, video_dir, bout_length=3, n_examples=10)
-
-def small_umap(config_file, outdir, n):
-    bsoid = BSOID(config_file)
-    bsoid.load_from_dataset(n)
-    bsoid.features_from_points(parallel=True)
-    
-    umap_results = bsoid.umap_reduce()
-    clustering_results = bsoid.identify_clusters_from_umap()
-    
-    import os
-    with open(os.path.join(outdir, "2d_umap_results"), "wb") as f:
-        joblib.dump(umap_results, f)
-    with open(os.path.join(outdir, "2d_cluster_results"), "wb") as f:
-        joblib.dump(clustering_results, f)
-
-def ensemble_pipeline(config_file, outdir, subsample_size=int(2e5)):
-    import hdbscan
-    import umap
-    from tqdm import tqdm
-    from BSOID.bsoid import BSOID
-    from BSOID.utils import cluster_with_hdbscan
-
-    bsoid = BSOID(config_file)
-    _, feats_sc = bsoid.load_features(collect=True)
-
-    embed_maps, clusterers = [], []
-    feats_sc = np.random.permutation(feats_sc)
-
-    for i in tqdm(range(0, feats_sc.shape[0], subsample_size)):
-        if i + subsample_size < feats_sc.shape[0]:
-            subset = feats_sc[i:i+subsample_size,:]
-        else:
-            subset = feats_sc[i:]
-        
-        mapper = umap.UMAP(n_components=bsoid.reduced_dim, **bsoid.umap_params).fit(subset)
-        _, _, _, clusterer = cluster_with_hdbscan(mapper.embedding_, bsoid.cluster_range, bsoid.hdbscan_params)
-
-        embed_maps.append(mapper)
-        clusterers.append(clusterer)
-    
-    with open(os.path.join(bsoid.base_dir + "ensemble_test_ckpt1.sav"), "wb") as f:
-        joblib.dump([embed_maps, clusterers], f)
-    
-    from joblib import Parallel, delayed
-    def transform_fn(clusterer, embed_map, X):
-        embedding = embed_map.transform(X)
-        labels = hdbscan.approximate_predict(clusterer, embedding)[0]
-        return labels
-    
-    labels = Parallel(n_jobs=-1)(delayed(transform_fn)(clusterer, embed_mapper, feats_sc) for clusterer, embed_mapper in zip(clusterers, embed_maps))
-    with open(os.path.join(outdir, "ensemble_clustering.sav"), "rb") as f:
-        joblib.dump(labels, f)
-
 def cluster_collect_embed(config_file, thresh, save_dir):
     bsoid = BSOID(config_file)
     templates, clustering = bsoid.load_strainwise_clustering()
-    clusters = collect_strain_clusters(templates, clustering, thresh, use_exemplars=True)
+
+    if bsoid.training_set_size > 0:
+        # subsample data
+        num_points = np.floor(bsoid.training_set_size / len(templates))
+        logger.info(f"generating training set with {num_points} per strain")
+        for strain in templates.keys():
+            templates[strain], clustering[strain]["soft_labels"] = find_templates(clustering[strain]["soft_labels"], templates[strain], num_points, use_inverse_density=False)
+
+    clusters = collect_strain_clusters(templates, clustering, thresh, use_exemplars=False)
     del templates, clustering
 
     templates = np.vstack([np.vstack(data) for _, data in clusters.items()])
-    logger.info(f"embedding {templates.shape} templates from {len(clusters)} clusters")
+    logger.info(f"embedding {templates.shape} templates from {sum(len(data) for _, data in clusters.items())} clusters")
 
     umap_params = bsoid.umap_params
     hdbscan_params = bsoid.hdbscan_params
@@ -179,12 +124,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser("scripts.py")
     parser.add_argument("--config", type=str, help="configuration file for B-SOID")
     parser.add_argument("--script", type=str, help="script to run", choices=[
-                                                                    "results", 
-                                                                    "validate_and_train", 
                                                                     "hyperparamter_tuning", 
                                                                     "main", 
-                                                                    "small_umap", 
-                                                                    "ensemble_pipeline", 
                                                                     "cluster_collect_embed", 
                                                                     "calculate_pairwise_similarity", 
                                                                     "strainwise_cluster",
