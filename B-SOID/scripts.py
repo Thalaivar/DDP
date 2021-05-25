@@ -47,6 +47,33 @@ def hyperparamter_tuning(config_file):
 
     print(n_clusters)
 
+def rooted_final_clustering(config_file, thresh, save_dir):
+    bsoid = BSOID(config_file)
+    templates, clustering = bsoid.load_strainwise_clustering()
+    clusters = collect_strain_clusters(templates, clustering, thresh, use_exemplars=True)
+
+    # retain 10% of each cluster as "roots"
+    k, templates, labels = 0, [], []
+    for _, data in clusters.items():
+        for d in data:
+            templates.append(d)
+            cluster_labels = -1 * np.ones((d.shape[0], ))
+
+            root_idxs = np.random.permutation(np.arange(cluster_labels.size))[:np.floor(0.1 * cluster_labels.size).astype(int)]
+            cluster_labels[root_idxs] = k
+            labels.append(cluster_labels)
+
+            k += 1
+
+    templates, labels = np.vstack(templates), np.hstack(labels)
+    
+    umap_params = bsoid.umap_params
+    hdbscan_params = bsoid.hdbscan_params
+
+    clustering = get_clusters(templates, hdbscan_params, umap_params, bsoid.scale_before_umap, verbose=True)
+    
+    with open(os.path.join(save_dir, "rooted_together.data"), "wb") as f:
+        joblib.dump([templates, clustering, thresh], f)
 
 def cluster_collect_embed(config_file, thresh, save_dir):
     bsoid = BSOID(config_file)
@@ -54,7 +81,7 @@ def cluster_collect_embed(config_file, thresh, save_dir):
 
     if bsoid.training_set_size > 0:
         # subsample data
-        num_points = np.floor(bsoid.training_set_size / len(templates))
+        num_points = np.floor(bsoid.training_set_size / len(templates)).astype(int)
         logger.info(f"generating training set with {num_points} per strain")
         for strain in templates.keys():
             templates[strain], clustering[strain]["soft_labels"] = find_templates(clustering[strain]["soft_labels"], templates[strain], num_points, use_inverse_density=False)
@@ -129,7 +156,8 @@ if __name__ == "__main__":
                                                                     "cluster_collect_embed", 
                                                                     "calculate_pairwise_similarity", 
                                                                     "strainwise_cluster",
-                                                                    "rep_cluster"
+                                                                    "rep_cluster",
+                                                                    "rooted_final_clustering"
                                                                 ])
     parser.add_argument("--n", type=int)
     parser.add_argument("--n_strains", type=int, default=None)
@@ -167,6 +195,8 @@ if __name__ == "__main__":
         eval(args.script)(config_file=args.config, outdir=args.outdir)
     elif args.script == "cluster_collect_embed":
         cluster_collect_embed(args.config, args.thresh, args.save_dir)
+    elif args.script == "rooted_final_clustering":
+        rooted_final_clustering(args.config, args.thresh, args.save_dir)
     elif args.script == "calculate_pairwise_similarity":
         calculate_pairwise_similarity(args.save_dir, args.thresh, args.sim_measure)
     elif args.script == "strainwise_cluster":

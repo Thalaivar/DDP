@@ -257,8 +257,8 @@ def videomaker(frames, fps, outfile):
 
 
 def create_class_examples(bsoid: BSOID, video_dir: str, min_bout_len: int, n_examples: int, outdir: str):
-    with open(os.path.join(video_dir, "C57BL6J.verify"), "rb") as f:
-        clf, _, _ = joblib.load(f)
+    with open(os.path.join(video_dir, "90_model.model"), "rb") as f:
+        clf = joblib.load(f)
 
     min_bout_len = bsoid.fps * min_bout_len // 1000
 
@@ -271,10 +271,6 @@ def create_class_examples(bsoid: BSOID, video_dir: str, min_bout_len: int, n_exa
     all_videos = []
     for raw_file, video_file in zip(raw_files, video_files):
         video_name = os.path.split(video_file)[-1][:-4]
-        # get trimmed labels and frames
-        # fdata, frames = extract_data_from_video(bsoid, raw_file, video_file)        
-        # feats = frameshift_features(fdata, bsoid.stride_window, bsoid.fps, extract_feats, window_extracted_feats)
-        # labels = frameshift_predict(feats, clf, bsoid.stride_window)
         labels, frames = labels_for_video(bsoid, clf, raw_file, video_file)
         
         if labels.size != len(frames):
@@ -331,6 +327,6 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
 
     bsoid = BSOID("./config/config.yaml")
-    video_dir = "../../data/tests/C57BL;6J" 
+    video_dir = "../../data/videos" 
 
     create_class_examples(bsoid, video_dir, min_bout_len=200, n_examples=5, outdir=video_dir)

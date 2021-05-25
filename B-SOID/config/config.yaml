@@ -1,6 +1,6 @@
 run_id: 'dis'
-base_dir: '/home/laadd/data/bsoid_data'
-# base_dir: 'D:/IIT/DDP/data'
+# base_dir: '/home/laadd/data/bsoid_data'
+base_dir: 'D:/IIT/DDP/data'
 
 # basic config
 fps: 30
@@ -31,7 +31,7 @@ umap_params:
 hdbscan_params:
   min_samples: 10
   prediction_data: True
-  core_dist_n_jobs: 18
+  core_dist_n_jobs: 24
   cluster_range: [0.4, 1.2]
 
 trim_params:
