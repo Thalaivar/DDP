@@ -70,7 +70,17 @@ def rooted_final_clustering(config_file, thresh, save_dir):
     umap_params = bsoid.umap_params
     hdbscan_params = bsoid.hdbscan_params
 
-    clustering = get_clusters(templates, hdbscan_params, umap_params, bsoid.scale_before_umap, verbose=True)
+    logger.info(f"running rooted embedding with {templates.shape} samples")
+
+    if bsoid.scale_before_umapale:
+        templates = StandardScaler().fit_transform(templates)
+    
+    embedding = umap.UMAP(**umap_params).fit_transform(templates, y=labels)
+    labels, _, soft_labels, clusterer = cluster_with_hdbscan(embedding, verbose=True, **hdbscan_params)
+    exemplars = [templates[idxs] for idxs in clusterer.exemplars_indices_]
+    
+    logger.info(f"embedded {templates.shape} to {embedding.shape[1]}D with {labels.max() + 1} clusters and entropy ratio={round(calculate_entropy_ratio(soft_labels),3)}")
+    clustering = {"labels": labels, "soft_labels": soft_labels, "exemplars": exemplars}
     
     with open(os.path.join(save_dir, "rooted_together.data"), "wb") as f:
         joblib.dump([templates, clustering, thresh], f)
