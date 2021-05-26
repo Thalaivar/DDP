@@ -159,16 +159,9 @@ def predict_frames(fdata, fps, stride_window, clf):
 
     return labels
 
-def labels_for_video(bsoid, clf, rawfile, vid_file, extract_frames=False):
-    filtered_data, frames = extract_data_from_video(bsoid, rawfile, vid_file, extract_frames)
-    geom_feats = extract_comb_feats(filtered_data, bsoid.fps)
-    
-    stride_window = 3
-
-    fs_feats = []
-    for i in range(stride_window):
-        fs_feats.append(aggregate_features(geom_feats[i:], stride_window))
-
+def get_frameshifted_prediction(fdata, clf, fps, stride_window):
+    geom_feats = extract_comb_feats(fdata, fps)
+    fs_feats = [aggregate_features(geom_feats[i:], stride_window) for i in range(stride_window)]
     fs_labels = [clf.predict(f).squeeze() for f in fs_feats]
     max_len = max([f.shape[0] for f in fs_labels])
     for i, f in enumerate(fs_labels):
@@ -177,7 +170,12 @@ def labels_for_video(bsoid, clf, rawfile, vid_file, extract_frames=False):
         fs_labels[i] = pad_arr
     labels = np.array(fs_labels).flatten('F')
     labels = labels[labels >= 0]
+    return labels
 
+def labels_for_video(bsoid, clf, rawfile, vid_file, extract_frames=False):
+    filtered_data, frames = extract_data_from_video(bsoid, rawfile, vid_file, extract_frames)
+    stride_window = 3
+    labels = get_frameshifted_prediction(filtered_data, clf, bsoid.fps, stride_window)
     return labels, frames
 
 def frameshift_features(filtered_data, stride_window, fps, feats_extractor, windower):
