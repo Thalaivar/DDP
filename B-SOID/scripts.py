@@ -7,6 +7,7 @@ from ray._private import services
 from analysis import *
 from BSOID.bsoid import BSOID
 from BSOID.clustering import *
+from BSOID.features import extract_bsoid_feats
 
 GET_DATA          = False
 PROCESS_CSVS      = False
@@ -82,12 +83,12 @@ def strainwise_cluster(config_file, logfile):
 
 def bsoid_stability_test(config_file, num_points, save_dir):
     bsoid = BSOID(config_file)
-    feats = bsoid.load_features(collect=False)
+    fdata = bsoid.load_filtered_data()
 
-    all_data = []
-    for _, data in feats.items():
-        all_data.extend(data)
-    feats = np.vstack(all_data)
+    feats = []
+    for _, data in fdata.items():
+        feats.extend([extract_bsoid_feats(d, bsoid.fps, bsoid.stride_window) for d in data])
+    feats = np.vstack(feats)
     
     pca = PCA().fit(StandardScaler().fit_transform(feats))
     num_dims = np.where(np.cumsum(pca.explained_variance_ratio_) >= 0.7)[0][0] + 1
