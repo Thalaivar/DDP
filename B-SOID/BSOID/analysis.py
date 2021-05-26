@@ -2,6 +2,7 @@ import os
 import h5py
 import psutil
 from joblib.parallel import Parallel, delayed
+import yaml
 import numpy as np
 import pandas as pd
 
@@ -112,23 +113,28 @@ def extract_labels(input_csv, data_dir, clf, fps, stride_window):
     logger.info(f"extracted labels from {len(label_data)} mice from {len(strain_labels)} strains")
     return strain_labels
 
+def get_key_from_metadata(metadata):
+    fields = ("MouseID", "Sex", "Strain", "NetworkFilename")
+    key = "".join([f"{metadata[f]};" for f in fields])
+    key = key[:-1]
+    return key
+
 def bout_stats_for_all_strains(label_info, max_label, min_bout_len, fps):
-    behavioral_bout_stats = {i: {"strain": [], "sex": [], "td": [], "abl":[], "nb": []} for i in range(max_label)}
+    behavioral_bout_stats = {}
 
-    for strain, data in label_info.items():
+    strains = list(label_info.keys())
+    for i in tqdm(range(len(strains))):
+        _, data = strains[i], label_info[strains[i]]
         for d in data:
-            sex = d["metadata"]["Sex"]
-            stats = bout_stats(d["labels"], max_label, min_bout_len, fps)
-            for lab in behavioral_bout_stats.keys():
-                behavioral_bout_stats[lab]["strain"].append(strain)
-                behavioral_bout_stats[lab]["sex"].append(sex)
-                behavioral_bout_stats[lab]["td"].append(stats[lab]["td"])
-                behavioral_bout_stats[lab]["abl"].append(stats[lab]["abl"])
-                behavioral_bout_stats[lab]["nb"].append(stats[lab]["nb"])
+            key = get_key_from_metadata(d["metadata"])
+            behavioral_bout_stats[key] = {}
 
-    for lab, data in behavioral_bout_stats.items():
-        behavioral_bout_stats[lab] = pd.DataFrame.from_dict(data)
-    
+            stats = bout_stats(d["labels"], max_label, min_bout_len, fps)
+            for i in range(max_label):
+                behavioral_bout_stats[key][f"phenotype_{i}_td"] = stats[i]["td"]
+                behavioral_bout_stats[key][f"phenotype_{i}_abl"] = stats[i]["abl"]
+                behavioral_bout_stats[key][f"phenotype_{i}_nb"] = stats[i]["nb"]
+
     return behavioral_bout_stats
 
 def proportion_usage_across_strains(label_info, max_label):
@@ -151,5 +157,43 @@ def transition_matrix_across_strains(label_info, max_label):
     
     return tmat
 
-def gemma_input(label_info, max_label):
+def gemma_files(label_info, input_csv, max_label, min_bout_len, fps, default_config_file):
+    strain_bout_stats = bout_stats_for_all_strains(label_info, max_label, min_bout_len, fps)
     
+    stats_df = {f"phenotype_{i}_td": [] for i in range(max_label)}
+    stats_df.update({f"phenotype_{i}_abl": [] for i in range(max_label)})
+    stats_df.update({f"phenotype_{i}_nb": [] for i in range(max_label)})
+
+    retain_idx = []
+    for i in range(input_csv.shape[0]):
+        key = get_key_from_metadata(dict(input_csv.iloc[i]))
+        if key in strain_bout_stats:
+            for i in range(max_label):
+                stats_df[f"phenotype_{i}_td"].append(strain_bout_stats[key][f"phenotype_{i}_td"])
+                stats_df[f"phenotype_{i}_abl"].append(strain_bout_stats[key][f"phenotype_{i}_abl"])
+                stats_df[f"phenotype_{i}_nb"].append(strain_bout_stats[key][f"phenotype_{i}_nb"])
+            retain_idx.append(i)
+    
+    gemma_csv = pd.concat([input_csv.iloc[retain_idx, :], pd.DataFrame.from_dict(stats_df)], axis=1)
+
+    config = {}
+    config["strain"] = "Strain"
+    config["sex"] = "Sex"
+    config["phenotypes"] = {}
+    config["groups"] = ["Total Duration", "Average Bout Length", "Number of Bouts"]
+
+    for i in range(max_label):
+        config["phenotypes"][f"phenotype_{i}_TD"] = {"papername": f"phenotype_{i}_TD", "group": "Total Duration"}
+        config["phenotypes"][f"phenotype_{i}_ABL"] = {"papername": f"phenotype_{i}_ABL", "group": "Average Bout Length"}
+        config["phenotypes"][f"phenotype_{i}_NB"] = {"papername": f"phenotype_{i}_NB", "group": "Number of Bouts"}
+
+    config["covar"] = ["Sex"]
+
+    with open(default_config_file, 'r') as f:
+        config.update(yaml.load(f, Loader=yaml.FullLoader))
+    
+    config_file = os.path.join(os.path.split(default_config_file)[0], "gemma_config.yaml")
+    with open(config_file, 'w') as f:
+        yaml.dump(config, f, default_flow_style=False)
+    
+    gemma_csv.to_csv(os.path.join(os.path.split(default_config_file)[0], "gemma_data.csv"))

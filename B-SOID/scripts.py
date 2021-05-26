@@ -47,44 +47,6 @@ def hyperparamter_tuning(config_file):
 
     print(n_clusters)
 
-def rooted_final_clustering(config_file, thresh, save_dir):
-    bsoid = BSOID(config_file)
-    templates, clustering = bsoid.load_strainwise_clustering()
-    clusters = collect_strain_clusters(templates, clustering, thresh, use_exemplars=True)
-
-    # retain 10% of each cluster as "roots"
-    k, templates, labels = 0, [], []
-    for _, data in clusters.items():
-        for d in data:
-            templates.append(d)
-            cluster_labels = -1 * np.ones((d.shape[0], ))
-
-            root_idxs = np.random.permutation(np.arange(cluster_labels.size))[:np.floor(0.1 * cluster_labels.size).astype(int)]
-            cluster_labels[root_idxs] = k
-            labels.append(cluster_labels)
-
-            k += 1
-
-    templates, labels = np.vstack(templates), np.hstack(labels)
-    
-    umap_params = bsoid.umap_params
-    hdbscan_params = bsoid.hdbscan_params
-
-    logger.info(f"running rooted embedding with {templates.shape} samples")
-
-    if bsoid.scale_before_umap:
-        templates = StandardScaler().fit_transform(templates)
-    
-    embedding = umap.UMAP(**umap_params).fit_transform(templates, y=labels)
-    labels, _, soft_labels, clusterer = cluster_with_hdbscan(embedding, verbose=True, **hdbscan_params)
-    exemplars = [templates[idxs] for idxs in clusterer.exemplars_indices_]
-    
-    logger.info(f"embedded {templates.shape} to {embedding.shape[1]}D with {labels.max() + 1} clusters and entropy ratio={round(calculate_entropy_ratio(soft_labels),3)}")
-    clustering = {"labels": labels, "soft_labels": soft_labels, "exemplars": exemplars}
-    
-    with open(os.path.join(save_dir, "rooted_together.data"), "wb") as f:
-        joblib.dump([templates, clustering, thresh], f)
-
 def cluster_collect_embed(config_file, thresh, save_dir):
     bsoid = BSOID(config_file)
     templates, clustering = bsoid.load_strainwise_clustering()
@@ -118,6 +80,25 @@ def strainwise_cluster(config_file, logfile):
     
     bsoid.cluster_strainwise(logfile)
 
+def bsoid_stability_test(config_file, num_points, save_dir):
+    bsoid = BSOID(config_file)
+    feats = bsoid.load_features(collect=False)
+
+    all_data = []
+    for _, data in feats.items():
+        all_data.extend(data)
+    feats = np.vstack(all_data)
+    
+    pca = PCA().fit(StandardScaler().fit_transform(feats))
+    num_dims = np.where(np.cumsum(pca.explained_variance_ratio_) >= 0.7)[0][0] + 1
+    umap_params = {"min_dist": 0.0, "n_neighbors": 60, "n_components": num_dims}
+    hdbscan_params = {"min_samples": 1, "cluster_range": [0.5, 1.0], "prediction_data": True}
+    feats = np.random.permutation(feats)[:num_points]
+    clustering = get_bsoid_clusters(feats, hdbscan_params, umap_params, scale=True, verbose=True)
+
+    with open(os.path.join(save_dir, "bsoid_stability.res"), "wb") as f:
+        joblib.dump([feats, clustering["soft_labels"]], f)
+    
 def rep_cluster(config_file, strain, save_dir, n):
     from new_clustering import cluster_for_strain
     from sklearn.ensemble import RandomForestClassifier
@@ -166,7 +147,7 @@ if __name__ == "__main__":
                                                                     "calculate_pairwise_similarity", 
                                                                     "strainwise_cluster",
                                                                     "rep_cluster",
-                                                                    "rooted_final_clustering",
+                                                                    "bsoid_stability_test",
                                                                 ])
     parser.add_argument("--n", type=int)
     parser.add_argument("--n_strains", type=int, default=None)
@@ -177,6 +158,7 @@ if __name__ == "__main__":
     parser.add_argument("--thresh", type=float)
     parser.add_argument("--logfile", type=str)
     parser.add_argument("--strain", type=str)
+    parser.add_argument("--num-points", type=int)
     parser.add_argument("--sim-measure", type=str, choices=[
                                                         "density_separation_similarity", 
                                                         "dbcv_index_similarity", 
@@ -200,8 +182,8 @@ if __name__ == "__main__":
         main(config_file=args.config, n=args.n, n_strains=args.n_strains)
     elif args.script == "cluster_collect_embed":
         cluster_collect_embed(args.config, args.thresh, args.save_dir)
-    elif args.script == "rooted_final_clustering":
-        rooted_final_clustering(args.config, args.thresh, args.save_dir)
+    elif args.script == "bsoid_stability_test":
+        bsoid_stability_test(args.config, args.num_points, args.save_dir)
     elif args.script == "calculate_pairwise_similarity":
         calculate_pairwise_similarity(args.save_dir, args.thresh, args.sim_measure)
     elif args.script == "strainwise_cluster":
