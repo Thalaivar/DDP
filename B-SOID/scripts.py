@@ -96,7 +96,7 @@ def cluster_collect_embed(config_file, thresh, save_dir):
         for strain in templates.keys():
             templates[strain], clustering[strain]["soft_labels"] = find_templates(clustering[strain]["soft_labels"], templates[strain], num_points, use_inverse_density=False)
 
-    clusters = collect_strain_clusters(templates, clustering, thresh, use_exemplars=False)
+    clusters = collect_strain_clusters(templates, clustering, thresh, use_exemplars=True)
     del templates, clustering
 
     templates = np.vstack([np.vstack(data) for _, data in clusters.items()])
@@ -109,27 +109,6 @@ def cluster_collect_embed(config_file, thresh, save_dir):
     
     with open(os.path.join(save_dir, "together.data"), "wb") as f:
         joblib.dump([templates, clustering, thresh], f)
-
-def clustering_stability_test(config_file, thresh, save_dir):
-    bsoid = BSOID(config_file)
-    templates, clustering = bsoid.load_strainwise_clustering()
-
-    clusters = collect_strain_clusters(templates, clustering, thresh, use_exemplars=False)
-    del templates, clustering
-
-    templates = np.vstack([np.vstack(data) for _, data in clusters.items()])
-    logger.info(f"embedding {templates.shape} templates from {sum(len(data) for _, data in clusters.items())} clusters")
-
-    umap_params = bsoid.umap_params
-    hdbscan_params = bsoid.hdbscan_params
-
-    assignments = []
-    for i in tqdm(range(50)):
-        clustering = get_clusters(templates, hdbscan_params, umap_params, bsoid.scale_before_umap, verbose=True)
-        assignments.append(clustering["soft_labels"])
-    
-    with open(os.path.join(save_dir, "runs.cluster"), "wb") as f:
-        joblib.dump(assignments, f)
 
 def strainwise_cluster(config_file, logfile):
     bsoid = BSOID(config_file)
@@ -188,7 +167,6 @@ if __name__ == "__main__":
                                                                     "strainwise_cluster",
                                                                     "rep_cluster",
                                                                     "rooted_final_clustering",
-                                                                    "clustering_stability_test"
                                                                 ])
     parser.add_argument("--n", type=int)
     parser.add_argument("--n_strains", type=int, default=None)
@@ -220,16 +198,10 @@ if __name__ == "__main__":
 
     if args.script == "main":
         main(config_file=args.config, n=args.n, n_strains=args.n_strains)
-    elif args.script == "small_umap":
-        small_umap(config_file=args.config, outdir=args.outdir, n=args.n)
-    elif args.script == "ensemble_pipeline":
-        eval(args.script)(config_file=args.config, outdir=args.outdir)
     elif args.script == "cluster_collect_embed":
         cluster_collect_embed(args.config, args.thresh, args.save_dir)
     elif args.script == "rooted_final_clustering":
         rooted_final_clustering(args.config, args.thresh, args.save_dir)
-    elif args.script == "clustering_stability_test":
-        clustering_stability_test(args.config, args.thresh, args.save_dir)
     elif args.script == "calculate_pairwise_similarity":
         calculate_pairwise_similarity(args.save_dir, args.thresh, args.sim_measure)
     elif args.script == "strainwise_cluster":

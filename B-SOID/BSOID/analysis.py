@@ -151,4 +151,5 @@ def transition_matrix_across_strains(label_info, max_label):
     
     return tmat
 
-def gemma_input(label_info)
+def gemma_input(label_info, max_label):
+    
