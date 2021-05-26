@@ -88,7 +88,7 @@ def bsoid_stability_test(config_file, num_points, save_dir):
 
     feats = []
     for _, data in fdata.items():
-        feats.extend([extract_bsoid_feats(d, bsoid.fps, bsoid.stride_window) for d in data])
+        feats.extend(Parallel(n_jobs=6)(delayed(extract_bsoid_feats)(d, bsoid.fps, bsoid.stride_window) for d in data))
     feats = np.vstack(feats)
     feats_sc = StandardScaler().fit_transform(feats)
 
