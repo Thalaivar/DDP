@@ -86,27 +86,26 @@ def bsoid_stability_test(config_file, num_points, save_dir):
     bsoid = BSOID(config_file)
     fdata = bsoid.load_filtered_data()
 
-    feats = []
-    for _, data in fdata.items():
-        feats.extend(Parallel(n_jobs=6)(delayed(extract_bsoid_feats)(d, bsoid.fps, bsoid.stride_window) for d in data))
-    feats = np.vstack(feats)
-    feats_sc = StandardScaler().fit_transform(feats)
+    feats, strains = [], list(fdata.keys())
+    for strain in strains:
+        feats.extend(Parallel(n_jobs=6)(delayed(extract_bsoid_feats)(data, bsoid.fps, bsoid.stride_window) for data in fdata[strain]))
+        del fdata[strain]
+    feats = StandardScaler().fit_transform(np.vstack(feats))
 
-    pca = PCA().fit(feats_sc)
-    idx = np.random.permutation(np.arange(feats.shape[0]))[:num_points]
-    feats, feats_sc = feats[idx], feats_sc[idx]
+    pca = PCA().fit(feats)
+    feats = np.random.permutation(feats)[:num_points]
     num_dims = np.where(np.cumsum(pca.explained_variance_ratio_) >= 0.7)[0][0] + 1
     logger.info(f"running bsoid original on {feats.shape} with embedding in {num_dims}D")
     umap_params = {"min_dist": 0.0, "n_neighbors": 60, "n_components": num_dims}
-    hdbscan_params = {"min_samples": 1, "cluster_range": [0.5, 1.0], "prediction_data": True, "core_dist_n_jobs": 16}
-    clustering = get_bsoid_clusters(feats_sc, hdbscan_params, umap_params, scale=False, verbose=True)
+    hdbscan_params = {"min_samples": 1, "cluster_range": [0.5, 1.0], "prediction_data": True}
+    clustering = get_bsoid_clusters(feats, hdbscan_params, umap_params, scale=False, verbose=True)
 
     from sklearn.ensemble import RandomForestClassifier
     model = RandomForestClassifier(n_jobs=-1)
     model.fit(feats, clustering["soft_labels"])
 
     with open(os.path.join(save_dir, "bsoid_stability.res"), "wb") as f:
-        joblib.dump([feats, clustering["soft_labels"], model], f)
+        joblib.dump([clustering["soft_labels"], model], f)
     
 def rep_cluster(config_file, strain, save_dir, n):
     from new_clustering import cluster_for_strain
