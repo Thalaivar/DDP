@@ -99,9 +99,9 @@ def extract_labels(input_csv, data_dir, clf, bsoid, min_video_len):
         labels = labels_for_mouse(metadata, clf, data_dir, bsoid, min_video_len)
         return [metadata, labels]
 
-    label_data = Parallel(n_jobs=psutil.cpu_count(logical=False))(delayed(par_labels)(input_csv.iloc[i], clf, data_dir, bsoid, min_video_len) for i in range(N))
+    label_data = Parallel(n_jobs=psutil.cpu_count(logical=False))(delayed(par_labels)(input_csv.iloc[i], clf, data_dir, bsoid, min_video_len) for i in tqdm(range(N)))
     label_data = [l for l in label_data if l[1] is not None]
-
+    
     strain_labels = {}
     for (metadata, labels) in label_data:
         strain = metadata["Strain"]
