@@ -15,7 +15,7 @@ from BSOID.preprocessing import likelihood_filter
 from BSOID.features import extract_comb_feats, aggregate_features
 from prediction import get_frameshifted_prediction
 
-def get_data(metadata, data_dir, fps, min_video_len):
+def get_data(metadata, data_dir, bsoid, min_video_len):
     try:
         pose_dir, _ = get_pose_data_dir(data_dir, metadata["NetworkFilename"])
         _, _, movie_name = metadata['NetworkFilename'].split('/')
@@ -24,7 +24,7 @@ def get_data(metadata, data_dir, fps, min_video_len):
         conf, pos = process_h5py_data(h5py.File(filename, 'r'))
         if conf.shape[0] >= min_video_len:
             data = bsoid_format(conf, pos)
-            fdata, perc_filt = likelihood_filter(data, fps, end_trim=5, clip_window=-1, conf_threshold=0.3)
+            fdata, perc_filt = likelihood_filter(data, bsoid.fps, bsoid.bodyparts, end_trim=5, clip_window=-1, conf_threshold=0.3)
 
             strain, mouse_id = metadata['Strain'], metadata['MouseID']
             if perc_filt > 10:
@@ -39,10 +39,10 @@ def get_data(metadata, data_dir, fps, min_video_len):
     
     return None
 
-def labels_for_mouse(metadata, clf, data_dir, fps, stride_window, min_video_len):
-    fdata = get_data(metadata, data_dir, fps, min_video_len)
+def labels_for_mouse(metadata, clf, data_dir, bsoid, min_video_len):
+    fdata = get_data(metadata, data_dir, bsoid, min_video_len)
     if fdata is not None:
-        labels = get_frameshifted_prediction(fdata, clf, fps, stride_window)
+        labels = get_frameshifted_prediction(fdata, clf, bsoid.fps, bsoid.stride_window)
         return labels
     else:
         return None
@@ -92,14 +92,14 @@ def proportion_usage(labels, max_label):
     prop /= labels.size
     return prop
 
-def extract_labels(input_csv, data_dir, clf, fps, stride_window, min_video_len):
+def extract_labels(input_csv, data_dir, clf, bsoid, min_video_len):
     N = input_csv.shape[0]
 
-    def par_labels(metadata, clf, data_dir, fps, stride_window, min_video_len):
-        labels = labels_for_mouse(metadata, clf, data_dir, fps, stride_window, min_video_len)
+    def par_labels(metadata, clf, data_dir, bsoid, min_video_len):
+        labels = labels_for_mouse(metadata, clf, data_dir, bsoid, min_video_len)
         return [metadata, labels]
 
-    label_data = Parallel(n_jobs=psutil.cpu_count(logical=False))(delayed(par_labels)(input_csv.iloc[i], clf, data_dir, fps, stride_window, min_video_len) for i in range(N))
+    label_data = Parallel(n_jobs=psutil.cpu_count(logical=False))(delayed(par_labels)(input_csv.iloc[i], clf, data_dir, bsoid, min_video_len) for i in range(N))
     label_data = [l for l in label_data if l[1] is not None]
 
     strain_labels = {}
