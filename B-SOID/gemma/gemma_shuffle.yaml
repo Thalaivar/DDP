@@ -41,7 +41,7 @@ groups:
   - Average Bout Length
   - Number of Bouts
 phenotypes:
-  phenotype_32_TD:
+  phenotype_32_td:
     group: Total Duration
     papername: phenotype_32_TD
 sex: Sex

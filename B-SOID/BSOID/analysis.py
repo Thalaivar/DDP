@@ -152,7 +152,7 @@ def transition_matrix_across_strains(label_info, max_label):
     tmat = {}
     for strain, data in label_info.items():
         tmat[strain] = [
-            {"metadata": d["metadata"], "tmat": transition_matrix(d["labels"], max_label)}
+            {"metadata": d["metadata"], "tmat": transition_matrix(d["labels"].astype(int), max_label)}
             for d in data
         ]
     
