@@ -19,7 +19,7 @@ mkdir $OUT_DIR
 source $HOME_DIR/.bashrc
 cd $OUT_DIR
 
-CONFIG_FILE=$HOME_DIR/$BASE_DIR/gemma_config.yaml
+CONFIG_FILE=$HOME_DIR/$BASE_DIR/gemma_config.yaml   
 SHUFFL_FILE=$HOME_DIR/$BASE_DIR/gemma_shuffle.yaml
 INPUT_FILE=$HOME_DIR/$BASE_DIR/gemma_data.csv
 

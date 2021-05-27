@@ -184,9 +184,9 @@ def gemma_files(label_info, input_csv, max_label, min_bout_len, fps, default_con
     config["groups"] = ["Total Duration", "Average Bout Length", "Number of Bouts"]
 
     for i in range(max_label):
-        config["phenotypes"][f"phenotype_{i}_TD"] = {"papername": f"phenotype_{i}_TD", "group": "Total Duration"}
-        config["phenotypes"][f"phenotype_{i}_ABL"] = {"papername": f"phenotype_{i}_ABL", "group": "Average Bout Length"}
-        config["phenotypes"][f"phenotype_{i}_NB"] = {"papername": f"phenotype_{i}_NB", "group": "Number of Bouts"}
+        config["phenotypes"][f"phenotype_{i}_td"] = {"papername": f"phenotype_{i}_TD", "group": "Total Duration"}
+        config["phenotypes"][f"phenotype_{i}_abl"] = {"papername": f"phenotype_{i}_ABL", "group": "Average Bout Length"}
+        config["phenotypes"][f"phenotype_{i}_nb"] = {"papername": f"phenotype_{i}_NB", "group": "Number of Bouts"}
 
     config["covar"] = ["Sex"]
 
