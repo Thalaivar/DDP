@@ -236,6 +236,7 @@ def bsoid_cluster(embeddings,  verbose=False, **hdbscan_params):
         
         labels = trained_classifier.labels_
         numulab.append(labels.max() + 1)
+        entropy.append(calculate_entropy_ratio(labels))
 
         if verbose:
             logger.info(f"identified {numulab[-1]} clusters with min_sample_prop={round(min_c,2)} and entropy ratio={round(entropy[-1], 3)}")

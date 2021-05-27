@@ -39,8 +39,8 @@ def get_data(metadata, data_dir, fps, min_video_len):
     
     return None
 
-def labels_for_mouse(metadata, clf, data_dir, fps, stride_window):
-    fdata = get_data(metadata, data_dir, fps)
+def labels_for_mouse(metadata, clf, data_dir, fps, stride_window, min_video_len):
+    fdata = get_data(metadata, data_dir, fps, min_video_len)
     if fdata is not None:
         labels = get_frameshifted_prediction(fdata, clf, fps, stride_window)
         return labels
@@ -92,14 +92,14 @@ def proportion_usage(labels, max_label):
     prop /= labels.size
     return prop
 
-def extract_labels(input_csv, data_dir, clf, fps, stride_window):
+def extract_labels(input_csv, data_dir, clf, fps, stride_window, min_video_len):
     N = input_csv.shape[0]
 
-    def par_labels(metadata, clf, data_dir, fps, stride_window):
-        labels = labels_for_mouse(metadata, clf, data_dir, fps, stride_window)
+    def par_labels(metadata, clf, data_dir, fps, stride_window, min_video_len):
+        labels = labels_for_mouse(metadata, clf, data_dir, fps, stride_window, min_video_len)
         return [metadata, labels]
 
-    label_data = Parallel(n_jobs=psutil.cpu_count(logical=False))(delayed(par_labels)(input_csv.iloc[i], clf, data_dir, fps, stride_window) for i in range(N))
+    label_data = Parallel(n_jobs=psutil.cpu_count(logical=False))(delayed(par_labels)(input_csv.iloc[i], clf, data_dir, fps, stride_window, min_video_len) for i in range(N))
     label_data = [l for l in label_data if l[1] is not None]
 
     strain_labels = {}

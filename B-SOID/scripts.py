@@ -10,6 +10,11 @@ from BSOID.bsoid import BSOID
 from BSOID.clustering import *
 from BSOID.features import extract_bsoid_feats
 
+"""
+Adjusted Mutual Info Score for 40 runs: 0.8542 +- 0.0073
+AMI - BSOID: 0.5082 +- 
+"""
+
 GET_DATA          = False
 PROCESS_CSVS      = False
 LOAD_FROM_DATASET = True
