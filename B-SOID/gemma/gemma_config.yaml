@@ -32,211 +32,575 @@ F1:
   - NZBWF1/J:
     - NZB/BlNJ
     - NZW/LacJ
-# confSNPs:
-#   - rs32105080
-covar:
+#   confSNPs:
+# - rs32105080
+covar: 
   - Sex
 groups:
-  - Groom
-  - Run
-  - Walk
-  - CW-Turn
-  - CCW-Turn
-  - Point
-  - Rear
-  - N/A
+  - Total Duration
+  - Average Bout Length
+  - Number of Bouts
 phenotypes:
-  CCW-Turn_0_ABL:
-    group: CCW-Turn
-    papername: CCW-Turnn0_ABL
-  CCW-Turn_0_NB:
-    group: CCW-Turn
-    papername: CCW-Turnn0_NB
-  CCW-Turn_0_TD:
-    group: CCW-Turn
-    papername: CCW-Turnn0_TD
-  CCW-Turn_1_ABL:
-    group: CCW-Turn
-    papername: CCW-Turnn1_ABL
-  CCW-Turn_1_NB:
-    group: CCW-Turn
-    papername: CCW-Turnn1_NB
-  CCW-Turn_1_TD:
-    group: CCW-Turn
-    papername: CCW-Turnn1_TD
-  CW-Turn_0_ABL:
-    group: CW-Turn
-    papername: CW-Turnn0_ABL
-  CW-Turn_0_NB:
-    group: CW-Turn
-    papername: CW-Turnn0_NB
-  CW-Turn_0_TD:
-    group: CW-Turn
-    papername: CW-Turnn0_TD
-  Groom_0_ABL:
-    group: Groom
-    papername: Groomn0_ABL
-  Groom_0_NB:
-    group: Groom
-    papername: Groomn0_NB
-  Groom_0_TD:
-    group: Groom
-    papername: Groomn0_TD
-  Groom_1_ABL:
-    group: Groom
-    papername: Groomn1_ABL
-  Groom_1_NB:
-    group: Groom
-    papername: Groomn1_NB
-  Groom_1_TD:
-    group: Groom
-    papername: Groomn1_TD
-  Groom_2_ABL:
-    group: Groom
-    papername: Groomn2_ABL
-  Groom_2_NB:
-    group: Groom
-    papername: Groomn2_NB
-  Groom_2_TD:
-    group: Groom
-    papername: Groomn2_TD
-  Groom_3_ABL:
-    group: Groom
-    papername: Groomn3_ABL
-  Groom_3_NB:
-    group: Groom
-    papername: Groomn3_NB
-  Groom_3_TD:
-    group: Groom
-    papername: Groomn3_TD
-  Groom_4_ABL:
-    group: Groom
-    papername: Groomn4_ABL
-  Groom_4_NB:
-    group: Groom
-    papername: Groomn4_NB
-  Groom_4_TD:
-    group: Groom
-    papername: Groomn4_TD
-  Groom_5_ABL:
-    group: Groom
-    papername: Groomn5_ABL
-  Groom_5_NB:
-    group: Groom
-    papername: Groomn5_NB
-  Groom_5_TD:
-    group: Groom
-    papername: Groomn5_TD
-  N/A_0_ABL:
-    group: N/A
-    papername: N/An0_ABL
-  N/A_0_NB:
-    group: N/A
-    papername: N/An0_NB
-  N/A_0_TD:
-    group: N/A
-    papername: N/An0_TD
-  N/A_1_ABL:
-    group: N/A
-    papername: N/An1_ABL
-  N/A_1_NB:
-    group: N/A
-    papername: N/An1_NB
-  N/A_1_TD:
-    group: N/A
-    papername: N/An1_TD
-  N/A_2_ABL:
-    group: N/A
-    papername: N/An2_ABL
-  N/A_2_NB:
-    group: N/A
-    papername: N/An2_NB
-  N/A_2_TD:
-    group: N/A
-    papername: N/An2_TD
-  Point_0_ABL:
-    group: Point
-    papername: Pointn0_ABL
-  Point_0_NB:
-    group: Point
-    papername: Pointn0_NB
-  Point_0_TD:
-    group: Point
-    papername: Pointn0_TD
-  Point_1_ABL:
-    group: Point
-    papername: Pointn1_ABL
-  Point_1_NB:
-    group: Point
-    papername: Pointn1_NB
-  Point_1_TD:
-    group: Point
-    papername: Pointn1_TD
-  Rear_0_ABL:
-    group: Rear
-    papername: Rearn0_ABL
-  Rear_0_NB:
-    group: Rear
-    papername: Rearn0_NB
-  Rear_0_TD:
-    group: Rear
-    papername: Rearn0_TD
-  Rear_1_ABL:
-    group: Rear
-    papername: Rearn1_ABL
-  Rear_1_NB:
-    group: Rear
-    papername: Rearn1_NB
-  Rear_1_TD:
-    group: Rear
-    papername: Rearn1_TD
-  Rear_2_ABL:
-    group: Rear
-    papername: Rearn2_ABL
-  Rear_2_NB:
-    group: Rear
-    papername: Rearn2_NB
-  Rear_2_TD:
-    group: Rear
-    papername: Rearn2_TD
-  Run_0_ABL:
-    group: Run
-    papername: Runn0_ABL
-  Run_0_NB:
-    group: Run
-    papername: Runn0_NB
-  Run_0_TD:
-    group: Run
-    papername: Runn0_TD
-  Walk_0_ABL:
-    group: Walk
-    papername: Walkn0_ABL
-  Walk_0_NB:
-    group: Walk
-    papername: Walkn0_NB
-  Walk_0_TD:
-    group: Walk
-    papername: Walkn0_TD
-  Walk_1_ABL:
-    group: Walk
-    papername: Walkn1_ABL
-  Walk_1_NB:
-    group: Walk
-    papername: Walkn1_NB
-  Walk_1_TD:
-    group: Walk
-    papername: Walkn1_TD
+  phenotype_0_ABL:
+    group: Average Bout Length
+    papername: phenotype_0_ABL
+  phenotype_0_NB:
+    group: Number of Bouts
+    papername: phenotype_0_NB
+  phenotype_0_TD:
+    group: Total Duration
+    papername: phenotype_0_TD
+  phenotype_10_ABL:
+    group: Average Bout Length
+    papername: phenotype_10_ABL
+  phenotype_10_NB:
+    group: Number of Bouts
+    papername: phenotype_10_NB
+  phenotype_10_TD:
+    group: Total Duration
+    papername: phenotype_10_TD
+  phenotype_11_ABL:
+    group: Average Bout Length
+    papername: phenotype_11_ABL
+  phenotype_11_NB:
+    group: Number of Bouts
+    papername: phenotype_11_NB
+  phenotype_11_TD:
+    group: Total Duration
+    papername: phenotype_11_TD
+  phenotype_12_ABL:
+    group: Average Bout Length
+    papername: phenotype_12_ABL
+  phenotype_12_NB:
+    group: Number of Bouts
+    papername: phenotype_12_NB
+  phenotype_12_TD:
+    group: Total Duration
+    papername: phenotype_12_TD
+  phenotype_13_ABL:
+    group: Average Bout Length
+    papername: phenotype_13_ABL
+  phenotype_13_NB:
+    group: Number of Bouts
+    papername: phenotype_13_NB
+  phenotype_13_TD:
+    group: Total Duration
+    papername: phenotype_13_TD
+  phenotype_14_ABL:
+    group: Average Bout Length
+    papername: phenotype_14_ABL
+  phenotype_14_NB:
+    group: Number of Bouts
+    papername: phenotype_14_NB
+  phenotype_14_TD:
+    group: Total Duration
+    papername: phenotype_14_TD
+  phenotype_15_ABL:
+    group: Average Bout Length
+    papername: phenotype_15_ABL
+  phenotype_15_NB:
+    group: Number of Bouts
+    papername: phenotype_15_NB
+  phenotype_15_TD:
+    group: Total Duration
+    papername: phenotype_15_TD
+  phenotype_16_ABL:
+    group: Average Bout Length
+    papername: phenotype_16_ABL
+  phenotype_16_NB:
+    group: Number of Bouts
+    papername: phenotype_16_NB
+  phenotype_16_TD:
+    group: Total Duration
+    papername: phenotype_16_TD
+  phenotype_17_ABL:
+    group: Average Bout Length
+    papername: phenotype_17_ABL
+  phenotype_17_NB:
+    group: Number of Bouts
+    papername: phenotype_17_NB
+  phenotype_17_TD:
+    group: Total Duration
+    papername: phenotype_17_TD
+  phenotype_18_ABL:
+    group: Average Bout Length
+    papername: phenotype_18_ABL
+  phenotype_18_NB:
+    group: Number of Bouts
+    papername: phenotype_18_NB
+  phenotype_18_TD:
+    group: Total Duration
+    papername: phenotype_18_TD
+  phenotype_19_ABL:
+    group: Average Bout Length
+    papername: phenotype_19_ABL
+  phenotype_19_NB:
+    group: Number of Bouts
+    papername: phenotype_19_NB
+  phenotype_19_TD:
+    group: Total Duration
+    papername: phenotype_19_TD
+  phenotype_1_ABL:
+    group: Average Bout Length
+    papername: phenotype_1_ABL
+  phenotype_1_NB:
+    group: Number of Bouts
+    papername: phenotype_1_NB
+  phenotype_1_TD:
+    group: Total Duration
+    papername: phenotype_1_TD
+  phenotype_20_ABL:
+    group: Average Bout Length
+    papername: phenotype_20_ABL
+  phenotype_20_NB:
+    group: Number of Bouts
+    papername: phenotype_20_NB
+  phenotype_20_TD:
+    group: Total Duration
+    papername: phenotype_20_TD
+  phenotype_21_ABL:
+    group: Average Bout Length
+    papername: phenotype_21_ABL
+  phenotype_21_NB:
+    group: Number of Bouts
+    papername: phenotype_21_NB
+  phenotype_21_TD:
+    group: Total Duration
+    papername: phenotype_21_TD
+  phenotype_22_ABL:
+    group: Average Bout Length
+    papername: phenotype_22_ABL
+  phenotype_22_NB:
+    group: Number of Bouts
+    papername: phenotype_22_NB
+  phenotype_22_TD:
+    group: Total Duration
+    papername: phenotype_22_TD
+  phenotype_23_ABL:
+    group: Average Bout Length
+    papername: phenotype_23_ABL
+  phenotype_23_NB:
+    group: Number of Bouts
+    papername: phenotype_23_NB
+  phenotype_23_TD:
+    group: Total Duration
+    papername: phenotype_23_TD
+  phenotype_24_ABL:
+    group: Average Bout Length
+    papername: phenotype_24_ABL
+  phenotype_24_NB:
+    group: Number of Bouts
+    papername: phenotype_24_NB
+  phenotype_24_TD:
+    group: Total Duration
+    papername: phenotype_24_TD
+  phenotype_25_ABL:
+    group: Average Bout Length
+    papername: phenotype_25_ABL
+  phenotype_25_NB:
+    group: Number of Bouts
+    papername: phenotype_25_NB
+  phenotype_25_TD:
+    group: Total Duration
+    papername: phenotype_25_TD
+  phenotype_26_ABL:
+    group: Average Bout Length
+    papername: phenotype_26_ABL
+  phenotype_26_NB:
+    group: Number of Bouts
+    papername: phenotype_26_NB
+  phenotype_26_TD:
+    group: Total Duration
+    papername: phenotype_26_TD
+  phenotype_27_ABL:
+    group: Average Bout Length
+    papername: phenotype_27_ABL
+  phenotype_27_NB:
+    group: Number of Bouts
+    papername: phenotype_27_NB
+  phenotype_27_TD:
+    group: Total Duration
+    papername: phenotype_27_TD
+  phenotype_28_ABL:
+    group: Average Bout Length
+    papername: phenotype_28_ABL
+  phenotype_28_NB:
+    group: Number of Bouts
+    papername: phenotype_28_NB
+  phenotype_28_TD:
+    group: Total Duration
+    papername: phenotype_28_TD
+  phenotype_29_ABL:
+    group: Average Bout Length
+    papername: phenotype_29_ABL
+  phenotype_29_NB:
+    group: Number of Bouts
+    papername: phenotype_29_NB
+  phenotype_29_TD:
+    group: Total Duration
+    papername: phenotype_29_TD
+  phenotype_2_ABL:
+    group: Average Bout Length
+    papername: phenotype_2_ABL
+  phenotype_2_NB:
+    group: Number of Bouts
+    papername: phenotype_2_NB
+  phenotype_2_TD:
+    group: Total Duration
+    papername: phenotype_2_TD
+  phenotype_30_ABL:
+    group: Average Bout Length
+    papername: phenotype_30_ABL
+  phenotype_30_NB:
+    group: Number of Bouts
+    papername: phenotype_30_NB
+  phenotype_30_TD:
+    group: Total Duration
+    papername: phenotype_30_TD
+  phenotype_31_ABL:
+    group: Average Bout Length
+    papername: phenotype_31_ABL
+  phenotype_31_NB:
+    group: Number of Bouts
+    papername: phenotype_31_NB
+  phenotype_31_TD:
+    group: Total Duration
+    papername: phenotype_31_TD
+  phenotype_32_ABL:
+    group: Average Bout Length
+    papername: phenotype_32_ABL
+  phenotype_32_NB:
+    group: Number of Bouts
+    papername: phenotype_32_NB
+  phenotype_32_TD:
+    group: Total Duration
+    papername: phenotype_32_TD
+  phenotype_33_ABL:
+    group: Average Bout Length
+    papername: phenotype_33_ABL
+  phenotype_33_NB:
+    group: Number of Bouts
+    papername: phenotype_33_NB
+  phenotype_33_TD:
+    group: Total Duration
+    papername: phenotype_33_TD
+  phenotype_34_ABL:
+    group: Average Bout Length
+    papername: phenotype_34_ABL
+  phenotype_34_NB:
+    group: Number of Bouts
+    papername: phenotype_34_NB
+  phenotype_34_TD:
+    group: Total Duration
+    papername: phenotype_34_TD
+  phenotype_35_ABL:
+    group: Average Bout Length
+    papername: phenotype_35_ABL
+  phenotype_35_NB:
+    group: Number of Bouts
+    papername: phenotype_35_NB
+  phenotype_35_TD:
+    group: Total Duration
+    papername: phenotype_35_TD
+  phenotype_36_ABL:
+    group: Average Bout Length
+    papername: phenotype_36_ABL
+  phenotype_36_NB:
+    group: Number of Bouts
+    papername: phenotype_36_NB
+  phenotype_36_TD:
+    group: Total Duration
+    papername: phenotype_36_TD
+  phenotype_37_ABL:
+    group: Average Bout Length
+    papername: phenotype_37_ABL
+  phenotype_37_NB:
+    group: Number of Bouts
+    papername: phenotype_37_NB
+  phenotype_37_TD:
+    group: Total Duration
+    papername: phenotype_37_TD
+  phenotype_38_ABL:
+    group: Average Bout Length
+    papername: phenotype_38_ABL
+  phenotype_38_NB:
+    group: Number of Bouts
+    papername: phenotype_38_NB
+  phenotype_38_TD:
+    group: Total Duration
+    papername: phenotype_38_TD
+  phenotype_39_ABL:
+    group: Average Bout Length
+    papername: phenotype_39_ABL
+  phenotype_39_NB:
+    group: Number of Bouts
+    papername: phenotype_39_NB
+  phenotype_39_TD:
+    group: Total Duration
+    papername: phenotype_39_TD
+  phenotype_3_ABL:
+    group: Average Bout Length
+    papername: phenotype_3_ABL
+  phenotype_3_NB:
+    group: Number of Bouts
+    papername: phenotype_3_NB
+  phenotype_3_TD:
+    group: Total Duration
+    papername: phenotype_3_TD
+  phenotype_40_ABL:
+    group: Average Bout Length
+    papername: phenotype_40_ABL
+  phenotype_40_NB:
+    group: Number of Bouts
+    papername: phenotype_40_NB
+  phenotype_40_TD:
+    group: Total Duration
+    papername: phenotype_40_TD
+  phenotype_41_ABL:
+    group: Average Bout Length
+    papername: phenotype_41_ABL
+  phenotype_41_NB:
+    group: Number of Bouts
+    papername: phenotype_41_NB
+  phenotype_41_TD:
+    group: Total Duration
+    papername: phenotype_41_TD
+  phenotype_42_ABL:
+    group: Average Bout Length
+    papername: phenotype_42_ABL
+  phenotype_42_NB:
+    group: Number of Bouts
+    papername: phenotype_42_NB
+  phenotype_42_TD:
+    group: Total Duration
+    papername: phenotype_42_TD
+  phenotype_43_ABL:
+    group: Average Bout Length
+    papername: phenotype_43_ABL
+  phenotype_43_NB:
+    group: Number of Bouts
+    papername: phenotype_43_NB
+  phenotype_43_TD:
+    group: Total Duration
+    papername: phenotype_43_TD
+  phenotype_44_ABL:
+    group: Average Bout Length
+    papername: phenotype_44_ABL
+  phenotype_44_NB:
+    group: Number of Bouts
+    papername: phenotype_44_NB
+  phenotype_44_TD:
+    group: Total Duration
+    papername: phenotype_44_TD
+  phenotype_45_ABL:
+    group: Average Bout Length
+    papername: phenotype_45_ABL
+  phenotype_45_NB:
+    group: Number of Bouts
+    papername: phenotype_45_NB
+  phenotype_45_TD:
+    group: Total Duration
+    papername: phenotype_45_TD
+  phenotype_46_ABL:
+    group: Average Bout Length
+    papername: phenotype_46_ABL
+  phenotype_46_NB:
+    group: Number of Bouts
+    papername: phenotype_46_NB
+  phenotype_46_TD:
+    group: Total Duration
+    papername: phenotype_46_TD
+  phenotype_47_ABL:
+    group: Average Bout Length
+    papername: phenotype_47_ABL
+  phenotype_47_NB:
+    group: Number of Bouts
+    papername: phenotype_47_NB
+  phenotype_47_TD:
+    group: Total Duration
+    papername: phenotype_47_TD
+  phenotype_48_ABL:
+    group: Average Bout Length
+    papername: phenotype_48_ABL
+  phenotype_48_NB:
+    group: Number of Bouts
+    papername: phenotype_48_NB
+  phenotype_48_TD:
+    group: Total Duration
+    papername: phenotype_48_TD
+  phenotype_49_ABL:
+    group: Average Bout Length
+    papername: phenotype_49_ABL
+  phenotype_49_NB:
+    group: Number of Bouts
+    papername: phenotype_49_NB
+  phenotype_49_TD:
+    group: Total Duration
+    papername: phenotype_49_TD
+  phenotype_4_ABL:
+    group: Average Bout Length
+    papername: phenotype_4_ABL
+  phenotype_4_NB:
+    group: Number of Bouts
+    papername: phenotype_4_NB
+  phenotype_4_TD:
+    group: Total Duration
+    papername: phenotype_4_TD
+  phenotype_50_ABL:
+    group: Average Bout Length
+    papername: phenotype_50_ABL
+  phenotype_50_NB:
+    group: Number of Bouts
+    papername: phenotype_50_NB
+  phenotype_50_TD:
+    group: Total Duration
+    papername: phenotype_50_TD
+  phenotype_51_ABL:
+    group: Average Bout Length
+    papername: phenotype_51_ABL
+  phenotype_51_NB:
+    group: Number of Bouts
+    papername: phenotype_51_NB
+  phenotype_51_TD:
+    group: Total Duration
+    papername: phenotype_51_TD
+  phenotype_52_ABL:
+    group: Average Bout Length
+    papername: phenotype_52_ABL
+  phenotype_52_NB:
+    group: Number of Bouts
+    papername: phenotype_52_NB
+  phenotype_52_TD:
+    group: Total Duration
+    papername: phenotype_52_TD
+  phenotype_53_ABL:
+    group: Average Bout Length
+    papername: phenotype_53_ABL
+  phenotype_53_NB:
+    group: Number of Bouts
+    papername: phenotype_53_NB
+  phenotype_53_TD:
+    group: Total Duration
+    papername: phenotype_53_TD
+  phenotype_54_ABL:
+    group: Average Bout Length
+    papername: phenotype_54_ABL
+  phenotype_54_NB:
+    group: Number of Bouts
+    papername: phenotype_54_NB
+  phenotype_54_TD:
+    group: Total Duration
+    papername: phenotype_54_TD
+  phenotype_55_ABL:
+    group: Average Bout Length
+    papername: phenotype_55_ABL
+  phenotype_55_NB:
+    group: Number of Bouts
+    papername: phenotype_55_NB
+  phenotype_55_TD:
+    group: Total Duration
+    papername: phenotype_55_TD
+  phenotype_56_ABL:
+    group: Average Bout Length
+    papername: phenotype_56_ABL
+  phenotype_56_NB:
+    group: Number of Bouts
+    papername: phenotype_56_NB
+  phenotype_56_TD:
+    group: Total Duration
+    papername: phenotype_56_TD
+  phenotype_57_ABL:
+    group: Average Bout Length
+    papername: phenotype_57_ABL
+  phenotype_57_NB:
+    group: Number of Bouts
+    papername: phenotype_57_NB
+  phenotype_57_TD:
+    group: Total Duration
+    papername: phenotype_57_TD
+  phenotype_58_ABL:
+    group: Average Bout Length
+    papername: phenotype_58_ABL
+  phenotype_58_NB:
+    group: Number of Bouts
+    papername: phenotype_58_NB
+  phenotype_58_TD:
+    group: Total Duration
+    papername: phenotype_58_TD
+  phenotype_59_ABL:
+    group: Average Bout Length
+    papername: phenotype_59_ABL
+  phenotype_59_NB:
+    group: Number of Bouts
+    papername: phenotype_59_NB
+  phenotype_59_TD:
+    group: Total Duration
+    papername: phenotype_59_TD
+  phenotype_5_ABL:
+    group: Average Bout Length
+    papername: phenotype_5_ABL
+  phenotype_5_NB:
+    group: Number of Bouts
+    papername: phenotype_5_NB
+  phenotype_5_TD:
+    group: Total Duration
+    papername: phenotype_5_TD
+  phenotype_60_ABL:
+    group: Average Bout Length
+    papername: phenotype_60_ABL
+  phenotype_60_NB:
+    group: Number of Bouts
+    papername: phenotype_60_NB
+  phenotype_60_TD:
+    group: Total Duration
+    papername: phenotype_60_TD
+  phenotype_6_ABL:
+    group: Average Bout Length
+    papername: phenotype_6_ABL
+  phenotype_6_NB:
+    group: Number of Bouts
+    papername: phenotype_6_NB
+  phenotype_6_TD:
+    group: Total Duration
+    papername: phenotype_6_TD
+  phenotype_7_ABL:
+    group: Average Bout Length
+    papername: phenotype_7_ABL
+  phenotype_7_NB:
+    group: Number of Bouts
+    papername: phenotype_7_NB
+  phenotype_7_TD:
+    group: Total Duration
+    papername: phenotype_7_TD
+  phenotype_8_ABL:
+    group: Average Bout Length
+    papername: phenotype_8_ABL
+  phenotype_8_NB:
+    group: Number of Bouts
+    papername: phenotype_8_NB
+  phenotype_8_TD:
+    group: Total Duration
+    papername: phenotype_8_TD
+  phenotype_9_ABL:
+    group: Average Bout Length
+    papername: phenotype_9_ABL
+  phenotype_9_NB:
+    group: Number of Bouts
+    papername: phenotype_9_NB
+  phenotype_9_TD:
+    group: Total Duration
+    papername: phenotype_9_TD
 sex: Sex
 strain: Strain
 translate:
-# - BTBRT...tf.J: BTBR T<+> Itpr3<tf>/J
-# - 129S1.SvImJ: 129S1/SvImJ
-# - C3H/HeOuJ: C3H/HeJ
-# - NON/LtJ: NON/ShiLtJ
-# - NOD/LtJ: NOD/ShiLtJ
-# - CAST/EiJ: none
-# - PWD/PhJ: none
-# - CZECHII/EiJ: none
-# - PWK/PhJ: none
-# - MSM/MsJ: none
-# - MOLF/EiJ: none
+- BTBR T<+>ltpr3<tf>/J: BTBR T<+> Itpr3<tf>/J
+- 129S1/SvlmJ: 129S1/SvImJ
+- C3H/HeOuJ: C3H/HeJ
+- NON/ShiLtJ: NON/ShiLtJ
+- NOD/ShiLtJ: NOD/ShiLtJ
+- CAST/EiJ: none
+- PWD/PhJ: none
+- CZECHII/EiJ: none
+- PWK/PhJ: none
+- MSM/MsJ: none
+- MOLF/EiJ: none

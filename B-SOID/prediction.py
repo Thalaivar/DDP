@@ -255,7 +255,7 @@ def videomaker(frames, fps, outfile):
 
 
 def create_class_examples(bsoid: BSOID, video_dir: str, min_bout_len: int, n_examples: int, outdir: str):
-    with open(os.path.join(video_dir, "90_model.model"), "rb") as f:
+    with open(os.path.join("D:/IIT/DDP/data/finals/max_label.model"), "rb") as f:
         clf = joblib.load(f)
 
     min_bout_len = bsoid.fps * min_bout_len // 1000

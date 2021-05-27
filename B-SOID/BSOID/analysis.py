@@ -7,7 +7,6 @@ import numpy as np
 import pandas as pd
 
 import logging
-from BSOID import data
 logger = logging.getLogger(__name__)
 
 from BSOID.data import *
@@ -49,6 +48,8 @@ def labels_for_mouse(metadata, clf, data_dir, bsoid, min_video_len):
 
 def bout_stats(labels, max_label, min_bout_len, fps):
     stats = {}
+    min_bout_len = min_bout_len * fps // 1000
+
     for i in range(max_label):
         stats[i] = {'td': None, 'abl': [], 'nb': 0}
     
@@ -165,16 +166,16 @@ def gemma_files(label_info, input_csv, max_label, min_bout_len, fps, default_con
     stats_df.update({f"phenotype_{i}_nb": [] for i in range(max_label)})
 
     retain_idx = []
-    for i in range(input_csv.shape[0]):
-        key = get_key_from_metadata(dict(input_csv.iloc[i]))
+    for k in range(input_csv.shape[0]):
+        key = get_key_from_metadata(dict(input_csv.iloc[k]))
         if key in strain_bout_stats:
             for i in range(max_label):
                 stats_df[f"phenotype_{i}_td"].append(strain_bout_stats[key][f"phenotype_{i}_td"])
                 stats_df[f"phenotype_{i}_abl"].append(strain_bout_stats[key][f"phenotype_{i}_abl"])
                 stats_df[f"phenotype_{i}_nb"].append(strain_bout_stats[key][f"phenotype_{i}_nb"])
-            retain_idx.append(i)
+            retain_idx.append(k)
     
-    gemma_csv = pd.concat([input_csv.iloc[retain_idx, :], pd.DataFrame.from_dict(stats_df)], axis=1)
+    gemma_csv = pd.concat([input_csv.iloc[retain_idx, :].reset_index(), pd.DataFrame.from_dict(stats_df)], axis=1)
 
     config = {}
     config["strain"] = "Strain"
@@ -196,4 +197,4 @@ def gemma_files(label_info, input_csv, max_label, min_bout_len, fps, default_con
     with open(config_file, 'w') as f:
         yaml.dump(config, f, default_flow_style=False)
     
-    gemma_csv.to_csv(os.path.join(os.path.split(default_config_file)[0], "gemma_data.csv"))
+    gemma_csv.to_csv(os.path.join(os.path.split(default_config_file)[0], "gemma_data.csv"), index=False)
