@@ -24,7 +24,7 @@ def get_data(metadata, data_dir, bsoid, min_video_len):
         conf, pos = process_h5py_data(h5py.File(filename, 'r'))
         if conf.shape[0] >= min_video_len:
             data = bsoid_format(conf, pos)
-            fdata, perc_filt = likelihood_filter(data, bsoid.fps, bsoid.bodyparts, end_trim=5, clip_window=-1, conf_threshold=0.3)
+            fdata, perc_filt = likelihood_filter(data, bsoid.fps, bsoid.conf_threshold, bsoid.bodyparts, end_trim=5, clip_window=-1)
 
             strain, mouse_id = metadata['Strain'], metadata['MouseID']
             if perc_filt > 10:
