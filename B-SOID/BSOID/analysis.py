@@ -42,7 +42,7 @@ def labels_for_mouse(metadata, clf, data_dir, bsoid, min_video_len):
     fdata = get_data(metadata, data_dir, bsoid, min_video_len)
     if fdata is not None:
         labels = get_frameshifted_prediction(fdata, clf, bsoid.fps, bsoid.stride_window)
-        return labels
+        return labels.astype(int)
     else:
         return None
 
@@ -89,7 +89,12 @@ def transition_matrix(labels, max_label):
     return tmat
 
 def proportion_usage(labels, max_label):
-    _, prop = np.unique(labels, return_counts=True)
+    prop = np.zeros((max_label+1,))
+    class_labels, counts = np.unique(labels, return_counts=True)
+
+    for i in range(class_labels.size):
+        prop[class_labels[i]] = counts[i]
+        
     prop /= labels.size
     return prop
 
