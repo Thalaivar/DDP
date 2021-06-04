@@ -26,4 +26,4 @@ INPUT_FILE=$HOME_DIR/$BASE_DIR/gemma_data.csv
 module load singularity
 singularity cache clean
 
-nextflow run TheJacksonLaboratory/mousegwas --yaml $CONFIG_FILE --shufyaml $SHUFFL_FILE --input $INPUT_FILE --outdir $OUT_DIR/gemma_output -profile slurm,singularity --addgwas " -d 10 "
+nextflow run /home/laadd/mousegwas/ --yaml $CONFIG_FILE --shufyaml $SHUFFL_FILE --input $INPUT_FILE --outdir $OUT_DIR/gemma_output -profile slurm,singularity --addgwas " -d 10 "

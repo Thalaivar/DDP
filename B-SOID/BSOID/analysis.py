@@ -78,6 +78,8 @@ def bout_stats(labels, max_label, min_bout_len, fps):
     return stats    
 
 def transition_matrix(labels, max_label):
+    labels = labels.astype(int)
+    
     tmat = np.zeros((max_label, max_label))
     
     curr_lab = labels[0]
@@ -85,11 +87,16 @@ def transition_matrix(labels, max_label):
         tmat[curr_lab, labels[i]] += 1
         curr_lab = labels[i]
     
-    tmat = tmat / tmat.sum(axis=1, keepdims=True)
+    for i in range(tmat.shape[0]):
+        if tmat[i].sum() > 0:
+            tmat[i] /= tmat[i].sum()
+
     return tmat
 
 def proportion_usage(labels, max_label):
-    prop = np.zeros((max_label+1,))
+    labels = labels.astype(int)
+
+    prop = np.zeros((max_label,))
     class_labels, counts = np.unique(labels, return_counts=True)
 
     for i in range(class_labels.size):
@@ -162,6 +169,52 @@ def transition_matrix_across_strains(label_info, max_label):
         ]
     
     return tmat
+
+def gemma_transitions(label_info, input_csv, max_label, default_config_file):
+    tmats = transition_matrix_across_strains(label_info, max_label)
+    transitions = {}
+    for _, data in tmats.items():
+        for d in data:
+            transitions[get_key_from_metadata(d["metadata"])] = d["tmat"]
+    del tmats
+
+    trans_df = {}
+    for i in range(max_label):
+        for j in range(max_label):
+            trans_df[f"transition_{i}_{j}"] = []
+    
+    retain_idx = []
+    for k in range(input_csv.shape[0]):
+        key = get_key_from_metadata(dict(input_csv.iloc[k]))
+        if key in transitions:
+            for i in range(max_label):
+                for j in range(max_label):
+                    trans_df[f"transition_{i}_{j}"].append(transitions[key][i,j])
+    
+            retain_idx.append(k)
+    
+    transitions_csv = pd.concat([input_csv.iloc[retain_idx, :].reset_index(), pd.DataFrame.from_dict(trans_df)], axis=1)
+    
+    config = {}
+    config["strain"] = "Strain"
+    config["sex"] = "Sex"
+    config["phenotypes"] = {}
+    config["groups"] = ["Transitions"]
+
+    for i in range(max_label):
+        for j in range(max_label):
+            config["phenotypes"][f"transition_{i}_{j}"] = {"papername": f"Transition {i}-{j}", "group": "Transitions"}
+
+    config["covar"] = ["Sex"]
+
+    with open(default_config_file, 'r') as f:
+        config.update(yaml.load(f, Loader=yaml.FullLoader))
+    
+    config_file = os.path.join(os.path.split(default_config_file)[0], "gemma_config.yaml")
+    with open(config_file, 'w') as f:
+        yaml.dump(config, f, default_flow_style=False)
+    
+    transitions_csv.to_csv(os.path.join(os.path.split(default_config_file)[0], "gemma_trans.csv"), index=False)
 
 def gemma_files(label_info, input_csv, max_label, min_bout_len, fps, default_config_file):
     strain_bout_stats = bout_stats_for_all_strains(label_info, max_label, min_bout_len, fps)

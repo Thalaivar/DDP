@@ -68,13 +68,19 @@ def get_random_video_and_keypoints(data_file, save_dir):
     data = pd.read_csv(data_file)
     
     session = ftplib.FTP("ftp.box.com")
-    session.login("ae16b011@smail.iitm.ac.in", "rSNxWCBv1407")
+    from getpass import getpass
+    password = getpass("Box login password: ")
+    session.login("ae16b011@smail.iitm.ac.in", password)
 
     data = dict(data.iloc[np.random.randint(0, data.shape[0], 1)[0]])
     data_filename, vid_filename = get_video_and_keypoint_data(session, data, save_dir)
     session.quit()
 
     return data_filename, vid_filename
+
+def bootstrap_estimate(x, statistic=np.mean, ns=100, n=25):
+    thetas = np.vstack([statistic(x[np.random.choice(np.arange(x.shape[0]), size=n, replace=True)], axis=0) for _ in range(ns)])
+    return thetas.std(axis=0)    
 
 
 def get_video_and_keypoint_data(session, data, save_dir):
