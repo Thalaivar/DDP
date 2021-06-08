@@ -415,3 +415,45 @@ class BSOID:
              f' Min. Confidence : {self.conf_threshold}\n'
              f'  Stride Window  : {self.stride_window * 1000 // self.fps}ms\n')
         print(s)
+
+if __name__ == "__main__":
+    import logging
+    logging.basicConfig(level=logging.INFO)
+
+    import argparse 
+    parser = argparse.ArgumentParser("bsoid.py")
+    parser.add_argument("-config", type=str, help="configuration file for B-SOID")
+    parser.add_argument("--load")
+    parser.add_argument("--extract")
+    parser.add_argument("--find-ndim")
+    parser.add_argument("--cluster-per-strain")
+    parser.add_argument("--pool")
+    parser.add_argument("--train")
+
+    # arguments for loading dataset
+    parser.add_argument("--n", type=int)
+    parser.add_argument("--n_strains", type=int)
+    parser.add_argument("--min-video-len", type=int)
+    parser.add_argument("--n-jobs", type=int)
+    
+    args, _ = parser.parse_known_args()
+
+    bsoid = BSOID(args.config)
+
+    if args.load is not None:
+        bsoid.load_from_dataset(n=args.n, n_strains=args.n_strains, min_video_len=args.min_video_len, n_jobs=args.n_jobs)
+    
+    if args.extract is not None:
+        bsoid.features_from_points()
+    
+    if args.find_ndim is not None:
+        bsoid.best_reduced_dim(var_prop=0.9)
+    
+    if args.cluster_per_strain is not None:
+        bsoid.cluster_strainwise()
+    
+    if args.pool is not None:
+        bsoid.pool()
+    
+    if args.train is not None:
+        bsoid.train()
