@@ -15,8 +15,9 @@ from tqdm import tqdm
 from psutil import virtual_memory
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
-from sklearn.neural_network import MLPClassifier
 from sklearn.model_selection import train_test_split, cross_val_score
+from catboost import CatBoostClassifier
+
 from BSOID.utils import *
 from BSOID.data import *
 from BSOID.clustering import *
@@ -52,10 +53,16 @@ class BSOID:
         self.num_points     = config["num_points"]
         self.hdbscan_params = config["hdbscan_params"]
         self.umap_params    = config["umap_params"]
+        self.scale_before_umap = config["scale_before_umap"]
         self.jax_dataset    = config["JAX_DATASET"]
         
-        self.training_set_size = config["training_set_size"]
-        self.scale_before_umap = config["scale_before_umap"]
+        self.pool_thresh = config["pool_thresh"]
+        self.use_exemplars = config["use_exemplars"]
+        
+        self.clf_params = config["clf_params"]
+
+        # set hdbscan core dist jobs to max
+        self.hdbscan_params["core_dist_n_jobs"] = psutil.cpu_count(logical=False)
         
         for d in [self.base_dir, self.output_dir, self.csv_dir, self.raw_dir]:
             try: os.mkdir(d)
@@ -177,7 +184,8 @@ class BSOID:
         logger.info(f"extracting from {len(all_data)} strains with {n} animals per strain")
 
         import psutil
-        num_cpus = psutil.cpu_count(logical=False)    
+        num_cpus = psutil.cpu_count(logical=False)   
+        n_jobs = min(n_jobs, num_cpus) 
         filtered_data = Parallel(n_jobs=n_jobs)(delayed(filter_for_strain)(*all_data[i], n) for i in tqdm(range(len(all_data))))
         
         filtered_data = [data for data in filtered_data if len(data[0]) > 0]
@@ -276,10 +284,14 @@ class BSOID:
         num_cpus = psutil.cpu_count(logical=False)
         ray.init(num_cpus=num_cpus)
         
+        # can interfere with ray
+        hdbscan_params = self.hdbscan_params
+        hdbscan_params["core_dist_n_jobs"] = 1
+
         kwargs = {
             "num_points": self.num_points,
             "umap_params": self.umap_params,
-            "hdbscan_params": self.hdbscan_params,
+            "hdbscan_params": hdbscan_params,
             "scale": self.scale_before_umap,
             "verbose": False
         }
@@ -322,6 +334,31 @@ class BSOID:
         
         return rep_data, clustering
     
+    def pool(self):
+        templates, clustering = self.load_strainwise_clustering()
+        clusters = collect_strain_clusters(templates, clustering, self.pool_thresh, self.use_exemplars)
+        del templates, clustering
+
+        templates = np.vstack([np.vstack(data) for _, data in clusters.items()])
+        logger.info(f"embedding {templates.shape} templates from {sum(len(data) for _, data in clusters.items())} clusters")
+
+        clustering = get_clusters(templates, self.hdbscan_params, self.umap_params, self.scale_before_umap, verbose=True)
+        
+        with open(os.path.join(self.output_dir, f"{self.run_id}_dataset.sav"), "wb") as f:
+            joblib.dump([templates, clustering], f)
+
+        return templates, clustering
+
+    def train(self):
+        templates, clustering = self.load_pooled_dataset()
+        clf = CatBoostClassifier(**self.clf_params)
+        clf.fit(templates, clustering["soft_labels"])
+
+        with open(os.path.join(self.output_dir, f"{self.run_id}_classifiers.sav")) as f:
+            joblib.dump(clf, f)
+        
+        return clf
+    
     def load_filtered_data(self):
         with open(self.output_dir + '/' + self.run_id + '_filtered_data.sav', 'rb') as f:
             filtered_data = joblib.load(f)
@@ -346,6 +383,12 @@ class BSOID:
 
     def load_strainwise_clustering(self):
         with open(self.output_dir + '/' + self.run_id + '_strainwise_clustering.sav', 'rb') as f:
+            templates, clustering = joblib.load(f)
+        
+        return templates, clustering
+
+    def load_pooled_dataset(self):
+        with open(os.path.join(self.output_dir, f"{self.run_id}_dataset.sav"), "rb") as f:
             templates, clustering = joblib.load(f)
         
         return templates, clustering
