@@ -170,7 +170,7 @@ def transition_matrix_across_strains(label_info, max_label):
     
     return tmat
 
-def gemma_transitions(label_info, input_csv, max_label, default_config_file):
+def gemma_transitions(label_info, input_csv, max_label, default_config_file, thresh=None):
     tmats = transition_matrix_across_strains(label_info, max_label)
     transitions = {}
     for _, data in tmats.items():
@@ -192,9 +192,20 @@ def gemma_transitions(label_info, input_csv, max_label, default_config_file):
                     trans_df[f"transition_{i}_{j}"].append(transitions[key][i,j])
     
             retain_idx.append(k)
-    
+            
     transitions_csv = pd.concat([input_csv.iloc[retain_idx, :].reset_index(), pd.DataFrame.from_dict(trans_df)], axis=1)
     
+    if thresh is None:
+        thresh = 1
+
+    drop_cols = []
+    for col in transitions_csv.columns:
+        if "transition" in col:
+            n = transitions_csv[col].unique().size
+            if n <= thresh:
+                drop_cols.append(col)
+    transitions_csv.drop(drop_cols, axis=1, inplace=True)
+
     config = {}
     config["strain"] = "Strain"
     config["sex"] = "Sex"
@@ -203,7 +214,8 @@ def gemma_transitions(label_info, input_csv, max_label, default_config_file):
 
     for i in range(max_label):
         for j in range(max_label):
-            config["phenotypes"][f"transition_{i}_{j}"] = {"papername": f"Transition {i}-{j}", "group": "Transitions"}
+            if f"transition_{i}_{j}" not in drop_cols:
+                config["phenotypes"][f"transition_{i}_{j}"] = {"papername": f"Transition {i}-{j}", "group": "Transitions"}
 
     config["covar"] = ["Sex"]
 

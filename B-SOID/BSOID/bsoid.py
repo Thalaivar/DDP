@@ -30,8 +30,11 @@ logger = logging.getLogger(__name__)
 
 class BSOID:
     def __init__(self, config_file):
-        with open(config_file, 'r') as f:
-            config = yaml.load(f, Loader=yaml.FullLoader)
+        if isinstance(config_file, dict):
+            config = config_file
+        else:
+            with open(config_file, 'r') as f:
+                config = yaml.load(f, Loader=yaml.FullLoader)
 
         self.run_id     = config["run_id"]
         base_dir        = os.path.join(config["base_dir"], self.run_id)

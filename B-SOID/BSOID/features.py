@@ -3,7 +3,6 @@ import logging
 import numpy as np
 from itertools import combinations
 from BSOID.preprocessing import windowed_feats, smoothen_data
-from behavelet import wavelet_transform
 
 """
 B-SOID original
