@@ -426,12 +426,12 @@ if __name__ == "__main__":
     import argparse 
     parser = argparse.ArgumentParser("bsoid.py")
     parser.add_argument("-config", type=str, help="configuration file for B-SOID")
-    parser.add_argument("--load")
-    parser.add_argument("--extract")
-    parser.add_argument("--find-ndim")
-    parser.add_argument("--cluster-per-strain")
-    parser.add_argument("--pool")
-    parser.add_argument("--train")
+    parser.add_argument("--load", action="store_true")
+    parser.add_argument("--extract", action="store_true")
+    parser.add_argument("--find-ndim", action="store_true")
+    parser.add_argument("--cluster-per-strain", action="store_true")
+    parser.add_argument("--pool", action="store_true")
+    parser.add_argument("--train", action="store_true")
 
     # arguments for loading dataset
     parser.add_argument("--n", type=int)
@@ -443,20 +443,20 @@ if __name__ == "__main__":
 
     bsoid = BSOID(args.config)
 
-    if args.load is not None:
+    if args.load:
         bsoid.load_from_dataset(n=args.n, n_strains=args.n_strains, min_video_len=args.min_video_len, n_jobs=args.n_jobs)
     
-    if args.extract is not None:
+    if args.extract:
         bsoid.features_from_points()
     
-    if args.find_ndim is not None:
+    if args.find_ndim:
         bsoid.best_reduced_dim(var_prop=0.9)
     
-    if args.cluster_per_strain is not None:
+    if args.cluster_per_strain:
         bsoid.cluster_strainwise()
     
-    if args.pool is not None:
+    if args.pool:
         bsoid.pool()
     
-    if args.train is not None:
+    if args.train:
         bsoid.train()
