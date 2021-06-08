@@ -18,6 +18,9 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split, cross_val_score
 from catboost import CatBoostClassifier
 
+import sys
+sys.path.insert(0, "/home/laadd/DDP/B-SOID")
+
 from BSOID.utils import *
 from BSOID.data import *
 from BSOID.clustering import *
