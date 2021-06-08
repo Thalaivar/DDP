@@ -5,7 +5,7 @@ import subprocess
 from bsoid_stability_test import bsoid_stabilitytest_predictions
 
 def execute_all_my_runs(nruns=50):
-    base_dir = "/fastscratch/laadd/bsoid_stability"
+    base_dir = "/fastscratch/laadd/my_stability"
     config_file = "../config/config.yaml"
 
     for i in range(nruns):
