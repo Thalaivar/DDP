@@ -34,7 +34,7 @@ def cleanup_bsoid_runs():
     models = []
     for f in os.listdir(base_dir):
         if f.endswith(".model"):
-            with open(os.path.join(base_dir, f)) as ff:
+            with open(os.path.join(base_dir, f), "rb") as ff:
                 models.append(joblib.load(ff))
             os.remove(os.path.join(base_dir, f))
     

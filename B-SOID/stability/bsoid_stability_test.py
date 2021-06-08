@@ -61,7 +61,7 @@ def bsoid_stabilitytest_train_model(config_file, run_id, base_dir, train_size):
     fdata = bsoid.load_filtered_data()
     
     feats, strains = [], list(fdata.keys())
-    for strain in strains[:10]:
+    for strain in strains:
         feats.extend(Parallel(n_jobs=5)(delayed(extract_bsoid_feats)(data, bsoid.fps, bsoid.stride_window) for data in fdata[strain]))
         del fdata[strain]
     feats = np.vstack(feats)
@@ -83,9 +83,12 @@ def bsoid_stabilitytest_train_model(config_file, run_id, base_dir, train_size):
         joblib.dump(model, f)
 
 def bsoid_stabilitytest_predictions(models, config_file, test_size, base_dir):
-    feats = []
-    for _, data in BSOID(config_file).load_features(collect=False).items():
-        feats.extend(data)
+    bsoid = BSOID(config_file)
+    fdata = bsoid.load_filtered_data()
+    feats, strains = [], list(fdata.keys())
+    for strain in strains:
+        feats.extend(Parallel(n_jobs=5)(delayed(extract_bsoid_feats)(data, bsoid.fps, bsoid.stride_window) for data in fdata[strain]))
+        del fdata[strain]
     feats = np.vstack(feats)
 
     feats = feats[np.random.choice(feats.shape[0], test_size, replace=False)]
