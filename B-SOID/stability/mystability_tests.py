@@ -15,7 +15,7 @@ def mystability_train_model(config_file, run_id, base_dir):
     bsoid = BSOID(config)
 
     with open(os.path.join(bsoid.output_dir, f"{bsoid.run_id}_features.sav"), "wb") as f:
-        joblib.dump(fdata, f)
+        joblib.dump(feats, f)
     del feats
 
     bsoid.cluster_strainwise()
