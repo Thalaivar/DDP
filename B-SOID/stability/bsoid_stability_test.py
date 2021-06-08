@@ -53,28 +53,16 @@ def bsoid_cluster(embeddings, **hdbscan_params):
 
 def get_bsoid_clusters(feats: np.ndarray, hdbscan_params: dict, umap_params: dict):
     embedding = embed_data(feats, scale=True, **umap_params)
-    labels, _, soft_labels, _ = bsoid_cluster(embedding, verbose=False, **hdbscan_params)
+    labels, _, soft_labels, _ = bsoid_cluster(embedding, **hdbscan_params)
     return {"labels": labels, "soft_labels": soft_labels}
 
 def bsoid_stabilitytest_train_model(config_file, run_id, base_dir, train_size): 
-    fdata = BSOID(config_file).load_filtered_data()
-
-    with open(config_file, 'r') as f:
-        config = yaml.load(f, Loader=yaml.FullLoader)
-    
-    config["run_id"] = f"run-{run_id}"
-    config["base_dir"] = base_dir
-    bsoid = BSOID(config)
-
-    with open(os.path.join(bsoid.output_dir, f"{bsoid.run_id}_filtered_data.sav"), "wb") as f:
-        joblib.dump(fdata, f)
-    del fdata
-
+    bsoid = BSOID(config_file)
     fdata = bsoid.load_filtered_data()
     
     feats, strains = [], list(fdata.keys())
-    for strain in strains:
-        feats.extend(Parallel(n_jobs=2)(delayed(extract_bsoid_feats)(data, bsoid.fps, bsoid.stride_window) for data in fdata[strain]))
+    for strain in strains[:10]:
+        feats.extend(Parallel(n_jobs=5)(delayed(extract_bsoid_feats)(data, bsoid.fps, bsoid.stride_window) for data in fdata[strain]))
         del fdata[strain]
     feats = np.vstack(feats)
     
@@ -93,8 +81,6 @@ def bsoid_stabilitytest_train_model(config_file, run_id, base_dir, train_size):
     
     with open(os.path.join(base_dir, f"run-{run_id}.model"), "wb") as f:
         joblib.dump(model, f)
-    
-    shutil.rmtree(bsoid.base_dir, ignore_errors=True)
 
 def bsoid_stabilitytest_predictions(models, config_file, test_size, base_dir):
     feats = []
