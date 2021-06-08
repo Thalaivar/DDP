@@ -4,6 +4,26 @@ import subprocess
 
 from bsoid_stability_test import bsoid_stabilitytest_predictions
 
+def execute_all_my_runs(nruns=50):
+    base_dir = "/fastscratch/laadd/bsoid_stability"
+    config_file = "../config/config.yaml"
+
+    for i in range(nruns):
+        job_command = f"python ./mystability_tests.py --config {config_file} --run-id {i} --base-dir {base_dir}"
+        with open("./my_stability.sh", 'a') as f:
+            f.write('\n')
+            f.write(job_command) 
+        
+        launch_cmd = f"sbatch ./my_stability.sh"
+        subprocess.call(launch_cmd, shell=True)
+
+        with open("./my_stability.sh", 'r') as f:
+            lines = f.readlines()
+        lines = lines[:-1]
+        lines[-1] = lines[-1][:-1]
+        with open("./my_stability.sh", 'w') as f:
+            f.writelines(lines)
+
 # before running, check if ./bsoid_stability.sh has correct job parameters
 def execute_all_bsoid_runs(nruns=50):
     base_dir = "/fastscratch/laadd/bsoid_stability"
