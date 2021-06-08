@@ -2,7 +2,6 @@ import sys
 sys.path.insert(0, "/home/laadd/DDP/B-SOID/")
 
 import os
-import ray
 import yaml
 import psutil
 import shutil
@@ -62,7 +61,7 @@ def get_bsoid_clusters(feats: np.ndarray, hdbscan_params: dict, umap_params: dic
     logger.info(f"embedded {feats.shape} to {embedding.shape[1]}D with {labels.max() + 1} clusters and entropy ratio={round(calculate_entropy_ratio(soft_labels),3)}")
     return {"labels": labels, "soft_labels": soft_labels}
 
-def bsoid_stability_test_train_model(config_file, run_id, base_dir, train_size=int(5e5)):
+def bsoid_stabilitytest_train_model(config_file, run_id, base_dir, train_size):
     fdata = BSOID(config_file).load_filtered_data()
 
     with open(config_file, 'r') as f:
@@ -80,7 +79,7 @@ def bsoid_stability_test_train_model(config_file, run_id, base_dir, train_size=i
     
     feats, strains = [], list(fdata.keys())
     for strain in strains:
-        feats.extend(Parallel(n_jobs=5)(delayed(extract_bsoid_feats)(data, bsoid.fps, bsoid.stride_window) for data in fdata[strain]))
+        feats.extend([extract_bsoid_feats(data, bsoid.fps, bsoid.stride_window) for data in fdata[strain]])
         del fdata[strain]
     feats = np.vstack(feats)
     
@@ -101,6 +100,9 @@ def bsoid_stability_test_train_model(config_file, run_id, base_dir, train_size=i
         joblib.dump(model, f)
     
     shutil.rmtree(bsoid.base_dir, ignore_errors=True)
+
+def execute_all_bsoid_runs(nruns, base_dir, train_size=int(5e5)):
+
 
 def my_stability_test(nruns=50, test_size=int(1e5)):
     num_cpus = psutil.cpu_count(logical=False)
