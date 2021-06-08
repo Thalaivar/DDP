@@ -8,7 +8,6 @@ from bsoid_stability_test import bsoid_stabilitytest_predictions
 def execute_all_bsoid_runs(nruns=50):
     base_dir = "/fastscratch/laadd/bsoid_stability"
     train_size = 500000
-    test_size = 100000
     config_file = "../config/config.yaml"
 
     for i in range(nruns):
@@ -27,11 +26,16 @@ def execute_all_bsoid_runs(nruns=50):
         with open("./bsoid_stability.sh", 'w') as f:
             f.writelines(lines)
     
+def cleanup_bsoid_runs():
+    base_dir = "/fastscratch/laadd/bsoid_stability"
+    test_size = 100000
+    config_file = "../config/config.yaml"
+
     models = []
     for f in os.listdir(base_dir):
         if f.endswith(".model"):
             with open(os.path.join(base_dir, f)) as ff:
                 models.append(joblib.load(ff))
             os.remove(os.path.join(base_dir, f))
-
+    
     bsoid_stabilitytest_predictions(models, config_file, test_size, base_dir)

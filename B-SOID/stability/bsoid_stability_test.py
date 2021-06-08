@@ -41,8 +41,6 @@ def bsoid_cluster(embeddings, **hdbscan_params):
         numulab.append(labels.max() + 1)
         entropy.append(calculate_entropy_ratio(labels))
 
-        if verbose:
-            logger.info(f"identified {numulab[-1]} clusters with min_sample_prop={round(min_c,2)} and entropy ratio={round(entropy[-1], 3)}")
         if numulab[-1] > max_classes:
             max_classes = numulab[-1]
             best_clf = trained_classifier
@@ -76,7 +74,7 @@ def bsoid_stabilitytest_train_model(config_file, run_id, base_dir, train_size):
     
     feats, strains = [], list(fdata.keys())
     for strain in strains:
-        feats.extend([extract_bsoid_feats(data, bsoid.fps, bsoid.stride_window) for data in fdata[strain]])
+        feats.extend(Parallel(n_jobs=2)(delayed(extract_bsoid_feats)(data, bsoid.fps, bsoid.stride_window) for data in fdata[strain]))
         del fdata[strain]
     feats = np.vstack(feats)
     
