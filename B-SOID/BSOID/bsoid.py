@@ -402,11 +402,6 @@ class BSOID:
         
         return clf
 
-    def load_umap_results(self, collect=None):
-        with open(self.output_dir + '/' + self.run_id + '_umap.sav', 'rb') as f:
-            feats_usc, feats_sc, umap_embeddings = joblib.load(f)
-        return feats_usc, feats_sc, umap_embeddings
-
     def save(self):
         with open(self.output_dir + '/' + self.run_id + '_bsoid.model', 'wb') as f:
             joblib.dump(self, f)

@@ -18,16 +18,20 @@ def mystability_train_model(config_file, run_id, base_dir):
         joblib.dump(feats, f)
     del feats
 
-    bsoid.cluster_strainwise()
-    bsoid.pool()
-    model = bsoid.train()
+    os.environ["PYTHONPATH"] = "/home/laadd/DDP/B-SOID/:" + os.environ.get("PYTHONPATH", "")
+    os.environ["PYTHONPATH"] = "/home/laadd/DDP/B-SOID/BSOID:" + os.environ.get("PYTHONPATH", "")
+    os.environ["PYTHONPATH"] = "/home/laadd/DDP/B-SOID/stability:" + os.environ.get("PYTHONPATH", "")
 
-    with open(os.path.join(base_dir, f"run-{run_id}.model"), "wb") as f:
-        joblib.dump(model, f)
+    bsoid.cluster_strainwise()
+    templates, clustering = bsoid.pool()
+    
+    with open(os.path.join(base_dir, f"{bsoid.run_id}_dataset.sav"), "rb") as f:
+        joblib.dump([templates, clustering], f)
     
     shutil.rmtree(bsoid.base_dir, ignore_errors=True)
 
-def bsoid_stabilitytest_predictions(models, config_file, test_size, base_dir):
+# def download_datasets(base)
+def mystabilitytest_predictions(models, config_file, test_size, base_dir):
     feats = []
     for _, data in BSOID(config_file).load_features(collect=False).items():
         feats.extend(data)
