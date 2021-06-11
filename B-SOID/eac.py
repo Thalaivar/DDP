@@ -1,3 +1,4 @@
+import time
 import subprocess
 from BSOID.bsoid import *
 from BSOID.similarity import *
@@ -67,11 +68,20 @@ def evidence_accumulation_matrix_runs(nruns, base_dir, config_file, default_job_
         with open(default_job_file, 'w') as f:
             f.writelines(lines)
 
+        time.sleep(60)
+
 def collect_runs(base_dir):
     labels = [np.load(os.path.join(base_dir, f)) for f in os.listdir(base_dir) if f.endswith("labels.npy")]
-    for lab in labels:
 
+    nclusters = labels[0].size
+    eac_mat = np.zeros((nclusters, nclusters))
+    for lab in labels:
+        eac_mat += coassociation_matrix(lab)
     
+    eac_mat /= len(labels)
+    dissim_mat = np.abs(eac_mat.max() - eac_mat)
+
+    np.save(os.path.join(base_dir, "eac_mat.npy", dissim_mat)
 
 if __name__ == "__main__":
     import argparse
