@@ -1,6 +1,10 @@
 import sys
 import shutil
-sys.path.insert(0, "/home/laadd/DDP/B-SOID/")
+import pysftp
+from getpass import getpass
+from tqdm import tqdm
+
+sys.path.insert(0, "/Users/dhruvlaad/IIT/DDP/DDP/B-SOID/")
 
 from BSOID.bsoid import *
 
@@ -23,14 +27,23 @@ def mystability_train_model(config_file, run_id, base_dir):
     os.environ["PYTHONPATH"] = "/home/laadd/DDP/B-SOID/stability:" + os.environ.get("PYTHONPATH", "")
 
     bsoid.cluster_strainwise()
-    templates, clustering = bsoid.pool()
+    bsoid.pool()
+    model = bsoid.train()
     
-    with open(os.path.join(base_dir, f"{bsoid.run_id}_dataset.sav"), "rb") as f:
-        joblib.dump([templates, clustering], f)
+    with open(os.path.join(base_dir, f"{bsoid.run_id}.model"), "rb") as f:
+        joblib.dump(model, f)
     
     shutil.rmtree(bsoid.base_dir, ignore_errors=True)
 
-# def download_datasets(base)
+def download_datasets(base_dir):
+    password = getpass("JAX ssh login password: ")
+    with pysftp.Connection('login.sumner.jax.org', username='laadd', password=password) as sftp:
+        files = sftp.listdir(base_dir)
+        for i in tqdm(range(len(files))):
+            f = files[i]
+            if f.endswith("dataset.sav"):
+                sftp.get(os.path.join(base_dir, f))
+
 def mystabilitytest_predictions(models, config_file, test_size, base_dir):
     feats = []
     for _, data in BSOID(config_file).load_features(collect=False).items():
