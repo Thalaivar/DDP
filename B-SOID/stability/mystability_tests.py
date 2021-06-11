@@ -4,7 +4,7 @@ import pysftp
 from getpass import getpass
 from tqdm import tqdm
 
-sys.path.insert(0, "/Users/dhruvlaad/IIT/DDP/DDP/B-SOID/")
+sys.path.insert(0, "/home/laadd/DDP/B-SOID/")
 
 from BSOID.bsoid import *
 
@@ -27,31 +27,34 @@ def mystability_train_model(config_file, run_id, base_dir):
     os.environ["PYTHONPATH"] = "/home/laadd/DDP/B-SOID/stability:" + os.environ.get("PYTHONPATH", "")
 
     bsoid.cluster_strainwise()
-    bsoid.pool()
-    model = bsoid.train()
+    templates, clustering = bsoid.pool()
     
-    with open(os.path.join(base_dir, f"{bsoid.run_id}.model"), "rb") as f:
-        joblib.dump(model, f)
+    with open(os.path.join(base_dir, f"{bsoid.run_id}.dataset"), "wb") as f:
+        joblib.dump([templates, clustering], f)
     
     shutil.rmtree(bsoid.base_dir, ignore_errors=True)
 
-def download_datasets(base_dir):
-    password = getpass("JAX ssh login password: ")
-    with pysftp.Connection('login.sumner.jax.org', username='laadd', password=password) as sftp:
-        files = sftp.listdir(base_dir)
-        for i in tqdm(range(len(files))):
-            f = files[i]
-            if f.endswith("dataset.sav"):
-                sftp.get(os.path.join(base_dir, f))
 
-def mystabilitytest_predictions(models, config_file, test_size, base_dir):
+def mystabilitytest_predictions(config_file, test_size, base_dir):
+    bsoid = BSOID(config_file)
+
     feats = []
-    for _, data in BSOID(config_file).load_features(collect=False).items():
+    for _, data in bsoid.load_features(collect=False).items():
         feats.extend(data)
     feats = np.vstack(feats)
 
     feats = feats[np.random.choice(feats.shape[0], test_size, replace=False)]
-    labels = [clf.predict(feats) for clf in models]
+
+    labels = []
+    dataset_files = [os.path.join(base_dir, f) for f in os.listdir(base_dir) if f.endswith("dataset")]
+    for f in dataset_files:
+        with open(f, "rb") as ff: 
+            templates, clustering = joblib.load(ff)
+        
+        model = CatBoostClassifier(**bsoid.clf_params)
+        model.fit(templates, clustering["soft_labels"])
+        labels.append(model.predict(feats))
+        
     with open(os.path.join(base_dir, "my_runs.labels"), "wb") as f:
         joblib.dump(labels, f)
 
