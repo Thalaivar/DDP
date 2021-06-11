@@ -6,7 +6,7 @@
 #SBATCH --time=1:00:00
 #SBATCH --partition=high_mem
 #SBATCH --qos=normal
-#SBATCH --mem=50000
+#SBATCH --mem=20000
 #SBATCH --mail-user=dhruv.laad@jax.org
 #SBATCH --mail-type=ALL
 
