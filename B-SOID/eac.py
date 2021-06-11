@@ -67,6 +67,12 @@ def evidence_accumulation_matrix_runs(nruns, base_dir, config_file, default_job_
         with open(default_job_file, 'w') as f:
             f.writelines(lines)
 
+def collect_runs(base_dir):
+    labels = [np.load(os.path.join(base_dir, f)) for f in os.listdir(base_dir) if f.endswith("labels.npy")]
+    for lab in labels:
+
+    
+
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser("eac.py")
