@@ -72,7 +72,7 @@ def evidence_accumulation_matrix_runs(nruns, base_dir, config_file, default_job_
 
 def collect_runs(base_dir):
     labels = [np.load(os.path.join(base_dir, f)) for f in os.listdir(base_dir) if f.endswith("labels.npy")]
-
+    print(f"Found {len(labels)} runs")
     nclusters = labels[0].size
     eac_mat = np.zeros((nclusters, nclusters))
     for lab in labels:
