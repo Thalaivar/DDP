@@ -235,8 +235,8 @@ def gemma_transitions(label_info, input_csv, max_label, default_config_file, thr
     
     transitions_csv.to_csv(os.path.join(os.path.split(default_config_file)[0], "gemma_trans.csv"), index=False)
 
-def gemma_files(label_info, input_csv, max_label, min_bout_len, fps, default_config_file):
-    strain_bout_stats = bout_stats_for_all_strains(label_info, max_label, min_bout_len, fps)
+def gemma_files(label_info, input_csv, max_label, min_bout_len, fps, default_config_file, nmax=10, exclude_strains=None, inv_group_map=None):
+    strain_bout_stats = bout_stats_for_all_strains(label_info, max_label, min_bout_len, fps, inv_group_map)
     
     stats_df = {f"phenotype_{i}_td": [] for i in range(max_label)}
     stats_df.update({f"phenotype_{i}_abl": [] for i in range(max_label)})
@@ -253,7 +253,19 @@ def gemma_files(label_info, input_csv, max_label, min_bout_len, fps, default_con
             retain_idx.append(k)
     
     gemma_csv = pd.concat([input_csv.iloc[retain_idx, :].reset_index(), pd.DataFrame.from_dict(stats_df)], axis=1)
-
+    
+    if exclude_strains is None:
+        exclude_strains = []
+    
+    downsampled_dfs = []
+    for strain, df in gemma_csv.groupby("Strain"):
+        if strain not in exclude_strains:
+            if df.shape[0] > nmax:
+                downsampled_dfs.append(df.sample(n=nmax))
+            else:
+                downsampled_dfs.append(df)
+    gemma_csv = pd.concat(downsampled_dfs, axis=0)
+    
     config = {}
     config["strain"] = "Strain"
     config["sex"] = "Sex"
