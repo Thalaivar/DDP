@@ -14,6 +14,11 @@ from BSOID.preprocessing import likelihood_filter
 from BSOID.features import extract_comb_feats, aggregate_features
 from prediction import get_frameshifted_prediction
 
+import scipy
+from scipy.spatial.distance import squareform
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+
 def get_data(metadata, data_dir, bsoid, min_video_len):
     try:
         pose_dir, _ = get_pose_data_dir(data_dir, metadata["NetworkFilename"])
@@ -46,20 +51,22 @@ def labels_for_mouse(metadata, clf, data_dir, bsoid, min_video_len):
     else:
         return None
 
-def bout_stats(labels, max_label, min_bout_len, fps):
+def bout_stats(labels, max_label, min_bout_len, fps, inv_group_map=None):
+    if inv_group_map is None:
+        inv_group_map = {i: i for i in range(max_label)}
+
     stats = {}
     min_bout_len = min_bout_len * fps // 1000
 
     for i in range(max_label):
-        stats[i] = {'td': None, 'abl': [], 'nb': 0}
-    
+        stats[inv_group_map[i]] = {'td': None, 'abl': [], 'nb': 0}
+
     i = 0
     while i < len(labels) - 1:
-        curr_label = labels[i]
+        curr_label = inv_group_map[labels[i]]
         curr_bout_len, j = 1, i + 1
-
-        while (j < len(labels) - 1) and (labels[j] == curr_label):
-            curr_label = labels[j]
+        while (j < len(labels) - 1) and (inv_group_map[labels[j]] == curr_label):
+            curr_label = inv_group_map[labels[j]]
             curr_bout_len += 1
             j += 1
             
@@ -132,7 +139,7 @@ def get_key_from_metadata(metadata):
     key = key[:-1]
     return key
 
-def bout_stats_for_all_strains(label_info, max_label, min_bout_len, fps):
+def bout_stats_for_all_strains(label_info, max_label, min_bout_len, fps, inv_group_map=None):
     behavioral_bout_stats = {}
 
     strains = list(label_info.keys())
@@ -142,8 +149,8 @@ def bout_stats_for_all_strains(label_info, max_label, min_bout_len, fps):
             key = get_key_from_metadata(d["metadata"])
             behavioral_bout_stats[key] = {}
 
-            stats = bout_stats(d["labels"], max_label, min_bout_len, fps)
-            for i in range(max_label):
+            stats = bout_stats(d["labels"], max_label, min_bout_len, fps, inv_group_map)
+            for i in stats.keys():
                 behavioral_bout_stats[key][f"phenotype_{i}_td"] = stats[i]["td"]
                 behavioral_bout_stats[key][f"phenotype_{i}_abl"] = stats[i]["abl"]
                 behavioral_bout_stats[key][f"phenotype_{i}_nb"] = stats[i]["nb"]
@@ -268,3 +275,63 @@ def gemma_files(label_info, input_csv, max_label, min_bout_len, fps, default_con
         yaml.dump(config, f, default_flow_style=False)
     
     gemma_csv.to_csv(os.path.join(os.path.split(default_config_file)[0], "gemma_data.csv"), index=False)
+
+def get_group_map(eac_mat_file, pvalue=None, plot=False):
+    eac_mat = np.load(eac_mat_file)
+    Z = scipy.cluster.hierarchy.linkage(squareform(eac_mat), method="single")
+    
+    if pvalue is None:
+        plot = True
+        fig, ax = plt.subplots(figsize=(6, 9))
+        ddata = scipy.cluster.hierarchy.dendrogram(Z, ax=ax)
+        ylocs = []
+        for i, d in zip(ddata['icoord'], ddata['dcoord']):
+            x = 0.5 * sum(i[1:3])
+            y = d[1]
+            ax.plot([0, x], [y, y], '--g')
+            ylocs.append(y)
+
+        plt.show()
+
+        pvalue = float(input("p-value for choosing split: "))
+    
+    group_labels = scipy.cluster.hierarchy.fcluster(Z, t=pvalue, criterion="distance")
+    
+    if plot:
+        fig, ax = plt.subplots(figsize=(6, 9))
+        cmap = plt.cm.tab20b(group_labels)
+        scipy.cluster.hierarchy.set_link_color_palette([mpl.colors.rgb2hex(rgb[:3]) for rgb in cmap])
+        scipy.cluster.hierarchy.dendrogram(Z, ax=ax, color_threshold=pvalue)
+        xlim = ax.get_xlim()
+        ax.plot([0, xlim[1]], [pvalue, pvalue], '--r')
+        ax.set_xticks([])
+        ax.set_xticklabels([])
+        plt.show()
+
+    group_labels = scipy.cluster.hierarchy.fcluster(Z, t=pvalue, criterion="distance")
+    
+    group_map = {lab: [] for lab in np.unique(group_labels)}
+    inv_group_map = {}
+    for i, lab in enumerate(group_labels):
+        group_map[lab].append(i)
+        inv_group_map[i] = lab
+    
+    group_labels = {
+        1: "Locomotion #1",
+        2: "Locomotion #2",
+        3: "Head Sweeps",
+        4: "Grooming",
+        5: "Sniffing + Grooming",
+        6: "Head Sweeps + Turning",
+        7: "Rearing",
+        8: "Rearing + Sniffing",
+        9: "Reared Grooming #1",
+        10: "Turning",
+        11: "Stationary Grooming",
+        12: "Posterior Grooming #1",
+        13: "Posterior Grooming #2",
+        14: "Paused",
+        15: "Reared Grooming #2" 
+    }
+
+    return group_map, inv_group_map, group_labels

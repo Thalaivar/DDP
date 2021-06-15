@@ -9,6 +9,7 @@ try:
     import hdbscan
 except:
     pass
+import warnings
 import logging
 import numpy as np
 import pandas as pd
@@ -78,11 +79,22 @@ def get_random_video_and_keypoints(data_file, save_dir):
 
     return data_filename, vid_filename
 
-def bootstrap_estimate(x, statistic=np.mean, ns=100, n=25):
-    thetas = np.vstack([statistic(x[np.random.choice(np.arange(x.shape[0]), size=n, replace=True)], axis=0) for _ in range(ns)])
-    return thetas.std(axis=0)    
+def bootstrap_estimate(data, n, ns):
+    N = data.shape[0]
+    if N < n:
+        warnings.warn(f"Number of samples to be drawn is greater than population")
+        return np.median(data, axis=0), data.std(axis=0)
+    
+    data = np.array([np.mean(data[np.random.choice(N, n, replace=True)], axis=0) for _ in range(ns)])
+    return data.mean(axis=0), data.std(axis=0)
 
-
+def normalize_statistics(data):
+    for i in range(data.shape[0]):
+        if data[i].sum() > 0:
+            data[i] /= data[i].sum()
+    
+    return data[i]
+    
 def get_video_and_keypoint_data(session, data, save_dir):
     strains = ["LL6-B2B", "LL5-B2B", "LL4-B2B", "LL3-B2B", "LL2-B2B", "LL1-B2B"]
     datasets = ["strain-survey-batch-2019-05-29-e/", "strain-survey-batch-2019-05-29-d/", "strain-survey-batch-2019-05-29-c/",

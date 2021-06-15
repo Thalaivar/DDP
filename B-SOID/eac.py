@@ -81,7 +81,7 @@ def collect_runs(base_dir):
     eac_mat /= len(labels)
     dissim_mat = np.abs(eac_mat.max() - eac_mat)
 
-    np.save(os.path.join(base_dir, "eac_mat.npy", dissim_mat)
+    np.save(os.path.join(base_dir, "eac_mat.npy"), dissim_mat)
 
 if __name__ == "__main__":
     import argparse
