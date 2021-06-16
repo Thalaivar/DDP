@@ -1,39 +1,37 @@
 F1:
-  - B6129SF1/J:
-    - C57BL/6J
-    - 129S1/SvImJ
-  - B6129PF1/J:
-    - C57BL/6J
-    - 129P3/J
-  - B6AF1/J:
-    - C57BL/6J
-    - A/J
-  - B6C3F1/J:
-    - C57BL/6J
-    - C3H/HeJ
-  - B6CBAF1/J:
-    - C57BL/6J
-    - CBA/J
-  - B6D2F1/J:
-    - C57BL/6J
-    - DBA/2J
-  - B6SJLF1/J:
-    - C57BL/6J
-    - SJL/J
-  - CAF1/J:
-    - BALB/cJ
-    - A/J
-  - CB6F1/J:
-    - BALB/cJ
-    - C57BL/6J
-  - CByB6F1/J:
-    - BALB/cByJ
-    - C57BL/6J
-  - NZBWF1/J:
-    - NZB/BlNJ
-    - NZW/LacJ
-# confSNPs:
-# - rs32105080
+- B6129SF1/J:
+  - C57BL/6J
+  - 129S1/SvImJ
+- B6129PF1/J:
+  - C57BL/6J
+  - 129P3/J
+- B6AF1/J:
+  - C57BL/6J
+  - A/J
+- B6C3F1/J:
+  - C57BL/6J
+  - C3H/HeJ
+- B6CBAF1/J:
+  - C57BL/6J
+  - CBA/J
+- B6D2F1/J:
+  - C57BL/6J
+  - DBA/2J
+- B6SJLF1/J:
+  - C57BL/6J
+  - SJL/J
+- CAF1/J:
+  - BALB/cJ
+  - A/J
+- CB6F1/J:
+  - BALB/cJ
+  - C57BL/6J
+- CByB6F1/J:
+  - BALB/cByJ
+  - C57BL/6J
+- NZBWF1/J:
+  - NZB/BlNJ
+  - NZW/LacJ
 covar:
   - Sex
 groups:
@@ -42,27 +40,12 @@ phenotypes:
   transition_0_0:
     group: Transitions
     papername: Transition 0-0
-  transition_0_10:
-    group: Transitions
-    papername: Transition 0-10
-  transition_0_11:
-    group: Transitions
-    papername: Transition 0-11
-  transition_0_17:
-    group: Transitions
-    papername: Transition 0-17
   transition_0_18:
     group: Transitions
     papername: Transition 0-18
-  transition_0_19:
-    group: Transitions
-    papername: Transition 0-19
   transition_0_2:
     group: Transitions
     papername: Transition 0-2
-  transition_0_20:
-    group: Transitions
-    papername: Transition 0-20
   transition_0_21:
     group: Transitions
     papername: Transition 0-21
@@ -78,33 +61,12 @@ phenotypes:
   transition_0_3:
     group: Transitions
     papername: Transition 0-3
-  transition_0_30:
-    group: Transitions
-    papername: Transition 0-30
-  transition_0_31:
-    group: Transitions
-    papername: Transition 0-31
   transition_0_33:
     group: Transitions
     papername: Transition 0-33
   transition_0_34:
     group: Transitions
     papername: Transition 0-34
-  transition_0_37:
-    group: Transitions
-    papername: Transition 0-37
-  transition_0_38:
-    group: Transitions
-    papername: Transition 0-38
-  transition_0_39:
-    group: Transitions
-    papername: Transition 0-39
-  transition_0_40:
-    group: Transitions
-    papername: Transition 0-40
-  transition_0_42:
-    group: Transitions
-    papername: Transition 0-42
   transition_0_43:
     group: Transitions
     papername: Transition 0-43
@@ -120,18 +82,9 @@ phenotypes:
   transition_0_47:
     group: Transitions
     papername: Transition 0-47
-  transition_0_48:
-    group: Transitions
-    papername: Transition 0-48
   transition_0_49:
     group: Transitions
     papername: Transition 0-49
-  transition_0_50:
-    group: Transitions
-    papername: Transition 0-50
-  transition_0_51:
-    group: Transitions
-    papername: Transition 0-51
   transition_0_53:
     group: Transitions
     papername: Transition 0-53
@@ -153,18 +106,9 @@ phenotypes:
   transition_0_6:
     group: Transitions
     papername: Transition 0-6
-  transition_0_60:
-    group: Transitions
-    papername: Transition 0-60
   transition_0_7:
     group: Transitions
     papername: Transition 0-7
-  transition_10_0:
-    group: Transitions
-    papername: Transition 10-0
-  transition_10_1:
-    group: Transitions
-    papername: Transition 10-1
   transition_10_10:
     group: Transitions
     papername: Transition 10-10
@@ -186,18 +130,9 @@ phenotypes:
   transition_10_16:
     group: Transitions
     papername: Transition 10-16
-  transition_10_17:
-    group: Transitions
-    papername: Transition 10-17
   transition_10_18:
     group: Transitions
     papername: Transition 10-18
-  transition_10_19:
-    group: Transitions
-    papername: Transition 10-19
-  transition_10_2:
-    group: Transitions
-    papername: Transition 10-2
   transition_10_20:
     group: Transitions
     papername: Transition 10-20
@@ -216,21 +151,9 @@ phenotypes:
   transition_10_25:
     group: Transitions
     papername: Transition 10-25
-  transition_10_26:
-    group: Transitions
-    papername: Transition 10-26
-  transition_10_27:
-    group: Transitions
-    papername: Transition 10-27
   transition_10_28:
     group: Transitions
     papername: Transition 10-28
-  transition_10_29:
-    group: Transitions
-    papername: Transition 10-29
-  transition_10_3:
-    group: Transitions
-    papername: Transition 10-3
   transition_10_30:
     group: Transitions
     papername: Transition 10-30
@@ -240,9 +163,6 @@ phenotypes:
   transition_10_32:
     group: Transitions
     papername: Transition 10-32
-  transition_10_33:
-    group: Transitions
-    papername: Transition 10-33
   transition_10_34:
     group: Transitions
     papername: Transition 10-34
@@ -258,27 +178,12 @@ phenotypes:
   transition_10_38:
     group: Transitions
     papername: Transition 10-38
-  transition_10_39:
-    group: Transitions
-    papername: Transition 10-39
-  transition_10_4:
-    group: Transitions
-    papername: Transition 10-4
   transition_10_40:
     group: Transitions
     papername: Transition 10-40
   transition_10_41:
     group: Transitions
     papername: Transition 10-41
-  transition_10_42:
-    group: Transitions
-    papername: Transition 10-42
-  transition_10_43:
-    group: Transitions
-    papername: Transition 10-43
-  transition_10_44:
-    group: Transitions
-    papername: Transition 10-44
   transition_10_45:
     group: Transitions
     papername: Transition 10-45
@@ -297,54 +202,27 @@ phenotypes:
   transition_10_5:
     group: Transitions
     papername: Transition 10-5
-  transition_10_50:
-    group: Transitions
-    papername: Transition 10-50
-  transition_10_51:
-    group: Transitions
-    papername: Transition 10-51
   transition_10_52:
     group: Transitions
     papername: Transition 10-52
-  transition_10_53:
-    group: Transitions
-    papername: Transition 10-53
   transition_10_54:
     group: Transitions
     papername: Transition 10-54
-  transition_10_55:
-    group: Transitions
-    papername: Transition 10-55
   transition_10_56:
     group: Transitions
     papername: Transition 10-56
-  transition_10_57:
-    group: Transitions
-    papername: Transition 10-57
   transition_10_58:
     group: Transitions
     papername: Transition 10-58
   transition_10_59:
     group: Transitions
     papername: Transition 10-59
-  transition_10_6:
-    group: Transitions
-    papername: Transition 10-6
-  transition_10_60:
-    group: Transitions
-    papername: Transition 10-60
-  transition_10_7:
-    group: Transitions
-    papername: Transition 10-7
   transition_10_8:
     group: Transitions
     papername: Transition 10-8
   transition_10_9:
     group: Transitions
     papername: Transition 10-9
-  transition_11_0:
-    group: Transitions
-    papername: Transition 11-0
   transition_11_1:
     group: Transitions
     papername: Transition 11-1
@@ -369,66 +247,33 @@ phenotypes:
   transition_11_17:
     group: Transitions
     papername: Transition 11-17
-  transition_11_18:
-    group: Transitions
-    papername: Transition 11-18
-  transition_11_2:
-    group: Transitions
-    papername: Transition 11-2
-  transition_11_20:
-    group: Transitions
-    papername: Transition 11-20
   transition_11_21:
     group: Transitions
     papername: Transition 11-21
   transition_11_22:
     group: Transitions
     papername: Transition 11-22
-  transition_11_23:
-    group: Transitions
-    papername: Transition 11-23
   transition_11_24:
     group: Transitions
     papername: Transition 11-24
   transition_11_25:
     group: Transitions
     papername: Transition 11-25
-  transition_11_26:
-    group: Transitions
-    papername: Transition 11-26
-  transition_11_27:
-    group: Transitions
-    papername: Transition 11-27
   transition_11_28:
     group: Transitions
     papername: Transition 11-28
-  transition_11_29:
-    group: Transitions
-    papername: Transition 11-29
   transition_11_3:
     group: Transitions
     papername: Transition 11-3
-  transition_11_30:
-    group: Transitions
-    papername: Transition 11-30
   transition_11_31:
     group: Transitions
     papername: Transition 11-31
-  transition_11_32:
-    group: Transitions
-    papername: Transition 11-32
-  transition_11_33:
-    group: Transitions
-    papername: Transition 11-33
   transition_11_34:
     group: Transitions
     papername: Transition 11-34
   transition_11_35:
     group: Transitions
     papername: Transition 11-35
-  transition_11_36:
-    group: Transitions
-    papername: Transition 11-36
   transition_11_37:
     group: Transitions
     papername: Transition 11-37
@@ -465,9 +310,6 @@ phenotypes:
   transition_11_50:
     group: Transitions
     papername: Transition 11-50
-  transition_11_51:
-    group: Transitions
-    papername: Transition 11-51
   transition_11_52:
     group: Transitions
     papername: Transition 11-52
@@ -492,15 +334,6 @@ phenotypes:
   transition_11_59:
     group: Transitions
     papername: Transition 11-59
-  transition_11_6:
-    group: Transitions
-    papername: Transition 11-6
-  transition_11_60:
-    group: Transitions
-    papername: Transition 11-60
-  transition_11_7:
-    group: Transitions
-    papername: Transition 11-7
   transition_11_8:
     group: Transitions
     papername: Transition 11-8
@@ -525,57 +358,15 @@ phenotypes:
   transition_12_14:
     group: Transitions
     papername: Transition 12-14
-  transition_12_15:
-    group: Transitions
-    papername: Transition 12-15
-  transition_12_16:
-    group: Transitions
-    papername: Transition 12-16
-  transition_12_2:
-    group: Transitions
-    papername: Transition 12-2
-  transition_12_21:
-    group: Transitions
-    papername: Transition 12-21
-  transition_12_22:
-    group: Transitions
-    papername: Transition 12-22
-  transition_12_23:
-    group: Transitions
-    papername: Transition 12-23
-  transition_12_25:
-    group: Transitions
-    papername: Transition 12-25
   transition_12_28:
     group: Transitions
     papername: Transition 12-28
-  transition_12_30:
-    group: Transitions
-    papername: Transition 12-30
-  transition_12_31:
-    group: Transitions
-    papername: Transition 12-31
-  transition_12_32:
-    group: Transitions
-    papername: Transition 12-32
   transition_12_35:
     group: Transitions
     papername: Transition 12-35
-  transition_12_36:
-    group: Transitions
-    papername: Transition 12-36
-  transition_12_37:
-    group: Transitions
-    papername: Transition 12-37
   transition_12_38:
     group: Transitions
     papername: Transition 12-38
-  transition_12_39:
-    group: Transitions
-    papername: Transition 12-39
-  transition_12_4:
-    group: Transitions
-    papername: Transition 12-4
   transition_12_41:
     group: Transitions
     papername: Transition 12-41
@@ -585,9 +376,6 @@ phenotypes:
   transition_12_45:
     group: Transitions
     papername: Transition 12-45
-  transition_12_46:
-    group: Transitions
-    papername: Transition 12-46
   transition_12_47:
     group: Transitions
     papername: Transition 12-47
@@ -597,15 +385,9 @@ phenotypes:
   transition_12_49:
     group: Transitions
     papername: Transition 12-49
-  transition_12_5:
-    group: Transitions
-    papername: Transition 12-5
   transition_12_50:
     group: Transitions
     papername: Transition 12-50
-  transition_12_51:
-    group: Transitions
-    papername: Transition 12-51
   transition_12_52:
     group: Transitions
     papername: Transition 12-52
@@ -624,9 +406,6 @@ phenotypes:
   transition_12_59:
     group: Transitions
     papername: Transition 12-59
-  transition_12_60:
-    group: Transitions
-    papername: Transition 12-60
   transition_12_9:
     group: Transitions
     papername: Transition 12-9
@@ -657,39 +436,21 @@ phenotypes:
   transition_13_22:
     group: Transitions
     papername: Transition 13-22
-  transition_13_23:
-    group: Transitions
-    papername: Transition 13-23
-  transition_13_25:
-    group: Transitions
-    papername: Transition 13-25
   transition_13_28:
     group: Transitions
     papername: Transition 13-28
   transition_13_31:
     group: Transitions
     papername: Transition 13-31
-  transition_13_34:
-    group: Transitions
-    papername: Transition 13-34
   transition_13_35:
     group: Transitions
     papername: Transition 13-35
-  transition_13_36:
-    group: Transitions
-    papername: Transition 13-36
-  transition_13_37:
-    group: Transitions
-    papername: Transition 13-37
   transition_13_38:
     group: Transitions
     papername: Transition 13-38
   transition_13_4:
     group: Transitions
     papername: Transition 13-4
-  transition_13_40:
-    group: Transitions
-    papername: Transition 13-40
   transition_13_41:
     group: Transitions
     papername: Transition 13-41
@@ -705,9 +466,6 @@ phenotypes:
   transition_13_48:
     group: Transitions
     papername: Transition 13-48
-  transition_13_49:
-    group: Transitions
-    papername: Transition 13-49
   transition_13_5:
     group: Transitions
     papername: Transition 13-5
@@ -729,9 +487,6 @@ phenotypes:
   transition_13_59:
     group: Transitions
     papername: Transition 13-59
-  transition_13_60:
-    group: Transitions
-    papername: Transition 13-60
   transition_13_9:
     group: Transitions
     papername: Transition 13-9
@@ -750,45 +505,21 @@ phenotypes:
   transition_14_14:
     group: Transitions
     papername: Transition 14-14
-  transition_14_15:
-    group: Transitions
-    papername: Transition 14-15
   transition_14_16:
     group: Transitions
     papername: Transition 14-16
-  transition_14_20:
-    group: Transitions
-    papername: Transition 14-20
   transition_14_21:
     group: Transitions
     papername: Transition 14-21
-  transition_14_22:
-    group: Transitions
-    papername: Transition 14-22
   transition_14_23:
     group: Transitions
     papername: Transition 14-23
-  transition_14_25:
-    group: Transitions
-    papername: Transition 14-25
-  transition_14_26:
-    group: Transitions
-    papername: Transition 14-26
   transition_14_28:
     group: Transitions
     papername: Transition 14-28
-  transition_14_30:
-    group: Transitions
-    papername: Transition 14-30
   transition_14_31:
     group: Transitions
     papername: Transition 14-31
-  transition_14_32:
-    group: Transitions
-    papername: Transition 14-32
-  transition_14_34:
-    group: Transitions
-    papername: Transition 14-34
   transition_14_35:
     group: Transitions
     papername: Transition 14-35
@@ -804,9 +535,6 @@ phenotypes:
   transition_14_41:
     group: Transitions
     papername: Transition 14-41
-  transition_14_42:
-    group: Transitions
-    papername: Transition 14-42
   transition_14_45:
     group: Transitions
     papername: Transition 14-45
@@ -816,12 +544,6 @@ phenotypes:
   transition_14_48:
     group: Transitions
     papername: Transition 14-48
-  transition_14_5:
-    group: Transitions
-    papername: Transition 14-5
-  transition_14_50:
-    group: Transitions
-    papername: Transition 14-50
   transition_14_52:
     group: Transitions
     papername: Transition 14-52
@@ -831,33 +553,15 @@ phenotypes:
   transition_14_56:
     group: Transitions
     papername: Transition 14-56
-  transition_14_57:
-    group: Transitions
-    papername: Transition 14-57
-  transition_14_58:
-    group: Transitions
-    papername: Transition 14-58
   transition_14_59:
     group: Transitions
     papername: Transition 14-59
-  transition_14_60:
-    group: Transitions
-    papername: Transition 14-60
   transition_14_9:
     group: Transitions
     papername: Transition 14-9
-  transition_15_0:
-    group: Transitions
-    papername: Transition 15-0
   transition_15_10:
     group: Transitions
     papername: Transition 15-10
-  transition_15_11:
-    group: Transitions
-    papername: Transition 15-11
-  transition_15_12:
-    group: Transitions
-    papername: Transition 15-12
   transition_15_15:
     group: Transitions
     papername: Transition 15-15
@@ -876,9 +580,6 @@ phenotypes:
   transition_15_21:
     group: Transitions
     papername: Transition 15-21
-  transition_15_22:
-    group: Transitions
-    papername: Transition 15-22
   transition_15_23:
     group: Transitions
     papername: Transition 15-23
@@ -906,18 +607,9 @@ phenotypes:
   transition_15_33:
     group: Transitions
     papername: Transition 15-33
-  transition_15_34:
-    group: Transitions
-    papername: Transition 15-34
-  transition_15_35:
-    group: Transitions
-    papername: Transition 15-35
   transition_15_36:
     group: Transitions
     papername: Transition 15-36
-  transition_15_37:
-    group: Transitions
-    papername: Transition 15-37
   transition_15_38:
     group: Transitions
     papername: Transition 15-38
@@ -927,18 +619,12 @@ phenotypes:
   transition_15_40:
     group: Transitions
     papername: Transition 15-40
-  transition_15_43:
-    group: Transitions
-    papername: Transition 15-43
   transition_15_44:
     group: Transitions
     papername: Transition 15-44
   transition_15_45:
     group: Transitions
     papername: Transition 15-45
-  transition_15_47:
-    group: Transitions
-    papername: Transition 15-47
   transition_15_48:
     group: Transitions
     papername: Transition 15-48
@@ -948,33 +634,21 @@ phenotypes:
   transition_15_56:
     group: Transitions
     papername: Transition 15-56
-  transition_15_58:
-    group: Transitions
-    papername: Transition 15-58
   transition_15_59:
     group: Transitions
     papername: Transition 15-59
   transition_15_6:
     group: Transitions
     papername: Transition 15-6
-  transition_15_7:
-    group: Transitions
-    papername: Transition 15-7
   transition_15_9:
     group: Transitions
     papername: Transition 15-9
-  transition_16_1:
-    group: Transitions
-    papername: Transition 16-1
   transition_16_10:
     group: Transitions
     papername: Transition 16-10
   transition_16_11:
     group: Transitions
     papername: Transition 16-11
-  transition_16_12:
-    group: Transitions
-    papername: Transition 16-12
   transition_16_13:
     group: Transitions
     papername: Transition 16-13
@@ -984,9 +658,6 @@ phenotypes:
   transition_16_16:
     group: Transitions
     papername: Transition 16-16
-  transition_16_18:
-    group: Transitions
-    papername: Transition 16-18
   transition_16_20:
     group: Transitions
     papername: Transition 16-20
@@ -999,9 +670,6 @@ phenotypes:
   transition_16_23:
     group: Transitions
     papername: Transition 16-23
-  transition_16_24:
-    group: Transitions
-    papername: Transition 16-24
   transition_16_25:
     group: Transitions
     papername: Transition 16-25
@@ -1011,21 +679,12 @@ phenotypes:
   transition_16_28:
     group: Transitions
     papername: Transition 16-28
-  transition_16_3:
-    group: Transitions
-    papername: Transition 16-3
-  transition_16_30:
-    group: Transitions
-    papername: Transition 16-30
   transition_16_31:
     group: Transitions
     papername: Transition 16-31
   transition_16_32:
     group: Transitions
     papername: Transition 16-32
-  transition_16_33:
-    group: Transitions
-    papername: Transition 16-33
   transition_16_34:
     group: Transitions
     papername: Transition 16-34
@@ -1044,21 +703,12 @@ phenotypes:
   transition_16_4:
     group: Transitions
     papername: Transition 16-4
-  transition_16_40:
-    group: Transitions
-    papername: Transition 16-40
   transition_16_41:
     group: Transitions
     papername: Transition 16-41
-  transition_16_42:
-    group: Transitions
-    papername: Transition 16-42
   transition_16_45:
     group: Transitions
     papername: Transition 16-45
-  transition_16_46:
-    group: Transitions
-    papername: Transition 16-46
   transition_16_47:
     group: Transitions
     papername: Transition 16-47
@@ -1077,84 +727,39 @@ phenotypes:
   transition_16_52:
     group: Transitions
     papername: Transition 16-52
-  transition_16_53:
-    group: Transitions
-    papername: Transition 16-53
   transition_16_54:
     group: Transitions
     papername: Transition 16-54
   transition_16_56:
     group: Transitions
     papername: Transition 16-56
-  transition_16_57:
-    group: Transitions
-    papername: Transition 16-57
   transition_16_59:
     group: Transitions
     papername: Transition 16-59
-  transition_16_60:
-    group: Transitions
-    papername: Transition 16-60
   transition_16_9:
     group: Transitions
     papername: Transition 16-9
-  transition_17_0:
-    group: Transitions
-    papername: Transition 17-0
   transition_17_1:
     group: Transitions
     papername: Transition 17-1
-  transition_17_10:
-    group: Transitions
-    papername: Transition 17-10
   transition_17_11:
     group: Transitions
     papername: Transition 17-11
-  transition_17_12:
-    group: Transitions
-    papername: Transition 17-12
   transition_17_17:
     group: Transitions
     papername: Transition 17-17
-  transition_17_21:
-    group: Transitions
-    papername: Transition 17-21
-  transition_17_22:
-    group: Transitions
-    papername: Transition 17-22
   transition_17_29:
     group: Transitions
     papername: Transition 17-29
-  transition_17_33:
-    group: Transitions
-    papername: Transition 17-33
-  transition_17_34:
-    group: Transitions
-    papername: Transition 17-34
-  transition_17_37:
-    group: Transitions
-    papername: Transition 17-37
-  transition_17_4:
-    group: Transitions
-    papername: Transition 17-4
   transition_17_41:
     group: Transitions
     papername: Transition 17-41
   transition_17_42:
     group: Transitions
     papername: Transition 17-42
-  transition_17_43:
-    group: Transitions
-    papername: Transition 17-43
-  transition_17_44:
-    group: Transitions
-    papername: Transition 17-44
   transition_17_45:
     group: Transitions
     papername: Transition 17-45
-  transition_17_46:
-    group: Transitions
-    papername: Transition 17-46
   transition_17_47:
     group: Transitions
     papername: Transition 17-47
@@ -1164,9 +769,6 @@ phenotypes:
   transition_17_49:
     group: Transitions
     papername: Transition 17-49
-  transition_17_5:
-    group: Transitions
-    papername: Transition 17-5
   transition_17_50:
     group: Transitions
     papername: Transition 17-50
@@ -1176,9 +778,6 @@ phenotypes:
   transition_17_52:
     group: Transitions
     papername: Transition 17-52
-  transition_17_53:
-    group: Transitions
-    papername: Transition 17-53
   transition_17_54:
     group: Transitions
     papername: Transition 17-54
@@ -1200,9 +799,6 @@ phenotypes:
   transition_17_60:
     group: Transitions
     papername: Transition 17-60
-  transition_17_8:
-    group: Transitions
-    papername: Transition 17-8
   transition_18_0:
     group: Transitions
     papername: Transition 18-0
@@ -1212,15 +808,9 @@ phenotypes:
   transition_18_11:
     group: Transitions
     papername: Transition 18-11
-  transition_18_13:
-    group: Transitions
-    papername: Transition 18-13
   transition_18_15:
     group: Transitions
     papername: Transition 18-15
-  transition_18_16:
-    group: Transitions
-    papername: Transition 18-16
   transition_18_18:
     group: Transitions
     papername: Transition 18-18
@@ -1236,21 +826,9 @@ phenotypes:
   transition_18_21:
     group: Transitions
     papername: Transition 18-21
-  transition_18_22:
-    group: Transitions
-    papername: Transition 18-22
-  transition_18_23:
-    group: Transitions
-    papername: Transition 18-23
-  transition_18_24:
-    group: Transitions
-    papername: Transition 18-24
   transition_18_25:
     group: Transitions
     papername: Transition 18-25
-  transition_18_26:
-    group: Transitions
-    papername: Transition 18-26
   transition_18_27:
     group: Transitions
     papername: Transition 18-27
@@ -1278,12 +856,6 @@ phenotypes:
   transition_18_34:
     group: Transitions
     papername: Transition 18-34
-  transition_18_35:
-    group: Transitions
-    papername: Transition 18-35
-  transition_18_36:
-    group: Transitions
-    papername: Transition 18-36
   transition_18_37:
     group: Transitions
     papername: Transition 18-37
@@ -1296,9 +868,6 @@ phenotypes:
   transition_18_40:
     group: Transitions
     papername: Transition 18-40
-  transition_18_42:
-    group: Transitions
-    papername: Transition 18-42
   transition_18_43:
     group: Transitions
     papername: Transition 18-43
@@ -1320,54 +889,24 @@ phenotypes:
   transition_18_49:
     group: Transitions
     papername: Transition 18-49
-  transition_18_50:
-    group: Transitions
-    papername: Transition 18-50
-  transition_18_51:
-    group: Transitions
-    papername: Transition 18-51
   transition_18_53:
     group: Transitions
     papername: Transition 18-53
   transition_18_54:
     group: Transitions
     papername: Transition 18-54
-  transition_18_55:
-    group: Transitions
-    papername: Transition 18-55
   transition_18_56:
     group: Transitions
     papername: Transition 18-56
-  transition_18_58:
-    group: Transitions
-    papername: Transition 18-58
   transition_18_59:
     group: Transitions
     papername: Transition 18-59
   transition_18_6:
     group: Transitions
     papername: Transition 18-6
-  transition_18_60:
-    group: Transitions
-    papername: Transition 18-60
   transition_18_7:
     group: Transitions
     papername: Transition 18-7
-  transition_18_8:
-    group: Transitions
-    papername: Transition 18-8
-  transition_18_9:
-    group: Transitions
-    papername: Transition 18-9
-  transition_19_0:
-    group: Transitions
-    papername: Transition 19-0
-  transition_19_10:
-    group: Transitions
-    papername: Transition 19-10
-  transition_19_12:
-    group: Transitions
-    papername: Transition 19-12
   transition_19_15:
     group: Transitions
     papername: Transition 19-15
@@ -1386,48 +925,21 @@ phenotypes:
   transition_19_21:
     group: Transitions
     papername: Transition 19-21
-  transition_19_23:
-    group: Transitions
-    papername: Transition 19-23
   transition_19_25:
     group: Transitions
     papername: Transition 19-25
-  transition_19_26:
-    group: Transitions
-    papername: Transition 19-26
   transition_19_27:
     group: Transitions
     papername: Transition 19-27
-  transition_19_28:
-    group: Transitions
-    papername: Transition 19-28
-  transition_19_29:
-    group: Transitions
-    papername: Transition 19-29
-  transition_19_3:
-    group: Transitions
-    papername: Transition 19-3
   transition_19_30:
     group: Transitions
     papername: Transition 19-30
   transition_19_31:
     group: Transitions
     papername: Transition 19-31
-  transition_19_32:
-    group: Transitions
-    papername: Transition 19-32
   transition_19_33:
     group: Transitions
     papername: Transition 19-33
-  transition_19_36:
-    group: Transitions
-    papername: Transition 19-36
-  transition_19_37:
-    group: Transitions
-    papername: Transition 19-37
-  transition_19_38:
-    group: Transitions
-    papername: Transition 19-38
   transition_19_39:
     group: Transitions
     papername: Transition 19-39
@@ -1458,18 +970,9 @@ phenotypes:
   transition_19_6:
     group: Transitions
     papername: Transition 19-6
-  transition_19_60:
-    group: Transitions
-    papername: Transition 19-60
-  transition_19_7:
-    group: Transitions
-    papername: Transition 19-7
   transition_1_1:
     group: Transitions
     papername: Transition 1-1
-  transition_1_10:
-    group: Transitions
-    papername: Transition 1-10
   transition_1_11:
     group: Transitions
     papername: Transition 1-11
@@ -1479,12 +982,6 @@ phenotypes:
   transition_1_13:
     group: Transitions
     papername: Transition 1-13
-  transition_1_14:
-    group: Transitions
-    papername: Transition 1-14
-  transition_1_16:
-    group: Transitions
-    papername: Transition 1-16
   transition_1_17:
     group: Transitions
     papername: Transition 1-17
@@ -1494,45 +991,18 @@ phenotypes:
   transition_1_22:
     group: Transitions
     papername: Transition 1-22
-  transition_1_24:
-    group: Transitions
-    papername: Transition 1-24
   transition_1_25:
     group: Transitions
     papername: Transition 1-25
-  transition_1_26:
-    group: Transitions
-    papername: Transition 1-26
-  transition_1_28:
-    group: Transitions
-    papername: Transition 1-28
-  transition_1_29:
-    group: Transitions
-    papername: Transition 1-29
-  transition_1_3:
-    group: Transitions
-    papername: Transition 1-3
   transition_1_31:
     group: Transitions
     papername: Transition 1-31
-  transition_1_32:
-    group: Transitions
-    papername: Transition 1-32
-  transition_1_33:
-    group: Transitions
-    papername: Transition 1-33
   transition_1_34:
     group: Transitions
     papername: Transition 1-34
-  transition_1_35:
-    group: Transitions
-    papername: Transition 1-35
   transition_1_37:
     group: Transitions
     papername: Transition 1-37
-  transition_1_39:
-    group: Transitions
-    papername: Transition 1-39
   transition_1_4:
     group: Transitions
     papername: Transition 1-4
@@ -1575,30 +1045,15 @@ phenotypes:
   transition_1_57:
     group: Transitions
     papername: Transition 1-57
-  transition_1_58:
-    group: Transitions
-    papername: Transition 1-58
   transition_1_59:
     group: Transitions
     papername: Transition 1-59
-  transition_1_7:
-    group: Transitions
-    papername: Transition 1-7
   transition_1_8:
     group: Transitions
     papername: Transition 1-8
-  transition_1_9:
-    group: Transitions
-    papername: Transition 1-9
-  transition_20_0:
-    group: Transitions
-    papername: Transition 20-0
   transition_20_10:
     group: Transitions
     papername: Transition 20-10
-  transition_20_11:
-    group: Transitions
-    papername: Transition 20-11
   transition_20_15:
     group: Transitions
     papername: Transition 20-15
@@ -1620,15 +1075,6 @@ phenotypes:
   transition_20_21:
     group: Transitions
     papername: Transition 20-21
-  transition_20_22:
-    group: Transitions
-    papername: Transition 20-22
-  transition_20_23:
-    group: Transitions
-    papername: Transition 20-23
-  transition_20_24:
-    group: Transitions
-    papername: Transition 20-24
   transition_20_25:
     group: Transitions
     papername: Transition 20-25
@@ -1641,9 +1087,6 @@ phenotypes:
   transition_20_28:
     group: Transitions
     papername: Transition 20-28
-  transition_20_29:
-    group: Transitions
-    papername: Transition 20-29
   transition_20_30:
     group: Transitions
     papername: Transition 20-30
@@ -1662,9 +1105,6 @@ phenotypes:
   transition_20_35:
     group: Transitions
     papername: Transition 20-35
-  transition_20_36:
-    group: Transitions
-    papername: Transition 20-36
   transition_20_37:
     group: Transitions
     papername: Transition 20-37
@@ -1677,30 +1117,15 @@ phenotypes:
   transition_20_40:
     group: Transitions
     papername: Transition 20-40
-  transition_20_43:
-    group: Transitions
-    papername: Transition 20-43
-  transition_20_44:
-    group: Transitions
-    papername: Transition 20-44
   transition_20_45:
     group: Transitions
     papername: Transition 20-45
-  transition_20_46:
-    group: Transitions
-    papername: Transition 20-46
   transition_20_47:
     group: Transitions
     papername: Transition 20-47
   transition_20_48:
     group: Transitions
     papername: Transition 20-48
-  transition_20_49:
-    group: Transitions
-    papername: Transition 20-49
-  transition_20_53:
-    group: Transitions
-    papername: Transition 20-53
   transition_20_54:
     group: Transitions
     papername: Transition 20-54
@@ -1710,15 +1135,6 @@ phenotypes:
   transition_20_59:
     group: Transitions
     papername: Transition 20-59
-  transition_20_6:
-    group: Transitions
-    papername: Transition 20-6
-  transition_20_60:
-    group: Transitions
-    papername: Transition 20-60
-  transition_20_7:
-    group: Transitions
-    papername: Transition 20-7
   transition_21_0:
     group: Transitions
     papername: Transition 21-0
@@ -1731,9 +1147,6 @@ phenotypes:
   transition_21_11:
     group: Transitions
     papername: Transition 21-11
-  transition_21_12:
-    group: Transitions
-    papername: Transition 21-12
   transition_21_13:
     group: Transitions
     papername: Transition 21-13
@@ -1827,15 +1240,9 @@ phenotypes:
   transition_21_40:
     group: Transitions
     papername: Transition 21-40
-  transition_21_41:
-    group: Transitions
-    papername: Transition 21-41
   transition_21_42:
     group: Transitions
     papername: Transition 21-42
-  transition_21_43:
-    group: Transitions
-    papername: Transition 21-43
   transition_21_44:
     group: Transitions
     papername: Transition 21-44
@@ -1860,9 +1267,6 @@ phenotypes:
   transition_21_50:
     group: Transitions
     papername: Transition 21-50
-  transition_21_51:
-    group: Transitions
-    papername: Transition 21-51
   transition_21_52:
     group: Transitions
     papername: Transition 21-52
@@ -1878,12 +1282,6 @@ phenotypes:
   transition_21_56:
     group: Transitions
     papername: Transition 21-56
-  transition_21_57:
-    group: Transitions
-    papername: Transition 21-57
-  transition_21_58:
-    group: Transitions
-    papername: Transition 21-58
   transition_21_59:
     group: Transitions
     papername: Transition 21-59
@@ -1920,78 +1318,39 @@ phenotypes:
   transition_22_14:
     group: Transitions
     papername: Transition 22-14
-  transition_22_15:
-    group: Transitions
-    papername: Transition 22-15
   transition_22_16:
     group: Transitions
     papername: Transition 22-16
-  transition_22_17:
-    group: Transitions
-    papername: Transition 22-17
-  transition_22_18:
-    group: Transitions
-    papername: Transition 22-18
-  transition_22_20:
-    group: Transitions
-    papername: Transition 22-20
   transition_22_21:
     group: Transitions
     papername: Transition 22-21
   transition_22_22:
     group: Transitions
     papername: Transition 22-22
-  transition_22_23:
-    group: Transitions
-    papername: Transition 22-23
   transition_22_24:
     group: Transitions
     papername: Transition 22-24
   transition_22_25:
     group: Transitions
     papername: Transition 22-25
-  transition_22_26:
-    group: Transitions
-    papername: Transition 22-26
   transition_22_28:
     group: Transitions
     papername: Transition 22-28
-  transition_22_29:
-    group: Transitions
-    papername: Transition 22-29
-  transition_22_3:
-    group: Transitions
-    papername: Transition 22-3
-  transition_22_30:
-    group: Transitions
-    papername: Transition 22-30
   transition_22_31:
     group: Transitions
     papername: Transition 22-31
   transition_22_32:
     group: Transitions
     papername: Transition 22-32
-  transition_22_33:
-    group: Transitions
-    papername: Transition 22-33
   transition_22_34:
     group: Transitions
     papername: Transition 22-34
   transition_22_35:
     group: Transitions
     papername: Transition 22-35
-  transition_22_36:
-    group: Transitions
-    papername: Transition 22-36
   transition_22_37:
     group: Transitions
     papername: Transition 22-37
-  transition_22_38:
-    group: Transitions
-    papername: Transition 22-38
-  transition_22_39:
-    group: Transitions
-    papername: Transition 22-39
   transition_22_4:
     group: Transitions
     papername: Transition 22-4
@@ -2001,9 +1360,6 @@ phenotypes:
   transition_22_42:
     group: Transitions
     papername: Transition 22-42
-  transition_22_43:
-    group: Transitions
-    papername: Transition 22-43
   transition_22_45:
     group: Transitions
     papername: Transition 22-45
@@ -2016,30 +1372,15 @@ phenotypes:
   transition_22_48:
     group: Transitions
     papername: Transition 22-48
-  transition_22_49:
-    group: Transitions
-    papername: Transition 22-49
   transition_22_5:
     group: Transitions
     papername: Transition 22-5
-  transition_22_50:
-    group: Transitions
-    papername: Transition 22-50
-  transition_22_51:
-    group: Transitions
-    papername: Transition 22-51
   transition_22_52:
     group: Transitions
     papername: Transition 22-52
-  transition_22_53:
-    group: Transitions
-    papername: Transition 22-53
   transition_22_54:
     group: Transitions
     papername: Transition 22-54
-  transition_22_55:
-    group: Transitions
-    papername: Transition 22-55
   transition_22_56:
     group: Transitions
     papername: Transition 22-56
@@ -2049,27 +1390,15 @@ phenotypes:
   transition_22_59:
     group: Transitions
     papername: Transition 22-59
-  transition_22_7:
-    group: Transitions
-    papername: Transition 22-7
-  transition_22_8:
-    group: Transitions
-    papername: Transition 22-8
   transition_22_9:
     group: Transitions
     papername: Transition 22-9
   transition_23_10:
     group: Transitions
     papername: Transition 23-10
-  transition_23_11:
-    group: Transitions
-    papername: Transition 23-11
   transition_23_12:
     group: Transitions
     papername: Transition 23-12
-  transition_23_13:
-    group: Transitions
-    papername: Transition 23-13
   transition_23_14:
     group: Transitions
     papername: Transition 23-14
@@ -2079,27 +1408,12 @@ phenotypes:
   transition_23_16:
     group: Transitions
     papername: Transition 23-16
-  transition_23_18:
-    group: Transitions
-    papername: Transition 23-18
-  transition_23_19:
-    group: Transitions
-    papername: Transition 23-19
-  transition_23_2:
-    group: Transitions
-    papername: Transition 23-2
-  transition_23_20:
-    group: Transitions
-    papername: Transition 23-20
   transition_23_21:
     group: Transitions
     papername: Transition 23-21
   transition_23_23:
     group: Transitions
     papername: Transition 23-23
-  transition_23_25:
-    group: Transitions
-    papername: Transition 23-25
   transition_23_26:
     group: Transitions
     papername: Transition 23-26
@@ -2115,27 +1429,15 @@ phenotypes:
   transition_23_32:
     group: Transitions
     papername: Transition 23-32
-  transition_23_33:
-    group: Transitions
-    papername: Transition 23-33
-  transition_23_34:
-    group: Transitions
-    papername: Transition 23-34
   transition_23_35:
     group: Transitions
     papername: Transition 23-35
   transition_23_36:
     group: Transitions
     papername: Transition 23-36
-  transition_23_37:
-    group: Transitions
-    papername: Transition 23-37
   transition_23_38:
     group: Transitions
     papername: Transition 23-38
-  transition_23_39:
-    group: Transitions
-    papername: Transition 23-39
   transition_23_40:
     group: Transitions
     papername: Transition 23-40
@@ -2148,24 +1450,9 @@ phenotypes:
   transition_23_48:
     group: Transitions
     papername: Transition 23-48
-  transition_23_52:
-    group: Transitions
-    papername: Transition 23-52
   transition_23_54:
     group: Transitions
     papername: Transition 23-54
-  transition_23_56:
-    group: Transitions
-    papername: Transition 23-56
-  transition_23_57:
-    group: Transitions
-    papername: Transition 23-57
-  transition_23_58:
-    group: Transitions
-    papername: Transition 23-58
-  transition_23_59:
-    group: Transitions
-    papername: Transition 23-59
   transition_23_9:
     group: Transitions
     papername: Transition 23-9
@@ -2178,18 +1465,6 @@ phenotypes:
   transition_24_11:
     group: Transitions
     papername: Transition 24-11
-  transition_24_12:
-    group: Transitions
-    papername: Transition 24-12
-  transition_24_16:
-    group: Transitions
-    papername: Transition 24-16
-  transition_24_18:
-    group: Transitions
-    papername: Transition 24-18
-  transition_24_20:
-    group: Transitions
-    papername: Transition 24-20
   transition_24_21:
     group: Transitions
     papername: Transition 24-21
@@ -2205,30 +1480,18 @@ phenotypes:
   transition_24_28:
     group: Transitions
     papername: Transition 24-28
-  transition_24_3:
-    group: Transitions
-    papername: Transition 24-3
   transition_24_31:
     group: Transitions
     papername: Transition 24-31
   transition_24_32:
     group: Transitions
     papername: Transition 24-32
-  transition_24_33:
-    group: Transitions
-    papername: Transition 24-33
   transition_24_34:
     group: Transitions
     papername: Transition 24-34
-  transition_24_35:
-    group: Transitions
-    papername: Transition 24-35
   transition_24_37:
     group: Transitions
     papername: Transition 24-37
-  transition_24_42:
-    group: Transitions
-    papername: Transition 24-42
   transition_24_45:
     group: Transitions
     papername: Transition 24-45
@@ -2241,15 +1504,6 @@ phenotypes:
   transition_24_48:
     group: Transitions
     papername: Transition 24-48
-  transition_24_49:
-    group: Transitions
-    papername: Transition 24-49
-  transition_24_5:
-    group: Transitions
-    papername: Transition 24-5
-  transition_24_50:
-    group: Transitions
-    papername: Transition 24-50
   transition_24_54:
     group: Transitions
     papername: Transition 24-54
@@ -2259,12 +1513,6 @@ phenotypes:
   transition_24_59:
     group: Transitions
     papername: Transition 24-59
-  transition_24_8:
-    group: Transitions
-    papername: Transition 24-8
-  transition_24_9:
-    group: Transitions
-    papername: Transition 24-9
   transition_25_0:
     group: Transitions
     papername: Transition 25-0
@@ -2277,15 +1525,6 @@ phenotypes:
   transition_25_11:
     group: Transitions
     papername: Transition 25-11
-  transition_25_12:
-    group: Transitions
-    papername: Transition 25-12
-  transition_25_13:
-    group: Transitions
-    papername: Transition 25-13
-  transition_25_14:
-    group: Transitions
-    papername: Transition 25-14
   transition_25_15:
     group: Transitions
     papername: Transition 25-15
@@ -2310,9 +1549,6 @@ phenotypes:
   transition_25_22:
     group: Transitions
     papername: Transition 25-22
-  transition_25_23:
-    group: Transitions
-    papername: Transition 25-23
   transition_25_24:
     group: Transitions
     papername: Transition 25-24
@@ -2328,9 +1564,6 @@ phenotypes:
   transition_25_28:
     group: Transitions
     papername: Transition 25-28
-  transition_25_29:
-    group: Transitions
-    papername: Transition 25-29
   transition_25_3:
     group: Transitions
     papername: Transition 25-3
@@ -2352,9 +1585,6 @@ phenotypes:
   transition_25_35:
     group: Transitions
     papername: Transition 25-35
-  transition_25_36:
-    group: Transitions
-    papername: Transition 25-36
   transition_25_37:
     group: Transitions
     papername: Transition 25-37
@@ -2364,24 +1594,9 @@ phenotypes:
   transition_25_39:
     group: Transitions
     papername: Transition 25-39
-  transition_25_4:
-    group: Transitions
-    papername: Transition 25-4
   transition_25_40:
     group: Transitions
     papername: Transition 25-40
-  transition_25_41:
-    group: Transitions
-    papername: Transition 25-41
-  transition_25_42:
-    group: Transitions
-    papername: Transition 25-42
-  transition_25_43:
-    group: Transitions
-    papername: Transition 25-43
-  transition_25_44:
-    group: Transitions
-    papername: Transition 25-44
   transition_25_45:
     group: Transitions
     papername: Transition 25-45
@@ -2400,42 +1615,15 @@ phenotypes:
   transition_25_5:
     group: Transitions
     papername: Transition 25-5
-  transition_25_50:
-    group: Transitions
-    papername: Transition 25-50
-  transition_25_51:
-    group: Transitions
-    papername: Transition 25-51
-  transition_25_52:
-    group: Transitions
-    papername: Transition 25-52
-  transition_25_53:
-    group: Transitions
-    papername: Transition 25-53
   transition_25_54:
     group: Transitions
     papername: Transition 25-54
-  transition_25_55:
-    group: Transitions
-    papername: Transition 25-55
   transition_25_56:
     group: Transitions
     papername: Transition 25-56
-  transition_25_57:
-    group: Transitions
-    papername: Transition 25-57
-  transition_25_58:
-    group: Transitions
-    papername: Transition 25-58
   transition_25_59:
     group: Transitions
     papername: Transition 25-59
-  transition_25_6:
-    group: Transitions
-    papername: Transition 25-6
-  transition_25_60:
-    group: Transitions
-    papername: Transition 25-60
   transition_25_7:
     group: Transitions
     papername: Transition 25-7
@@ -2445,33 +1633,12 @@ phenotypes:
   transition_25_9:
     group: Transitions
     papername: Transition 25-9
-  transition_26_1:
-    group: Transitions
-    papername: Transition 26-1
-  transition_26_10:
-    group: Transitions
-    papername: Transition 26-10
-  transition_26_11:
-    group: Transitions
-    papername: Transition 26-11
-  transition_26_13:
-    group: Transitions
-    papername: Transition 26-13
-  transition_26_14:
-    group: Transitions
-    papername: Transition 26-14
   transition_26_15:
     group: Transitions
     papername: Transition 26-15
   transition_26_16:
     group: Transitions
     papername: Transition 26-16
-  transition_26_18:
-    group: Transitions
-    papername: Transition 26-18
-  transition_26_19:
-    group: Transitions
-    papername: Transition 26-19
   transition_26_2:
     group: Transitions
     papername: Transition 26-2
@@ -2481,9 +1648,6 @@ phenotypes:
   transition_26_21:
     group: Transitions
     papername: Transition 26-21
-  transition_26_22:
-    group: Transitions
-    papername: Transition 26-22
   transition_26_23:
     group: Transitions
     papername: Transition 26-23
@@ -2493,12 +1657,6 @@ phenotypes:
   transition_26_26:
     group: Transitions
     papername: Transition 26-26
-  transition_26_29:
-    group: Transitions
-    papername: Transition 26-29
-  transition_26_30:
-    group: Transitions
-    papername: Transition 26-30
   transition_26_31:
     group: Transitions
     papername: Transition 26-31
@@ -2523,21 +1681,9 @@ phenotypes:
   transition_26_38:
     group: Transitions
     papername: Transition 26-38
-  transition_26_39:
-    group: Transitions
-    papername: Transition 26-39
-  transition_26_40:
-    group: Transitions
-    papername: Transition 26-40
-  transition_26_42:
-    group: Transitions
-    papername: Transition 26-42
   transition_26_45:
     group: Transitions
     papername: Transition 26-45
-  transition_26_46:
-    group: Transitions
-    papername: Transition 26-46
   transition_26_47:
     group: Transitions
     papername: Transition 26-47
@@ -2547,36 +1693,18 @@ phenotypes:
   transition_26_49:
     group: Transitions
     papername: Transition 26-49
-  transition_26_52:
-    group: Transitions
-    papername: Transition 26-52
   transition_26_54:
     group: Transitions
     papername: Transition 26-54
-  transition_26_56:
-    group: Transitions
-    papername: Transition 26-56
   transition_26_59:
     group: Transitions
     papername: Transition 26-59
-  transition_26_7:
-    group: Transitions
-    papername: Transition 26-7
-  transition_26_8:
-    group: Transitions
-    papername: Transition 26-8
-  transition_26_9:
-    group: Transitions
-    papername: Transition 26-9
   transition_27_0:
     group: Transitions
     papername: Transition 27-0
   transition_27_10:
     group: Transitions
     papername: Transition 27-10
-  transition_27_11:
-    group: Transitions
-    papername: Transition 27-11
   transition_27_15:
     group: Transitions
     papername: Transition 27-15
@@ -2598,15 +1726,9 @@ phenotypes:
   transition_27_25:
     group: Transitions
     papername: Transition 27-25
-  transition_27_26:
-    group: Transitions
-    papername: Transition 27-26
   transition_27_27:
     group: Transitions
     papername: Transition 27-27
-  transition_27_28:
-    group: Transitions
-    papername: Transition 27-28
   transition_27_29:
     group: Transitions
     papername: Transition 27-29
@@ -2622,15 +1744,6 @@ phenotypes:
   transition_27_33:
     group: Transitions
     papername: Transition 27-33
-  transition_27_34:
-    group: Transitions
-    papername: Transition 27-34
-  transition_27_36:
-    group: Transitions
-    papername: Transition 27-36
-  transition_27_37:
-    group: Transitions
-    papername: Transition 27-37
   transition_27_38:
     group: Transitions
     papername: Transition 27-38
@@ -2652,15 +1765,9 @@ phenotypes:
   transition_27_46:
     group: Transitions
     papername: Transition 27-46
-  transition_27_47:
-    group: Transitions
-    papername: Transition 27-47
   transition_27_48:
     group: Transitions
     papername: Transition 27-48
-  transition_27_50:
-    group: Transitions
-    papername: Transition 27-50
   transition_27_53:
     group: Transitions
     papername: Transition 27-53
@@ -2673,27 +1780,15 @@ phenotypes:
   transition_27_56:
     group: Transitions
     papername: Transition 27-56
-  transition_27_58:
-    group: Transitions
-    papername: Transition 27-58
   transition_27_59:
     group: Transitions
     papername: Transition 27-59
   transition_27_6:
     group: Transitions
     papername: Transition 27-6
-  transition_27_60:
-    group: Transitions
-    papername: Transition 27-60
   transition_27_7:
     group: Transitions
     papername: Transition 27-7
-  transition_27_9:
-    group: Transitions
-    papername: Transition 27-9
-  transition_28_1:
-    group: Transitions
-    papername: Transition 28-1
   transition_28_10:
     group: Transitions
     papername: Transition 28-10
@@ -2715,15 +1810,6 @@ phenotypes:
   transition_28_16:
     group: Transitions
     papername: Transition 28-16
-  transition_28_18:
-    group: Transitions
-    papername: Transition 28-18
-  transition_28_19:
-    group: Transitions
-    papername: Transition 28-19
-  transition_28_20:
-    group: Transitions
-    papername: Transition 28-20
   transition_28_21:
     group: Transitions
     papername: Transition 28-21
@@ -2733,9 +1819,6 @@ phenotypes:
   transition_28_23:
     group: Transitions
     papername: Transition 28-23
-  transition_28_24:
-    group: Transitions
-    papername: Transition 28-24
   transition_28_25:
     group: Transitions
     papername: Transition 28-25
@@ -2751,18 +1834,9 @@ phenotypes:
   transition_28_32:
     group: Transitions
     papername: Transition 28-32
-  transition_28_33:
-    group: Transitions
-    papername: Transition 28-33
-  transition_28_34:
-    group: Transitions
-    papername: Transition 28-34
   transition_28_35:
     group: Transitions
     papername: Transition 28-35
-  transition_28_36:
-    group: Transitions
-    papername: Transition 28-36
   transition_28_38:
     group: Transitions
     papername: Transition 28-38
@@ -2775,9 +1849,6 @@ phenotypes:
   transition_28_41:
     group: Transitions
     papername: Transition 28-41
-  transition_28_42:
-    group: Transitions
-    papername: Transition 28-42
   transition_28_45:
     group: Transitions
     papername: Transition 28-45
@@ -2790,12 +1861,6 @@ phenotypes:
   transition_28_5:
     group: Transitions
     papername: Transition 28-5
-  transition_28_50:
-    group: Transitions
-    papername: Transition 28-50
-  transition_28_51:
-    group: Transitions
-    papername: Transition 28-51
   transition_28_52:
     group: Transitions
     papername: Transition 28-52
@@ -2808,60 +1873,27 @@ phenotypes:
   transition_28_57:
     group: Transitions
     papername: Transition 28-57
-  transition_28_58:
-    group: Transitions
-    papername: Transition 28-58
   transition_28_59:
     group: Transitions
     papername: Transition 28-59
-  transition_28_60:
-    group: Transitions
-    papername: Transition 28-60
-  transition_28_7:
-    group: Transitions
-    papername: Transition 28-7
   transition_28_9:
     group: Transitions
     papername: Transition 28-9
   transition_29_0:
     group: Transitions
     papername: Transition 29-0
-  transition_29_1:
-    group: Transitions
-    papername: Transition 29-1
-  transition_29_10:
-    group: Transitions
-    papername: Transition 29-10
-  transition_29_11:
-    group: Transitions
-    papername: Transition 29-11
-  transition_29_12:
-    group: Transitions
-    papername: Transition 29-12
   transition_29_17:
     group: Transitions
     papername: Transition 29-17
   transition_29_18:
     group: Transitions
     papername: Transition 29-18
-  transition_29_2:
-    group: Transitions
-    papername: Transition 29-2
-  transition_29_20:
-    group: Transitions
-    papername: Transition 29-20
   transition_29_21:
     group: Transitions
     papername: Transition 29-21
-  transition_29_22:
-    group: Transitions
-    papername: Transition 29-22
   transition_29_25:
     group: Transitions
     papername: Transition 29-25
-  transition_29_26:
-    group: Transitions
-    papername: Transition 29-26
   transition_29_27:
     group: Transitions
     papername: Transition 29-27
@@ -2871,9 +1903,6 @@ phenotypes:
   transition_29_3:
     group: Transitions
     papername: Transition 29-3
-  transition_29_31:
-    group: Transitions
-    papername: Transition 29-31
   transition_29_33:
     group: Transitions
     papername: Transition 29-33
@@ -2883,9 +1912,6 @@ phenotypes:
   transition_29_37:
     group: Transitions
     papername: Transition 29-37
-  transition_29_39:
-    group: Transitions
-    papername: Transition 29-39
   transition_29_43:
     group: Transitions
     papername: Transition 29-43
@@ -2931,33 +1957,12 @@ phenotypes:
   transition_29_6:
     group: Transitions
     papername: Transition 29-6
-  transition_29_60:
-    group: Transitions
-    papername: Transition 29-60
   transition_29_7:
     group: Transitions
     papername: Transition 29-7
-  transition_29_8:
-    group: Transitions
-    papername: Transition 29-8
-  transition_29_9:
-    group: Transitions
-    papername: Transition 29-9
   transition_2_0:
     group: Transitions
     papername: Transition 2-0
-  transition_2_10:
-    group: Transitions
-    papername: Transition 2-10
-  transition_2_11:
-    group: Transitions
-    papername: Transition 2-11
-  transition_2_12:
-    group: Transitions
-    papername: Transition 2-12
-  transition_2_13:
-    group: Transitions
-    papername: Transition 2-13
   transition_2_15:
     group: Transitions
     papername: Transition 2-15
@@ -2976,12 +1981,6 @@ phenotypes:
   transition_2_21:
     group: Transitions
     papername: Transition 2-21
-  transition_2_22:
-    group: Transitions
-    papername: Transition 2-22
-  transition_2_23:
-    group: Transitions
-    papername: Transition 2-23
   transition_2_25:
     group: Transitions
     papername: Transition 2-25
@@ -2991,12 +1990,6 @@ phenotypes:
   transition_2_27:
     group: Transitions
     papername: Transition 2-27
-  transition_2_28:
-    group: Transitions
-    papername: Transition 2-28
-  transition_2_29:
-    group: Transitions
-    papername: Transition 2-29
   transition_2_3:
     group: Transitions
     papername: Transition 2-3
@@ -3006,18 +1999,12 @@ phenotypes:
   transition_2_31:
     group: Transitions
     papername: Transition 2-31
-  transition_2_32:
-    group: Transitions
-    papername: Transition 2-32
   transition_2_33:
     group: Transitions
     papername: Transition 2-33
   transition_2_34:
     group: Transitions
     papername: Transition 2-34
-  transition_2_36:
-    group: Transitions
-    papername: Transition 2-36
   transition_2_37:
     group: Transitions
     papername: Transition 2-37
@@ -3030,9 +2017,6 @@ phenotypes:
   transition_2_40:
     group: Transitions
     papername: Transition 2-40
-  transition_2_42:
-    group: Transitions
-    papername: Transition 2-42
   transition_2_43:
     group: Transitions
     papername: Transition 2-43
@@ -3045,18 +2029,9 @@ phenotypes:
   transition_2_46:
     group: Transitions
     papername: Transition 2-46
-  transition_2_47:
-    group: Transitions
-    papername: Transition 2-47
   transition_2_48:
     group: Transitions
     papername: Transition 2-48
-  transition_2_49:
-    group: Transitions
-    papername: Transition 2-49
-  transition_2_50:
-    group: Transitions
-    papername: Transition 2-50
   transition_2_53:
     group: Transitions
     papername: Transition 2-53
@@ -3084,33 +2059,12 @@ phenotypes:
   transition_2_7:
     group: Transitions
     papername: Transition 2-7
-  transition_2_8:
-    group: Transitions
-    papername: Transition 2-8
-  transition_2_9:
-    group: Transitions
-    papername: Transition 2-9
-  transition_30_0:
-    group: Transitions
-    papername: Transition 30-0
   transition_30_10:
     group: Transitions
     papername: Transition 30-10
-  transition_30_12:
-    group: Transitions
-    papername: Transition 30-12
-  transition_30_13:
-    group: Transitions
-    papername: Transition 30-13
-  transition_30_14:
-    group: Transitions
-    papername: Transition 30-14
   transition_30_15:
     group: Transitions
     papername: Transition 30-15
-  transition_30_16:
-    group: Transitions
-    papername: Transition 30-16
   transition_30_18:
     group: Transitions
     papername: Transition 30-18
@@ -3126,18 +2080,12 @@ phenotypes:
   transition_30_21:
     group: Transitions
     papername: Transition 30-21
-  transition_30_22:
-    group: Transitions
-    papername: Transition 30-22
   transition_30_23:
     group: Transitions
     papername: Transition 30-23
   transition_30_25:
     group: Transitions
     papername: Transition 30-25
-  transition_30_26:
-    group: Transitions
-    papername: Transition 30-26
   transition_30_27:
     group: Transitions
     papername: Transition 30-27
@@ -3153,18 +2101,12 @@ phenotypes:
   transition_30_32:
     group: Transitions
     papername: Transition 30-32
-  transition_30_33:
-    group: Transitions
-    papername: Transition 30-33
   transition_30_35:
     group: Transitions
     papername: Transition 30-35
   transition_30_36:
     group: Transitions
     papername: Transition 30-36
-  transition_30_37:
-    group: Transitions
-    papername: Transition 30-37
   transition_30_38:
     group: Transitions
     papername: Transition 30-38
@@ -3186,48 +2128,21 @@ phenotypes:
   transition_30_45:
     group: Transitions
     papername: Transition 30-45
-  transition_30_47:
-    group: Transitions
-    papername: Transition 30-47
-  transition_30_48:
-    group: Transitions
-    papername: Transition 30-48
-  transition_30_51:
-    group: Transitions
-    papername: Transition 30-51
-  transition_30_52:
-    group: Transitions
-    papername: Transition 30-52
   transition_30_54:
     group: Transitions
     papername: Transition 30-54
   transition_30_56:
     group: Transitions
     papername: Transition 30-56
-  transition_30_58:
-    group: Transitions
-    papername: Transition 30-58
   transition_30_59:
     group: Transitions
     papername: Transition 30-59
-  transition_30_6:
-    group: Transitions
-    papername: Transition 30-6
   transition_30_60:
     group: Transitions
     papername: Transition 30-60
-  transition_30_7:
-    group: Transitions
-    papername: Transition 30-7
-  transition_30_8:
-    group: Transitions
-    papername: Transition 30-8
   transition_30_9:
     group: Transitions
     papername: Transition 30-9
-  transition_31_0:
-    group: Transitions
-    papername: Transition 31-0
   transition_31_1:
     group: Transitions
     papername: Transition 31-1
@@ -3258,9 +2173,6 @@ phenotypes:
   transition_31_19:
     group: Transitions
     papername: Transition 31-19
-  transition_31_2:
-    group: Transitions
-    papername: Transition 31-2
   transition_31_20:
     group: Transitions
     papername: Transition 31-20
@@ -3285,9 +2197,6 @@ phenotypes:
   transition_31_28:
     group: Transitions
     papername: Transition 31-28
-  transition_31_29:
-    group: Transitions
-    papername: Transition 31-29
   transition_31_3:
     group: Transitions
     papername: Transition 31-3
@@ -3300,12 +2209,6 @@ phenotypes:
   transition_31_32:
     group: Transitions
     papername: Transition 31-32
-  transition_31_33:
-    group: Transitions
-    papername: Transition 31-33
-  transition_31_34:
-    group: Transitions
-    papername: Transition 31-34
   transition_31_35:
     group: Transitions
     papername: Transition 31-35
@@ -3315,9 +2218,6 @@ phenotypes:
   transition_31_37:
     group: Transitions
     papername: Transition 31-37
-  transition_31_38:
-    group: Transitions
-    papername: Transition 31-38
   transition_31_4:
     group: Transitions
     papername: Transition 31-4
@@ -3327,36 +2227,18 @@ phenotypes:
   transition_31_41:
     group: Transitions
     papername: Transition 31-41
-  transition_31_42:
-    group: Transitions
-    papername: Transition 31-42
-  transition_31_43:
-    group: Transitions
-    papername: Transition 31-43
   transition_31_45:
     group: Transitions
     papername: Transition 31-45
   transition_31_46:
     group: Transitions
     papername: Transition 31-46
-  transition_31_47:
-    group: Transitions
-    papername: Transition 31-47
   transition_31_48:
     group: Transitions
     papername: Transition 31-48
-  transition_31_49:
-    group: Transitions
-    papername: Transition 31-49
   transition_31_5:
     group: Transitions
     papername: Transition 31-5
-  transition_31_50:
-    group: Transitions
-    papername: Transition 31-50
-  transition_31_51:
-    group: Transitions
-    papername: Transition 31-51
   transition_31_52:
     group: Transitions
     papername: Transition 31-52
@@ -3369,36 +2251,18 @@ phenotypes:
   transition_31_57:
     group: Transitions
     papername: Transition 31-57
-  transition_31_58:
-    group: Transitions
-    papername: Transition 31-58
-  transition_31_59:
-    group: Transitions
-    papername: Transition 31-59
   transition_31_60:
     group: Transitions
     papername: Transition 31-60
-  transition_31_8:
-    group: Transitions
-    papername: Transition 31-8
   transition_31_9:
     group: Transitions
     papername: Transition 31-9
-  transition_32_1:
-    group: Transitions
-    papername: Transition 32-1
   transition_32_10:
     group: Transitions
     papername: Transition 32-10
-  transition_32_11:
-    group: Transitions
-    papername: Transition 32-11
   transition_32_12:
     group: Transitions
     papername: Transition 32-12
-  transition_32_14:
-    group: Transitions
-    papername: Transition 32-14
   transition_32_15:
     group: Transitions
     papername: Transition 32-15
@@ -3411,9 +2275,6 @@ phenotypes:
   transition_32_19:
     group: Transitions
     papername: Transition 32-19
-  transition_32_2:
-    group: Transitions
-    papername: Transition 32-2
   transition_32_20:
     group: Transitions
     papername: Transition 32-20
@@ -3435,9 +2296,6 @@ phenotypes:
   transition_32_26:
     group: Transitions
     papername: Transition 32-26
-  transition_32_27:
-    group: Transitions
-    papername: Transition 32-27
   transition_32_28:
     group: Transitions
     papername: Transition 32-28
@@ -3453,24 +2311,12 @@ phenotypes:
   transition_32_33:
     group: Transitions
     papername: Transition 32-33
-  transition_32_34:
-    group: Transitions
-    papername: Transition 32-34
   transition_32_35:
     group: Transitions
     papername: Transition 32-35
   transition_32_36:
     group: Transitions
     papername: Transition 32-36
-  transition_32_38:
-    group: Transitions
-    papername: Transition 32-38
-  transition_32_40:
-    group: Transitions
-    papername: Transition 32-40
-  transition_32_41:
-    group: Transitions
-    papername: Transition 32-41
   transition_32_45:
     group: Transitions
     papername: Transition 32-45
@@ -3489,33 +2335,18 @@ phenotypes:
   transition_32_56:
     group: Transitions
     papername: Transition 32-56
-  transition_32_57:
-    group: Transitions
-    papername: Transition 32-57
   transition_32_59:
     group: Transitions
     papername: Transition 32-59
-  transition_32_60:
-    group: Transitions
-    papername: Transition 32-60
   transition_32_9:
     group: Transitions
     papername: Transition 32-9
   transition_33_0:
     group: Transitions
     papername: Transition 33-0
-  transition_33_10:
-    group: Transitions
-    papername: Transition 33-10
-  transition_33_11:
-    group: Transitions
-    papername: Transition 33-11
   transition_33_15:
     group: Transitions
     papername: Transition 33-15
-  transition_33_17:
-    group: Transitions
-    papername: Transition 33-17
   transition_33_18:
     group: Transitions
     papername: Transition 33-18
@@ -3531,15 +2362,6 @@ phenotypes:
   transition_33_21:
     group: Transitions
     papername: Transition 33-21
-  transition_33_22:
-    group: Transitions
-    papername: Transition 33-22
-  transition_33_23:
-    group: Transitions
-    papername: Transition 33-23
-  transition_33_24:
-    group: Transitions
-    papername: Transition 33-24
   transition_33_25:
     group: Transitions
     papername: Transition 33-25
@@ -3549,48 +2371,27 @@ phenotypes:
   transition_33_27:
     group: Transitions
     papername: Transition 33-27
-  transition_33_28:
-    group: Transitions
-    papername: Transition 33-28
   transition_33_29:
     group: Transitions
     papername: Transition 33-29
   transition_33_3:
     group: Transitions
     papername: Transition 33-3
-  transition_33_30:
-    group: Transitions
-    papername: Transition 33-30
-  transition_33_31:
-    group: Transitions
-    papername: Transition 33-31
-  transition_33_32:
-    group: Transitions
-    papername: Transition 33-32
   transition_33_33:
     group: Transitions
     papername: Transition 33-33
   transition_33_34:
     group: Transitions
     papername: Transition 33-34
-  transition_33_36:
-    group: Transitions
-    papername: Transition 33-36
   transition_33_37:
     group: Transitions
     papername: Transition 33-37
-  transition_33_38:
-    group: Transitions
-    papername: Transition 33-38
   transition_33_39:
     group: Transitions
     papername: Transition 33-39
   transition_33_40:
     group: Transitions
     papername: Transition 33-40
-  transition_33_42:
-    group: Transitions
-    papername: Transition 33-42
   transition_33_43:
     group: Transitions
     papername: Transition 33-43
@@ -3612,9 +2413,6 @@ phenotypes:
   transition_33_49:
     group: Transitions
     papername: Transition 33-49
-  transition_33_50:
-    group: Transitions
-    papername: Transition 33-50
   transition_33_53:
     group: Transitions
     papername: Transition 33-53
@@ -3627,18 +2425,12 @@ phenotypes:
   transition_33_56:
     group: Transitions
     papername: Transition 33-56
-  transition_33_58:
-    group: Transitions
-    papername: Transition 33-58
   transition_33_59:
     group: Transitions
     papername: Transition 33-59
   transition_33_6:
     group: Transitions
     papername: Transition 33-6
-  transition_33_60:
-    group: Transitions
-    papername: Transition 33-60
   transition_33_7:
     group: Transitions
     papername: Transition 33-7
@@ -3657,24 +2449,12 @@ phenotypes:
   transition_34_11:
     group: Transitions
     papername: Transition 34-11
-  transition_34_13:
-    group: Transitions
-    papername: Transition 34-13
-  transition_34_15:
-    group: Transitions
-    papername: Transition 34-15
   transition_34_16:
     group: Transitions
     papername: Transition 34-16
-  transition_34_17:
-    group: Transitions
-    papername: Transition 34-17
   transition_34_18:
     group: Transitions
     papername: Transition 34-18
-  transition_34_19:
-    group: Transitions
-    papername: Transition 34-19
   transition_34_2:
     group: Transitions
     papername: Transition 34-2
@@ -3687,9 +2467,6 @@ phenotypes:
   transition_34_22:
     group: Transitions
     papername: Transition 34-22
-  transition_34_23:
-    group: Transitions
-    papername: Transition 34-23
   transition_34_24:
     group: Transitions
     papername: Transition 34-24
@@ -3699,30 +2476,15 @@ phenotypes:
   transition_34_26:
     group: Transitions
     papername: Transition 34-26
-  transition_34_27:
-    group: Transitions
-    papername: Transition 34-27
-  transition_34_28:
-    group: Transitions
-    papername: Transition 34-28
   transition_34_29:
     group: Transitions
     papername: Transition 34-29
-  transition_34_3:
-    group: Transitions
-    papername: Transition 34-3
-  transition_34_31:
-    group: Transitions
-    papername: Transition 34-31
   transition_34_33:
     group: Transitions
     papername: Transition 34-33
   transition_34_34:
     group: Transitions
     papername: Transition 34-34
-  transition_34_35:
-    group: Transitions
-    papername: Transition 34-35
   transition_34_36:
     group: Transitions
     papername: Transition 34-36
@@ -3735,21 +2497,6 @@ phenotypes:
   transition_34_39:
     group: Transitions
     papername: Transition 34-39
-  transition_34_4:
-    group: Transitions
-    papername: Transition 34-4
-  transition_34_40:
-    group: Transitions
-    papername: Transition 34-40
-  transition_34_42:
-    group: Transitions
-    papername: Transition 34-42
-  transition_34_43:
-    group: Transitions
-    papername: Transition 34-43
-  transition_34_44:
-    group: Transitions
-    papername: Transition 34-44
   transition_34_45:
     group: Transitions
     papername: Transition 34-45
@@ -3768,51 +2515,30 @@ phenotypes:
   transition_34_5:
     group: Transitions
     papername: Transition 34-5
-  transition_34_50:
-    group: Transitions
-    papername: Transition 34-50
   transition_34_53:
     group: Transitions
     papername: Transition 34-53
   transition_34_54:
     group: Transitions
     papername: Transition 34-54
-  transition_34_55:
-    group: Transitions
-    papername: Transition 34-55
   transition_34_56:
     group: Transitions
     papername: Transition 34-56
   transition_34_59:
     group: Transitions
     papername: Transition 34-59
-  transition_34_6:
-    group: Transitions
-    papername: Transition 34-6
-  transition_34_60:
-    group: Transitions
-    papername: Transition 34-60
   transition_34_7:
     group: Transitions
     papername: Transition 34-7
   transition_34_8:
     group: Transitions
     papername: Transition 34-8
-  transition_34_9:
-    group: Transitions
-    papername: Transition 34-9
-  transition_35_1:
-    group: Transitions
-    papername: Transition 35-1
   transition_35_10:
     group: Transitions
     papername: Transition 35-10
   transition_35_11:
     group: Transitions
     papername: Transition 35-11
-  transition_35_12:
-    group: Transitions
-    papername: Transition 35-12
   transition_35_13:
     group: Transitions
     papername: Transition 35-13
@@ -3825,15 +2551,6 @@ phenotypes:
   transition_35_16:
     group: Transitions
     papername: Transition 35-16
-  transition_35_18:
-    group: Transitions
-    papername: Transition 35-18
-  transition_35_19:
-    group: Transitions
-    papername: Transition 35-19
-  transition_35_2:
-    group: Transitions
-    papername: Transition 35-2
   transition_35_20:
     group: Transitions
     papername: Transition 35-20
@@ -3846,9 +2563,6 @@ phenotypes:
   transition_35_23:
     group: Transitions
     papername: Transition 35-23
-  transition_35_24:
-    group: Transitions
-    papername: Transition 35-24
   transition_35_25:
     group: Transitions
     papername: Transition 35-25
@@ -3867,12 +2581,6 @@ phenotypes:
   transition_35_32:
     group: Transitions
     papername: Transition 35-32
-  transition_35_33:
-    group: Transitions
-    papername: Transition 35-33
-  transition_35_34:
-    group: Transitions
-    papername: Transition 35-34
   transition_35_35:
     group: Transitions
     papername: Transition 35-35
@@ -3885,51 +2593,24 @@ phenotypes:
   transition_35_38:
     group: Transitions
     papername: Transition 35-38
-  transition_35_39:
-    group: Transitions
-    papername: Transition 35-39
-  transition_35_4:
-    group: Transitions
-    papername: Transition 35-4
   transition_35_40:
     group: Transitions
     papername: Transition 35-40
-  transition_35_41:
-    group: Transitions
-    papername: Transition 35-41
-  transition_35_42:
-    group: Transitions
-    papername: Transition 35-42
   transition_35_45:
     group: Transitions
     papername: Transition 35-45
-  transition_35_46:
-    group: Transitions
-    papername: Transition 35-46
   transition_35_47:
     group: Transitions
     papername: Transition 35-47
   transition_35_48:
     group: Transitions
     papername: Transition 35-48
-  transition_35_5:
-    group: Transitions
-    papername: Transition 35-5
-  transition_35_50:
-    group: Transitions
-    papername: Transition 35-50
-  transition_35_52:
-    group: Transitions
-    papername: Transition 35-52
   transition_35_54:
     group: Transitions
     papername: Transition 35-54
   transition_35_56:
     group: Transitions
     papername: Transition 35-56
-  transition_35_57:
-    group: Transitions
-    papername: Transition 35-57
   transition_35_59:
     group: Transitions
     papername: Transition 35-59
@@ -3942,9 +2623,6 @@ phenotypes:
   transition_36_11:
     group: Transitions
     papername: Transition 36-11
-  transition_36_12:
-    group: Transitions
-    papername: Transition 36-12
   transition_36_13:
     group: Transitions
     papername: Transition 36-13
@@ -3957,12 +2635,6 @@ phenotypes:
   transition_36_16:
     group: Transitions
     papername: Transition 36-16
-  transition_36_18:
-    group: Transitions
-    papername: Transition 36-18
-  transition_36_19:
-    group: Transitions
-    papername: Transition 36-19
   transition_36_2:
     group: Transitions
     papername: Transition 36-2
@@ -3972,9 +2644,6 @@ phenotypes:
   transition_36_21:
     group: Transitions
     papername: Transition 36-21
-  transition_36_22:
-    group: Transitions
-    papername: Transition 36-22
   transition_36_23:
     group: Transitions
     papername: Transition 36-23
@@ -3984,9 +2653,6 @@ phenotypes:
   transition_36_26:
     group: Transitions
     papername: Transition 36-26
-  transition_36_27:
-    group: Transitions
-    papername: Transition 36-27
   transition_36_28:
     group: Transitions
     papername: Transition 36-28
@@ -4014,21 +2680,9 @@ phenotypes:
   transition_36_38:
     group: Transitions
     papername: Transition 36-38
-  transition_36_39:
-    group: Transitions
-    papername: Transition 36-39
-  transition_36_4:
-    group: Transitions
-    papername: Transition 36-4
   transition_36_40:
     group: Transitions
     papername: Transition 36-40
-  transition_36_41:
-    group: Transitions
-    papername: Transition 36-41
-  transition_36_42:
-    group: Transitions
-    papername: Transition 36-42
   transition_36_45:
     group: Transitions
     papername: Transition 36-45
@@ -4038,30 +2692,15 @@ phenotypes:
   transition_36_48:
     group: Transitions
     papername: Transition 36-48
-  transition_36_52:
-    group: Transitions
-    papername: Transition 36-52
   transition_36_54:
     group: Transitions
     papername: Transition 36-54
   transition_36_56:
     group: Transitions
     papername: Transition 36-56
-  transition_36_58:
-    group: Transitions
-    papername: Transition 36-58
-  transition_36_59:
-    group: Transitions
-    papername: Transition 36-59
-  transition_36_60:
-    group: Transitions
-    papername: Transition 36-60
   transition_36_9:
     group: Transitions
     papername: Transition 36-9
-  transition_37_0:
-    group: Transitions
-    papername: Transition 37-0
   transition_37_1:
     group: Transitions
     papername: Transition 37-1
@@ -4071,18 +2710,9 @@ phenotypes:
   transition_37_11:
     group: Transitions
     papername: Transition 37-11
-  transition_37_12:
-    group: Transitions
-    papername: Transition 37-12
-  transition_37_13:
-    group: Transitions
-    papername: Transition 37-13
   transition_37_16:
     group: Transitions
     papername: Transition 37-16
-  transition_37_17:
-    group: Transitions
-    papername: Transition 37-17
   transition_37_18:
     group: Transitions
     papername: Transition 37-18
@@ -4110,21 +2740,12 @@ phenotypes:
   transition_37_26:
     group: Transitions
     papername: Transition 37-26
-  transition_37_27:
-    group: Transitions
-    papername: Transition 37-27
-  transition_37_28:
-    group: Transitions
-    papername: Transition 37-28
   transition_37_29:
     group: Transitions
     papername: Transition 37-29
   transition_37_3:
     group: Transitions
     papername: Transition 37-3
-  transition_37_30:
-    group: Transitions
-    papername: Transition 37-30
   transition_37_31:
     group: Transitions
     papername: Transition 37-31
@@ -4149,18 +2770,6 @@ phenotypes:
   transition_37_39:
     group: Transitions
     papername: Transition 37-39
-  transition_37_4:
-    group: Transitions
-    papername: Transition 37-4
-  transition_37_40:
-    group: Transitions
-    papername: Transition 37-40
-  transition_37_42:
-    group: Transitions
-    papername: Transition 37-42
-  transition_37_43:
-    group: Transitions
-    papername: Transition 37-43
   transition_37_45:
     group: Transitions
     papername: Transition 37-45
@@ -4176,33 +2785,15 @@ phenotypes:
   transition_37_49:
     group: Transitions
     papername: Transition 37-49
-  transition_37_5:
-    group: Transitions
-    papername: Transition 37-5
-  transition_37_50:
-    group: Transitions
-    papername: Transition 37-50
-  transition_37_53:
-    group: Transitions
-    papername: Transition 37-53
   transition_37_54:
     group: Transitions
     papername: Transition 37-54
-  transition_37_55:
-    group: Transitions
-    papername: Transition 37-55
   transition_37_56:
     group: Transitions
     papername: Transition 37-56
-  transition_37_58:
-    group: Transitions
-    papername: Transition 37-58
   transition_37_59:
     group: Transitions
     papername: Transition 37-59
-  transition_37_60:
-    group: Transitions
-    papername: Transition 37-60
   transition_37_7:
     group: Transitions
     papername: Transition 37-7
@@ -4212,18 +2803,12 @@ phenotypes:
   transition_37_9:
     group: Transitions
     papername: Transition 37-9
-  transition_38_0:
-    group: Transitions
-    papername: Transition 38-0
   transition_38_10:
     group: Transitions
     papername: Transition 38-10
   transition_38_11:
     group: Transitions
     papername: Transition 38-11
-  transition_38_12:
-    group: Transitions
-    papername: Transition 38-12
   transition_38_13:
     group: Transitions
     papername: Transition 38-13
@@ -4251,9 +2836,6 @@ phenotypes:
   transition_38_21:
     group: Transitions
     papername: Transition 38-21
-  transition_38_22:
-    group: Transitions
-    papername: Transition 38-22
   transition_38_23:
     group: Transitions
     papername: Transition 38-23
@@ -4269,21 +2851,12 @@ phenotypes:
   transition_38_28:
     group: Transitions
     papername: Transition 38-28
-  transition_38_3:
-    group: Transitions
-    papername: Transition 38-3
   transition_38_30:
     group: Transitions
     papername: Transition 38-30
-  transition_38_31:
-    group: Transitions
-    papername: Transition 38-31
   transition_38_32:
     group: Transitions
     papername: Transition 38-32
-  transition_38_33:
-    group: Transitions
-    papername: Transition 38-33
   transition_38_34:
     group: Transitions
     papername: Transition 38-34
@@ -4302,15 +2875,9 @@ phenotypes:
   transition_38_39:
     group: Transitions
     papername: Transition 38-39
-  transition_38_4:
-    group: Transitions
-    papername: Transition 38-4
   transition_38_40:
     group: Transitions
     papername: Transition 38-40
-  transition_38_41:
-    group: Transitions
-    papername: Transition 38-41
   transition_38_43:
     group: Transitions
     papername: Transition 38-43
@@ -4320,48 +2887,24 @@ phenotypes:
   transition_38_45:
     group: Transitions
     papername: Transition 38-45
-  transition_38_46:
-    group: Transitions
-    papername: Transition 38-46
   transition_38_47:
     group: Transitions
     papername: Transition 38-47
   transition_38_48:
     group: Transitions
     papername: Transition 38-48
-  transition_38_49:
-    group: Transitions
-    papername: Transition 38-49
-  transition_38_50:
-    group: Transitions
-    papername: Transition 38-50
-  transition_38_51:
-    group: Transitions
-    papername: Transition 38-51
-  transition_38_52:
-    group: Transitions
-    papername: Transition 38-52
   transition_38_54:
     group: Transitions
     papername: Transition 38-54
   transition_38_56:
     group: Transitions
     papername: Transition 38-56
-  transition_38_57:
-    group: Transitions
-    papername: Transition 38-57
-  transition_38_58:
-    group: Transitions
-    papername: Transition 38-58
   transition_38_59:
     group: Transitions
     papername: Transition 38-59
   transition_38_6:
     group: Transitions
     papername: Transition 38-6
-  transition_38_60:
-    group: Transitions
-    papername: Transition 38-60
   transition_38_7:
     group: Transitions
     papername: Transition 38-7
@@ -4371,12 +2914,6 @@ phenotypes:
   transition_38_9:
     group: Transitions
     papername: Transition 38-9
-  transition_39_0:
-    group: Transitions
-    papername: Transition 39-0
-  transition_39_1:
-    group: Transitions
-    papername: Transition 39-1
   transition_39_10:
     group: Transitions
     papername: Transition 39-10
@@ -4398,42 +2935,21 @@ phenotypes:
   transition_39_21:
     group: Transitions
     papername: Transition 39-21
-  transition_39_23:
-    group: Transitions
-    papername: Transition 39-23
   transition_39_25:
     group: Transitions
     papername: Transition 39-25
-  transition_39_26:
-    group: Transitions
-    papername: Transition 39-26
   transition_39_27:
     group: Transitions
     papername: Transition 39-27
-  transition_39_29:
-    group: Transitions
-    papername: Transition 39-29
-  transition_39_3:
-    group: Transitions
-    papername: Transition 39-3
   transition_39_30:
     group: Transitions
     papername: Transition 39-30
-  transition_39_31:
-    group: Transitions
-    papername: Transition 39-31
   transition_39_33:
     group: Transitions
     papername: Transition 39-33
   transition_39_34:
     group: Transitions
     papername: Transition 39-34
-  transition_39_35:
-    group: Transitions
-    papername: Transition 39-35
-  transition_39_36:
-    group: Transitions
-    papername: Transition 39-36
   transition_39_37:
     group: Transitions
     papername: Transition 39-37
@@ -4455,18 +2971,9 @@ phenotypes:
   transition_39_45:
     group: Transitions
     papername: Transition 39-45
-  transition_39_47:
-    group: Transitions
-    papername: Transition 39-47
   transition_39_48:
     group: Transitions
     papername: Transition 39-48
-  transition_39_49:
-    group: Transitions
-    papername: Transition 39-49
-  transition_39_53:
-    group: Transitions
-    papername: Transition 39-53
   transition_39_54:
     group: Transitions
     papername: Transition 39-54
@@ -4479,9 +2986,6 @@ phenotypes:
   transition_39_6:
     group: Transitions
     papername: Transition 39-6
-  transition_39_60:
-    group: Transitions
-    papername: Transition 39-60
   transition_39_7:
     group: Transitions
     papername: Transition 39-7
@@ -4491,36 +2995,18 @@ phenotypes:
   transition_3_0:
     group: Transitions
     papername: Transition 3-0
-  transition_3_1:
-    group: Transitions
-    papername: Transition 3-1
-  transition_3_10:
-    group: Transitions
-    papername: Transition 3-10
   transition_3_11:
     group: Transitions
     papername: Transition 3-11
-  transition_3_16:
-    group: Transitions
-    papername: Transition 3-16
   transition_3_18:
     group: Transitions
     papername: Transition 3-18
-  transition_3_19:
-    group: Transitions
-    papername: Transition 3-19
   transition_3_2:
     group: Transitions
     papername: Transition 3-2
   transition_3_21:
     group: Transitions
     papername: Transition 3-21
-  transition_3_22:
-    group: Transitions
-    papername: Transition 3-22
-  transition_3_24:
-    group: Transitions
-    papername: Transition 3-24
   transition_3_25:
     group: Transitions
     papername: Transition 3-25
@@ -4533,30 +3019,12 @@ phenotypes:
   transition_3_3:
     group: Transitions
     papername: Transition 3-3
-  transition_3_30:
-    group: Transitions
-    papername: Transition 3-30
-  transition_3_31:
-    group: Transitions
-    papername: Transition 3-31
   transition_3_33:
     group: Transitions
     papername: Transition 3-33
-  transition_3_34:
-    group: Transitions
-    papername: Transition 3-34
   transition_3_37:
     group: Transitions
     papername: Transition 3-37
-  transition_3_39:
-    group: Transitions
-    papername: Transition 3-39
-  transition_3_40:
-    group: Transitions
-    papername: Transition 3-40
-  transition_3_42:
-    group: Transitions
-    papername: Transition 3-42
   transition_3_43:
     group: Transitions
     papername: Transition 3-43
@@ -4578,9 +3046,6 @@ phenotypes:
   transition_3_49:
     group: Transitions
     papername: Transition 3-49
-  transition_3_50:
-    group: Transitions
-    papername: Transition 3-50
   transition_3_53:
     group: Transitions
     papername: Transition 3-53
@@ -4593,9 +3058,6 @@ phenotypes:
   transition_3_56:
     group: Transitions
     papername: Transition 3-56
-  transition_3_58:
-    group: Transitions
-    papername: Transition 3-58
   transition_3_59:
     group: Transitions
     papername: Transition 3-59
@@ -4608,27 +3070,12 @@ phenotypes:
   transition_3_8:
     group: Transitions
     papername: Transition 3-8
-  transition_3_9:
-    group: Transitions
-    papername: Transition 3-9
-  transition_40_0:
-    group: Transitions
-    papername: Transition 40-0
   transition_40_10:
     group: Transitions
     papername: Transition 40-10
-  transition_40_12:
-    group: Transitions
-    papername: Transition 40-12
-  transition_40_13:
-    group: Transitions
-    papername: Transition 40-13
   transition_40_15:
     group: Transitions
     papername: Transition 40-15
-  transition_40_16:
-    group: Transitions
-    papername: Transition 40-16
   transition_40_18:
     group: Transitions
     papername: Transition 40-18
@@ -4650,39 +3097,24 @@ phenotypes:
   transition_40_25:
     group: Transitions
     papername: Transition 40-25
-  transition_40_26:
-    group: Transitions
-    papername: Transition 40-26
   transition_40_27:
     group: Transitions
     papername: Transition 40-27
   transition_40_28:
     group: Transitions
     papername: Transition 40-28
-  transition_40_3:
-    group: Transitions
-    papername: Transition 40-3
   transition_40_30:
     group: Transitions
     papername: Transition 40-30
   transition_40_31:
     group: Transitions
     papername: Transition 40-31
-  transition_40_32:
-    group: Transitions
-    papername: Transition 40-32
   transition_40_33:
     group: Transitions
     papername: Transition 40-33
-  transition_40_35:
-    group: Transitions
-    papername: Transition 40-35
   transition_40_36:
     group: Transitions
     papername: Transition 40-36
-  transition_40_37:
-    group: Transitions
-    papername: Transition 40-37
   transition_40_38:
     group: Transitions
     papername: Transition 40-38
@@ -4701,33 +3133,21 @@ phenotypes:
   transition_40_45:
     group: Transitions
     papername: Transition 40-45
-  transition_40_47:
-    group: Transitions
-    papername: Transition 40-47
   transition_40_48:
     group: Transitions
     papername: Transition 40-48
-  transition_40_50:
-    group: Transitions
-    papername: Transition 40-50
   transition_40_54:
     group: Transitions
     papername: Transition 40-54
   transition_40_56:
     group: Transitions
     papername: Transition 40-56
-  transition_40_58:
-    group: Transitions
-    papername: Transition 40-58
   transition_40_59:
     group: Transitions
     papername: Transition 40-59
   transition_40_6:
     group: Transitions
     papername: Transition 40-6
-  transition_40_60:
-    group: Transitions
-    papername: Transition 40-60
   transition_40_7:
     group: Transitions
     papername: Transition 40-7
@@ -4764,21 +3184,12 @@ phenotypes:
   transition_41_22:
     group: Transitions
     papername: Transition 41-22
-  transition_41_25:
-    group: Transitions
-    papername: Transition 41-25
   transition_41_28:
     group: Transitions
     papername: Transition 41-28
-  transition_41_30:
-    group: Transitions
-    papername: Transition 41-30
   transition_41_31:
     group: Transitions
     papername: Transition 41-31
-  transition_41_32:
-    group: Transitions
-    papername: Transition 41-32
   transition_41_35:
     group: Transitions
     papername: Transition 41-35
@@ -4842,15 +3253,9 @@ phenotypes:
   transition_41_9:
     group: Transitions
     papername: Transition 41-9
-  transition_42_0:
-    group: Transitions
-    papername: Transition 42-0
   transition_42_1:
     group: Transitions
     papername: Transition 42-1
-  transition_42_10:
-    group: Transitions
-    papername: Transition 42-10
   transition_42_11:
     group: Transitions
     papername: Transition 42-11
@@ -4860,60 +3265,15 @@ phenotypes:
   transition_42_13:
     group: Transitions
     papername: Transition 42-13
-  transition_42_14:
-    group: Transitions
-    papername: Transition 42-14
-  transition_42_16:
-    group: Transitions
-    papername: Transition 42-16
   transition_42_17:
     group: Transitions
     papername: Transition 42-17
-  transition_42_18:
-    group: Transitions
-    papername: Transition 42-18
-  transition_42_2:
-    group: Transitions
-    papername: Transition 42-2
   transition_42_21:
     group: Transitions
     papername: Transition 42-21
   transition_42_22:
     group: Transitions
     papername: Transition 42-22
-  transition_42_24:
-    group: Transitions
-    papername: Transition 42-24
-  transition_42_25:
-    group: Transitions
-    papername: Transition 42-25
-  transition_42_26:
-    group: Transitions
-    papername: Transition 42-26
-  transition_42_28:
-    group: Transitions
-    papername: Transition 42-28
-  transition_42_29:
-    group: Transitions
-    papername: Transition 42-29
-  transition_42_3:
-    group: Transitions
-    papername: Transition 42-3
-  transition_42_31:
-    group: Transitions
-    papername: Transition 42-31
-  transition_42_34:
-    group: Transitions
-    papername: Transition 42-34
-  transition_42_35:
-    group: Transitions
-    papername: Transition 42-35
-  transition_42_36:
-    group: Transitions
-    papername: Transition 42-36
-  transition_42_37:
-    group: Transitions
-    papername: Transition 42-37
   transition_42_4:
     group: Transitions
     papername: Transition 42-4
@@ -4926,9 +3286,6 @@ phenotypes:
   transition_42_43:
     group: Transitions
     papername: Transition 42-43
-  transition_42_44:
-    group: Transitions
-    papername: Transition 42-44
   transition_42_45:
     group: Transitions
     papername: Transition 42-45
@@ -4980,24 +3337,12 @@ phenotypes:
   transition_42_60:
     group: Transitions
     papername: Transition 42-60
-  transition_42_8:
-    group: Transitions
-    papername: Transition 42-8
-  transition_42_9:
-    group: Transitions
-    papername: Transition 42-9
   transition_43_0:
     group: Transitions
     papername: Transition 43-0
-  transition_43_10:
-    group: Transitions
-    papername: Transition 43-10
   transition_43_15:
     group: Transitions
     papername: Transition 43-15
-  transition_43_17:
-    group: Transitions
-    papername: Transition 43-17
   transition_43_18:
     group: Transitions
     papername: Transition 43-18
@@ -5007,15 +3352,9 @@ phenotypes:
   transition_43_2:
     group: Transitions
     papername: Transition 43-2
-  transition_43_20:
-    group: Transitions
-    papername: Transition 43-20
   transition_43_21:
     group: Transitions
     papername: Transition 43-21
-  transition_43_22:
-    group: Transitions
-    papername: Transition 43-22
   transition_43_25:
     group: Transitions
     papername: Transition 43-25
@@ -5034,21 +3373,9 @@ phenotypes:
   transition_43_31:
     group: Transitions
     papername: Transition 43-31
-  transition_43_32:
-    group: Transitions
-    papername: Transition 43-32
   transition_43_33:
     group: Transitions
     papername: Transition 43-33
-  transition_43_34:
-    group: Transitions
-    papername: Transition 43-34
-  transition_43_36:
-    group: Transitions
-    papername: Transition 43-36
-  transition_43_37:
-    group: Transitions
-    papername: Transition 43-37
   transition_43_38:
     group: Transitions
     papername: Transition 43-38
@@ -5058,12 +3385,6 @@ phenotypes:
   transition_43_40:
     group: Transitions
     papername: Transition 43-40
-  transition_43_41:
-    group: Transitions
-    papername: Transition 43-41
-  transition_43_42:
-    group: Transitions
-    papername: Transition 43-42
   transition_43_43:
     group: Transitions
     papername: Transition 43-43
@@ -5115,30 +3436,12 @@ phenotypes:
   transition_43_7:
     group: Transitions
     papername: Transition 43-7
-  transition_43_8:
-    group: Transitions
-    papername: Transition 43-8
-  transition_43_9:
-    group: Transitions
-    papername: Transition 43-9
   transition_44_0:
     group: Transitions
     papername: Transition 44-0
-  transition_44_1:
-    group: Transitions
-    papername: Transition 44-1
-  transition_44_10:
-    group: Transitions
-    papername: Transition 44-10
-  transition_44_12:
-    group: Transitions
-    papername: Transition 44-12
   transition_44_15:
     group: Transitions
     papername: Transition 44-15
-  transition_44_17:
-    group: Transitions
-    papername: Transition 44-17
   transition_44_18:
     group: Transitions
     papername: Transition 44-18
@@ -5148,15 +3451,9 @@ phenotypes:
   transition_44_2:
     group: Transitions
     papername: Transition 44-2
-  transition_44_20:
-    group: Transitions
-    papername: Transition 44-20
   transition_44_21:
     group: Transitions
     papername: Transition 44-21
-  transition_44_22:
-    group: Transitions
-    papername: Transition 44-22
   transition_44_25:
     group: Transitions
     papername: Transition 44-25
@@ -5172,18 +3469,9 @@ phenotypes:
   transition_44_30:
     group: Transitions
     papername: Transition 44-30
-  transition_44_31:
-    group: Transitions
-    papername: Transition 44-31
   transition_44_33:
     group: Transitions
     papername: Transition 44-33
-  transition_44_34:
-    group: Transitions
-    papername: Transition 44-34
-  transition_44_37:
-    group: Transitions
-    papername: Transition 44-37
   transition_44_38:
     group: Transitions
     papername: Transition 44-38
@@ -5247,12 +3535,6 @@ phenotypes:
   transition_44_7:
     group: Transitions
     papername: Transition 44-7
-  transition_44_8:
-    group: Transitions
-    papername: Transition 44-8
-  transition_44_9:
-    group: Transitions
-    papername: Transition 44-9
   transition_45_0:
     group: Transitions
     papername: Transition 45-0
@@ -5448,27 +3730,12 @@ phenotypes:
   transition_46_11:
     group: Transitions
     papername: Transition 46-11
-  transition_46_12:
-    group: Transitions
-    papername: Transition 46-12
-  transition_46_16:
-    group: Transitions
-    papername: Transition 46-16
-  transition_46_17:
-    group: Transitions
-    papername: Transition 46-17
   transition_46_18:
     group: Transitions
     papername: Transition 46-18
-  transition_46_19:
-    group: Transitions
-    papername: Transition 46-19
   transition_46_2:
     group: Transitions
     papername: Transition 46-2
-  transition_46_20:
-    group: Transitions
-    papername: Transition 46-20
   transition_46_21:
     group: Transitions
     papername: Transition 46-21
@@ -5481,9 +3748,6 @@ phenotypes:
   transition_46_25:
     group: Transitions
     papername: Transition 46-25
-  transition_46_26:
-    group: Transitions
-    papername: Transition 46-26
   transition_46_27:
     group: Transitions
     papername: Transition 46-27
@@ -5502,9 +3766,6 @@ phenotypes:
   transition_46_34:
     group: Transitions
     papername: Transition 46-34
-  transition_46_35:
-    group: Transitions
-    papername: Transition 46-35
   transition_46_37:
     group: Transitions
     papername: Transition 46-37
@@ -5535,9 +3796,6 @@ phenotypes:
   transition_46_49:
     group: Transitions
     papername: Transition 46-49
-  transition_46_5:
-    group: Transitions
-    papername: Transition 46-5
   transition_46_50:
     group: Transitions
     papername: Transition 46-50
@@ -5604,9 +3862,6 @@ phenotypes:
   transition_47_14:
     group: Transitions
     papername: Transition 47-14
-  transition_47_15:
-    group: Transitions
-    papername: Transition 47-15
   transition_47_16:
     group: Transitions
     papername: Transition 47-16
@@ -5616,15 +3871,6 @@ phenotypes:
   transition_47_18:
     group: Transitions
     papername: Transition 47-18
-  transition_47_19:
-    group: Transitions
-    papername: Transition 47-19
-  transition_47_2:
-    group: Transitions
-    papername: Transition 47-2
-  transition_47_20:
-    group: Transitions
-    papername: Transition 47-20
   transition_47_21:
     group: Transitions
     papername: Transition 47-21
@@ -5655,12 +3901,6 @@ phenotypes:
   transition_47_3:
     group: Transitions
     papername: Transition 47-3
-  transition_47_30:
-    group: Transitions
-    papername: Transition 47-30
-  transition_47_31:
-    group: Transitions
-    papername: Transition 47-31
   transition_47_32:
     group: Transitions
     papername: Transition 47-32
@@ -5682,15 +3922,9 @@ phenotypes:
   transition_47_38:
     group: Transitions
     papername: Transition 47-38
-  transition_47_39:
-    group: Transitions
-    papername: Transition 47-39
   transition_47_4:
     group: Transitions
     papername: Transition 47-4
-  transition_47_40:
-    group: Transitions
-    papername: Transition 47-40
   transition_47_41:
     group: Transitions
     papername: Transition 47-41
@@ -5751,24 +3985,12 @@ phenotypes:
   transition_47_59:
     group: Transitions
     papername: Transition 47-59
-  transition_47_6:
-    group: Transitions
-    papername: Transition 47-6
   transition_47_60:
     group: Transitions
     papername: Transition 47-60
   transition_47_7:
     group: Transitions
     papername: Transition 47-7
-  transition_47_8:
-    group: Transitions
-    papername: Transition 47-8
-  transition_47_9:
-    group: Transitions
-    papername: Transition 47-9
-  transition_48_0:
-    group: Transitions
-    papername: Transition 48-0
   transition_48_1:
     group: Transitions
     papername: Transition 48-1
@@ -5802,9 +4024,6 @@ phenotypes:
   transition_48_19:
     group: Transitions
     papername: Transition 48-19
-  transition_48_2:
-    group: Transitions
-    papername: Transition 48-2
   transition_48_20:
     group: Transitions
     papername: Transition 48-20
@@ -5814,9 +4033,6 @@ phenotypes:
   transition_48_22:
     group: Transitions
     papername: Transition 48-22
-  transition_48_23:
-    group: Transitions
-    papername: Transition 48-23
   transition_48_24:
     group: Transitions
     papername: Transition 48-24
@@ -5838,9 +4054,6 @@ phenotypes:
   transition_48_3:
     group: Transitions
     papername: Transition 48-3
-  transition_48_30:
-    group: Transitions
-    papername: Transition 48-30
   transition_48_31:
     group: Transitions
     papername: Transition 48-31
@@ -5880,12 +4093,6 @@ phenotypes:
   transition_48_42:
     group: Transitions
     papername: Transition 48-42
-  transition_48_43:
-    group: Transitions
-    papername: Transition 48-43
-  transition_48_44:
-    group: Transitions
-    papername: Transition 48-44
   transition_48_45:
     group: Transitions
     papername: Transition 48-45
@@ -5907,9 +4114,6 @@ phenotypes:
   transition_48_50:
     group: Transitions
     papername: Transition 48-50
-  transition_48_51:
-    group: Transitions
-    papername: Transition 48-51
   transition_48_52:
     group: Transitions
     papername: Transition 48-52
@@ -5964,9 +4168,6 @@ phenotypes:
   transition_49_12:
     group: Transitions
     papername: Transition 49-12
-  transition_49_13:
-    group: Transitions
-    papername: Transition 49-13
   transition_49_16:
     group: Transitions
     papername: Transition 49-16
@@ -5976,30 +4177,15 @@ phenotypes:
   transition_49_18:
     group: Transitions
     papername: Transition 49-18
-  transition_49_2:
-    group: Transitions
-    papername: Transition 49-2
-  transition_49_20:
-    group: Transitions
-    papername: Transition 49-20
   transition_49_21:
     group: Transitions
     papername: Transition 49-21
-  transition_49_22:
-    group: Transitions
-    papername: Transition 49-22
-  transition_49_24:
-    group: Transitions
-    papername: Transition 49-24
   transition_49_25:
     group: Transitions
     papername: Transition 49-25
   transition_49_26:
     group: Transitions
     papername: Transition 49-26
-  transition_49_27:
-    group: Transitions
-    papername: Transition 49-27
   transition_49_29:
     group: Transitions
     papername: Transition 49-29
@@ -6015,18 +4201,9 @@ phenotypes:
   transition_49_37:
     group: Transitions
     papername: Transition 49-37
-  transition_49_38:
-    group: Transitions
-    papername: Transition 49-38
-  transition_49_39:
-    group: Transitions
-    papername: Transition 49-39
   transition_49_4:
     group: Transitions
     papername: Transition 49-4
-  transition_49_41:
-    group: Transitions
-    papername: Transition 49-41
   transition_49_42:
     group: Transitions
     papername: Transition 49-42
@@ -6084,9 +4261,6 @@ phenotypes:
   transition_49_59:
     group: Transitions
     papername: Transition 49-59
-  transition_49_6:
-    group: Transitions
-    papername: Transition 49-6
   transition_49_60:
     group: Transitions
     papername: Transition 49-60
@@ -6099,15 +4273,9 @@ phenotypes:
   transition_4_1:
     group: Transitions
     papername: Transition 4-1
-  transition_4_10:
-    group: Transitions
-    papername: Transition 4-10
   transition_4_11:
     group: Transitions
     papername: Transition 4-11
-  transition_4_12:
-    group: Transitions
-    papername: Transition 4-12
   transition_4_13:
     group: Transitions
     papername: Transition 4-13
@@ -6117,36 +4285,18 @@ phenotypes:
   transition_4_16:
     group: Transitions
     papername: Transition 4-16
-  transition_4_17:
-    group: Transitions
-    papername: Transition 4-17
   transition_4_21:
     group: Transitions
     papername: Transition 4-21
   transition_4_22:
     group: Transitions
     papername: Transition 4-22
-  transition_4_25:
-    group: Transitions
-    papername: Transition 4-25
   transition_4_28:
     group: Transitions
     papername: Transition 4-28
-  transition_4_31:
-    group: Transitions
-    papername: Transition 4-31
-  transition_4_34:
-    group: Transitions
-    papername: Transition 4-34
   transition_4_35:
     group: Transitions
     papername: Transition 4-35
-  transition_4_37:
-    group: Transitions
-    papername: Transition 4-37
-  transition_4_38:
-    group: Transitions
-    papername: Transition 4-38
   transition_4_4:
     group: Transitions
     papername: Transition 4-4
@@ -6177,9 +4327,6 @@ phenotypes:
   transition_4_52:
     group: Transitions
     papername: Transition 4-52
-  transition_4_54:
-    group: Transitions
-    papername: Transition 4-54
   transition_4_56:
     group: Transitions
     papername: Transition 4-56
@@ -6189,15 +4336,9 @@ phenotypes:
   transition_4_59:
     group: Transitions
     papername: Transition 4-59
-  transition_4_60:
-    group: Transitions
-    papername: Transition 4-60
   transition_4_9:
     group: Transitions
     papername: Transition 4-9
-  transition_50_0:
-    group: Transitions
-    papername: Transition 50-0
   transition_50_1:
     group: Transitions
     papername: Transition 50-1
@@ -6213,78 +4354,27 @@ phenotypes:
   transition_50_13:
     group: Transitions
     papername: Transition 50-13
-  transition_50_14:
-    group: Transitions
-    papername: Transition 50-14
   transition_50_16:
     group: Transitions
     papername: Transition 50-16
   transition_50_17:
     group: Transitions
     papername: Transition 50-17
-  transition_50_18:
-    group: Transitions
-    papername: Transition 50-18
-  transition_50_2:
-    group: Transitions
-    papername: Transition 50-2
   transition_50_21:
     group: Transitions
     papername: Transition 50-21
-  transition_50_22:
-    group: Transitions
-    papername: Transition 50-22
-  transition_50_24:
-    group: Transitions
-    papername: Transition 50-24
-  transition_50_25:
-    group: Transitions
-    papername: Transition 50-25
-  transition_50_28:
-    group: Transitions
-    papername: Transition 50-28
   transition_50_29:
     group: Transitions
     papername: Transition 50-29
-  transition_50_3:
-    group: Transitions
-    papername: Transition 50-3
-  transition_50_31:
-    group: Transitions
-    papername: Transition 50-31
-  transition_50_33:
-    group: Transitions
-    papername: Transition 50-33
-  transition_50_34:
-    group: Transitions
-    papername: Transition 50-34
   transition_50_35:
     group: Transitions
     papername: Transition 50-35
-  transition_50_36:
-    group: Transitions
-    papername: Transition 50-36
-  transition_50_37:
-    group: Transitions
-    papername: Transition 50-37
-  transition_50_38:
-    group: Transitions
-    papername: Transition 50-38
-  transition_50_4:
-    group: Transitions
-    papername: Transition 50-4
   transition_50_41:
     group: Transitions
     papername: Transition 50-41
   transition_50_42:
     group: Transitions
     papername: Transition 50-42
-  transition_50_43:
-    group: Transitions
-    papername: Transition 50-43
-  transition_50_44:
-    group: Transitions
-    papername: Transition 50-44
   transition_50_45:
     group: Transitions
     papername: Transition 50-45
@@ -6300,9 +4390,6 @@ phenotypes:
   transition_50_49:
     group: Transitions
     papername: Transition 50-49
-  transition_50_5:
-    group: Transitions
-    papername: Transition 50-5
   transition_50_50:
     group: Transitions
     papername: Transition 50-50
@@ -6336,51 +4423,9 @@ phenotypes:
   transition_50_60:
     group: Transitions
     papername: Transition 50-60
-  transition_50_8:
-    group: Transitions
-    papername: Transition 50-8
-  transition_51_0:
-    group: Transitions
-    papername: Transition 51-0
-  transition_51_10:
-    group: Transitions
-    papername: Transition 51-10
-  transition_51_11:
-    group: Transitions
-    papername: Transition 51-11
-  transition_51_12:
-    group: Transitions
-    papername: Transition 51-12
-  transition_51_15:
-    group: Transitions
-    papername: Transition 51-15
   transition_51_17:
     group: Transitions
     papername: Transition 51-17
-  transition_51_18:
-    group: Transitions
-    papername: Transition 51-18
-  transition_51_2:
-    group: Transitions
-    papername: Transition 51-2
-  transition_51_21:
-    group: Transitions
-    papername: Transition 51-21
-  transition_51_25:
-    group: Transitions
-    papername: Transition 51-25
-  transition_51_29:
-    group: Transitions
-    papername: Transition 51-29
-  transition_51_30:
-    group: Transitions
-    papername: Transition 51-30
-  transition_51_31:
-    group: Transitions
-    papername: Transition 51-31
-  transition_51_37:
-    group: Transitions
-    papername: Transition 51-37
   transition_51_41:
     group: Transitions
     papername: Transition 51-41
@@ -6468,18 +4513,9 @@ phenotypes:
   transition_52_17:
     group: Transitions
     papername: Transition 52-17
-  transition_52_21:
-    group: Transitions
-    papername: Transition 52-21
   transition_52_22:
     group: Transitions
     papername: Transition 52-22
-  transition_52_23:
-    group: Transitions
-    papername: Transition 52-23
-  transition_52_25:
-    group: Transitions
-    papername: Transition 52-25
   transition_52_28:
     group: Transitions
     papername: Transition 52-28
@@ -6495,12 +4531,6 @@ phenotypes:
   transition_52_35:
     group: Transitions
     papername: Transition 52-35
-  transition_52_36:
-    group: Transitions
-    papername: Transition 52-36
-  transition_52_37:
-    group: Transitions
-    papername: Transition 52-37
   transition_52_38:
     group: Transitions
     papername: Transition 52-38
@@ -6564,36 +4594,15 @@ phenotypes:
   transition_53_0:
     group: Transitions
     papername: Transition 53-0
-  transition_53_1:
-    group: Transitions
-    papername: Transition 53-1
-  transition_53_10:
-    group: Transitions
-    papername: Transition 53-10
-  transition_53_11:
-    group: Transitions
-    papername: Transition 53-11
-  transition_53_16:
-    group: Transitions
-    papername: Transition 53-16
-  transition_53_17:
-    group: Transitions
-    papername: Transition 53-17
   transition_53_18:
     group: Transitions
     papername: Transition 53-18
   transition_53_2:
     group: Transitions
     papername: Transition 53-2
-  transition_53_20:
-    group: Transitions
-    papername: Transition 53-20
   transition_53_21:
     group: Transitions
     papername: Transition 53-21
-  transition_53_25:
-    group: Transitions
-    papername: Transition 53-25
   transition_53_27:
     group: Transitions
     papername: Transition 53-27
@@ -6609,12 +4618,6 @@ phenotypes:
   transition_53_34:
     group: Transitions
     papername: Transition 53-34
-  transition_53_37:
-    group: Transitions
-    papername: Transition 53-37
-  transition_53_38:
-    group: Transitions
-    papername: Transition 53-38
   transition_53_42:
     group: Transitions
     papername: Transition 53-42
@@ -6639,9 +4642,6 @@ phenotypes:
   transition_53_49:
     group: Transitions
     papername: Transition 53-49
-  transition_53_5:
-    group: Transitions
-    papername: Transition 53-5
   transition_53_50:
     group: Transitions
     papername: Transition 53-50
@@ -6672,12 +4672,6 @@ phenotypes:
   transition_53_60:
     group: Transitions
     papername: Transition 53-60
-  transition_53_7:
-    group: Transitions
-    papername: Transition 53-7
-  transition_53_8:
-    group: Transitions
-    papername: Transition 53-8
   transition_54_0:
     group: Transitions
     papername: Transition 54-0
@@ -6864,33 +4858,18 @@ phenotypes:
   transition_55_0:
     group: Transitions
     papername: Transition 55-0
-  transition_55_10:
-    group: Transitions
-    papername: Transition 55-10
   transition_55_11:
     group: Transitions
     papername: Transition 55-11
-  transition_55_15:
-    group: Transitions
-    papername: Transition 55-15
   transition_55_17:
     group: Transitions
     papername: Transition 55-17
-  transition_55_18:
-    group: Transitions
-    papername: Transition 55-18
   transition_55_2:
     group: Transitions
     papername: Transition 55-2
   transition_55_21:
     group: Transitions
     papername: Transition 55-21
-  transition_55_22:
-    group: Transitions
-    papername: Transition 55-22
-  transition_55_25:
-    group: Transitions
-    papername: Transition 55-25
   transition_55_27:
     group: Transitions
     papername: Transition 55-27
@@ -6903,9 +4882,6 @@ phenotypes:
   transition_55_33:
     group: Transitions
     papername: Transition 55-33
-  transition_55_34:
-    group: Transitions
-    papername: Transition 55-34
   transition_55_42:
     group: Transitions
     papername: Transition 55-42
@@ -6948,9 +4924,6 @@ phenotypes:
   transition_55_56:
     group: Transitions
     papername: Transition 55-56
-  transition_55_57:
-    group: Transitions
-    papername: Transition 55-57
   transition_55_58:
     group: Transitions
     papername: Transition 55-58
@@ -6963,12 +4936,6 @@ phenotypes:
   transition_55_60:
     group: Transitions
     papername: Transition 55-60
-  transition_55_7:
-    group: Transitions
-    papername: Transition 55-7
-  transition_55_8:
-    group: Transitions
-    papername: Transition 55-8
   transition_56_0:
     group: Transitions
     papername: Transition 56-0
@@ -7017,18 +4984,12 @@ phenotypes:
   transition_56_22:
     group: Transitions
     papername: Transition 56-22
-  transition_56_23:
-    group: Transitions
-    papername: Transition 56-23
   transition_56_24:
     group: Transitions
     papername: Transition 56-24
   transition_56_25:
     group: Transitions
     papername: Transition 56-25
-  transition_56_26:
-    group: Transitions
-    papername: Transition 56-26
   transition_56_27:
     group: Transitions
     papername: Transition 56-27
@@ -7044,9 +5005,6 @@ phenotypes:
   transition_56_30:
     group: Transitions
     papername: Transition 56-30
-  transition_56_31:
-    group: Transitions
-    papername: Transition 56-31
   transition_56_32:
     group: Transitions
     papername: Transition 56-32
@@ -7149,15 +5107,9 @@ phenotypes:
   transition_56_8:
     group: Transitions
     papername: Transition 56-8
-  transition_56_9:
-    group: Transitions
-    papername: Transition 56-9
   transition_57_1:
     group: Transitions
     papername: Transition 57-1
-  transition_57_10:
-    group: Transitions
-    papername: Transition 57-10
   transition_57_11:
     group: Transitions
     papername: Transition 57-11
@@ -7167,42 +5119,18 @@ phenotypes:
   transition_57_13:
     group: Transitions
     papername: Transition 57-13
-  transition_57_14:
-    group: Transitions
-    papername: Transition 57-14
-  transition_57_16:
-    group: Transitions
-    papername: Transition 57-16
   transition_57_17:
     group: Transitions
     papername: Transition 57-17
-  transition_57_21:
-    group: Transitions
-    papername: Transition 57-21
   transition_57_22:
     group: Transitions
     papername: Transition 57-22
-  transition_57_25:
-    group: Transitions
-    papername: Transition 57-25
   transition_57_28:
     group: Transitions
     papername: Transition 57-28
-  transition_57_31:
-    group: Transitions
-    papername: Transition 57-31
-  transition_57_32:
-    group: Transitions
-    papername: Transition 57-32
   transition_57_35:
     group: Transitions
     papername: Transition 57-35
-  transition_57_37:
-    group: Transitions
-    papername: Transition 57-37
-  transition_57_38:
-    group: Transitions
-    papername: Transition 57-38
   transition_57_4:
     group: Transitions
     papername: Transition 57-4
@@ -7257,15 +5185,9 @@ phenotypes:
   transition_57_60:
     group: Transitions
     papername: Transition 57-60
-  transition_57_9:
-    group: Transitions
-    papername: Transition 57-9
   transition_58_0:
     group: Transitions
     papername: Transition 58-0
-  transition_58_1:
-    group: Transitions
-    papername: Transition 58-1
   transition_58_10:
     group: Transitions
     papername: Transition 58-10
@@ -7275,60 +5197,15 @@ phenotypes:
   transition_58_12:
     group: Transitions
     papername: Transition 58-12
-  transition_58_13:
-    group: Transitions
-    papername: Transition 58-13
-  transition_58_15:
-    group: Transitions
-    papername: Transition 58-15
   transition_58_17:
     group: Transitions
     papername: Transition 58-17
   transition_58_2:
     group: Transitions
     papername: Transition 58-2
-  transition_58_21:
-    group: Transitions
-    papername: Transition 58-21
-  transition_58_22:
-    group: Transitions
-    papername: Transition 58-22
-  transition_58_23:
-    group: Transitions
-    papername: Transition 58-23
-  transition_58_25:
-    group: Transitions
-    papername: Transition 58-25
-  transition_58_27:
-    group: Transitions
-    papername: Transition 58-27
-  transition_58_28:
-    group: Transitions
-    papername: Transition 58-28
   transition_58_29:
     group: Transitions
     papername: Transition 58-29
-  transition_58_3:
-    group: Transitions
-    papername: Transition 58-3
-  transition_58_32:
-    group: Transitions
-    papername: Transition 58-32
-  transition_58_33:
-    group: Transitions
-    papername: Transition 58-33
-  transition_58_34:
-    group: Transitions
-    papername: Transition 58-34
-  transition_58_36:
-    group: Transitions
-    papername: Transition 58-36
-  transition_58_37:
-    group: Transitions
-    papername: Transition 58-37
-  transition_58_38:
-    group: Transitions
-    papername: Transition 58-38
   transition_58_41:
     group: Transitions
     papername: Transition 58-41
@@ -7389,15 +5266,6 @@ phenotypes:
   transition_58_60:
     group: Transitions
     papername: Transition 58-60
-  transition_58_7:
-    group: Transitions
-    papername: Transition 58-7
-  transition_58_8:
-    group: Transitions
-    papername: Transition 58-8
-  transition_58_9:
-    group: Transitions
-    papername: Transition 58-9
   transition_59_0:
     group: Transitions
     papername: Transition 59-0
@@ -7446,9 +5314,6 @@ phenotypes:
   transition_59_22:
     group: Transitions
     papername: Transition 59-22
-  transition_59_23:
-    group: Transitions
-    papername: Transition 59-23
   transition_59_24:
     group: Transitions
     papername: Transition 59-24
@@ -7473,9 +5338,6 @@ phenotypes:
   transition_59_30:
     group: Transitions
     papername: Transition 59-30
-  transition_59_31:
-    group: Transitions
-    papername: Transition 59-31
   transition_59_32:
     group: Transitions
     papername: Transition 59-32
@@ -7596,24 +5458,15 @@ phenotypes:
   transition_5_13:
     group: Transitions
     papername: Transition 5-13
-  transition_5_14:
-    group: Transitions
-    papername: Transition 5-14
   transition_5_16:
     group: Transitions
     papername: Transition 5-16
-  transition_5_17:
-    group: Transitions
-    papername: Transition 5-17
   transition_5_21:
     group: Transitions
     papername: Transition 5-21
   transition_5_22:
     group: Transitions
     papername: Transition 5-22
-  transition_5_24:
-    group: Transitions
-    papername: Transition 5-24
   transition_5_25:
     group: Transitions
     papername: Transition 5-25
@@ -7629,9 +5482,6 @@ phenotypes:
   transition_5_35:
     group: Transitions
     papername: Transition 5-35
-  transition_5_37:
-    group: Transitions
-    papername: Transition 5-37
   transition_5_4:
     group: Transitions
     papername: Transition 5-4
@@ -7644,9 +5494,6 @@ phenotypes:
   transition_5_45:
     group: Transitions
     papername: Transition 5-45
-  transition_5_46:
-    group: Transitions
-    papername: Transition 5-46
   transition_5_47:
     group: Transitions
     papername: Transition 5-47
@@ -7659,9 +5506,6 @@ phenotypes:
   transition_5_5:
     group: Transitions
     papername: Transition 5-5
-  transition_5_50:
-    group: Transitions
-    papername: Transition 5-50
   transition_5_52:
     group: Transitions
     papername: Transition 5-52
@@ -7674,87 +5518,24 @@ phenotypes:
   transition_5_57:
     group: Transitions
     papername: Transition 5-57
-  transition_5_58:
-    group: Transitions
-    papername: Transition 5-58
   transition_5_59:
     group: Transitions
     papername: Transition 5-59
-  transition_5_60:
-    group: Transitions
-    papername: Transition 5-60
-  transition_5_9:
-    group: Transitions
-    papername: Transition 5-9
-  transition_60_10:
-    group: Transitions
-    papername: Transition 60-10
   transition_60_11:
     group: Transitions
     papername: Transition 60-11
-  transition_60_12:
-    group: Transitions
-    papername: Transition 60-12
-  transition_60_13:
-    group: Transitions
-    papername: Transition 60-13
-  transition_60_14:
-    group: Transitions
-    papername: Transition 60-14
-  transition_60_16:
-    group: Transitions
-    papername: Transition 60-16
   transition_60_17:
     group: Transitions
     papername: Transition 60-17
-  transition_60_2:
-    group: Transitions
-    papername: Transition 60-2
   transition_60_21:
     group: Transitions
     papername: Transition 60-21
-  transition_60_22:
-    group: Transitions
-    papername: Transition 60-22
-  transition_60_25:
-    group: Transitions
-    papername: Transition 60-25
-  transition_60_27:
-    group: Transitions
-    papername: Transition 60-27
-  transition_60_28:
-    group: Transitions
-    papername: Transition 60-28
-  transition_60_29:
-    group: Transitions
-    papername: Transition 60-29
-  transition_60_3:
-    group: Transitions
-    papername: Transition 60-3
   transition_60_30:
     group: Transitions
     papername: Transition 60-30
-  transition_60_31:
-    group: Transitions
-    papername: Transition 60-31
-  transition_60_33:
-    group: Transitions
-    papername: Transition 60-33
-  transition_60_34:
-    group: Transitions
-    papername: Transition 60-34
-  transition_60_35:
-    group: Transitions
-    papername: Transition 60-35
-  transition_60_37:
-    group: Transitions
-    papername: Transition 60-37
   transition_60_38:
     group: Transitions
     papername: Transition 60-38
-  transition_60_39:
-    group: Transitions
-    papername: Transition 60-39
   transition_60_41:
     group: Transitions
     papername: Transition 60-41
@@ -7815,24 +5596,12 @@ phenotypes:
   transition_60_60:
     group: Transitions
     papername: Transition 60-60
-  transition_60_8:
-    group: Transitions
-    papername: Transition 60-8
   transition_60_9:
     group: Transitions
     papername: Transition 60-9
   transition_6_0:
     group: Transitions
     papername: Transition 6-0
-  transition_6_10:
-    group: Transitions
-    papername: Transition 6-10
-  transition_6_11:
-    group: Transitions
-    papername: Transition 6-11
-  transition_6_15:
-    group: Transitions
-    papername: Transition 6-15
   transition_6_18:
     group: Transitions
     papername: Transition 6-18
@@ -7842,9 +5611,6 @@ phenotypes:
   transition_6_2:
     group: Transitions
     papername: Transition 6-2
-  transition_6_20:
-    group: Transitions
-    papername: Transition 6-20
   transition_6_21:
     group: Transitions
     papername: Transition 6-21
@@ -7860,15 +5626,9 @@ phenotypes:
   transition_6_3:
     group: Transitions
     papername: Transition 6-3
-  transition_6_30:
-    group: Transitions
-    papername: Transition 6-30
   transition_6_33:
     group: Transitions
     papername: Transition 6-33
-  transition_6_34:
-    group: Transitions
-    papername: Transition 6-34
   transition_6_39:
     group: Transitions
     papername: Transition 6-39
@@ -7887,18 +5647,9 @@ phenotypes:
   transition_6_46:
     group: Transitions
     papername: Transition 6-46
-  transition_6_47:
-    group: Transitions
-    papername: Transition 6-47
   transition_6_48:
     group: Transitions
     papername: Transition 6-48
-  transition_6_49:
-    group: Transitions
-    papername: Transition 6-49
-  transition_6_53:
-    group: Transitions
-    papername: Transition 6-53
   transition_6_54:
     group: Transitions
     papername: Transition 6-54
@@ -7923,21 +5674,9 @@ phenotypes:
   transition_7_1:
     group: Transitions
     papername: Transition 7-1
-  transition_7_10:
-    group: Transitions
-    papername: Transition 7-10
-  transition_7_11:
-    group: Transitions
-    papername: Transition 7-11
-  transition_7_15:
-    group: Transitions
-    papername: Transition 7-15
   transition_7_18:
     group: Transitions
     papername: Transition 7-18
-  transition_7_19:
-    group: Transitions
-    papername: Transition 7-19
   transition_7_2:
     group: Transitions
     papername: Transition 7-2
@@ -7947,15 +5686,9 @@ phenotypes:
   transition_7_21:
     group: Transitions
     papername: Transition 7-21
-  transition_7_22:
-    group: Transitions
-    papername: Transition 7-22
   transition_7_25:
     group: Transitions
     papername: Transition 7-25
-  transition_7_26:
-    group: Transitions
-    papername: Transition 7-26
   transition_7_27:
     group: Transitions
     papername: Transition 7-27
@@ -7965,9 +5698,6 @@ phenotypes:
   transition_7_3:
     group: Transitions
     papername: Transition 7-3
-  transition_7_30:
-    group: Transitions
-    papername: Transition 7-30
   transition_7_33:
     group: Transitions
     papername: Transition 7-33
@@ -7986,9 +5716,6 @@ phenotypes:
   transition_7_40:
     group: Transitions
     papername: Transition 7-40
-  transition_7_42:
-    group: Transitions
-    papername: Transition 7-42
   transition_7_43:
     group: Transitions
     papername: Transition 7-43
@@ -8010,84 +5737,39 @@ phenotypes:
   transition_7_49:
     group: Transitions
     papername: Transition 7-49
-  transition_7_53:
-    group: Transitions
-    papername: Transition 7-53
   transition_7_54:
     group: Transitions
     papername: Transition 7-54
-  transition_7_55:
-    group: Transitions
-    papername: Transition 7-55
   transition_7_56:
     group: Transitions
     papername: Transition 7-56
-  transition_7_58:
-    group: Transitions
-    papername: Transition 7-58
   transition_7_59:
     group: Transitions
     papername: Transition 7-59
   transition_7_6:
     group: Transitions
     papername: Transition 7-6
-  transition_7_60:
-    group: Transitions
-    papername: Transition 7-60
   transition_7_7:
     group: Transitions
     papername: Transition 7-7
   transition_7_8:
     group: Transitions
     papername: Transition 7-8
-  transition_7_9:
-    group: Transitions
-    papername: Transition 7-9
   transition_8_1:
     group: Transitions
     papername: Transition 8-1
-  transition_8_10:
-    group: Transitions
-    papername: Transition 8-10
   transition_8_11:
     group: Transitions
     papername: Transition 8-11
-  transition_8_16:
-    group: Transitions
-    papername: Transition 8-16
-  transition_8_17:
-    group: Transitions
-    papername: Transition 8-17
-  transition_8_18:
-    group: Transitions
-    papername: Transition 8-18
-  transition_8_2:
-    group: Transitions
-    papername: Transition 8-2
   transition_8_21:
     group: Transitions
     papername: Transition 8-21
-  transition_8_22:
-    group: Transitions
-    papername: Transition 8-22
-  transition_8_24:
-    group: Transitions
-    papername: Transition 8-24
   transition_8_25:
     group: Transitions
     papername: Transition 8-25
-  transition_8_26:
-    group: Transitions
-    papername: Transition 8-26
-  transition_8_29:
-    group: Transitions
-    papername: Transition 8-29
   transition_8_3:
     group: Transitions
     papername: Transition 8-3
-  transition_8_31:
-    group: Transitions
-    papername: Transition 8-31
   transition_8_33:
     group: Transitions
     papername: Transition 8-33
@@ -8103,18 +5785,6 @@ phenotypes:
   transition_8_39:
     group: Transitions
     papername: Transition 8-39
-  transition_8_40:
-    group: Transitions
-    papername: Transition 8-40
-  transition_8_42:
-    group: Transitions
-    papername: Transition 8-42
-  transition_8_43:
-    group: Transitions
-    papername: Transition 8-43
-  transition_8_44:
-    group: Transitions
-    papername: Transition 8-44
   transition_8_45:
     group: Transitions
     papername: Transition 8-45
@@ -8130,45 +5800,21 @@ phenotypes:
   transition_8_49:
     group: Transitions
     papername: Transition 8-49
-  transition_8_50:
-    group: Transitions
-    papername: Transition 8-50
-  transition_8_51:
-    group: Transitions
-    papername: Transition 8-51
   transition_8_54:
     group: Transitions
     papername: Transition 8-54
-  transition_8_55:
-    group: Transitions
-    papername: Transition 8-55
   transition_8_56:
     group: Transitions
     papername: Transition 8-56
-  transition_8_58:
-    group: Transitions
-    papername: Transition 8-58
   transition_8_59:
     group: Transitions
     papername: Transition 8-59
-  transition_8_6:
-    group: Transitions
-    papername: Transition 8-6
-  transition_8_60:
-    group: Transitions
-    papername: Transition 8-60
   transition_8_7:
     group: Transitions
     papername: Transition 8-7
   transition_8_8:
     group: Transitions
     papername: Transition 8-8
-  transition_8_9:
-    group: Transitions
-    papername: Transition 8-9
-  transition_9_1:
-    group: Transitions
-    papername: Transition 9-1
   transition_9_10:
     group: Transitions
     papername: Transition 9-10
@@ -8190,9 +5836,6 @@ phenotypes:
   transition_9_16:
     group: Transitions
     papername: Transition 9-16
-  transition_9_18:
-    group: Transitions
-    papername: Transition 9-18
   transition_9_21:
     group: Transitions
     papername: Transition 9-21
@@ -8202,24 +5845,12 @@ phenotypes:
   transition_9_23:
     group: Transitions
     papername: Transition 9-23
-  transition_9_24:
-    group: Transitions
-    papername: Transition 9-24
   transition_9_25:
     group: Transitions
     papername: Transition 9-25
-  transition_9_26:
-    group: Transitions
-    papername: Transition 9-26
   transition_9_28:
     group: Transitions
     papername: Transition 9-28
-  transition_9_29:
-    group: Transitions
-    papername: Transition 9-29
-  transition_9_3:
-    group: Transitions
-    papername: Transition 9-3
   transition_9_30:
     group: Transitions
     papername: Transition 9-30
@@ -8253,60 +5884,30 @@ phenotypes:
   transition_9_41:
     group: Transitions
     papername: Transition 9-41
-  transition_9_43:
-    group: Transitions
-    papername: Transition 9-43
-  transition_9_44:
-    group: Transitions
-    papername: Transition 9-44
   transition_9_45:
     group: Transitions
     papername: Transition 9-45
   transition_9_46:
     group: Transitions
     papername: Transition 9-46
-  transition_9_47:
-    group: Transitions
-    papername: Transition 9-47
   transition_9_48:
     group: Transitions
     papername: Transition 9-48
-  transition_9_5:
-    group: Transitions
-    papername: Transition 9-5
   transition_9_51:
     group: Transitions
     papername: Transition 9-51
   transition_9_52:
     group: Transitions
     papername: Transition 9-52
-  transition_9_53:
-    group: Transitions
-    papername: Transition 9-53
   transition_9_54:
     group: Transitions
     papername: Transition 9-54
-  transition_9_56:
-    group: Transitions
-    papername: Transition 9-56
-  transition_9_57:
-    group: Transitions
-    papername: Transition 9-57
-  transition_9_58:
-    group: Transitions
-    papername: Transition 9-58
   transition_9_59:
     group: Transitions
     papername: Transition 9-59
   transition_9_60:
     group: Transitions
     papername: Transition 9-60
-  transition_9_7:
-    group: Transitions
-    papername: Transition 9-7
-  transition_9_8:
-    group: Transitions
-    papername: Transition 9-8
   transition_9_9:
     group: Transitions
     papername: Transition 9-9

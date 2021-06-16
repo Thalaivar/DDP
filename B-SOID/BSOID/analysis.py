@@ -177,8 +177,12 @@ def transition_matrix_across_strains(label_info, max_label):
     
     return tmat
 
-def gemma_transitions(label_info, input_csv, max_label, default_config_file, thresh=None):
+def gemma_transitions(label_info, input_csv, max_label, default_config_file, thresh=None, exclude_strains=None, nmax=10):
     tmats = transition_matrix_across_strains(label_info, max_label)
+
+    if exclude_strains is not None:
+        exclude_strains = []
+
     transitions = {}
     for _, data in tmats.items():
         for d in data:
@@ -202,6 +206,15 @@ def gemma_transitions(label_info, input_csv, max_label, default_config_file, thr
             
     transitions_csv = pd.concat([input_csv.iloc[retain_idx, :].reset_index(), pd.DataFrame.from_dict(trans_df)], axis=1)
     
+    downsampled_dfs = []
+    for strain, df in transitions_csv.groupby("Strain"):
+        if strain not in exclude_strains:
+            if df.shape[0] > nmax:
+                downsampled_dfs.append(df.sample(n=nmax))
+            else:
+                downsampled_dfs.append(df)
+    transitions_csv = pd.concat(downsampled_dfs, axis=0)
+
     if thresh is None:
         thresh = 1
 
@@ -212,6 +225,7 @@ def gemma_transitions(label_info, input_csv, max_label, default_config_file, thr
             if n <= thresh:
                 drop_cols.append(col)
     transitions_csv.drop(drop_cols, axis=1, inplace=True)
+    transitions_csv.drop("TestAssayNotes", axis=1, inplace=True)
 
     config = {}
     config["strain"] = "Strain"
