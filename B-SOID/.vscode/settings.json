@@ -1,6 +1,5 @@
 {
     "python.pythonPath": "D:\\Applications\\anaconda3\\envs\\ddp\\python.exe",
     "debug.node.showUseWslIsDeprecatedWarning": false,
-    "terminal.integrated.useWslProfiles": false,
-    "python.formatting.provider": "black"
+    "terminal.integrated.shell.osx": "/usr/local/bin/fish"
 }

@@ -215,29 +215,33 @@ def gemma_transitions(label_info, input_csv, max_label, default_config_file, thr
                 downsampled_dfs.append(df)
     transitions_csv = pd.concat(downsampled_dfs, axis=0)
 
-    if thresh is None:
-        thresh = 1
+    if thresh is not None:
+        # get no. of unique values in each transition
+        utrans = transitions_csv.nunique(axis=0)
+        drop_cols = [utrans.index[i] for i in range(utrans.size) if "transition" not in utrans.index[i]]
+        utrans = utrans.drop(drop_cols)
 
-    drop_cols = []
-    for col in transitions_csv.columns:
-        if "transition" in col:
-            n = transitions_csv[col].unique().size
-            if n <= thresh:
-                drop_cols.append(col)
-    transitions_csv.drop(drop_cols, axis=1, inplace=True)
+        utrans = utrans.sort_values(ascending=False)
+        top_trans = list(utrans.index[:round(thresh * utrans.size)])
+
+        for col in transitions_csv.columns:
+            if (col not in top_trans) and ("transition" in col):
+                transitions_csv.drop(col, axis=1, inplace=True)
+
     transitions_csv.drop("TestAssayNotes", axis=1, inplace=True)
-
+    
     config = {}
     config["strain"] = "Strain"
     config["sex"] = "Sex"
     config["phenotypes"] = {}
     config["groups"] = ["Transitions"]
 
-    for i in range(max_label):
-        for j in range(max_label):
-            if f"transition_{i}_{j}" not in drop_cols:
-                config["phenotypes"][f"transition_{i}_{j}"] = {"papername": f"Transition {i}-{j}", "group": "Transitions"}
-
+    for col in transitions_csv.columns:
+        if "transition" in col:
+            _, i, j = col.split('_')
+            i, j = int(i), int(j)
+            config["phenotypes"][col] = {"papername": f"T{i}-{j}", "group": "Transitions"}
+    
     config["covar"] = ["Sex"]
 
     with open(default_config_file, 'r') as f:
