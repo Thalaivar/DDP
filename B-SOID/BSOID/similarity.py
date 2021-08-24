@@ -33,7 +33,7 @@ def density_separation_similarity(X1, X2, metric):
     density_sep = density_separation(X, y, 0, 1, internal_nodes[0], internal_nodes[1], core_distances[0], core_distances[1])
     return density_sep
 
-def roc_similiarity(X1, X2, metric=None):
+def roc_similarity(X1, X2, metric=None):
     X = np.vstack((X1, X2))
     y = np.hstack((np.zeros((X1.shape[0],)), np.ones((X2.shape[0],)))).astype("int")
 

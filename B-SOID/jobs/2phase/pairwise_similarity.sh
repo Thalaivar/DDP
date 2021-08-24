@@ -16,7 +16,11 @@ N_JOB=$N_TASKS
 BASE_DIR=/fastscratch/laadd/pwise_strain
 mkdir $BASE_DIR
 
-sim_measures=("dbcv_index_similarity" "density_separation_similarity" "roc_similiarity" "minimum_distance_similarity" "hausdorff_similarity")
+SIM_MEASURE="dbcv_index_similarity"
+SAVE_DIR=$BASE_DIR/$SIM_MEASURE
+mkdir $SAVE_DIR
+
+# sim_measures=("dbcv_index_similarity" "density_separation_similarity" "roc_similiarity" "minimum_distance_similarity" "hausdorff_similarity")
 
 source /home/laadd/.bashrc
 conda activate bsoid 

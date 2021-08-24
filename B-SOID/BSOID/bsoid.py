@@ -137,10 +137,10 @@ class BSOID:
             - filtered_data (dict) : strain-wise filtered keypoint data
         """
         min_video_len *= (60 * self.fps)
-
         input_csv = self.jax_dataset["input_csv"]
         data_dir = self.jax_dataset["data_dir"]
         filter_thresh = self.filter_thresh
+        min_video_length *= 60 * 30
 
         if input_csv.endswith('.tsv'):
             all_data = pd.read_csv(input_csv, sep='\t')    
@@ -165,6 +165,7 @@ class BSOID:
                     filename = f'{pose_dir}/{movie_name[0:-4]}_pose_est_v2.h5'
 
                     conf, pos = process_h5py_data(h5py.File(filename, "r"))
+
                     if conf.shape[0] >= min_video_len:
                         bsoid_data = bsoid_format(conf, pos)
                         fdata, perc_filt = likelihood_filter(bsoid_data, self.fps, self.conf_threshold, bodyparts=self.bodyparts, **self.trim_params)

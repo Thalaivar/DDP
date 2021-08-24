@@ -175,7 +175,7 @@ if __name__ == "__main__":
     parser.add_argument("--sim-measure", type=str, choices=[
                                                         "density_separation_similarity", 
                                                         "dbcv_index_similarity", 
-                                                        "roc_similiarity",
+                                                        "roc_similarity",
                                                         "minimum_distance_similarity",
                                                         "hausdorff_similarity"
                                                     ]
