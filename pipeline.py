@@ -4,7 +4,8 @@ import yaml
 import psutil
 import random
 import pandas as pd
-from preprocessing import filter_strain_data
+import numpy as np
+from preprocessing import filter_strain_data, trim_data
 from joblib import Parallel, delayed
 
 import logging
@@ -48,12 +49,20 @@ class BehaviourPipeline:
             for strain, df in list(records.groupby("Strain"))
         )
 
-        filtered_data = [(strain, data) for strain, data in filtered_data if len(data) > 0]
+        filtered_data = [(strain, animal_data) for strain, animal_data in filtered_data if len(animal_data) > 0]
         if n_strains > 0: filtered_data = random.sample(filtered_data, n_strains)
-        filtered_data = {strain: data for strain, data in filtered_data}
+        filtered_data = {strain: animal_data for strain, animal_data in filtered_data}
+
+        # trim filtered data
+        for strain, animal_data in filtered_data.items():
+            for i, fdata in enumerate(animal_data):
+                for key, data in fdata.items():
+                    fdata[key] = trim_data(data, self.fps)
+                animal_data[i] = fdata
+            filtered_data[strain] = animal_data
 
         logger.info(f"extracted data from {len(filtered_data)} strains with a total of {sum(len(data) for _, data in filtered_data.items())} animals")
-        self.save_to_cache(filtered_data, "filtered_strainwise_data.sav")
+        self.save_to_cache(filtered_data, "strains.sav")
 
         return filtered_data
 

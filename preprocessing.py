@@ -85,27 +85,38 @@ def likelihood_filter(data, conf_threshold, bodyparts):
     perc_filt = points_filtered_by_idx.max()    
     return {'conf': conf, 'x': filt_x, 'y': filt_y}, perc_filt * 100 / N
 
+def trim_data(fdata: np.ndarray, fps: int):
+        # remove first and last 5 mins
+        end_trim = 5 * 60 * fps
+        fdata = fdata[end_trim:-end_trim]
+        
+        # consider only first 10 mins
+        clip = 10 * 60 * fps
+        fdata = fdata[:clip+1]
+        
+        return fdata
+
 # NOTE: if you change this you should also change the frame extraction function
-def trim_data(x, y, conf, fps, end_trim, clip_window):
-    assert x.shape[1] == y.shape[1]
-    assert conf.shape[0] == x.shape[0] == y.shape[0]
+# def trim_data(x, y, conf, fps, end_trim, clip_window):
+#     assert x.shape[1] == y.shape[1]
+#     assert conf.shape[0] == x.shape[0] == y.shape[0]
 
-    # baseline video only 
-    HOUR_LEN = 55 * 60 * fps
-    conf, x, y = conf[:HOUR_LEN, :], x[:HOUR_LEN, :], y[:HOUR_LEN, :]
+#     # baseline video only 
+#     HOUR_LEN = 55 * 60 * fps
+#     conf, x, y = conf[:HOUR_LEN, :], x[:HOUR_LEN, :], y[:HOUR_LEN, :]
     
-    if end_trim > 0:
-        end_trim *= (fps * 60)
-        conf, x, y = conf[end_trim:-end_trim, :], x[end_trim:-end_trim, :], y[end_trim:-end_trim, :]
+#     if end_trim > 0:
+#         end_trim *= (fps * 60)
+#         conf, x, y = conf[end_trim:-end_trim, :], x[end_trim:-end_trim, :], y[end_trim:-end_trim, :]
 
-    if clip_window > 0:            
-            # take first clip_window after trimming
-            clip_window *= (60 * fps)
-            conf = conf[end_trim:end_trim + clip_window, :]
-            x = x[end_trim:end_trim + clip_window, :]
-            y = y[end_trim:end_trim + clip_window, :]
+#     if clip_window > 0:            
+#             # take first clip_window after trimming
+#             clip_window *= (60 * fps)
+#             conf = conf[end_trim:end_trim + clip_window, :]
+#             x = x[end_trim:end_trim + clip_window, :]
+#             y = y[end_trim:end_trim + clip_window, :]
 
-    return (x, y, conf)
+#     return (x, y, conf)
 
 def windowed_feats(feats, window_len: int=3, mode: str='mean'):
     """
