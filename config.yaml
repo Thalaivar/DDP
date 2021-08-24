@@ -1,5 +1,5 @@
 pipelinename: 'trial'
-base_dir: '/home/laadd/data/pipelines'
+base_dir: '/fastscratch/laadd/pipelines'
 # base_dir: 'D:/IIT/DDP/data'
 
 # basic config

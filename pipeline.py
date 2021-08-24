@@ -5,8 +5,11 @@ import psutil
 import random
 import pandas as pd
 import numpy as np
-from preprocessing import filter_strain_data, trim_data
+
+from tqdm import tqdm
 from joblib import Parallel, delayed
+from preprocessing import filter_strain_data, trim_data
+from features import extract_comb_feats, aggregate_features
 
 import logging
 logger = logging.getLogger(__name__)
@@ -66,6 +69,26 @@ class BehaviourPipeline:
 
         return filtered_data
 
+    def compute_features(self, n_jobs: int=-1):
+        n_jobs = min(n_jobs, psutil.cpu_count(logical=False))
+
+        filtered_data = self.load("strains.sav")
+        logger.info(f'extracting features from {len(filtered_data)} strains')
+
+        pbar = tqdm(total=len(filtered_data))
+        feats = {}
+
+        for strain, fdata in filtered_data.items():
+            feats[strain] = Parallel(n_jobs)(delayed(extract_comb_feats)(data, self.fps) for data in fdata)
+            feats[strain] = [aggregate_features(f, self.stride_window) for f in feats[strain]]
+            pbar.update(1)
+        
+        logger.info(f'extracted {len(feats)} datasets of {feats[list(feats.keys())[0]][0].shape[1]}D features')
+        logger.info(f'collected features into bins of {1000 * self.stride_window // self.fps} ms')
+
+        self.save_to_cache(feats, "features.sav")
+        return feats
+        
     def save_to_cache(self, data, f):
         with open(os.path.join(self.base_dir, f), "wb") as fname:
             joblib.dump(data, fname)
