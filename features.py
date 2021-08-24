@@ -1,8 +1,6 @@
-import math
-import logging
 import numpy as np
 from itertools import combinations
-from BSOID.preprocessing import windowed_feats, smoothen_data
+from preprocessing import windowed_feats, smoothen_data
 
 """
 B-SOID original
