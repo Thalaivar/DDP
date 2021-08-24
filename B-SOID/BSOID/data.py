@@ -12,6 +12,8 @@ import random
 import logging
 logger = logging.getLogger(__name__)
 
+from getpass import getpass
+
 BSOID_DATA = ['NOSE', 'LEFT_EAR', 'RIGHT_EAR', 
         'BASE_NECK', 'FOREPAW1', 'FOREPAW2', 
         'CENTER_SPINE', 'HINDPAW1', 'HINDPAW2', 
@@ -66,7 +68,8 @@ def download_data(bsoid_data_file, pose_est_dir):
     bsoid_data = pd.read_csv(bsoid_data_file)
     
     session = ftplib.FTP("ftp.box.com")
-    session.login("ae16b011@smail.iitm.ac.in", "rSNxWCBv1407")
+    password = getpass("Box login password: ")
+    session.login("ae16b011@smail.iitm.ac.in", password)
 
     strains = ["LL6-B2B", "LL5-B2B", "LL4-B2B", "LL3-B2B", "LL2-B2B", "LL1-B2B"]
     datasets = ["strain-survey-batch-2019-05-29-e/", "strain-survey-batch-2019-05-29-d/", "strain-survey-batch-2019-05-29-c/",
@@ -131,7 +134,8 @@ def get_pose_data_dir(base_dir, network_filename):
 
 def push_folder_to_box(upload_dir, base_dir):
     session = ftplib.FTP("ftp.box.com")
-    session.login("ae16b011@smail.iitm.ac.in", "rSNxWCBv1407")
+    password = getpass("Box login password: ")
+    session.login("ae16b011@smail.iitm.ac.in", password)
 
     upload_dir_name = upload_dir.split('/')[-1]
 
@@ -158,7 +162,9 @@ def push_folder_to_box(upload_dir, base_dir):
 
 def push_file_to_box(upload_file, base_dir):
     session = ftplib.FTP("ftp.box.com")
-    session.login("ae16b011@smail.iitm.ac.in", "rSNxWCBv1407")
+    
+    password = getpass("Box login password: ")
+    session.login("ae16b011@smail.iitm.ac.in", password)
 
     master_dir = 'JAX-IITM Shared Folder/B-SOiD'
     session.cwd(f'{master_dir}/{base_dir}')

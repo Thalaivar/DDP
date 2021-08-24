@@ -12,15 +12,18 @@
 
 
 HOME_DIR=/home/laadd
-BASE_DIR=DDP/B-SOID
-OUT_DIR=/fastscratch/laadd
+BASE_DIR=DDP/B-SOID/gemma
+OUT_DIR=/fastscratch/laadd/gemma
+mkdir $OUT_DIR
 
 source $HOME_DIR/.bashrc
 cd $OUT_DIR
 
-CONFIG_FILE=$HOME_DIR/$BASE_DIR/gemma_config.yaml
+CONFIG_FILE=$HOME_DIR/$BASE_DIR/gemma_config.yaml   
 SHUFFL_FILE=$HOME_DIR/$BASE_DIR/gemma_shuffle.yaml
-INPUT_FILE=$HOME_DIR/$BASE_DIR/filt_gemma_input.csv
+INPUT_FILE=$HOME_DIR/$BASE_DIR/gemma_data.csv
 
 module load singularity
-nextflow run TheJacksonLaboratory/mousegwas --yaml $CONFIG_FILE --shufyaml $SHUFFL_FILE --input $INPUT_FILE --outdir $OUT_DIR/gemma_output -profile slurm,singularity --addgwas " -d 10 "
+singularity cache clean
+
+nextflow run /home/laadd/mousegwas/ --yaml $CONFIG_FILE --shufyaml $SHUFFL_FILE --input $INPUT_FILE --outdir $OUT_DIR/gemma_output -profile slurm,singularity --addgwas " -d 10 "

@@ -26,4 +26,10 @@ source /home/laadd/.bashrc
 conda activate bsoid 
 
 cd /home/laadd/DDP/B-SOID/
-python scripts.py --script calculate_pairwise_similarity --thresh 0.9 --save-dir $SAVE_DIR --sim-measure $SIM_MEASURE
+
+for measure in "${sim_measures[@]}"; do
+    mkdir $BASE_DIR/$JOBNAME-$measure
+    srun --exclusive --ntasks 1 python scripts.py --script calculate_pairwise_similarity --thresh 0.9 --save-dir $BASE_DIR/$JOBNAME-$measure --sim-measure $measure &
+done
+
+wait

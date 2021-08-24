@@ -1,0 +1,498 @@
+F1:
+- B6129SF1/J:
+  - C57BL/6J
+  - 129S1/SvImJ
+- B6129PF1/J:
+  - C57BL/6J
+  - 129P3/J
+- B6AF1/J:
+  - C57BL/6J
+  - A/J
+- B6C3F1/J:
+  - C57BL/6J
+  - C3H/HeJ
+- B6CBAF1/J:
+  - C57BL/6J
+  - CBA/J
+- B6D2F1/J:
+  - C57BL/6J
+  - DBA/2J
+- B6SJLF1/J:
+  - C57BL/6J
+  - SJL/J
+- CAF1/J:
+  - BALB/cJ
+  - A/J
+- CB6F1/J:
+  - BALB/cJ
+  - C57BL/6J
+- CByB6F1/J:
+  - BALB/cByJ
+  - C57BL/6J
+- NZBWF1/J:
+  - NZB/BlNJ
+  - NZW/LacJ
+covar:
+- Sex
+groups:
+- Transitions
+phenotypes:
+  transition_0_0:
+    group: Transitions
+    papername: T0-0
+  transition_0_27:
+    group: Transitions
+    papername: T0-27
+  transition_0_43:
+    group: Transitions
+    papername: T0-43
+  transition_0_44:
+    group: Transitions
+    papername: T0-44
+  transition_0_55:
+    group: Transitions
+    papername: T0-55
+  transition_10_10:
+    group: Transitions
+    papername: T10-10
+  transition_11_11:
+    group: Transitions
+    papername: T11-11
+  transition_11_13:
+    group: Transitions
+    papername: T11-13
+  transition_11_16:
+    group: Transitions
+    papername: T11-16
+  transition_11_4:
+    group: Transitions
+    papername: T11-4
+  transition_11_45:
+    group: Transitions
+    papername: T11-45
+  transition_11_57:
+    group: Transitions
+    papername: T11-57
+  transition_11_59:
+    group: Transitions
+    papername: T11-59
+  transition_13_13:
+    group: Transitions
+    papername: T13-13
+  transition_14_14:
+    group: Transitions
+    papername: T14-14
+  transition_14_35:
+    group: Transitions
+    papername: T14-35
+  transition_15_15:
+    group: Transitions
+    papername: T15-15
+  transition_16_11:
+    group: Transitions
+    papername: T16-11
+  transition_16_14:
+    group: Transitions
+    papername: T16-14
+  transition_16_16:
+    group: Transitions
+    papername: T16-16
+  transition_16_35:
+    group: Transitions
+    papername: T16-35
+  transition_18_18:
+    group: Transitions
+    papername: T18-18
+  transition_19_19:
+    group: Transitions
+    papername: T19-19
+  transition_19_25:
+    group: Transitions
+    papername: T19-25
+  transition_25_15:
+    group: Transitions
+    papername: T25-15
+  transition_25_19:
+    group: Transitions
+    papername: T25-19
+  transition_25_25:
+    group: Transitions
+    papername: T25-25
+  transition_25_31:
+    group: Transitions
+    papername: T25-31
+  transition_25_32:
+    group: Transitions
+    papername: T25-32
+  transition_27_0:
+    group: Transitions
+    papername: T27-0
+  transition_27_18:
+    group: Transitions
+    papername: T27-18
+  transition_27_2:
+    group: Transitions
+    papername: T27-2
+  transition_27_27:
+    group: Transitions
+    papername: T27-27
+  transition_27_33:
+    group: Transitions
+    papername: T27-33
+  transition_27_45:
+    group: Transitions
+    papername: T27-45
+  transition_28_28:
+    group: Transitions
+    papername: T28-28
+  transition_29_29:
+    group: Transitions
+    papername: T29-29
+  transition_2_19:
+    group: Transitions
+    papername: T2-19
+  transition_2_2:
+    group: Transitions
+    papername: T2-2
+  transition_2_27:
+    group: Transitions
+    papername: T2-27
+  transition_2_44:
+    group: Transitions
+    papername: T2-44
+  transition_30_15:
+    group: Transitions
+    papername: T30-15
+  transition_30_30:
+    group: Transitions
+    papername: T30-30
+  transition_31_31:
+    group: Transitions
+    papername: T31-31
+  transition_32_32:
+    group: Transitions
+    papername: T32-32
+  transition_33_33:
+    group: Transitions
+    papername: T33-33
+  transition_35_35:
+    group: Transitions
+    papername: T35-35
+  transition_35_36:
+    group: Transitions
+    papername: T35-36
+  transition_35_38:
+    group: Transitions
+    papername: T35-38
+  transition_36_36:
+    group: Transitions
+    papername: T36-36
+  transition_38_30:
+    group: Transitions
+    papername: T38-30
+  transition_38_38:
+    group: Transitions
+    papername: T38-38
+  transition_38_39:
+    group: Transitions
+    papername: T38-39
+  transition_38_40:
+    group: Transitions
+    papername: T38-40
+  transition_38_59:
+    group: Transitions
+    papername: T38-59
+  transition_40_40:
+    group: Transitions
+    papername: T40-40
+  transition_41_41:
+    group: Transitions
+    papername: T41-41
+  transition_41_45:
+    group: Transitions
+    papername: T41-45
+  transition_41_52:
+    group: Transitions
+    papername: T41-52
+  transition_41_57:
+    group: Transitions
+    papername: T41-57
+  transition_43_0:
+    group: Transitions
+    papername: T43-0
+  transition_43_2:
+    group: Transitions
+    papername: T43-2
+  transition_43_27:
+    group: Transitions
+    papername: T43-27
+  transition_43_43:
+    group: Transitions
+    papername: T43-43
+  transition_43_44:
+    group: Transitions
+    papername: T43-44
+  transition_43_45:
+    group: Transitions
+    papername: T43-45
+  transition_43_55:
+    group: Transitions
+    papername: T43-55
+  transition_44_0:
+    group: Transitions
+    papername: T44-0
+  transition_44_43:
+    group: Transitions
+    papername: T44-43
+  transition_44_44:
+    group: Transitions
+    papername: T44-44
+  transition_44_55:
+    group: Transitions
+    papername: T44-55
+  transition_44_59:
+    group: Transitions
+    papername: T44-59
+  transition_45_11:
+    group: Transitions
+    papername: T45-11
+  transition_45_27:
+    group: Transitions
+    papername: T45-27
+  transition_45_29:
+    group: Transitions
+    papername: T45-29
+  transition_45_31:
+    group: Transitions
+    papername: T45-31
+  transition_45_41:
+    group: Transitions
+    papername: T45-41
+  transition_45_43:
+    group: Transitions
+    papername: T45-43
+  transition_45_45:
+    group: Transitions
+    papername: T45-45
+  transition_45_46:
+    group: Transitions
+    papername: T45-46
+  transition_45_47:
+    group: Transitions
+    papername: T45-47
+  transition_45_49:
+    group: Transitions
+    papername: T45-49
+  transition_45_51:
+    group: Transitions
+    papername: T45-51
+  transition_45_52:
+    group: Transitions
+    papername: T45-52
+  transition_45_53:
+    group: Transitions
+    papername: T45-53
+  transition_45_55:
+    group: Transitions
+    papername: T45-55
+  transition_45_57:
+    group: Transitions
+    papername: T45-57
+  transition_45_58:
+    group: Transitions
+    papername: T45-58
+  transition_46_45:
+    group: Transitions
+    papername: T46-45
+  transition_46_46:
+    group: Transitions
+    papername: T46-46
+  transition_46_56:
+    group: Transitions
+    papername: T46-56
+  transition_46_59:
+    group: Transitions
+    papername: T46-59
+  transition_47_45:
+    group: Transitions
+    papername: T47-45
+  transition_47_47:
+    group: Transitions
+    papername: T47-47
+  transition_48_48:
+    group: Transitions
+    papername: T48-48
+  transition_49_49:
+    group: Transitions
+    papername: T49-49
+  transition_50_50:
+    group: Transitions
+    papername: T50-50
+  transition_51_51:
+    group: Transitions
+    papername: T51-51
+  transition_51_58:
+    group: Transitions
+    papername: T51-58
+  transition_51_60:
+    group: Transitions
+    papername: T51-60
+  transition_52_11:
+    group: Transitions
+    papername: T52-11
+  transition_52_13:
+    group: Transitions
+    papername: T52-13
+  transition_52_41:
+    group: Transitions
+    papername: T52-41
+  transition_52_52:
+    group: Transitions
+    papername: T52-52
+  transition_52_57:
+    group: Transitions
+    papername: T52-57
+  transition_52_59:
+    group: Transitions
+    papername: T52-59
+  transition_55_0:
+    group: Transitions
+    papername: T55-0
+  transition_55_43:
+    group: Transitions
+    papername: T55-43
+  transition_55_44:
+    group: Transitions
+    papername: T55-44
+  transition_55_45:
+    group: Transitions
+    papername: T55-45
+  transition_55_46:
+    group: Transitions
+    papername: T55-46
+  transition_55_53:
+    group: Transitions
+    papername: T55-53
+  transition_55_55:
+    group: Transitions
+    papername: T55-55
+  transition_55_56:
+    group: Transitions
+    papername: T55-56
+  transition_56_46:
+    group: Transitions
+    papername: T56-46
+  transition_56_47:
+    group: Transitions
+    papername: T56-47
+  transition_56_55:
+    group: Transitions
+    papername: T56-55
+  transition_56_56:
+    group: Transitions
+    papername: T56-56
+  transition_56_59:
+    group: Transitions
+    papername: T56-59
+  transition_57_11:
+    group: Transitions
+    papername: T57-11
+  transition_57_41:
+    group: Transitions
+    papername: T57-41
+  transition_57_45:
+    group: Transitions
+    papername: T57-45
+  transition_57_50:
+    group: Transitions
+    papername: T57-50
+  transition_57_52:
+    group: Transitions
+    papername: T57-52
+  transition_57_56:
+    group: Transitions
+    papername: T57-56
+  transition_57_57:
+    group: Transitions
+    papername: T57-57
+  transition_57_59:
+    group: Transitions
+    papername: T57-59
+  transition_58_45:
+    group: Transitions
+    papername: T58-45
+  transition_58_51:
+    group: Transitions
+    papername: T58-51
+  transition_58_56:
+    group: Transitions
+    papername: T58-56
+  transition_58_58:
+    group: Transitions
+    papername: T58-58
+  transition_58_60:
+    group: Transitions
+    papername: T58-60
+  transition_59_11:
+    group: Transitions
+    papername: T59-11
+  transition_59_38:
+    group: Transitions
+    papername: T59-38
+  transition_59_44:
+    group: Transitions
+    papername: T59-44
+  transition_59_46:
+    group: Transitions
+    papername: T59-46
+  transition_59_52:
+    group: Transitions
+    papername: T59-52
+  transition_59_54:
+    group: Transitions
+    papername: T59-54
+  transition_59_55:
+    group: Transitions
+    papername: T59-55
+  transition_59_56:
+    group: Transitions
+    papername: T59-56
+  transition_59_57:
+    group: Transitions
+    papername: T59-57
+  transition_59_58:
+    group: Transitions
+    papername: T59-58
+  transition_59_59:
+    group: Transitions
+    papername: T59-59
+  transition_59_60:
+    group: Transitions
+    papername: T59-60
+  transition_60_51:
+    group: Transitions
+    papername: T60-51
+  transition_60_58:
+    group: Transitions
+    papername: T60-58
+  transition_60_59:
+    group: Transitions
+    papername: T60-59
+  transition_60_60:
+    group: Transitions
+    papername: T60-60
+  transition_9_9:
+    group: Transitions
+    papername: T9-9
+sex: Sex
+strain: Strain
+translate:
+- BTBR T<+>ltpr3<tf>/J: BTBR T<+> Itpr3<tf>/J
+- 129S1/SvlmJ: 129S1/SvImJ
+- C3H/HeOuJ: C3H/HeJ
+- NON/ShiLtJ: NON/ShiLtJ
+- NOD/ShiLtJ: NOD/ShiLtJ
+- C57BL/6NJ: C57BL/10ScNJ
+- C57BL/10SnJ: C57BL/10ScSnJ
+- KK/HiJ: KK/HlJ
+- NZO/HILtJ: NZO/HlLtJ

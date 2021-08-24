@@ -32,34 +32,25 @@ F1:
   - NZBWF1/J:
     - NZB/BlNJ
     - NZW/LacJ
-# confSNPs:
-#   - rs32105080
 covar:
   - Sex
 groups:
-  - Groom
-  - Run
-  - Walk
-  - CW-Turn
-  - CCW-Turn
-  - Point
-  - Rear
-  - N/A
+  - Total Duration
+  - Average Bout Length
+  - Number of Bouts
 phenotypes:
-  Groom_4_TD:
-    group: Groom
-    papername: Groomn4_TD
+  phenotype_32_td:
+    group: Total Duration
+    papername: phenotype_32_TD
 sex: Sex
 strain: Strain
 translate:
-# - BTBRT...tf.J: BTBR T<+> Itpr3<tf>/J
-# - 129S1.SvImJ: 129S1/SvImJ
-# - C3H/HeOuJ: C3H/HeJ
-# - NON/LtJ: NON/ShiLtJ
-# - NOD/LtJ: NOD/ShiLtJ
-# - CAST/EiJ: none
-# - PWD/PhJ: none
-# - CZECHII/EiJ: none
-# - PWK/PhJ: none
-# - MSM/MsJ: none
-# - MOLF/EiJ: none
+- BTBR T<+>ltpr3<tf>/J: BTBR T<+> Itpr3<tf>/J
+- 129S1/SvlmJ: 129S1/SvImJ
+- C3H/HeOuJ: C3H/HeJ
+- NON/ShiLtJ: NON/ShiLtJ
+- NOD/ShiLtJ: NOD/ShiLtJ
+- C57BL/6NJ: C57BL/10ScNJ
+- C57BL/10SnJ: C57BL/10ScSnJ
+- KK/HiJ: KK/HlJ
+- NZO/HILtJ: NZO/HlLtJ

@@ -32,17 +32,21 @@ F1:
 - NZBWF1/J:
   - NZB/BlNJ
   - NZW/LacJ
-confSNPs:
-- rs32105080
+# confSNPs:
+# - rs32105080
 translate:
-- BTBRT...tf.J: BTBR T<+> Itpr3<tf>/J
-- 129S1.SvImJ: 129S1/SvImJ
+- BTBR T<+>ltpr3<tf>/J: BTBR T<+> Itpr3<tf>/J
+- 129S1/SvlmJ: 129S1/SvImJ
 - C3H/HeOuJ: C3H/HeJ
-- NON/LtJ: NON/ShiLtJ
-- NOD/LtJ: NOD/ShiLtJ
-- CAST/EiJ: none
-- PWD/PhJ: none
-- CZECHII/EiJ: none
-- PWK/PhJ: none
-- MSM/MsJ: none
-- MOLF/EiJ: none
+- NON/ShiLtJ: NON/ShiLtJ
+- NOD/ShiLtJ: NOD/ShiLtJ
+- C57BL/6NJ: C57BL/10ScNJ
+- C57BL/10SnJ: C57BL/10ScSnJ
+- KK/HiJ: KK/HlJ
+- NZO/HILtJ: NZO/HlLtJ
+# - CAST/EiJ: NULL
+# - PWD/PhJ: NULL
+# - CZECHII/EiJ: NULL
+# - PWK/PhJ: NULL
+# - MSM/MsJ: NULL
+# - MOLF/EiJ: NULL

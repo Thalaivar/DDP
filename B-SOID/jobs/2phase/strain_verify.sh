@@ -1,32 +1,17 @@
 #!/bin/bash
-
-#SBATCH --time 48:00:00
-#SBATCH --job-name strain-verify
-#SBATCH --output strain-verify.log
-#SBATCH --mem 40G
-#SBATCH --cpus-per-task 6
-#SBATCH --partition compute
+#SBATCH --job-name=final-cluster-ver
+#SBATCH --output=final-cluster-ver.txt
+#SBATCH --ntasks=1
+#SBATCH --cpus-per-task=32
+#SBATCH --time=72:00:00
+#SBATCH --partition=compute
 #SBATCH --qos=batch
+#SBATCH --mem=50000
+#SBATCH --mail-user=dhruv.laad@jax.org
+#SBATCH --mail-type=ALL
 
 source /home/laadd/.bashrc
 conda activate bsoid 
 
-IFS=$'\n' read -d '' -r -a strains < ./strains.txt
-
-#SBATCH -n ${#strains[@]}
-
-JOBNAME=$SLURM_JOB_NAME
-N_JOB=$N_TASKS
-
-BASE_DIR=/fastscratch/laadd/strain_verify
-mkdir $BASE_DIR
-
-cd /home/laadd/DDP/B-SOID
-
-for t in ${strains[@]}; do
-    strain=${t/\//-}
-    mkdir $BASE_DIR/$JOBNAME-$strain
-    srun --exclusive --ntasks 1 python scripts.py --script rep_cluster --config ./config/config.yaml --save-dir $BASE_DIR/$JOBNAME-$strain --strain $t --n 200
-done
-
-wait
+cd /home/laadd/DDP/B-SOID/
+python scripts.py --script clustering_stability_test --config ./config/config.yaml --save-dir /fastscratch/laadd/stab --thresh 0.85

@@ -7,13 +7,13 @@ import joblib
 
 import numpy as np
 import pandas as pd
+from tqdm import tqdm
 from BSOID.bsoid import BSOID
 from itertools import combinations
 from BSOID.utils import alphanum_key
-from BSOID.features import extract_comb_feats as extract_feats
 from BSOID.data import process_h5py_data, bsoid_format
+from BSOID.features import extract_comb_feats, aggregate_features
 from BSOID.preprocessing import smoothen_data, likelihood_filter, windowed_feats
-from sklearn.preprocessing import StandardScaler
 
 logger = logging.getLogger(__name__)
 
@@ -147,7 +147,7 @@ def predict_frames(fdata, fps, stride_window, clf):
         return fs_feats
     
     fs_feats = extract(fdata, fps, stride_window)
-    fs_labels = [clf.predict(f) for f in fs_feats]
+    fs_labels = [clf.predict(f).squeeze() for f in fs_feats]
 
     max_len = max([f.shape[0] for f in fs_labels])
     for i, f in enumerate(fs_labels):
@@ -159,37 +159,24 @@ def predict_frames(fdata, fps, stride_window, clf):
 
     return labels
 
-def labels_for_video2(bsoid, rawfile, vid_file, extract_frames=False):
+def get_frameshifted_prediction(fdata, clf, fps, stride_window):
+    geom_feats = extract_comb_feats(fdata, fps)
+    fs_feats = [aggregate_features(geom_feats[i:], stride_window) for i in range(stride_window)]
+    fs_labels = [clf.predict(f).squeeze() for f in fs_feats]
+    max_len = max([f.shape[0] for f in fs_labels])
+    for i, f in enumerate(fs_labels):
+        pad_arr = -1 * np.ones((max_len,))
+        pad_arr[:f.shape[0]] = f
+        fs_labels[i] = pad_arr
+    labels = np.array(fs_labels).flatten('F')
+    labels = labels[labels >= 0]
+    return labels
+
+def labels_for_video(bsoid, clf, rawfile, vid_file, extract_frames=False):
     filtered_data, frames = extract_data_from_video(bsoid, rawfile, vid_file, extract_frames)
-    with open("D:/IIT/DDP/data/tests/test.model", "rb") as f:
-        clf = joblib.load(f)
-    labels = predict_frames(filtered_data, bsoid.fps, 3, clf)
+    stride_window = 3
+    labels = get_frameshifted_prediction(filtered_data, clf, bsoid.fps, stride_window)
     return labels, frames
-
-def labels_for_video(bsoid: BSOID, raw_data_file: str, video_file: str, extract_frames=False):
-    filtered_data, frames = extract_data_from_video(bsoid, raw_data_file, video_file, extract_frames)
-    x_raw, y_raw = filtered_data['x'], filtered_data['y']
-    assert x_raw.shape == y_raw.shape
-    _, n_dpoints = x_raw.shape
-
-    win_len = np.int(np.round(0.05 / (1 / bsoid.fps)) * 2 - 1) if bsoid.stride_window is None else bsoid.stride_window // 2
-    x, y = np.zeros_like(x_raw), np.zeros_like(y_raw)
-    for i in range(n_dpoints):
-        x[:,i] = smoothen_data(x_raw[:,i], win_len)
-        y[:,i] = smoothen_data(y_raw[:,i], win_len)
-    
-    links = [np.array([x[:,i] - x[:,j], y[:,i] - y[:,j]]).T for i, j in combinations(range(n_dpoints), 2)]
-    link_lens = np.vstack([np.linalg.norm(link, axis=1) for link in links]).T
-    link_angles = np.vstack([np.arctan2(link[:,1], link[:,0]) for i, link in enumerate(links)]).T
-
-    for i in range(link_lens.shape[1]):
-        link_lens[:,i] = np.array(pd.Series(link_lens[:,i]).rolling(bsoid.stride_window, min_periods=1, center=True).mean())
-    for i in range(link_angles.shape[1]):
-        link_angles[:,i] = np.array(pd.Series(link_angles[:,i]).rolling(bsoid.stride_window, min_periods=1, center=True).sum())
-    feats = np.hstack((link_angles, link_lens))
-    clf = bsoid.load_classifier()
-    labels = clf.predict(feats)
-    return labels.reshape(1,-1)[0], frames
 
 def frameshift_features(filtered_data, stride_window, fps, feats_extractor, windower):
     if not isinstance(filtered_data, list):
@@ -238,6 +225,23 @@ def frameshift_predict(feats, clf, stride_window):
 
     return fs_labels
 
+def add_group_label_to_frame(frames, label):
+    font = cv2.FONT_HERSHEY_COMPLEX
+    font_scale = 0.6
+    # parameters for adding text
+    text = f'Group {label}'
+    (text_width, text_height) = cv2.getTextSize(text, font, fontScale=font_scale, thickness=1)[0]
+    text_offset_x = 20
+    text_offset_y = 20
+    box_coords = ((text_offset_x - 12, text_offset_y + 12), (text_offset_x + text_width + 12, text_offset_y - text_height - 8))
+
+    for i, frame in enumerate(frames):
+        frames[i] = cv2.rectangle(frame, box_coords[0], box_coords[1], (0,0,0), cv2.FILLED)
+        frames[i] = cv2.putText(frame, text, (text_offset_x, text_offset_y), font,
+                            fontScale=font_scale, color=(255, 255, 255), thickness=1)
+    
+    return frames
+
 def videomaker(frames, fps, outfile):
     fourcc = cv2.VideoWriter_fourcc(*'avc1')
     height, width, _ = frames[0].shape
@@ -251,7 +255,9 @@ def videomaker(frames, fps, outfile):
 
 
 def create_class_examples(bsoid: BSOID, video_dir: str, min_bout_len: int, n_examples: int, outdir: str):
-    clf = bsoid.load_classifier()
+    with open(os.path.join("D:/IIT/DDP/data/finals/max_label.model"), "rb") as f:
+        clf = joblib.load(f)
+
     min_bout_len = bsoid.fps * min_bout_len // 1000
 
     try: os.mkdir(outdir)
@@ -263,15 +269,11 @@ def create_class_examples(bsoid: BSOID, video_dir: str, min_bout_len: int, n_exa
     all_videos = []
     for raw_file, video_file in zip(raw_files, video_files):
         video_name = os.path.split(video_file)[-1][:-4]
-        # get trimmed labels and frames
-        # fdata, frames = extract_data_from_video(bsoid, raw_file, video_file)        
-        # feats = frameshift_features(fdata, bsoid.stride_window, bsoid.fps, extract_feats, window_extracted_feats)
-        # labels = frameshift_predict(feats, clf, bsoid.stride_window)
-        labels, frames = labels_for_video2(bsoid, raw_file, video_file)
+        labels, frames = labels_for_video(bsoid, clf, raw_file, video_file)
         
         if labels.size != len(frames):
             if len(frames) > labels.size:
-                logger.warn(f"{video_name}:# of frames ({len(frames)}) not equal to # of labels ({labels.size})")
+                logger.warning(f"{video_name}:# of frames ({len(frames)}) not equal to # of labels ({labels.size})")
                 frames = frames[:labels.size]
         
         # get example segments
@@ -289,35 +291,40 @@ def create_class_examples(bsoid: BSOID, video_dir: str, min_bout_len: int, n_exa
 
     frame = cv2.imread(all_videos[0]["frames"][0])
     height, width, layers = frame.shape
+    fourcc = cv2.VideoWriter_fourcc(*'avc1')
 
-    logger.info(f"saving example videos from {n_classes} classes to {outdir}")
-    for k in range(n_classes):
-        logger.info(f"generating example videos for class {k}")
-        video_name = os.path.join(outdir, 'group_{}.mp4'.format(k))
-        video_frames = []
+    video_name = os.path.join(outdir, "examples.mp4")
+    video = cv2.VideoWriter(video_name, fourcc, int(bsoid.fps), (width, height))
+
+    logger.info(f"saving example videos from {n_classes} classes to {video_name}")
+    for k in tqdm(range(n_classes)):
+        class_video_frames = []
 
         for video_data in all_videos:
             curr_frames = video_data["frames"]
             curr_vid_locs = video_data["segments"][k]
 
             for j, vid in enumerate(curr_vid_locs):
+                video_frames = []
                 for idx in range(vid['start'], vid['end']+1):
                     video_frames.append(cv2.imread(curr_frames[idx]))
+                video_frames = add_group_label_to_frame(video_frames, k)
+                class_video_frames.extend(video_frames)
                 for idx in range(bsoid.fps):
-                    video_frames.append(np.zeros(shape=(height, width, layers), dtype=np.uint8))
+                    class_video_frames.append(np.zeros(shape=(height, width, layers), dtype=np.uint8))
         
-        if len(video_frames) > 0:
-            videomaker(video_frames, int(bsoid.fps), video_name)
+        if len(class_video_frames) > 0:
+            for frame in class_video_frames:
+                video.write(frame.astype(np.uint8))
+
+    cv2.destroyAllWindows()
+    video.release()
 
 if __name__ == "__main__":
     import logging
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO)
 
     bsoid = BSOID("./config/config.yaml")
-    raw_file = "../../data/videos/WT009G2NCIN20825M-25-PSY_pose_est_v2.h5"
-    video_file = "../../data/videos/WT009G2NCIN20825M-25-PSY.avi"
+    video_dir = "../../data/videos" 
 
-    fdata, frames = extract_data_from_video(bsoid, raw_file, video_file)
-    labels = labels_for_video(bsoid, fdata)
-
-    print(labels.shape)
+    create_class_examples(bsoid, video_dir, min_bout_len=200, n_examples=5, outdir=video_dir)
