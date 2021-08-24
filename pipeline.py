@@ -1,5 +1,7 @@
 import os
+from hdbscan.hdbscan_ import hdbscan
 import joblib
+import ray
 import yaml
 import psutil
 import random
@@ -10,18 +12,19 @@ from tqdm import tqdm
 from joblib import Parallel, delayed
 from preprocessing import filter_strain_data, trim_data
 from features import extract_comb_feats, aggregate_features
+from clustering import cluster_for_strain
 
 import logging
 logger = logging.getLogger(__name__)
 
 class BehaviourPipeline:
-    def __init__(self, config: str):
+    def __init__(self, pipelinename:str, config: str):
         with open(config, 'r') as f:
             config = yaml.load(f, Loader=yaml.FullLoader)
 
-        self.pipelinename     = config["pipelinename"]
-        base_dir        = os.path.join(config["base_dir"], self.pipelinename)
-        self.base_dir   = base_dir
+        self.pipelinename     = pipelinename
+        base_dir              = os.path.join(config["base_dir"], self.pipelinename)
+        self.base_dir         = base_dir
 
         self.fps            = config["fps"]
         self.stride_window  = round(config["stride_window"] * self.fps / 1000)
@@ -30,6 +33,10 @@ class BehaviourPipeline:
         self.filter_thresh  = config["filter_thresh"]
         self.min_video_len  = config["min_video_len"]
         
+        self.hdbscan_params = config["hdbscan_params"]
+        self.umap_params    = config["umap_params"]
+
+        self.num_points = config["num_points"]
     
         try: os.mkdir(self.base_dir)
         except FileExistsError: pass
@@ -88,7 +95,45 @@ class BehaviourPipeline:
 
         self.save_to_cache(feats, "features.sav")
         return feats
+    
+    def cluster_strainwise(self, n_jobs=-1):
+        kwargs = dict(
+            num_points=self.num_points,
+            umap_params=self.umap_params,
+            hdbscan_params=self.hdbscan_params,
+            cluster_range=self.hdbscan_params["cluster_range"]
+        )
+
+        @ray.remote
+        def clustering_wrapper(strain, feats_id, **kwargs):
+            templates, clustering = cluster_for_strain(feats_id[strain], **kwargs)
+            return strain, templates, clustering
+
+        n_jobs = min(n_jobs, psutil.cpu_count(logical=False))
+        feats = self.load("features.sav")
+
+        ray.init(num_cpus=n_jobs)
+        feats_id = ray.put(feats)
+
+        futures = [clustering_wrapper.remote(strain, feats_id, **kwargs) for strain in feats.keys()]
+        pbar, results = tqdm(total=len(futures)), []
+        while len(futures) > 0:
+            n = len(futures) if len(futures) < n_jobs else n_jobs
+            fin, rest = ray.wait(futures, num_returns=n)
+            results.extend(ray.get(fin))
+            futures = rest
+            pbar.update(n)
+
+        ray.shutdown()
+
+        templates, clustering = {}, {}
+        for res in results:
+            strain, data, labels = res
+            templates[strain] = data
+            clustering[strain] = labels
         
+        self.save_to_cache([templates, clustering], "strainclusters.sav")
+
     def save_to_cache(self, data, f):
         with open(os.path.join(self.base_dir, f), "wb") as fname:
             joblib.dump(data, fname)
@@ -97,3 +142,5 @@ class BehaviourPipeline:
         with open(os.path.join(self.base_dir, f), "rb") as fname:
             data = joblib.load(fname)
         return data
+
+    # add provision for no template sampling

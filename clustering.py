@@ -1,12 +1,10 @@
 from ray._private.runtime_env import fetch_package
 import umap
-import joblib
 import warnings
 import hdbscan
 import logging
 import ray
 import psutil
-import pynndescent
 import numpy as np
 
 from tqdm import tqdm
@@ -16,45 +14,35 @@ from BSOID.utils import max_entropy, calculate_entropy_ratio
 
 logger = logging.getLogger(__name__)
 
-def embed_data(feats: np.ndarray, scale: bool, **umap_params):
-    if scale:
-        feats = StandardScaler().fit_transform(feats)
-    
+def embed_data(feats: np.ndarray, **umap_params):
+    feats = StandardScaler().fit_transform(feats)
     embedding = umap.UMAP(**umap_params).fit_transform(feats)
     return embedding
 
-def cluster_with_hdbscan(embeddings,  verbose=False, **hdbscan_params):    
+def cluster_data(embedding, cluster_range, **hdbscan_params):    
     highest_entropy = -np.infty
     numulab, entropy = [], []
 
-    if "cluster_range" not in hdbscan_params:
-        cluster_range = [0.4, 1.2]
-    else:
-        cluster_range = hdbscan_params["cluster_range"]
-        del hdbscan_params["cluster_range"]
-
-    if verbose:
-        logger.info(f"Clustering {embeddings.shape} with range {cluster_range}")
+    logger.info(f"clustering {embedding.shape} with range {cluster_range}")
     
     if not isinstance(cluster_range, list):
         min_cluster_range = [cluster_range]
-    elif len(cluster_range) == 2:
+    if len(cluster_range) == 2:
         min_cluster_range = np.linspace(*cluster_range, 25)
     elif len(cluster_range) == 3:
         cluster_range[-1] = int(cluster_range[-1])
         min_cluster_range = np.linspace(*cluster_range)
         
     for min_c in min_cluster_range:
-        trained_classifier = hdbscan.HDBSCAN(min_cluster_size=int(round(min_c * 0.01 * embeddings.shape[0])),
-                                            **hdbscan_params).fit(embeddings)
+        trained_classifier = hdbscan.HDBSCAN(min_cluster_size=int(round(min_c * 0.01 * embedding.shape[0])),
+                                            **hdbscan_params).fit(embedding)
         
         labels = trained_classifier.labels_
         numulab.append(labels.max() + 1)
         
         entropy.append(calculate_entropy_ratio(labels))
 
-        if verbose:
-            logger.info(f"identified {numulab[-1]} clusters with min_sample_prop={round(min_c,2)} and entropy ratio={round(entropy[-1], 3)}")
+        logger.info(f"identified {numulab[-1]} clusters with min_sample_prop={round(min_c,2)} and entropy ratio={round(entropy[-1], 3)}")
         if entropy[-1] > highest_entropy:
             highest_entropy = entropy[-1]
             best_clf = trained_classifier
@@ -65,9 +53,9 @@ def cluster_with_hdbscan(embeddings,  verbose=False, **hdbscan_params):
 
     return assignments, soft_clusters, soft_assignments, best_clf
 
-def get_clusters(feats: np.ndarray, hdbscan_params: dict, umap_params: dict, scale: bool, verbose=False, return_embedding=False):
-    embedding = embed_data(feats, scale, **umap_params)
-    labels, _, soft_labels, clusterer = cluster_with_hdbscan(embedding, verbose=verbose, **hdbscan_params)
+def cluster(feats: np.ndarray, hdbscan_params: dict, umap_params: dict, cluster_range=[0.4, 1.2], return_embedding=False):
+    embedding = embed_data(feats, **umap_params)
+    labels, _, soft_labels, clusterer = cluster_data(embedding, cluster_range, **hdbscan_params)
     exemplars = [feats[idxs] for idxs in clusterer.exemplars_indices_]
     
     logger.info(f"embedded {feats.shape} to {embedding.shape[1]}D with {labels.max() + 1} clusters and entropy ratio={round(calculate_entropy_ratio(soft_labels),3)}")
@@ -104,14 +92,13 @@ def find_templates(labels, feats, num_points, use_inverse_density=True):
 
     return feats[np.hstack(idx)], labels[np.hstack(idx)]
 
-def cluster_for_strain(feats, num_points, umap_params, hdbscan_params, scale, verbose=False):
+def cluster_for_strain(feats, num_points, umap_params, hdbscan_params, cluster_range=[0.4, 1.2]):
     # embed and cluster each animal
-    clusters = [get_clusters(
+    clusters = [cluster(
                     f, 
                     hdbscan_params, 
                     umap_params, 
-                    scale, 
-                    verbose
+                    cluster_range,
                 ) for f in feats]
 
     # get representative dataset from each animal
@@ -119,7 +106,7 @@ def cluster_for_strain(feats, num_points, umap_params, hdbscan_params, scale, ve
     logger.info(f"extracted {templates.shape} dataset from {len(feats)} animals")
 
     # embed and cluster templates again
-    clustering = get_clusters(templates, hdbscan_params, umap_params, scale, verbose)
+    clustering = cluster(templates, hdbscan_params, umap_params, cluster_range)
     return templates, clustering
 
 def collect_strain_clusters(feats: dict, clustering: dict, thresh: float, use_exemplars: bool) -> dict:
