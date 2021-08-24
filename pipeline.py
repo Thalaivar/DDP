@@ -26,9 +26,9 @@ class BehaviourPipeline:
         self.filter_thresh  = config["filter_thresh"]
         self.min_video_len  = config["min_video_len"]
         
-        for d in [self.base_dir, self.output_dir, self.csv_dir, self.raw_dir]:
-            try: os.mkdir(d)
-            except FileExistsError: pass
+    
+        try: os.mkdir(self.base_dir)
+        except FileExistsError: pass
         
     def ingest_data(self, data_dir: str, records: pd.DataFrame, n: int, n_strains: int=-1, n_jobs: int=-1):
         min_video_len = self.min_video_len * self.fps * 60
