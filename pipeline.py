@@ -30,7 +30,7 @@ class BehaviourPipeline:
             try: os.mkdir(d)
             except FileExistsError: pass
         
-    def ingest_data(self, data_dir: str, records: pd.DataFrame, n_strains: int=-1, n_jobs: int=-1):
+    def ingest_data(self, data_dir: str, records: pd.DataFrame, n: int, n_strains: int=-1, n_jobs: int=-1):
         min_video_len = self.min_video_len * self.fps * 60
         
         n_jobs = min(n_jobs, psutil.cpu_count(logical=False))
@@ -43,7 +43,7 @@ class BehaviourPipeline:
                 min_video_len, 
                 self.conf_threshold, 
                 self.filter_thresh, 
-                self.n_anim
+                n
             )
             for strain, df in list(records.groupby("Strain"))
         )
