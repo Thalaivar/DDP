@@ -49,7 +49,7 @@ class BehaviourPipeline:
         )
 
         filtered_data = [(strain, data) for strain, data in filtered_data if len(data) > 0]
-        if n_strains > 0: filtered_data = random.sample(filtered_data)
+        if n_strains > 0: filtered_data = random.sample(filtered_data, n_strains)
         filtered_data = {strain: data for strain, data in filtered_data}
 
         logger.info(f"extracted data from {len(filtered_data)} strains with a total of {sum(len(data) for _, data in filtered_data.items())} animals")
