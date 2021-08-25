@@ -13,6 +13,20 @@ min_video_len: 120
 
 # preprocessing
 filter_thresh: 10
+
+# body parts to choose from
+# nose         = 0
+# left ear     = 1
+# right ear    = 2
+# base neck    = 3
+# l.f. paw     = 4
+# r.f. paw     = 5
+# center spine = 6
+# l.r. paw     = 7
+# r.r. paw     = 8
+# tail base    = 9
+# tail mid     = 10
+# tail tip     = 11
 bodyparts: [0, 1, 2, 3, 6, 7, 8, 9, 10, 11]
 
 # embedding
