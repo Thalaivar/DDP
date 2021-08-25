@@ -1,5 +1,4 @@
 import os
-from hdbscan.hdbscan_ import hdbscan
 import joblib
 import ray
 import yaml
@@ -11,6 +10,7 @@ import numpy as np
 from tqdm import tqdm
 from clustering import *
 from joblib import Parallel, delayed
+from catboost import CatBoostClassifier
 from preprocessing import filter_strain_data, trim_data
 from features import extract_comb_feats, aggregate_features
 
@@ -159,6 +159,13 @@ class BehaviourPipeline:
         self.save_to_cache([templates, clustering], "dataset.sav")
         return templates, clustering
     
+    def train(self):
+        templates, clustering = self.load("dataset.sav")
+        clf = CatBoostClassifier(**self.clf_params)
+        clf.fit(templates, clustering["soft_labels"])
+        self.save_to_cache(clf, "classifier.sav")
+        return clf
+        
     def save_to_cache(self, data, f):
         with open(os.path.join(self.base_dir, f), "wb") as fname:
             joblib.dump(data, fname)
