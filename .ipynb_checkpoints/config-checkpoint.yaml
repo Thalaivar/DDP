@@ -1,5 +1,4 @@
-pipelinename: 'trial'
-base_dir: '/home/laadd/data/pipelines'
+base_dir: '/fastscratch/laadd/pipelines'
 # base_dir: 'D:/IIT/DDP/data'
 
 # basic config
@@ -14,4 +13,45 @@ min_video_len: 120
 
 # preprocessing
 filter_thresh: 10
+
+# body parts to choose from
+# nose         = 0
+# left ear     = 1
+# right ear    = 2
+# base neck    = 3
+# l.f. paw     = 4
+# r.f. paw     = 5
+# center spine = 6
+# l.r. paw     = 7
+# r.r. paw     = 8
+# tail base    = 9
+# tail mid     = 10
+# tail tip     = 11
 bodyparts: [0, 1, 2, 3, 6, 7, 8, 9, 10, 11]
+
+# embedding
+umap_params:
+  min_dist: 0.0
+  n_neighbors: 90
+  n_components: 35
+  metric: 'cosine'
+
+# clustering  
+hdbscan_params:
+  min_samples: 1
+  prediction_data: True
+  cluster_range: [0.4, 1.2]
+
+# cluster pooling
+cluster_thresh: 0.85
+use_exemplars: True
+
+# sampling
+num_points: 600
+
+clf_params:
+  task_type: 'GPU'
+  loss_function: 'MultiClass'
+  iterations: 1500
+  verbose: True
+  eval_metric: 'Accuracy'

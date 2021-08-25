@@ -48,3 +48,10 @@ use_exemplars: True
 
 # sampling
 num_points: 600
+
+clf_params:
+  task_type: 'GPU'
+  loss_function: 'MultiClass'
+  iterations: 1500
+  verbose: True
+  eval_metric: 'Accuracy'

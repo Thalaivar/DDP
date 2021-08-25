@@ -1,3 +1,6 @@
+import sys
+sys.path.insert(0, "/home/laadd/DDP/behaviourPipeline/")
+
 import os
 import joblib
 import ray
@@ -39,7 +42,8 @@ class BehaviourPipeline:
         self.num_points     = config["num_points"]
         self.cluster_thresh = config["cluster_thresh"]
         self.use_exemplars  = config["use_exemplars"] 
-    
+        
+        self.clf_params     = config["clf_params"] 
         try: os.mkdir(self.base_dir)
         except FileExistsError: pass
         
@@ -92,7 +96,7 @@ class BehaviourPipeline:
             feats[strain] = [aggregate_features(f, self.stride_window) for f in feats[strain]]
             pbar.update(1)
         
-        logger.info(f'extracted {len(feats)} datasets of {feats[list(feats.keys())[0]][0].shape[1]}D features')
+        logger.info(f'extracted {feats[list(feats.keys())[0]][0].shape[1]}D featres from {len(feats)} strains')
         logger.info(f'collected features into bins of {1000 * self.stride_window // self.fps} ms')
 
         self.save_to_cache(feats, "features.sav")
@@ -111,10 +115,10 @@ class BehaviourPipeline:
             templates, clustering = cluster_for_strain(feats_id[strain], **kwargs)
             return strain, templates, clustering
 
-        n_jobs = min(n_jobs, psutil.cpu_count(logical=False))
+        n_jobs = min(n_jobs, psutil.cpu_count(logical=False)) if n_jobs > 0 else psutil.cpu_count(logical=False)
         feats = self.load("features.sav")
 
-        ray.init(num_cpus=n_jobs)
+        ray.init(num_cpus=n_jobs, address="auto")
         feats_id = ray.put(feats)
 
         futures = [clustering_wrapper.remote(strain, feats_id, **kwargs) for strain in feats.keys()]
