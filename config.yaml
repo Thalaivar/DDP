@@ -28,5 +28,9 @@ hdbscan_params:
   prediction_data: True
   cluster_range: [0.4, 1.2]
 
+# cluster pooling
+cluster_thresh: 0.85
+use_exemplars: True
+
 # sampling
 num_points: 600
