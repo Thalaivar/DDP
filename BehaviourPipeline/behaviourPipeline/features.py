@@ -1,6 +1,6 @@
 import numpy as np
 from itertools import combinations
-from preprocessing import windowed_feats, smoothen_data
+from behaviourPipeline.preprocessing import windowed_feats, smoothen_data
 
 """
 B-SOID original

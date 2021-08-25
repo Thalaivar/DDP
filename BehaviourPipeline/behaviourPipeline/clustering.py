@@ -1,14 +1,10 @@
-from ray._private.runtime_env import fetch_package
 import umap
-import warnings
 import hdbscan
 import logging
-import ray
-import psutil
 import numpy as np
 
 from collections import defaultdict
-from utils import calculate_entropy_ratio
+from behaviourPipeline.utils import calculate_entropy_ratio
 from sklearn.preprocessing import StandardScaler
 
 logger = logging.getLogger(__name__)

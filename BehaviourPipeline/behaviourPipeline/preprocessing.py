@@ -2,7 +2,7 @@ import h5py
 import logging
 import pandas as pd
 import numpy as np
-from data import bsoid_format, get_filename_in_dataset, process_h5py_data
+from behaviourPipeline.data import bsoid_format, get_filename_in_dataset, process_h5py_data
 from sklearn.preprocessing import StandardScaler
 
 import logging

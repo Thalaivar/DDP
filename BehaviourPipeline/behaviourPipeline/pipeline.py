@@ -8,11 +8,11 @@ import pandas as pd
 import numpy as np
 
 from tqdm import tqdm
-from clustering import *
+from behaviourPipeline.clustering import *
 from joblib import Parallel, delayed
 from catboost import CatBoostClassifier
-from preprocessing import filter_strain_data, trim_data
-from features import extract_comb_feats, aggregate_features
+from behaviourPipeline.preprocessing import filter_strain_data, trim_data
+from behaviourPipeline.features import extract_comb_feats, aggregate_features
 
 import logging
 logger = logging.getLogger(__name__)

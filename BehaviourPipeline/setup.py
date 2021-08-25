@@ -9,7 +9,7 @@ setup(
     license='LICENSE.txt',
     install_requires=[
        "ray",
-       "umap",
+       "umap-learn",
        "hdbscan",
        "catboost",
        "pyyaml",

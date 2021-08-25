@@ -1,32 +1,14 @@
 import re
-import os
-try:
-    import cv2
-    import ffmpeg
-except:
-    pass
-try:
-    import hdbscan
-except:
-    pass
 import warnings
 import logging
 import numpy as np
 import pandas as pd
 import ftplib
-try:
-    import matplotlib.pyplot as plt
-except:
-    pass
-try:
-    import seaborn as sn
-except:
-    pass
+import matplotlib.pyplot as plt
+import seaborn as sn
 from sklearn.metrics import confusion_matrix
 
 logger = logging.getLogger(__name__)
-
-
 
 def create_confusion_matrix(feats, labels, clf):
     pred = clf.predict(feats)

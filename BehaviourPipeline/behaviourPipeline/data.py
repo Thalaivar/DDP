@@ -1,13 +1,8 @@
-try:
-    import h5py
-except:
-    pass
+import os
+import h5py
+import ftplib
 import pandas as pd
 import numpy as np
-import os
-from tqdm import tqdm
-import ftplib
-import random
 
 import logging
 logger = logging.getLogger(__name__)
