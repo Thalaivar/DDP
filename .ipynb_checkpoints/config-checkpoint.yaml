@@ -40,7 +40,7 @@ umap_params:
 hdbscan_params:
   min_samples: 1
   prediction_data: True
-  cluster_range: [0.4, 1.2]
+cluster_range: [0.4, 1.2]
 
 # cluster pooling
 cluster_thresh: 0.85
@@ -50,7 +50,7 @@ use_exemplars: True
 num_points: 600
 
 clf_params:
-  task_type: 'GPU'
+  task_type: 'CPU'
   loss_function: 'MultiClass'
   iterations: 1500
   verbose: True
